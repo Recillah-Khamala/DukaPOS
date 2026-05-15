@@ -8,6 +8,7 @@ import TopAppBar from '../components/layout/TopAppBar';
 import BasketItemCard from '../components/ui/BasketItemCard';
 import PaymentMethodSelector from '../components/ui/PaymentMethodSelector';
 import ChangeCalculator from '../components/ui/ChangeCalculator';
+import { useBasket } from '../hooks/useBasket';
 import type { BasketItem, PaymentMethod } from '../types';
 
 export default function HomeScreen() {
@@ -16,6 +17,7 @@ export default function HomeScreen() {
   const [cashReceived, setCashReceived] = useState(0);
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { items, addItem, removeItem, updateQuantity, clearBasket, total } = useBasket();
 
   const handleTabChange = (tab: BottomNavTab) => {
     setActiveTab(tab);
@@ -28,37 +30,6 @@ export default function HomeScreen() {
     }
   };
 
-  // Hardcoded mock data for basket items
-  const sampleItems: BasketItem[] = [
-    {
-      id: '1',
-      name: 'Medium Plastic Bag',
-      unitPrice: 15,
-      quantity: 2,
-      icon: 'shopping-bag',
-      isService: false,
-    },
-    {
-      id: '2',
-      name: 'Large Woven Bag',
-      unitPrice: 40,
-      quantity: 3,
-      icon: 'shopping-bag',
-      isService: false,
-    },
-    {
-      id: '3',
-      name: 'Grade 1 Milling',
-      unitPrice: 40,
-      quantity: 1.5,
-      icon: 'factory',
-      isService: true,
-    },
-  ];
-
-  // Calculate total bill from basket items
-  const totalBill = sampleItems.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
-
   const handleHelp = () => {
     Alert.alert('Help', 'This is the DukaPOS help section');
   };
@@ -68,13 +39,11 @@ export default function HomeScreen() {
   };
 
   const handleClearAll = () => {
-    // In a real app, we would clear the basket and reset form
-    Alert.alert('Clear All', 'Basket cleared');
-    // For now, just alert - in future we'd set sampleItems to empty
+    clearBasket();
   };
 
   const handleCompleteSale = () => {
-    Alert.alert('Sale Complete', `Sale completed with ${paymentMethod}\nChange: KES ${Math.max(0, cashReceived - totalBill).toLocaleString()}`);
+    Alert.alert('Sale Complete', `Sale completed with ${paymentMethod}\nChange: KES ${Math.max(0, cashReceived - total).toLocaleString()}`);
   };
 
   return (
@@ -91,7 +60,7 @@ export default function HomeScreen() {
           <Button title="Clear All" onPress={handleClearAll} color="#012d1d" />
         </View>
         <View className="gap-3">
-          {sampleItems.map((item) => (
+          {items.map((item) => (
             <BasketItemCard key={item.id} item={item} />
           ))}
         </View>
@@ -109,7 +78,7 @@ export default function HomeScreen() {
           </Link>
         </View>
         <ChangeCalculator 
-          totalBill={totalBill} 
+          totalBill={total} 
           cashReceived={cashReceived} 
           onCashReceivedChange={setCashReceived} 
           className="my-6" />
