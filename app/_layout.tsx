@@ -2,12 +2,15 @@ import '../global.css';
 
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 
 export default function RootLayout() {
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.StyleSheet) {
-      (window.StyleSheet as any).setFlag?.('darkMode', 'class');
+  useLayoutEffect(() => {
+    if (typeof window !== 'undefined') {
+      const StyleSheet = (window as any).StyleSheet;
+      if (StyleSheet && StyleSheet.setFlag) {
+        StyleSheet.setFlag('darkMode', 'class');
+      }
     }
   }, []);
 
