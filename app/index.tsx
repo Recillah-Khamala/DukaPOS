@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Alert, ScrollView, Text, View, Button } from 'react-native';
@@ -17,7 +17,17 @@ export default function HomeScreen() {
   const [cashReceived, setCashReceived] = useState(0);
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { clearBasket } = useBasket();
+  const { items, addItem, clearBasket, total } = useBasket();
+
+  // Initialize basket with mock data on mount
+  useEffect(() => {
+    const sampleItems: BasketItem[] = [
+      { id: '1', name: 'Medium Plastic Bag', unitPrice: 15, quantity: 2, icon: 'shopping-bag', isService: false },
+      { id: '2', name: 'Large Woven Bag', unitPrice: 40, quantity: 3, icon: 'shopping-bag', isService: false },
+      { id: '3', name: 'Grade 1 Milling', unitPrice: 40, quantity: 1.5, icon: 'factory', isService: true },
+    ];
+    sampleItems.forEach(addItem);
+  }, [addItem]);
 
   const handleTabChange = (tab: BottomNavTab) => {
     setActiveTab(tab);
@@ -29,37 +39,6 @@ export default function HomeScreen() {
       router.push('/credit');
     }
   };
-
-  // Hardcoded mock data for basket items
-  const sampleItems: BasketItem[] = [
-    {
-      id: '1',
-      name: 'Medium Plastic Bag',
-      unitPrice: 15,
-      quantity: 2,
-      icon: 'shopping-bag',
-      isService: false,
-    },
-    {
-      id: '2',
-      name: 'Large Woven Bag',
-      unitPrice: 40,
-      quantity: 3,
-      icon: 'shopping-bag',
-      isService: false,
-    },
-    {
-      id: '3',
-      name: 'Grade 1 Milling',
-      unitPrice: 40,
-      quantity: 1.5,
-      icon: 'factory',
-      isService: true,
-    },
-  ];
-
-  // Calculate total bill from basket items
-  const totalBill = sampleItems.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
 
   const handleHelp = () => {
     Alert.alert('Help', 'This is the DukaPOS help section');
@@ -74,7 +53,7 @@ export default function HomeScreen() {
   };
 
   const handleCompleteSale = () => {
-    Alert.alert('Sale Complete', `Sale completed with ${paymentMethod}\nChange: KES ${Math.max(0, cashReceived - totalBill).toLocaleString()}`);
+    Alert.alert('Sale Complete', `Sale completed with ${paymentMethod}\nChange: KES ${Math.max(0, cashReceived - total).toLocaleString()}`);
   };
 
   return (
@@ -91,7 +70,7 @@ export default function HomeScreen() {
           <Button title="Clear All" onPress={handleClearAll} color="#012d1d" />
         </View>
         <View className="gap-3">
-          {sampleItems.map((item) => (
+          {items.map((item) => (
             <BasketItemCard key={item.id} item={item} />
           ))}
         </View>
@@ -109,7 +88,7 @@ export default function HomeScreen() {
           </Link>
         </View>
         <ChangeCalculator 
-          totalBill={totalBill} 
+          totalBill={total} 
           cashReceived={cashReceived} 
           onCashReceivedChange={setCashReceived} 
           className="my-6" />
