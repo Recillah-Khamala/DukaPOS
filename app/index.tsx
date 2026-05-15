@@ -5,10 +5,12 @@ import { Alert, ScrollView, Text, View } from 'react-native';
 import BottomNavBar, { BottomNavTab } from '../components/layout/BottomNavBar';
 import TopAppBar from '../components/layout/TopAppBar';
 import BasketItemCard from '../components/ui/BasketItemCard';
-import type { BasketItem } from '../types';
+import PaymentMethodSelector from '../components/ui/PaymentMethodSelector';
+import type { BasketItem, PaymentMethod } from '../types';
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState<BottomNavTab>('sales');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
 
   const handleHelp = () => {
     Alert.alert('Help', 'This is the DukaPOS help section');
@@ -56,6 +58,11 @@ export default function HomeScreen() {
             <BasketItemCard key={item.id} item={item} />
           ))}
         </View>
+        <PaymentMethodSelector 
+          value={paymentMethod} 
+          onChange={setPaymentMethod} 
+          className="my-6"
+        />
         <View className="my-6 items-center gap-3">
           <Text className="mt-4 text-lg font-medium text-neutral-700">
             Active Tab: {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
