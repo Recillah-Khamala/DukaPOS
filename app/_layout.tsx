@@ -2,18 +2,8 @@ import '../global.css';
 
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useLayoutEffect } from 'react';
 
 export default function RootLayout() {
-  useLayoutEffect(() => {
-    if (typeof window !== 'undefined') {
-      const StyleSheet = (window as any).StyleSheet;
-      if (StyleSheet && StyleSheet.setFlag) {
-        StyleSheet.setFlag('darkMode', 'class');
-      }
-    }
-  }, []);
-
   return (
     <GestureHandlerRootView className="flex-1">
       <Stack>
