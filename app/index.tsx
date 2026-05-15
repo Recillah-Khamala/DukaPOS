@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Alert, ScrollView, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BottomNavBar, { BottomNavTab } from '../components/layout/BottomNavBar';
 import TopAppBar from '../components/layout/TopAppBar';
 import BasketItemCard from '../components/ui/BasketItemCard';
@@ -12,6 +13,7 @@ import type { BasketItem, PaymentMethod } from '../types';
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState<BottomNavTab>('sales');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
+  const insets = useSafeAreaInsets();
 
   const handleHelp = () => {
     Alert.alert('Help', 'This is the DukaPOS help section');
@@ -52,7 +54,12 @@ export default function HomeScreen() {
   return (
     <View className="flex-1 bg-gray-50">
       <TopAppBar title="DukaPOS" onHelp={handleHelp} onClose={handleClose} />
-      <ScrollView className="flex-1 px-4 py-4">
+       <ScrollView
+         contentContainerStyle={{ 
+           paddingBottom: Math.max(insets.bottom, 20) + 70 
+         }}
+         className="px-4 py-4"
+       >
         <Text className="mb-4 text-2xl font-semibold text-neutral-900">Basket Items</Text>
         <View className="gap-3">
           {sampleItems.map((item) => (
