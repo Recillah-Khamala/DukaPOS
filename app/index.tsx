@@ -21,6 +21,8 @@ export default function HomeScreen() {
     setActiveTab(tab);
     if (tab === 'inventory') {
       router.push('/inventory');
+    } else if (tab === 'reports') {
+      router.push('/reports');
     }
   };
 
