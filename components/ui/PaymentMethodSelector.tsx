@@ -20,7 +20,7 @@ export default function PaymentMethodSelector({ value, onChange }: PaymentMethod
             : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600'
         }`}
       >
-        <MaterialIcons name="attach_money" size={24} color="#012d1d" />
+        <MaterialIcons name="attach-money" size={24} color="#012d1d" />
         <Text className="mt-1 text-sm font-medium">
           Cash
         </Text>
@@ -36,7 +36,7 @@ export default function PaymentMethodSelector({ value, onChange }: PaymentMethod
             : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600'
         }`}
       >
-        <MaterialIcons name="phone_android" size={24} color="#012d1d" />
+        <MaterialIcons name="phone-android" size={24} color="#012d1d" />
         <Text className="mt-1 text-sm font-medium">
           M-Pesa
         </Text>
