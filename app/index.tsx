@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Alert, ScrollView, Text, View, Button } from 'react-native';
@@ -11,23 +11,19 @@ import ChangeCalculator from '../components/ui/ChangeCalculator';
 import { useBasket } from '../hooks/useBasket';
 import type { BasketItem, PaymentMethod } from '../types';
 
+const initialBasketItems: BasketItem[] = [
+  { id: '1', name: 'Medium Plastic Bag', unitPrice: 15, quantity: 2, icon: 'shopping-bag', isService: false },
+  { id: '2', name: 'Large Woven Bag', unitPrice: 40, quantity: 3, icon: 'shopping-bag', isService: false },
+  { id: '3', name: 'Grade 1 Milling', unitPrice: 40, quantity: 1.5, icon: 'factory', isService: true },
+];
+
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState<BottomNavTab>('sales');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
   const [cashReceived, setCashReceived] = useState(0);
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { items, addItem, clearBasket, total } = useBasket();
-
-  // Initialize basket with mock data on mount
-  useEffect(() => {
-    const sampleItems: BasketItem[] = [
-      { id: '1', name: 'Medium Plastic Bag', unitPrice: 15, quantity: 2, icon: 'shopping-bag', isService: false },
-      { id: '2', name: 'Large Woven Bag', unitPrice: 40, quantity: 3, icon: 'shopping-bag', isService: false },
-      { id: '3', name: 'Grade 1 Milling', unitPrice: 40, quantity: 1.5, icon: 'factory', isService: true },
-    ];
-    sampleItems.forEach(addItem);
-  }, [addItem]);
+  const { items, clearBasket, total } = useBasket(initialBasketItems);
 
   const handleTabChange = (tab: BottomNavTab) => {
     setActiveTab(tab);

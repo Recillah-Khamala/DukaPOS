@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
 import type { BasketItem } from '../types';
 
-export function useBasket() {
-  const [items, setItems] = useState<BasketItem[]>([]);
+export function useBasket(initialItems: BasketItem[] = []) {
+  const [items, setItems] = useState<BasketItem[]>(initialItems);
 
   const addItem = (item: BasketItem) => {
     setItems((prev) => [...prev, item]);
