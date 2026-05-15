@@ -23,6 +23,8 @@ export default function HomeScreen() {
       router.push('/inventory');
     } else if (tab === 'reports') {
       router.push('/reports');
+    } else if (tab === 'credit') {
+      router.push('/credit');
     }
   };
 

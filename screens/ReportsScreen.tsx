@@ -14,6 +14,8 @@ export default function ReportsScreen() {
       router.push('/');
     } else if (tab === 'inventory') {
       router.push('/inventory');
+    } else if (tab === 'credit') {
+      router.push('/credit');
     }
   };
 
