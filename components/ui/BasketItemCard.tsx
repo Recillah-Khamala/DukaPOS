@@ -15,6 +15,11 @@ export default function BasketItemCard({ item }: BasketItemCardProps) {
       style={{
         borderLeftWidth: item.isService ? 4 : 0,
         borderLeftColor: item.isService ? '#7d5800' : 'transparent',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 2,
       }}
     >
       {/* Left: Icon Container */}

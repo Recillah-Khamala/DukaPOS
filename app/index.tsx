@@ -51,13 +51,7 @@ export default function HomeScreen() {
       <TopAppBar title="DukaPOS" onHelp={handleHelp} onClose={handleClose} />
       <ScrollView className="flex-1 px-4 py-4">
         <Text className="mb-4 text-2xl font-semibold text-neutral-900">Basket Items</Text>
-        <View className="gap-3" style={{
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.1,
-          shadowRadius: 2,
-          elevation: 2,
-        }}>
+        <View className="gap-3">
           {sampleItems.map((item) => (
             <BasketItemCard key={item.id} item={item} />
           ))}
