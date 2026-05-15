@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Alert, ScrollView, Text, View } from 'react-native';
+import { Alert, ScrollView, Text, View, Button } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BottomNavBar, { BottomNavTab } from '../components/layout/BottomNavBar';
 import TopAppBar from '../components/layout/TopAppBar';
@@ -13,7 +13,39 @@ import type { BasketItem, PaymentMethod } from '../types';
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState<BottomNavTab>('sales');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
+  const [cashReceived, setCashReceived] = useState(0);
   const insets = useSafeAreaInsets();
+
+  // Hardcoded mock data for basket items
+  const sampleItems: BasketItem[] = [
+    {
+      id: '1',
+      name: 'Medium Plastic Bag',
+      unitPrice: 15,
+      quantity: 2,
+      icon: 'shopping-bag',
+      isService: false,
+    },
+    {
+      id: '2',
+      name: 'Large Woven Bag',
+      unitPrice: 40,
+      quantity: 3,
+      icon: 'shopping-bag',
+      isService: false,
+    },
+    {
+      id: '3',
+      name: 'Grade 1 Milling',
+      unitPrice: 40,
+      quantity: 1.5,
+      icon: 'factory',
+      isService: true,
+    },
+  ];
+
+  // Calculate total bill from basket items
+  const totalBill = sampleItems.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
 
   const handleHelp = () => {
     Alert.alert('Help', 'This is the DukaPOS help section');
@@ -23,44 +55,29 @@ export default function HomeScreen() {
     Alert.alert('Close', 'Close button pressed');
   };
 
-  // Sample basket items for demonstration
-  const sampleItems: BasketItem[] = [
-    {
-      id: '1',
-      name: 'Laptop Repair',
-      unitPrice: 5000,
-      quantity: 1,
-      icon: 'build',
-      isService: true,
-    },
-    {
-      id: '2',
-      name: 'USB Cable',
-      unitPrice: 500,
-      quantity: 3,
-      icon: 'cable',
-      isService: false,
-    },
-    {
-      id: '3',
-      name: 'Wireless Mouse',
-      unitPrice: 1200,
-      quantity: 2,
-      icon: 'mouse',
-      isService: false,
-    },
-  ];
+  const handleClearAll = () => {
+    // In a real app, we would clear the basket and reset form
+    Alert.alert('Clear All', 'Basket cleared');
+    // For now, just alert - in future we'd set sampleItems to empty
+  };
+
+  const handleCompleteSale = () => {
+    Alert.alert('Sale Complete', `Sale completed with ${paymentMethod}\nChange: KES ${Math.max(0, cashReceived - totalBill).toLocaleString()}`);
+  };
 
   return (
     <View className="flex-1 bg-gray-50">
       <TopAppBar title="DukaPOS" onHelp={handleHelp} onClose={handleClose} />
-       <ScrollView
-         contentContainerStyle={{ 
-           paddingBottom: Math.max(insets.bottom, 20) + 70 
-         }}
-         className="px-4 py-4"
-       >
-        <Text className="mb-4 text-2xl font-semibold text-neutral-900">Basket Items</Text>
+      <ScrollView
+        contentContainerStyle={{ 
+          paddingBottom: Math.max(insets.bottom, 20) + 160 
+        }}
+        className="px-4 py-4"
+      >
+        <View className="flex justify-between items-center mb-4">
+          <Text className="text-2xl font-semibold text-neutral-900">Basket Items</Text>
+          <Button title="Clear All" onPress={handleClearAll} color="#012d1d" />
+        </View>
         <View className="gap-3">
           {sampleItems.map((item) => (
             <BasketItemCard key={item.id} item={item} />
@@ -79,7 +96,14 @@ export default function HomeScreen() {
             Go to details
           </Link>
         </View>
-        <ChangeCalculator totalBill={8900} className="my-6" />
+        <ChangeCalculator 
+          totalBill={totalBill} 
+          cashReceived={cashReceived} 
+          onCashReceivedChange={setCashReceived} 
+          className="my-6" />
+        <View className="my-6">
+          <Button title="COMPLETE SALE & PRINT" onPress={handleCompleteSale} color="#012d1d" />
+        </View>
       </ScrollView>
       <BottomNavBar activeTab={activeTab} onTabChange={setActiveTab} />
       <StatusBar style="auto" />

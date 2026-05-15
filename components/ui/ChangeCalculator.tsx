@@ -1,13 +1,12 @@
-import { useState } from 'react';
 import { Text, View, TextInput } from 'react-native';
 
 export type ChangeCalculatorProps = {
   totalBill: number;
+  cashReceived: number;
+  onCashReceivedChange: (amount: number) => void;
 };
 
-export default function ChangeCalculator({ totalBill }: ChangeCalculatorProps) {
-  const [cashReceived, setCashReceived] = useState(0);
-
+export default function ChangeCalculator({ totalBill, cashReceived, onCashReceivedChange }: ChangeCalculatorProps) {
   const change = Math.max(0, cashReceived - totalBill);
 
   return (
@@ -35,7 +34,7 @@ export default function ChangeCalculator({ totalBill }: ChangeCalculatorProps) {
           value={cashReceived.toString()}
           onChangeText={(text) => {
             const num = parseInt(text) || 0;
-            setCashReceived(num);
+            onCashReceivedChange(num);
           }}
         />
       </View>
