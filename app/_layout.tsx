@@ -9,6 +9,7 @@ export default function RootLayout() {
       <Stack>
         <Stack.Screen name="index" options={{ title: 'DukaPOS' }} />
         <Stack.Screen name="details" options={{ title: 'Details' }} />
+        <Stack.Screen name="inventory" options={{ title: 'Inventory' }} />
       </Stack>
     </GestureHandlerRootView>
   );

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Alert, ScrollView, Text, View, Button } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,6 +15,14 @@ export default function HomeScreen() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
   const [cashReceived, setCashReceived] = useState(0);
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+
+  const handleTabChange = (tab: BottomNavTab) => {
+    setActiveTab(tab);
+    if (tab === 'inventory') {
+      router.push('/inventory');
+    }
+  };
 
   // Hardcoded mock data for basket items
   const sampleItems: BasketItem[] = [
@@ -105,7 +113,7 @@ export default function HomeScreen() {
           <Button title="COMPLETE SALE & PRINT" onPress={handleCompleteSale} color="#012d1d" />
         </View>
       </ScrollView>
-      <BottomNavBar activeTab={activeTab} onTabChange={setActiveTab} />
+      <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
       <StatusBar style="auto" />
     </View>
   );
