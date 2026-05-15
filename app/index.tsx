@@ -6,6 +6,7 @@ import BottomNavBar, { BottomNavTab } from '../components/layout/BottomNavBar';
 import TopAppBar from '../components/layout/TopAppBar';
 import BasketItemCard from '../components/ui/BasketItemCard';
 import PaymentMethodSelector from '../components/ui/PaymentMethodSelector';
+import ChangeCalculator from '../components/ui/ChangeCalculator';
 import type { BasketItem, PaymentMethod } from '../types';
 
 export default function HomeScreen() {
@@ -71,6 +72,7 @@ export default function HomeScreen() {
             Go to details
           </Link>
         </View>
+        <ChangeCalculator totalBill={8900} className="my-6" />
       </ScrollView>
       <BottomNavBar activeTab={activeTab} onTabChange={setActiveTab} />
       <StatusBar style="auto" />
