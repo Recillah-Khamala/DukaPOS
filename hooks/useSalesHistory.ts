@@ -5,14 +5,14 @@ import type { Sale } from '../types';
 const SALES_KEY = 'duka_sales';
 
 export function useSalesHistory() {
-  const [sales, setSales] = useState<Sale[]>([]);
+  const [salesHistory, setSalesHistory] = useState<Sale[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadSales = async () => {
       const savedSales = await loadData<Sale[]>(SALES_KEY);
       if (savedSales !== null) {
-        setSales(savedSales);
+        setSalesHistory(savedSales);
       }
       setLoading(false);
     };
@@ -20,10 +20,10 @@ export function useSalesHistory() {
   }, []);
 
   const addSale = async (sale: Sale) => {
-    const updatedSales = [...sales, sale];
-    setSales(updatedSales);
+    const updatedSales = [...salesHistory, sale];
+    setSalesHistory(updatedSales);
     await saveData(SALES_KEY, updatedSales);
   };
 
-  return { sales, loading, addSale };
+  return { salesHistory, loading, addSale };
 }
