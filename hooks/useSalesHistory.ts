@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { loadData } from '../utils/storage';
+import { loadData, saveData } from '../utils/storage';
 import type { Sale } from '../types';
 
 const SALES_KEY = 'duka_sales';
@@ -19,8 +19,10 @@ export function useSalesHistory() {
     loadSales();
   }, []);
 
-  const addSale = (sale: Sale) => {
-    setSales((prev) => [...prev, sale]);
+  const addSale = async (sale: Sale) => {
+    const updatedSales = [...sales, sale];
+    setSales(updatedSales);
+    await saveData(SALES_KEY, updatedSales);
   };
 
   return { sales, loading, addSale };
