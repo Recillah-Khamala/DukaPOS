@@ -5,11 +5,12 @@ import type { PaymentMethod } from '../../types';
 export type PaymentMethodSelectorProps = {
   value: PaymentMethod;
   onChange: (method: PaymentMethod) => void;
+  className?: string;
 };
 
-export default function PaymentMethodSelector({ value, onChange }: PaymentMethodSelectorProps) {
+export default function PaymentMethodSelector({ value, onChange, className }: PaymentMethodSelectorProps) {
   return (
-    <View className="flex-row gap-4">
+    <View className={`flex-row gap-4 ${className || ''}`}>
       {/* Cash Button */}
       <TouchableOpacity
         activeOpacity={0.7}

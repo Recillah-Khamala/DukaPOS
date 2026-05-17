@@ -4,13 +4,14 @@ export type ChangeCalculatorProps = {
   totalBill: number;
   cashReceived: number;
   onCashReceivedChange: (amount: number) => void;
+  className?: string;
 };
 
-export default function ChangeCalculator({ totalBill, cashReceived, onCashReceivedChange }: ChangeCalculatorProps) {
+export default function ChangeCalculator({ totalBill, cashReceived, onCashReceivedChange, className }: ChangeCalculatorProps) {
   const change = Math.max(0, cashReceived - totalBill);
 
   return (
-    <View className="bg-white p-4 rounded-lg shadow-md">
+    <View className={`bg-white p-4 rounded-lg shadow-md ${className || ''}`}>
       {/* Total Bill */}
       <View className="mb-4">
         <Text className="text-sm font-medium text-neutral-600">
