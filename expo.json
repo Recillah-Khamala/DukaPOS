@@ -1,0 +1,12 @@
+{
+  "name": "dukapos",
+  "slug": "duka-pos",
+  "version": "1.0.0",
+  "platforms": {
+    "web": {
+      "bundled": {
+        "exclusions": ["react-native-svg"]
+      }
+    }
+  }
+}
