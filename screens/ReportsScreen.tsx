@@ -51,21 +51,21 @@ export default function ReportsScreen() {
             <StatCard
               label="Total Revenue"
               value={`KES ${totalRevenue.toLocaleString()}`}
-              icon="attach_money"
+              icon="attach-money"
               accentColor="emerald"
               trend="+12%"
             />
             <StatCard
               label="Total Transactions"
               value={totalTransactions.toString()}
-              icon="shopping_cart"
+              icon="shopping-cart"
               accentColor="blue"
               trend="+5%"
             />
             <StatCard
               label="Average Sale"
               value={`KES ${(totalRevenue / Math.max(totalTransactions, 1)).toLocaleString()}`}
-              icon="show_chart"
+              icon="show-chart"
               accentColor="purple"
               trend="+8%"
             />

@@ -1,6 +1,6 @@
+// simple, type-safe revenue chart replacement
 import React from 'react';
-import { View, Text } from 'react-native';
-import { BarChart } from 'react-native-gifted-charts';
+import { View, Text, Dimensions } from 'react-native';
 
 export type RevenueChartProps = {
   data: { date: string; revenue: number }[];
@@ -15,36 +15,25 @@ export default function RevenueChart({ data }: RevenueChartProps) {
     );
   }
 
-  // Format date to day of week (Mon, Tue, etc.)
   const chartData = data.map(({ date, revenue }) => {
     const day = new Date(date).toLocaleDateString(undefined, { weekday: 'short' });
     return { label: day, value: revenue };
   });
 
+  const max = Math.max(...chartData.map((d) => d.value), 1);
+  const barMaxWidth = Math.min(Math.max(Dimensions.get('window').width - 96, 240), 600);
+
   return (
     <View className="w-full">
-      <BarChart
-        data={chartData}
-        width={undefined} // Take full width
-        height={200}
-        chartConfig={{
-          backgroundGradientFrom: '#fff',
-          backgroundGradientTo: '#fff',
-          decimalPlaces: 2, // revenue values
-          color: (opacity: number) => `rgba(1, 45, 29, ${opacity})`, // primary green #012d1d
-          labelColor: (opacity: number) => `rgba(1, 45, 29, ${opacity})`,
-          style: { borderRadius: 8 },
-          propsForDots: {
-            r: '6',
-            strokeWidth: '2',
-            stroke: '#fff',
-          },
-        }}
-        bezier
-        style={{ borderRadius: 8 }}
-        // Add a bit of padding to the chart
-        contentInset={{ top: 20, bottom: 30, left: 20, right: 20 }}
-      />
+      <View className="bg-white rounded-lg p-3">
+        {chartData.map((d) => (
+          <View key={d.label} className="flex-row items-center mb-2">
+            <Text className="w-16 text-sm text-neutral-600">{d.label}</Text>
+            <View className="h-4 rounded bg-emerald-300 mr-3" style={{ width: (d.value / max) * barMaxWidth }} />
+            <Text className="text-sm text-neutral-800">KES {d.value.toLocaleString()}</Text>
+          </View>
+        ))}
+      </View>
     </View>
   );
 }
