@@ -76,22 +76,24 @@ export default function ReportsScreen() {
             <Text className="mb-2 text-lg font-semibold text-neutral-900">
               Daily Revenue Trend
             </Text>
-            <RevenueChart 
-              data={filteredSales
-                // Group sales by date
-                .reduce((acc: Record<string, number>, sale) => {
-                  const date = new Date(sale.createdAt || Date.now()).toISOString().split('T')[0];
-                  acc[date] = (acc[date] || 0) + sale.total;
-                  return acc;
-                }, {})
-                // Convert to array format expected by RevenueChart
-                .map((date, revenue) => ({ date, revenue }))
-                // Sort by date
-                .sort((a, b) => a.date.localeCompare(b.date))
-                // Get last 7 days for better visualization
-                .slice(-7)
+              {
+                // Prepare chart data: group sales by date, convert to array, sort and take last 7
               }
-            />
+              <RevenueChart
+                data={(() => {
+                  const grouped = filteredSales.reduce((acc: Record<string, number>, sale) => {
+                    const date = new Date(sale.createdAt || Date.now()).toISOString().split('T')[0];
+                    acc[date] = (acc[date] || 0) + sale.total;
+                    return acc;
+                  }, {});
+
+                  const arr = Object.entries(grouped).map(([date, revenue]) => ({ date, revenue }));
+
+                  arr.sort((a, b) => a.date.localeCompare(b.date));
+
+                  return arr.slice(-7);
+                })()}
+              />
           </View>
           
           <View className="mt-4 gap-2">

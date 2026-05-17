@@ -44,7 +44,20 @@ export default function BottomNavBar({ activeTab, onTabChange }: BottomNavBarPro
             key={tab.id}
             accessibilityRole="tab"
             accessibilityState={{ selected: isActive }}
-            onPress={() => onTabChange(tab.id)}
+            onPress={() => {
+              // If running on web, ensure any focused element inside the current
+              // view is blurred before navigation so it isn't hidden from AT when
+              // the route is hidden (some routers set aria-hidden on inactive routes).
+              try {
+                if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
+                  document.activeElement.blur();
+                }
+              } catch (e) {
+                // ignore in non-browser environments
+              }
+
+              onTabChange(tab.id);
+            }}
             className="mx-0.5 flex-1 items-center justify-center rounded-lg py-1.5"
             style={{
               backgroundColor: isActive ? Colors.secondaryContainer : 'transparent',

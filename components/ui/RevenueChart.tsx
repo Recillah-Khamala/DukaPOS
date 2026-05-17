@@ -27,9 +27,6 @@ export default function RevenueChart({ data }: RevenueChartProps) {
         data={chartData}
         width={undefined} // Take full width
         height={200}
-        svg={{
-          // Optional: customize the chart container
-        }}
         chartConfig={{
           backgroundGradientFrom: '#fff',
           backgroundGradientTo: '#fff',
