@@ -5,9 +5,10 @@ import BottomNavBar, { BottomNavTab } from '../components/layout/BottomNavBar';
 import TopAppBar from '../components/layout/TopAppBar';
 import { useSalesHistory } from '../hooks/useSalesHistory';
 import { useDateFilter, DateRange } from '../hooks/useDateFilter';
-import { getTotalRevenue, getTotalTransactions } from '../utils/salesHelpers';
+import { getTotalRevenue, getTotalTransactions, getTopProducts } from '../utils/salesHelpers';
 import StatCard from '../components/ui/StatCard';
 import RevenueChart from '../components/ui/RevenueChart';
+import TopProductsList from '../components/ui/TopProductsList';
 
 export default function ReportsScreen() {
   const [activeTab, setActiveTab] = useState<BottomNavTab>('reports');
@@ -105,6 +106,12 @@ export default function ReportsScreen() {
                 // Prepare chart data: group sales by date, convert to array, sort and take last 7
               }
               <RevenueChart data={revenueChartData} />
+          </View>
+
+          {/* Top Products */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-semibold text-neutral-900">Top Products</Text>
+            <TopProductsList products={getTopProducts(filteredSales, 5)} />
           </View>
           
           <View className="mt-4 gap-2">
