@@ -9,6 +9,7 @@ import { getTotalRevenue, getTotalTransactions, getTopProducts } from '../utils/
 import StatCard from '../components/ui/StatCard';
 import RevenueChart from '../components/ui/RevenueChart';
 import TopProductsList from '../components/ui/TopProductsList';
+import DateRangeFilter from '../components/ui/DateRangeFilter';
 import PaymentBreakdown from '../components/ui/PaymentBreakdown';
 import { getPaymentMethodBreakdown } from '../utils/salesHelpers';
 
@@ -131,16 +132,8 @@ export default function ReportsScreen() {
             <PaymentBreakdown breakdown={paymentAmounts} counts={paymentCounts} />
           </View>
           
-          <View className="mt-4 gap-2">
-            {(['today', 'this_week', 'this_month', 'all_time'] as DateRange[]).map((range) => (
-              <Pressable
-                key={range}
-                onPress={() => setRange(range)}
-                className={`p-2 rounded ${selectedRange === range ? 'bg-yellow-200' : 'bg-white'}`}
-              >
-                <Text>{range.replace(/_/g, ' ')}</Text>
-              </Pressable>
-            ))}
+          <View className="mt-4">
+            <DateRangeFilter value={selectedRange} onChange={setRange} />
           </View>
           <View className="mt-4">
             {filteredSales.length === 0 ? (
