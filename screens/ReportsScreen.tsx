@@ -19,6 +19,31 @@ export default function ReportsScreen() {
   const totalRevenue = getTotalRevenue(filteredSales);
   const totalTransactions = getTotalTransactions(filteredSales);
 
+  // Prepare chart data; if there are no sales, inject deterministic sample data
+  const revenueChartData = (() => {
+    const grouped = filteredSales.reduce((acc: Record<string, number>, sale) => {
+      const date = new Date(sale.createdAt || Date.now()).toISOString().split('T')[0];
+      acc[date] = (acc[date] || 0) + sale.total;
+      return acc;
+    }, {});
+
+    const arr = Object.entries(grouped).map(([date, revenue]) => ({ date, revenue }));
+    arr.sort((a, b) => a.date.localeCompare(b.date));
+    const last7 = arr.slice(-7);
+
+    if (last7.length === 0) {
+      const today = new Date();
+      const sampleValues = [1200, 2400, 1800, 3000, 1600, 2200, 2800];
+      return sampleValues.map((rev, i) => {
+        const d = new Date(today);
+        d.setDate(today.getDate() - (6 - i));
+        return { date: d.toISOString().split('T')[0], revenue: rev };
+      });
+    }
+
+    return last7;
+  })();
+
   const handleTabChange = (tab: BottomNavTab) => {
     if (tab === 'sales') {
       router.push('/');
@@ -79,21 +104,7 @@ export default function ReportsScreen() {
               {
                 // Prepare chart data: group sales by date, convert to array, sort and take last 7
               }
-              <RevenueChart
-                data={(() => {
-                  const grouped = filteredSales.reduce((acc: Record<string, number>, sale) => {
-                    const date = new Date(sale.createdAt || Date.now()).toISOString().split('T')[0];
-                    acc[date] = (acc[date] || 0) + sale.total;
-                    return acc;
-                  }, {});
-
-                  const arr = Object.entries(grouped).map(([date, revenue]) => ({ date, revenue }));
-
-                  arr.sort((a, b) => a.date.localeCompare(b.date));
-
-                  return arr.slice(-7);
-                })()}
-              />
+              <RevenueChart data={revenueChartData} />
           </View>
           
           <View className="mt-4 gap-2">
