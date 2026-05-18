@@ -125,7 +125,7 @@ export default function ReportsScreen() {
           {/* Top Products */}
           <View className="mb-6 bg-white rounded-lg p-4">
             <Text className="mb-2 text-lg font-semibold text-neutral-900">Top Products</Text>
-            <TopProductsList products={getTopProducts(filteredSales, 5)} />
+            <TopProductsList products={topProductsData} />
           </View>
           
           <View className="mt-4 gap-2">
