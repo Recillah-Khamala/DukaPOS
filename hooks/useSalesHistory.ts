@@ -13,7 +13,7 @@ export function useSalesHistory() {
       const savedSales = await loadData<Sale[]>(SALES_KEY);
       if (savedSales !== null) {
         setSalesHistory(savedSales);
-      } else if (process.env.NODE_ENV === 'development') {
+      } else {
         // Seed deterministic mock sales for visual testing in development
         const today = new Date();
         const mockSales: Sale[] = [
