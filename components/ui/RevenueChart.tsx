@@ -17,9 +17,10 @@ export default function RevenueChart({ data }: RevenueChartProps) {
   const barWidth = 28;
   const spacing = 12;
 
+  // If there's no data, render an empty state message.
   if (!data || data.length === 0) {
     return (
-      <View style={[styles.container, { height: 200 }]}> 
+      <View style={[styles.container, { height: 200 }]}>
         <Text style={styles.emptyText}>No sales yet</Text>
       </View>
     );

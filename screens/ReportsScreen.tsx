@@ -32,30 +32,13 @@ export default function ReportsScreen() {
     arr.sort((a, b) => a.date.localeCompare(b.date));
     const last7 = arr.slice(-7);
 
-    if (last7.length === 0) {
-      const today = new Date();
-      const sampleValues = [1200, 2400, 1800, 3000, 1600, 2200, 2800];
-      return sampleValues.map((rev, i) => {
-        const d = new Date(today);
-        d.setDate(today.getDate() - (6 - i));
-        return { date: d.toISOString().split('T')[0], revenue: rev };
-      });
-    }
-
+    // Return the actual last 7 days of revenue (may be empty).
     return last7;
   })();
 
-  // Top products: use real data when available, otherwise show deterministic mock data for visual testing
+  // Top products: compute from real sales; may be empty until sales exist
   const _topProducts = getTopProducts(filteredSales, 5);
-  const topProductsData = _topProducts.length
-    ? _topProducts
-    : [
-        { name: 'Tea Leaves - Premium', unitsSold: 42, revenue: 3010 },
-        { name: 'Sugar (2kg)', unitsSold: 35, revenue: 2257 },
-        { name: 'Maize Flour', unitsSold: 28, revenue: 1800 },
-        { name: 'Cooking Oil', unitsSold: 22, revenue: 1505 },
-        { name: 'Salt (1kg)', unitsSold: 18, revenue: 752 },
-      ];
+  const topProductsData = _topProducts;
 
   const handleTabChange = (tab: BottomNavTab) => {
     if (tab === 'sales') {
