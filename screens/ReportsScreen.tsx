@@ -9,6 +9,8 @@ import { getTotalRevenue, getTotalTransactions, getTopProducts } from '../utils/
 import StatCard from '../components/ui/StatCard';
 import RevenueChart from '../components/ui/RevenueChart';
 import TopProductsList from '../components/ui/TopProductsList';
+import PaymentBreakdown from '../components/ui/PaymentBreakdown';
+import { getPaymentMethodBreakdown } from '../utils/salesHelpers';
 
 export default function ReportsScreen() {
   const [activeTab, setActiveTab] = useState<BottomNavTab>('reports');
@@ -19,6 +21,18 @@ export default function ReportsScreen() {
   const filteredSales = filterSales(salesHistory);
   const totalRevenue = getTotalRevenue(filteredSales);
   const totalTransactions = getTotalTransactions(filteredSales);
+
+  // Payment breakdown: amounts and counts
+  const paymentAmounts = filteredSales.reduce(
+    (acc: { cash: number; mpesa: number }, sale) => {
+      if (sale.paymentMethod === 'cash') acc.cash += sale.total;
+      else if (sale.paymentMethod === 'mpesa') acc.mpesa += sale.total;
+      return acc;
+    },
+    { cash: 0, mpesa: 0 }
+  );
+
+  const paymentCounts = getPaymentMethodBreakdown(filteredSales);
 
   // Prepare chart data; if there are no sales, inject deterministic sample data
   const revenueChartData = (() => {
@@ -109,6 +123,12 @@ export default function ReportsScreen() {
           <View className="mb-6 bg-white rounded-lg p-4">
             <Text className="mb-2 text-lg font-semibold text-neutral-900">Top Products</Text>
             <TopProductsList products={topProductsData} />
+          </View>
+
+          {/* Payment Breakdown */}
+          <View className="mb-6 bg-white rounded-lg p-4">
+            <Text className="mb-2 text-lg font-semibold text-neutral-900">Payments</Text>
+            <PaymentBreakdown breakdown={paymentAmounts} counts={paymentCounts} />
           </View>
           
           <View className="mt-4 gap-2">
