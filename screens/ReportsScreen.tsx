@@ -98,7 +98,7 @@ export default function ReportsScreen() {
           </View>
           
           {/* Revenue Chart */}
-          <View className="mb-6">
+          <View className="mb-10">
             <Text className="mb-2 text-lg font-semibold text-neutral-900">
               Daily Revenue Trend
             </Text>

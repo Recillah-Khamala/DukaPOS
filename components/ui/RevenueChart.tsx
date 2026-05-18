@@ -28,7 +28,7 @@ export default function RevenueChart({ data }: RevenueChartProps) {
   const chartData = data.map((d) => ({ value: d.revenue, label: formatDay(d.date), frontColor: PRIMARY }));
 
   return (
-    <View style={{ height: 200, width: '100%' }}>
+    <View style={{ height: 220, width: '100%', paddingBottom: 8 }}>
       <BarChart
         data={chartData}
         barWidth={barWidth}
@@ -44,7 +44,7 @@ export default function RevenueChart({ data }: RevenueChartProps) {
         showVerticalLines={false}
       />
 
-      <View style={[styles.labelsRow, { paddingHorizontal: 8 }]}>
+      <View style={[styles.labelsRow, { paddingHorizontal: 8, marginTop: 12 }]}>
         {chartData.map((d, i) => (
           <Text key={i} style={[styles.label, { width: barWidth + spacing }]}> 
             {d.label}
