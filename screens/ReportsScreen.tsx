@@ -82,7 +82,7 @@ export default function ReportsScreen() {
     return (
       <View className="flex-1 bg-gray-50">
         <TopAppBar title="Reports" />
-        <ScrollView className="flex-1 px-4 py-4 pb-24">
+        <ScrollView className="flex-1 px-4 py-4" contentContainerStyle={{ paddingBottom: 120 }}>
           <View className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
             <StatCard
               label="Total Revenue"
