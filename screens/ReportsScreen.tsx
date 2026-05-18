@@ -20,11 +20,38 @@ export default function ReportsScreen() {
   const { selectedRange, setRange, filterSales } = useDateFilter();
 
   const filteredSales = filterSales(salesHistory);
-  const totalRevenue = getTotalRevenue(filteredSales);
-  const totalTransactions = getTotalTransactions(filteredSales);
+  // Use real filtered sales when available; otherwise use deterministic mock data for visual testing
+  const mockSales = [
+    {
+      id: 'm-001',
+      items: [{ id: 'p1', name: 'Tea Leaves - Premium', unitPrice: 70, quantity: 42, icon: 'local-cafe' }],
+      total: 3010,
+      paymentMethod: 'cash' as const,
+      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      id: 'm-002',
+      items: [{ id: 'p2', name: 'Sugar (2kg)', unitPrice: 64.48, quantity: 35, icon: 'shopping-cart' }],
+      total: 2257,
+      paymentMethod: 'mpesa' as const,
+      createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      id: 'm-003',
+      items: [{ id: 'p3', name: 'Maize Flour', unitPrice: 64.2857, quantity: 28, icon: 'local-dining' }],
+      total: 1800,
+      paymentMethod: 'cash' as const,
+      createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+  ];
 
-  // Payment breakdown: amounts and counts
-  const paymentAmounts = filteredSales.reduce(
+  const visualSales = filteredSales.length > 0 ? filteredSales : mockSales;
+
+  const totalRevenue = getTotalRevenue(visualSales);
+  const totalTransactions = getTotalTransactions(visualSales);
+
+  // Payment breakdown: amounts and counts (use visualSales)
+  const paymentAmounts = visualSales.reduce(
     (acc: { cash: number; mpesa: number }, sale) => {
       if (sale.paymentMethod === 'cash') acc.cash += sale.total;
       else if (sale.paymentMethod === 'mpesa') acc.mpesa += sale.total;
@@ -33,11 +60,11 @@ export default function ReportsScreen() {
     { cash: 0, mpesa: 0 }
   );
 
-  const paymentCounts = getPaymentMethodBreakdown(filteredSales);
+  const paymentCounts = getPaymentMethodBreakdown(visualSales as any);
 
   // Prepare chart data; if there are no sales, inject deterministic sample data
   const revenueChartData = (() => {
-    const grouped = filteredSales.reduce((acc: Record<string, number>, sale) => {
+    const grouped = visualSales.reduce((acc: Record<string, number>, sale) => {
       const date = new Date(sale.createdAt || Date.now()).toISOString().split('T')[0];
       acc[date] = (acc[date] || 0) + sale.total;
       return acc;
