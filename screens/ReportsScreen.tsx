@@ -45,6 +45,18 @@ export default function ReportsScreen() {
     return last7;
   })();
 
+  // Top products: use real data when available, otherwise show deterministic mock data for visual testing
+  const _topProducts = getTopProducts(filteredSales, 5);
+  const topProductsData = _topProducts.length
+    ? _topProducts
+    : [
+        { name: 'Tea Leaves - Premium', unitsSold: 42, revenue: 3010 },
+        { name: 'Sugar (2kg)', unitsSold: 35, revenue: 2257 },
+        { name: 'Maize Flour', unitsSold: 28, revenue: 1800 },
+        { name: 'Cooking Oil', unitsSold: 22, revenue: 1505 },
+        { name: 'Salt (1kg)', unitsSold: 18, revenue: 752 },
+      ];
+
   const handleTabChange = (tab: BottomNavTab) => {
     if (tab === 'sales') {
       router.push('/');
