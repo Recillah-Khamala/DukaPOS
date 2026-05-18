@@ -42,8 +42,6 @@ export default function RevenueChart({ data }: RevenueChartProps) {
         roundedTop
         barBorderRadius={4}
         showVerticalLines={false}
-        renderLabel={() => null}
-        renderTooltip={() => null}
       />
 
       <View style={[styles.labelsRow, { paddingHorizontal: 8 }]}>
