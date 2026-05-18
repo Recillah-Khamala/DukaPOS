@@ -78,8 +78,8 @@ export default function ReportsScreen() {
     return last7;
   })();
 
-  // Top products: compute from real sales; may be empty until sales exist
-  const _topProducts = getTopProducts(filteredSales, 5);
+  // Top products: compute from visualSales (real or mock)
+  const _topProducts = getTopProducts(visualSales as any, 5);
   const topProductsData = _topProducts;
 
   const handleTabChange = (tab: BottomNavTab) => {
