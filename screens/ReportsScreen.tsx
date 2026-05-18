@@ -19,8 +19,7 @@ export default function ReportsScreen() {
   const { salesHistory, loading } = useSalesHistory();
   const { selectedRange, setRange, filterSales } = useDateFilter();
 
-  const filteredSales = filterSales(salesHistory);
-  // Use real filtered sales when available; otherwise use deterministic mock data for visual testing
+  // Use real filtered sales when available; otherwise filter mock data for visual testing
   const mockSales = [
     {
       id: 'm-001',
@@ -45,7 +44,8 @@ export default function ReportsScreen() {
     },
   ];
 
-  const visualSales = filteredSales.length > 0 ? filteredSales : mockSales;
+  const visualSales = salesHistory.length > 0 ? salesHistory : mockSales;
+  const filteredSales = filterSales(visualSales);
 
   const totalRevenue = getTotalRevenue(visualSales);
   const totalTransactions = getTotalTransactions(visualSales);
