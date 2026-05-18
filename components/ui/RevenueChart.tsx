@@ -40,7 +40,7 @@ export default function RevenueChart({ data }: RevenueChartProps) {
         xAxisColor="transparent"
         noOfSections={4}
         roundedTop
-        barCornerRadius={4}
+        barBorderRadius={4}
         showVerticalLines={false}
         renderLabel={() => null}
         renderTooltip={() => null}
