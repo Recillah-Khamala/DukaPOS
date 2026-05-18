@@ -1,3 +1,61 @@
+import React from 'react';
+import { View, Text } from 'react-native';
+import { BarChart } from 'react-native-gifted-charts';
+
+type DataPoint = { date: string; revenue: number };
+
+type Props = {
+  data: DataPoint[];
+};
+
+const COLORS = {
+  primary: '#012d1d',
+};
+
+function formatDay(dateStr: string) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString(undefined, { weekday: 'short' });
+}
+
+export default function RevenueChart({ data }: Props) {
+  if (!data || data.length === 0) {
+    return (
+      <View style={{ height: 200, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ color: '#6b7280' }}>No sales yet</Text>
+      </View>
+    );
+  }
+
+  const chartData = data.map((d) => ({ value: d.revenue, label: formatDay(d.date), frontColor: COLORS.primary }));
+
+  return (
+    <View style={{ height: 200 }}>
+      <BarChart
+        data={chartData}
+        barWidth={20}
+        spacing={18}
+        initialSpacing={0}
+        isAnimated
+        hideRules
+        yAxisThickness={0}
+        xAxisColor="transparent"
+        noOfSections={4}
+        roundedTop
+        barCornerRadius={4}
+        showVerticalLines={false}
+        renderLabel={() => null}
+        renderTooltip={() => null}
+      />
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8, paddingHorizontal: 8 }}>
+        {data.map((d) => (
+          <Text key={d.date} style={{ width: 40, textAlign: 'center', fontSize: 12, color: '#374151' }}>
+            {formatDay(d.date)}
+          </Text>
+        ))}
+      </View>
+    </View>
+  );
+}
 // simple, type-safe revenue chart replacement
 import React from 'react';
 import { View, Text, Dimensions } from 'react-native';
