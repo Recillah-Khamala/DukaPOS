@@ -98,18 +98,20 @@ export default function ReportsScreen() {
           </View>
           
           {/* Revenue Chart */}
-          <View className="mb-10">
-            <Text className="mb-2 text-lg font-semibold text-neutral-900">
-              Daily Revenue Trend
-            </Text>
-              {
-                // Prepare chart data: group sales by date, convert to array, sort and take last 7
-              }
+          <View className="mb-6">
+            <View className="bg-white rounded-lg p-4 shadow">
+              <Text className="mb-2 text-lg font-semibold text-neutral-900">
+                Daily Revenue Trend
+              </Text>
               <RevenueChart data={revenueChartData} />
+            </View>
           </View>
 
+          {/* Spacer to ensure chart has room for labels on all platforms */}
+          <View className="h-4" />
+
           {/* Top Products */}
-          <View className="mb-6">
+          <View className="mb-6 bg-white rounded-lg p-4">
             <Text className="mb-2 text-lg font-semibold text-neutral-900">Top Products</Text>
             <TopProductsList products={getTopProducts(filteredSales, 5)} />
           </View>
