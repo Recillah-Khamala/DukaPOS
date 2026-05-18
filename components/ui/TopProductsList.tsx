@@ -24,7 +24,7 @@ export default function TopProductsList({ products }: TopProductsListProps) {
   const topRevenue = Math.max(...sorted.map((p) => p.revenue), 1);
 
   return (
-    <View className="w-full">
+    <View className="w-full mt-4">
       {sorted.map((p, idx) => {
         const rank = idx + 1;
         const pct = p.revenue / topRevenue;
