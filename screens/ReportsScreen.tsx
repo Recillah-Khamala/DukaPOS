@@ -7,6 +7,7 @@ import TopAppBar from '../components/layout/TopAppBar';
 import { useSalesHistory } from '../hooks/useSalesHistory';
 import { useDateFilter, DateRange } from '../hooks/useDateFilter';
 import { getTotalRevenue, getTotalTransactions, getTopProducts, getRevenueByDay, getPaymentMethodBreakdown } from '../utils/salesHelpers';
+import { seedSampleSales } from '../utils/seedData';
 import StatCard from '../components/ui/StatCard';
 import RevenueChart from '../components/ui/RevenueChart';
 import TopProductsList from '../components/ui/TopProductsList';
@@ -16,7 +17,7 @@ import PaymentBreakdown from '../components/ui/PaymentBreakdown';
 export default function ReportsScreen() {
   const [activeTab, setActiveTab] = useState<BottomNavTab>('reports');
   const router = useRouter();
-  const { salesHistory, loading } = useSalesHistory();
+  const { salesHistory, loading, addSale } = useSalesHistory();
   const { selectedRange, setRange, filterSales } = useDateFilter();
 
   // Use real filtered sales when available; otherwise filter mock data for visual testing
@@ -86,7 +87,7 @@ export default function ReportsScreen() {
         <View className="pb-20">
           {filteredSales.length === 0 ? (
             // Empty state
-            <View className="items-center justify-center flex-1">
+            <View className="items-center justify-center flex-1 space-y-6">
               <MaterialCommunityIcons name="chart-bar" size={80} color="text-neutral-400" />
               <Text className="mt-4 text-lg font-semibold text-neutral-900">
                 No sales yet
@@ -94,6 +95,24 @@ export default function ReportsScreen() {
               <Text className="mt-2 text-neutral-500 text-center">
                 Complete your first sale to see your reports here.
               </Text>
+              <Pressable
+                onPress={async () => {
+                  const sampleSales = seedSampleSales();
+                  // Clear existing data and add all sample sales
+                  // First, we'll replace the entire sales history
+                  // Since useSalesHistory only provides addSale, we'll need to work around this
+                  // For simplicity in this test, we'll add each sale individually
+                  // In a real app, you might want to add a setSalesHistory function
+                  for (const sale of sampleSales) {
+                    await addSale(sale);
+                  }
+                  // Note: This will append to existing data, not replace it
+                  // For a proper seed function that replaces data, we'd need to modify the hook
+                }}
+                className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                Load Sample Data
+              </Pressable>
             </View>
           ) : (
             // Normal content
