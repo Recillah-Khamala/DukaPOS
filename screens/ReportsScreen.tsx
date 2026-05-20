@@ -26,32 +26,32 @@ export default function ReportsScreen() {
       items: [{ id: 'p1', name: 'Tea Leaves - Premium', unitPrice: 70, quantity: 42, icon: 'local-cafe' }],
       total: 3010,
       paymentMethod: 'cash' as const,
-      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+       createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
     },
-    {
-      id: 'm-002',
-      items: [{ id: 'p2', name: 'Sugar (2kg)', unitPrice: 64.48, quantity: 35, icon: 'shopping-cart' }],
-      total: 2257,
-      paymentMethod: 'mpesa' as const,
-      createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-    },
-    {
-      id: 'm-003',
-      items: [{ id: 'p3', name: 'Maize Flour', unitPrice: 64.2857, quantity: 28, icon: 'local-dining' }],
-      total: 1800,
-      paymentMethod: 'cash' as const,
-      createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
-    },
+     {
+       id: 'm-002',
+       items: [{ id: 'p2', name: 'Sugar (2kg)', unitPrice: 64.48, quantity: 35, icon: 'shopping-cart' }],
+       total: 2257,
+       paymentMethod: 'mpesa' as const,
+       createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
+     },
+     {
+       id: 'm-003',
+       items: [{ id: 'p3', name: 'Maize Flour', unitPrice: 64.2857, quantity: 28, icon: 'local-dining' }],
+       total: 1800,
+       paymentMethod: 'cash' as const,
+       createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
+     },
   ];
 
   const visualSales = salesHistory.length > 0 ? salesHistory : mockSales;
   const filteredSales = filterSales(visualSales);
 
-  const totalRevenue = getTotalRevenue(visualSales);
-  const totalTransactions = getTotalTransactions(visualSales);
+  const totalRevenue = getTotalRevenue(filteredSales);
+  const totalTransactions = getTotalTransactions(filteredSales);
 
-  // Payment breakdown: amounts and counts (use visualSales)
-  const paymentAmounts = visualSales.reduce(
+  // Payment breakdown: amounts and counts (use filteredSales)
+  const paymentAmounts = filteredSales.reduce(
     (acc: { cash: number; mpesa: number }, sale) => {
       if (sale.paymentMethod === 'cash') acc.cash += sale.total;
       else if (sale.paymentMethod === 'mpesa') acc.mpesa += sale.total;
@@ -60,11 +60,11 @@ export default function ReportsScreen() {
     { cash: 0, mpesa: 0 }
   );
 
-  const paymentCounts = getPaymentMethodBreakdown(visualSales as any);
+  const paymentCounts = getPaymentMethodBreakdown(filteredSales as any);
 
   // Prepare chart data; if there are no sales, inject deterministic sample data
   const revenueChartData = (() => {
-    const grouped = visualSales.reduce((acc: Record<string, number>, sale) => {
+    const grouped = filteredSales.reduce((acc: Record<string, number>, sale) => {
       const date = new Date(sale.createdAt || Date.now()).toISOString().split('T')[0];
       acc[date] = (acc[date] || 0) + sale.total;
       return acc;
@@ -78,9 +78,8 @@ export default function ReportsScreen() {
     return last7;
   })();
 
-  // Top products: compute from visualSales (real or mock)
-  const _topProducts = getTopProducts(visualSales as any, 5);
-  const topProductsData = _topProducts;
+  // Top products: compute from filteredSales (real or mock)
+  const topProductsData = getTopProducts(filteredSales as any, 5);
 
   const handleTabChange = (tab: BottomNavTab) => {
     if (tab === 'sales') {

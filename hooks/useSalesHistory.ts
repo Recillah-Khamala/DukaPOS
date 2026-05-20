@@ -24,7 +24,7 @@ export function useSalesHistory() {
             ],
             total: 3010,
             paymentMethod: 'cash',
-            createdAt: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString() as any,
+             createdAt: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000),
           },
           {
             id: 's-002',
@@ -33,7 +33,7 @@ export function useSalesHistory() {
             ],
             total: 2257,
             paymentMethod: 'mpesa',
-            createdAt: new Date(today.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString() as any,
+             createdAt: new Date(today.getTime() - 4 * 24 * 60 * 60 * 1000),
           },
           {
             id: 's-003',
