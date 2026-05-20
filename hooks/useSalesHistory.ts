@@ -12,7 +12,12 @@ export function useSalesHistory() {
     const loadSales = async () => {
       const savedSales = await loadData<Sale[]>(SALES_KEY);
       if (savedSales !== null) {
-        setSalesHistory(savedSales);
+        // Convert createdAt strings back to Date objects
+        const salesWithDates = savedSales.map(sale => ({
+          ...sale,
+          createdAt: new Date(sale.createdAt)
+        }));
+        setSalesHistory(salesWithDates);
       } else {
         // Seed deterministic mock sales for visual testing in development
         const today = new Date();
@@ -24,7 +29,7 @@ export function useSalesHistory() {
             ],
             total: 3010,
             paymentMethod: 'cash',
-             createdAt: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000),
+            createdAt: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000),
           },
           {
             id: 's-002',
@@ -33,7 +38,7 @@ export function useSalesHistory() {
             ],
             total: 2257,
             paymentMethod: 'mpesa',
-             createdAt: new Date(today.getTime() - 4 * 24 * 60 * 60 * 1000),
+            createdAt: new Date(today.getTime() - 4 * 24 * 60 * 60 * 1000),
           },
           {
             id: 's-003',
@@ -42,7 +47,7 @@ export function useSalesHistory() {
             ],
             total: 1800,
             paymentMethod: 'cash',
-             createdAt: new Date(today.getTime() - 6 * 24 * 60 * 60 * 1000),
+            createdAt: new Date(today.getTime() - 6 * 24 * 60 * 60 * 1000),
           },
         ];
 
