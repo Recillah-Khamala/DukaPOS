@@ -83,6 +83,7 @@ export default function ReportsScreen() {
   return (
     <View className="flex-1 bg-gray-50">
       <TopAppBar title="Reports" />
+      <Text className="mb-2 text-sm text-neutral-500">Loaded: {salesHistory.length} sales</Text>
       <ScrollView className="flex-1 px-4">
         <View className="pb-20">
           {filteredSales.length === 0 ? (
