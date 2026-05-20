@@ -42,7 +42,7 @@ export function useSalesHistory() {
             ],
             total: 1800,
             paymentMethod: 'cash',
-            createdAt: new Date(today.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString() as any,
+             createdAt: new Date(today.getTime() - 6 * 24 * 60 * 60 * 1000),
           },
         ];
 
