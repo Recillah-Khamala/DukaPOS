@@ -79,65 +79,67 @@ export default function ReportsScreen() {
   }
 
   return (
-    <ScrollView className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-gray-50">
       <TopAppBar title="Reports" />
-      <View className="px-4 py-4 pb-16">
-        <DateRangeFilter value={selectedRange} onChange={setRange} className="mb-4" />
-        
-        {/* Stat Cards in horizontal ScrollView */}
-        <ScrollView horizontal className="space-x-3 mb-6">
-          <StatCard
-            label="Total Revenue"
-            value={`KES ${totalRevenue.toLocaleString()}`}
-            icon="attach-money"
-            accentColor="emerald"
-          />
-          <StatCard
-            label="Total Transactions"
-            value={totalTransactions.toString()}
-            icon="shopping-cart"
-            accentColor="blue"
-          />
-          <StatCard
-            label="Average Sale"
-            value={`KES ${averageSale.toLocaleString()}`}
-            icon="show-chart"
-            accentColor="purple"
-          />
-          <StatCard
-            label="Best Selling"
-            value={bestSellingProduct}
-            icon="star"
-            accentColor="pink"
-          />
-        </ScrollView>
-        
-        {/* Revenue Chart */}
-        <View className="mb-6">
-          <View className="bg-white rounded-lg p-4 shadow">
-            <Text className="mb-2 text-lg font-semibold text-neutral-900">
-              Daily Revenue Trend
-            </Text>
-            <RevenueChart data={revenueChartData} />
+      <ScrollView className="flex-1 px-4">
+        <View className="pb-20">
+          <DateRangeFilter value={selectedRange} onChange={setRange} className="mb-4" />
+          
+          {/* Stat Cards in horizontal ScrollView */}
+          <ScrollView horizontal className="space-x-3 mb-6">
+            <StatCard
+              label="Total Revenue"
+              value={`KES ${totalRevenue.toLocaleString()}`}
+              icon="attach-money"
+              accentColor="emerald"
+            />
+            <StatCard
+              label="Total Transactions"
+              value={totalTransactions.toString()}
+              icon="shopping-cart"
+              accentColor="blue"
+            />
+            <StatCard
+              label="Average Sale"
+              value={`KES ${averageSale.toLocaleString()}`}
+              icon="show-chart"
+              accentColor="purple"
+            />
+            <StatCard
+              label="Best Selling"
+              value={bestSellingProduct}
+              icon="star"
+              accentColor="pink"
+            />
+          </ScrollView>
+          
+          {/* Revenue Chart */}
+          <View className="mb-6">
+            <View className="bg-white rounded-lg p-4 shadow">
+              <Text className="mb-2 text-lg font-semibold text-neutral-900">
+                Daily Revenue Trend
+              </Text>
+              <RevenueChart data={revenueChartData} />
+            </View>
+          </View>
+          
+          {/* Spacer to ensure chart has room for labels on all platforms */}
+          <View className="h-4" />
+          
+          {/* Top Products */}
+          <View className="mb-6 bg-white rounded-lg p-4">
+            <Text className="mb-2 text-lg font-semibold text-neutral-900">Top Products</Text>
+            <TopProductsList products={topProductsData} />
+          </View>
+          
+          {/* Payment Breakdown */}
+          <View className="mb-6 bg-white rounded-lg p-4">
+            <Text className="mb-2 text-lg font-semibold text-neutral-900">Payments</Text>
+            <PaymentBreakdown breakdown={paymentBreakdown} />
           </View>
         </View>
-        
-        {/* Spacer to ensure chart has room for labels on all platforms */}
-        <View className="h-4" />
-        
-        {/* Top Products */}
-        <View className="mb-6 bg-white rounded-lg p-4">
-          <Text className="mb-2 text-lg font-semibold text-neutral-900">Top Products</Text>
-          <TopProductsList products={topProductsData} />
-        </View>
-        
-        {/* Payment Breakdown */}
-        <View className="mb-6 bg-white rounded-lg p-4">
-          <Text className="mb-2 text-lg font-semibold text-neutral-900">Payments</Text>
-          <PaymentBreakdown breakdown={paymentBreakdown} />
-        </View>
-      </View>
+      </ScrollView>
       <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
-    </ScrollView>
+    </View>
   );
 }
