@@ -50,28 +50,25 @@ export default function HomeScreen() {
     clearBasket();
   };
 
-   const handleCompleteSale = () => {
-     // Create a new sale object from current basket
-     const newSale: Sale = {
-       id: `sale-${Date.now()}`,
-       items: items,
-       total: total,
-       paymentMethod: paymentMethod,
-       createdAt: new Date()
-     };
-     
-     // Save the sale to history
-     addSale(newSale);
-     
-     // Log the saved sale to console for confirmation
-     console.log('Sale saved:', newSale);
-     
-     // Clear the basket after successful save
-     clearBasket();
-     
-     // Show confirmation alert
-     Alert.alert('Sale Complete', `Sale completed with ${paymentMethod}\nChange: KES ${Math.max(0, cashReceived - total).toLocaleString()}`);
-   };
+    const handleCompleteSale = () => {
+      // Create a new sale object from current basket
+      const newSale: Sale = {
+        id: `sale-${Date.now()}`,
+        items: items,
+        total: total,
+        paymentMethod: paymentMethod,
+        createdAt: new Date()
+      };
+      
+      // Save the sale to history
+      addSale(newSale);
+      
+      // Clear the basket after successful save
+      clearBasket();
+      
+      // Show confirmation alert
+      Alert.alert('Sale Complete', `Sale completed with ${paymentMethod}\nChange: KES ${Math.max(0, cashReceived - total).toLocaleString()}`);
+    };
 
   return (
     <View className="flex-1 bg-gray-50">
