@@ -7,7 +7,7 @@ const SALES_KEY = 'duka_sales';
 
 function productToBasketItem(product: typeof mockProducts[0]): BasketItem {
   const iconMap: Record<string, string> = {
-    'Grains & Flour': 'local-flour-mill',
+    'Grains & Flour': 'grain',
     'Cooking': 'local-dining',
     'Beverages': 'local-cafe',
     'Household': 'cleaning-services',
