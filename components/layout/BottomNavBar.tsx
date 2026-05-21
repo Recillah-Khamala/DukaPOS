@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,14 +23,20 @@ const TABS: TabConfig[] = [
 export type BottomNavBarProps = {
   activeTab: BottomNavTab;
   onTabChange: (tab: BottomNavTab) => void;
+  onHeightMeasured?: (height: number) => void;
 };
 
-export default function BottomNavBar({ activeTab, onTabChange }: BottomNavBarProps) {
+export default function BottomNavBar({ activeTab, onTabChange, onHeightMeasured }: BottomNavBarProps) {
   const insets = useSafeAreaInsets();
+
+  const handleLayout = useCallback((e: any) => {
+    onHeightMeasured?.(e.nativeEvent.layout.height);
+  }, [onHeightMeasured]);
 
   return (
     <View
-      className="absolute bottom-0 left-0 right-0 flex-row border-t"
+      className="absolute bottom-0 left-0 right-0 flex-row border-t bg-white"
+      onLayout={handleLayout}
       style={{
         paddingBottom: Math.max(insets.bottom, 8),
         paddingTop: 8,
@@ -45,17 +52,13 @@ export default function BottomNavBar({ activeTab, onTabChange }: BottomNavBarPro
             accessibilityRole="tab"
             accessibilityState={{ selected: isActive }}
             onPress={() => {
-              // If running on web, ensure any focused element inside the current
-              // view is blurred before navigation so it isn't hidden from AT when
-              // the route is hidden (some routers set aria-hidden on inactive routes).
               try {
                 if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
                   document.activeElement.blur();
                 }
-              } catch (e) {
-                // ignore in non-browser environments
+              } catch {
+                // ignore non-browser envs
               }
-
               onTabChange(tab.id);
             }}
             className="mx-0.5 flex-1 items-center justify-center rounded-lg py-1.5"

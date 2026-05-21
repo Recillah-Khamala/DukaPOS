@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Text, View, ScrollView, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import BottomNavBar, { BottomNavTab } from '../components/layout/BottomNavBar';
 import TopAppBar from '../components/layout/TopAppBar';
@@ -17,6 +18,7 @@ import PaymentBreakdown from '../components/ui/PaymentBreakdown';
 export default function ReportsScreen() {
   const [activeTab, setActiveTab] = useState<BottomNavTab>('reports');
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { salesHistory, loading, addSale } = useSalesHistory();
   const { selectedRange, setRange, filterSales } = useDateFilter();
 
@@ -58,7 +60,7 @@ export default function ReportsScreen() {
     <View className="flex-1 bg-gray-50">
       <TopAppBar title="Reports" />
       <ScrollView className="flex-1 px-4">
-        <View className="pb-20">
+        <View style={{ paddingBottom: insets.bottom + 100 }}>
           {filteredSales.length === 0 ? (
             // Empty state
             <View className="items-center justify-center flex-1 space-y-6">

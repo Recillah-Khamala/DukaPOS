@@ -1,5 +1,12 @@
 import { useState } from 'react';
-import { Text, View, FlatList, Pressable, Alert } from 'react-native';
+import {
+  Text,
+  View,
+  FlatList,
+  Pressable,
+  Alert,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import BottomNavBar, { BottomNavTab } from '../components/layout/BottomNavBar';
@@ -27,6 +34,7 @@ const CATEGORY_COLOR: Record<string, string> = {
 export default function InventoryScreen() {
   const [activeTab, setActiveTab] = useState<BottomNavTab>('inventory');
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { products } = useProducts();
   const { query, setQuery, groupedProducts } = useProductSearch(products);
 
@@ -94,7 +102,7 @@ export default function InventoryScreen() {
         data={categories}
         keyExtractor={(cat) => cat}
         renderItem={renderCategorySection}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: insets.bottom + 80 }}
         ListEmptyComponent={
           <View className="items-center py-12">
             <MaterialIcons name="search-off" size={48} color="#d1d5db" />
