@@ -7,7 +7,6 @@ import {
   Pressable,
   ScrollView,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -16,6 +15,7 @@ import BottomNavBar, { BottomNavTab } from '../components/layout/BottomNavBar';
 import TopAppBar from '../components/layout/TopAppBar';
 import BasketItemCard from '../components/ui/BasketItemCard';
 import ProductCard from '../components/ui/ProductCard';
+import SearchBar from '../components/ui/SearchBar';
 import PaymentMethodSelector from '../components/ui/PaymentMethodSelector';
 import ChangeCalculator from '../components/ui/ChangeCalculator';
 import { mockProducts } from '../constants/mockProducts';
@@ -142,23 +142,12 @@ export default function HomeScreen() {
 
           {showQuickAdd && (
             <View className="rounded-xl bg-white shadow-sm overflow-hidden">
-              <View className="flex-row items-center rounded-lg bg-neutral-100 px-3 py-2 mx-1 mt-1.5 mb-1">
-                <MaterialIcons name="search" size={18} color="#9ca3af" />
-                <TextInput
-                  value={query}
-                  onChangeText={setQuery}
-                  placeholder="Search products..."
-                  placeholderTextColor="#9ca3af"
-                  className="flex-1 ml-2 text-sm text-neutral-900"
-                  autoCorrect={false}
-                  autoCapitalize="none"
-                />
-                {query.length > 0 && (
-                  <Pressable onPress={() => setQuery('')}>
-                    <MaterialIcons name="close" size={18} color="#9ca3af" />
-                  </Pressable>
-                )}
-              </View>
+              <SearchBar
+                value={query}
+                onChangeText={setQuery}
+                placeholder="Search products..."
+                className="mx-1 mt-1.5 mb-1"
+              />
 
               <FlatList
                 data={quickAddCategories}

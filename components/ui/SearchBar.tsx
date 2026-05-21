@@ -1,18 +1,19 @@
 import { useCallback } from 'react';
-import { TextInput, View } from 'react-native';
+import { TextInput, View, Pressable } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export type SearchBarProps = {
   value: string;
   onChangeText: (text: string) => void;
   placeholder?: string;
+  className?: string;
 };
 
-export default function SearchBar({ value, onChangeText, placeholder = 'Search...' }: SearchBarProps) {
+export default function SearchBar({ value, onChangeText, placeholder = 'Search...', className }: SearchBarProps) {
   const handleClear = useCallback(() => onChangeText(''), [onChangeText]);
 
   return (
-    <View className="flex-row items-center rounded-full bg-[#f3f4f5] px-4">
+    <View className={`flex-row items-center rounded-full bg-[#f3f4f5] px-4 ${className ?? ''}`}>
       <MaterialIcons name="search" size={20} color="#9ca3af" />
       <TextInput
         value={value}
@@ -24,7 +25,9 @@ export default function SearchBar({ value, onChangeText, placeholder = 'Search..
         autoCapitalize="none"
       />
       {value.length > 0 && (
-        <MaterialIcons name="close" size={18} color="#9ca3af" />
+        <Pressable onPress={handleClear} hitSlop={8}>
+          <MaterialIcons name="close" size={18} color="#9ca3af" />
+        </Pressable>
       )}
     </View>
   );

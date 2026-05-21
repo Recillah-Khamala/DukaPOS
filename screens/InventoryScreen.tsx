@@ -1,16 +1,10 @@
 import { useState } from 'react';
-import {
-  Text,
-  View,
-  FlatList,
-  TextInput,
-  Pressable,
-  Alert,
-} from 'react-native';
+import { Text, View, FlatList, Pressable, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import BottomNavBar, { BottomNavTab } from '../components/layout/BottomNavBar';
 import TopAppBar from '../components/layout/TopAppBar';
+import SearchBar from '../components/ui/SearchBar';
 import ProductCard from '../components/ui/ProductCard';
 import { useProducts } from '../hooks/useProducts';
 import { useProductSearch } from '../hooks/useProductSearch';
@@ -78,22 +72,12 @@ export default function InventoryScreen() {
 
       {/* Search bar */}
       <View className="px-4 pb-3 pt-2 bg-white border-b border-neutral-200">
-        <View className="flex-row items-center rounded-lg bg-neutral-100 px-3 py-2.5">
-          <MaterialIcons name="search" size={20} color="#9ca3af" />
-          <TextInput
+        <View className="px-3 pt-2.5 pb-2">
+          <SearchBar
             value={query}
             onChangeText={setQuery}
             placeholder="Search products..."
-            placeholderTextColor="#9ca3af"
-            className="flex-1 ml-2 text-base text-neutral-900"
-            autoCorrect={false}
-            autoCapitalize="none"
           />
-          {query.length > 0 && (
-            <Pressable onPress={() => setQuery('')}>
-              <MaterialIcons name="close" size={20} color="#9ca3af" />
-            </Pressable>
-          )}
         </View>
       </View>
 
