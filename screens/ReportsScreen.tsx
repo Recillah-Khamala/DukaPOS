@@ -5,7 +5,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import BottomNavBar, { BottomNavTab } from '../components/layout/BottomNavBar';
 import TopAppBar from '../components/layout/TopAppBar';
 import { useSalesHistory } from '../hooks/useSalesHistory';
-import { useDateFilter, DateRange } from '../hooks/useDateFilter';
+import { useDateFilter } from '../hooks/useDateFilter';
 import { getTotalRevenue, getTotalTransactions, getTopProducts, getRevenueByDay, getPaymentMethodBreakdown } from '../utils/salesHelpers';
 import { seedSampleSales } from '../utils/seedData';
 import StatCard from '../components/ui/StatCard';
@@ -20,41 +20,15 @@ export default function ReportsScreen() {
   const { salesHistory, loading, addSale } = useSalesHistory();
   const { selectedRange, setRange, filterSales } = useDateFilter();
 
-  // Use real filtered sales when available; otherwise filter mock data for visual testing
-  const mockSales = [
-    {
-      id: 'm-001',
-      items: [{ id: 'p1', name: 'Tea Leaves - Premium', unitPrice: 70, quantity: 42, icon: 'local-cafe' }],
-      total: 3010,
-      paymentMethod: 'cash' as const,
-      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-    },
-    {
-      id: 'm-002',
-      items: [{ id: 'p2', name: 'Sugar (2kg)', unitPrice: 64.48, quantity: 35, icon: 'shopping-cart' }],
-      total: 2257,
-      paymentMethod: 'mpesa' as const,
-      createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
-    },
-    {
-      id: 'm-003',
-      items: [{ id: 'p3', name: 'Maize Flour', unitPrice: 64.2857, quantity: 28, icon: 'local-dining' }],
-      total: 1800,
-      paymentMethod: 'cash' as const,
-      createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
-    },
-  ];
-
-  const visualSales = salesHistory.length > 0 ? salesHistory : mockSales;
-  const filteredSales = filterSales(visualSales);
+  const filteredSales = filterSales(salesHistory);
 
   const totalRevenue = getTotalRevenue(filteredSales);
   const totalTransactions = getTotalTransactions(filteredSales);
   const averageSale = totalRevenue / Math.max(totalTransactions, 1);
-  const bestSellingProduct = getTopProducts(filteredSales as any, 1)[0]?.name ?? 'N/A';
-  const topProductsData = getTopProducts(filteredSales as any, 5);
+  const bestSellingProduct = getTopProducts(filteredSales, 1)[0]?.name ?? 'N/A';
+  const topProductsData = getTopProducts(filteredSales, 5);
   const revenueChartData = getRevenueByDay(filteredSales);
-  const paymentBreakdown = getPaymentMethodBreakdown(filteredSales as any);
+  const paymentBreakdown = getPaymentMethodBreakdown(filteredSales);
 
   const handleTabChange = (tab: BottomNavTab) => {
     if (tab === 'sales') {

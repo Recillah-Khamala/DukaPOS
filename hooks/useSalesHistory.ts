@@ -1,8 +1,25 @@
 import { useState, useEffect } from 'react';
 import { loadData, saveData } from '../utils/storage';
-import type { Sale } from '../types';
+import { mockProducts } from '../constants/mockProducts';
+import type { Sale, BasketItem } from '../types';
 
 const SALES_KEY = 'duka_sales';
+
+function productToBasketItem(product: typeof mockProducts[0]): BasketItem {
+  const iconMap: Record<string, string> = {
+    'Grains & Flour': 'local-flour-mill',
+    'Cooking': 'local-dining',
+    'Beverages': 'local-cafe',
+    'Household': 'cleaning-services',
+  };
+  return {
+    id: product.id,
+    name: product.name,
+    unitPrice: product.price,
+    quantity: Math.floor(Math.random() * 20) + 5,
+    icon: iconMap[product.category] || 'shopping-bag',
+  };
+}
 
 export function useSalesHistory() {
   const [salesHistory, setSalesHistory] = useState<Sale[]>([]);
@@ -19,37 +36,21 @@ export function useSalesHistory() {
         }));
         setSalesHistory(salesWithDates);
       } else {
-        // Seed deterministic mock sales for visual testing in development
+        // Seed deterministic mock sales derived from mockProducts for visual testing
         const today = new Date();
-        const mockSales: Sale[] = [
-          {
-            id: 's-001',
-            items: [
-              { id: 'p1', name: 'Tea Leaves - Premium', unitPrice: 70, quantity: 42, icon: 'local-cafe' },
-            ],
-            total: 3010,
-            paymentMethod: 'cash',
-            createdAt: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000),
-          },
-          {
-            id: 's-002',
-            items: [
-              { id: 'p2', name: 'Sugar (2kg)', unitPrice: 64.48, quantity: 35, icon: 'shopping-cart' },
-            ],
-            total: 2257,
-            paymentMethod: 'mpesa',
-            createdAt: new Date(today.getTime() - 4 * 24 * 60 * 60 * 1000),
-          },
-          {
-            id: 's-003',
-            items: [
-              { id: 'p3', name: 'Maize Flour', unitPrice: 64.2857, quantity: 28, icon: 'local-dining' },
-            ],
-            total: 1800,
-            paymentMethod: 'cash',
-            createdAt: new Date(today.getTime() - 6 * 24 * 60 * 60 * 1000),
-          },
-        ];
+        const mockSales: Sale[] = mockProducts.slice(0, 4).map((product, i) => {
+          const items = [
+            { ...productToBasketItem(product) },
+          ];
+          const quantity = items[0].quantity;
+          return {
+            id: `s-${String(i + 1).padStart(3, '0')}`,
+            items,
+            total: product.price * quantity,
+            paymentMethod: i % 2 === 0 ? 'cash' : 'mpesa',
+            createdAt: new Date(today.getTime() - (i + 1) * 2 * 24 * 60 * 60 * 1000),
+          };
+        });
 
         setSalesHistory(mockSales);
         await saveData(SALES_KEY, mockSales);

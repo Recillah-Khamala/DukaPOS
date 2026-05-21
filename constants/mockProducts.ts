@@ -33,7 +33,7 @@ export const mockProducts: Product[] = [
     id: "P004",
     name: "Ndengu 500g",
     price: 150,
-    unit: "kg",
+    unit: "g",
     category: "Grains & Flour",
     barcode: "6901234567893",
     stock: 25,

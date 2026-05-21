@@ -8,15 +8,25 @@ import TopAppBar from '../components/layout/TopAppBar';
 import BasketItemCard from '../components/ui/BasketItemCard';
 import PaymentMethodSelector from '../components/ui/PaymentMethodSelector';
 import ChangeCalculator from '../components/ui/ChangeCalculator';
+import { mockProducts } from '../constants/mockProducts';
 import { useBasket } from '../hooks/useBasket';
 import { useSalesHistory } from '../hooks/useSalesHistory';
 import type { BasketItem, PaymentMethod, Sale } from '../types';
 
-const initialBasketItems: BasketItem[] = [
-  { id: '1', name: 'Medium Plastic Bag', unitPrice: 15, quantity: 2, icon: 'shopping-bag', isService: false },
-  { id: '2', name: 'Large Woven Bag', unitPrice: 40, quantity: 3, icon: 'shopping-bag', isService: false },
-  { id: '3', name: 'Grade 1 Milling', unitPrice: 40, quantity: 1.5, icon: 'factory', isService: true },
-];
+const ICON_MAP: Record<string, string> = {
+  'Grains & Flour': 'local-flour-mill',
+  'Cooking': 'local-dining',
+  'Beverages': 'local-cafe',
+  'Household': 'cleaning-services',
+};
+
+const initialBasketItems: BasketItem[] = mockProducts.slice(0, 3).map((product, idx) => ({
+  id: product.id,
+  name: product.name,
+  unitPrice: product.price,
+  quantity: [2, 3, 1][idx] ?? 1,
+  icon: ICON_MAP[product.category] || 'shopping-bag',
+}));
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState<BottomNavTab>('sales');

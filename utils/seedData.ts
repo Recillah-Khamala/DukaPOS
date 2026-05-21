@@ -1,4 +1,5 @@
 import type { Sale, BasketItem } from '../types';
+import { mockProducts } from '../constants/mockProducts';
 
 /**
  * Generates a random integer between min (inclusive) and max (inclusive)
@@ -34,72 +35,20 @@ const randomDateInLast7Days = (): Date => {
   return date;
 };
 
-/**
- * List of common duka products for generating sample data
- */
-const sampleProducts: Array<{
-  id: string;
-  name: string;
-  icon: string;
-  priceRange: [number, number]; // min and max unit price
-}> = [
-  {
-    id: 'unga-mahindi-2kg',
-    name: 'Unga wa Mahindi 2kg',
-    icon: 'local-flour-mill',
-    priceRange: [120, 180],
-  },
-  {
-    id: 'sugar-1kg',
-    name: 'Sugar 1kg',
-    icon: 'local-dining',
-    priceRange: [80, 120],
-  },
-  {
-    id: 'cooking-oil-500ml',
-    name: 'Cooking Oil 500ml',
-    icon: 'local-dining',
-    priceRange: [150, 250],
-  },
-  {
-    id: 'bread',
-    name: 'Bread',
-    icon: 'local-bakery',
-    priceRange: [50, 80],
-  },
-  {
-    id: 'milk-500ml',
-    name: 'Milk 500ml',
-    icon: 'local-cafe',
-    priceRange: [40, 60],
-  },
-  {
-    id: 'eggs-x6',
-    name: 'Eggs x6',
-    icon: 'local-dining',
-    priceRange: [90, 140],
-  },
-  {
-    id: 'rice-1kg',
-    name: 'Rice 1kg',
-    icon: 'local-dining',
-    priceRange: [100, 160],
-  },
-  {
-    id: 'royco-sachet',
-    name: 'Royco Sachet',
-    icon: 'local-dining',
-    priceRange: [10, 20],
-  },
-];
+const ICON_MAP: Record<string, string> = {
+  'Grains & Flour': 'local-flour-mill',
+  'Cooking': 'local-dining',
+  'Beverages': 'local-cafe',
+  'Household': 'cleaning-services',
+};
 
 /**
- * Generates a random basket item from the sampleProducts list
+ * Generates a random basket item from the shared mockProducts list
  */
 const generateRandomBasketItem = (): BasketItem => {
-  const product = sampleProducts[randomInt(0, sampleProducts.length - 1)];
+  const product = mockProducts[randomInt(0, mockProducts.length - 1)];
   const quantity = randomInt(1, 5); // 1 to 5 units
-  const unitPrice = randomFloat(product.priceRange[0], product.priceRange[1]);
+  const unitPrice = randomFloat(product.price, product.price * 1.2);
 
   // Round unitPrice to 2 decimal places for currency
   const roundedUnitPrice = Math.round(unitPrice * 100) / 100;
@@ -109,7 +58,7 @@ const generateRandomBasketItem = (): BasketItem => {
     name: product.name,
     unitPrice: roundedUnitPrice,
     quantity,
-    icon: product.icon,
+    icon: ICON_MAP[product.category] || 'shopping-bag',
   };
 };
 
