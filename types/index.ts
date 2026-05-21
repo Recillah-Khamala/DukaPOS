@@ -16,3 +16,13 @@ export interface Sale {
   paymentMethod: PaymentMethod;
   createdAt: Date;
 }
+
+export interface Product {
+  id: string;
+  name: string;
+  price: number;
+  unit: string;
+  category: string;
+  barcode?: string;
+  stock?: number;
+}
