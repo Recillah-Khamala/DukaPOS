@@ -6,20 +6,21 @@ import TopAppBar from '../components/layout/TopAppBar';
 import SearchBar from '../components/ui/SearchBar';
 import CategoryTabs from '../components/ui/CategoryTabs';
 import ProductCard from '../components/ui/ProductCard';
-import BasketPreviewBar from '../components/ui/BasketPreviewBar';
+import BasketPreviewBar, { BAR_H } from '../components/ui/BasketPreviewBar';
 import { useBasket } from '../hooks/useBasket';
 import { useProducts } from '../hooks/useProducts';
 import { useProductSearch } from '../hooks/useProductSearch';
 
-/** Approximate height consumed by BasketPreviewBar + BottomNavBar together.
- *  Both their bottoms align with the device's safe-area bottom edge so the
- *  FlatList knows exactly how much content to clear:
- *    BasketPreviewBar ~52 px + BottomNavBar ~48 px + seals ≈ 132 px total.
- *  We then divide that height between the preview bar and the nav bar via
- *  absolute `bottom` positioning so they share that 132 px column.
+/** Approximate height values for the bottom stacked bars layout:
+ *
+ *  NAVBAR_H  Constant used to keep layout calculations isolated from the
+ *          safe-area and device pixel ratios.
+ *  BAR_H    (=52) — exported by BasketPreviewBar; the bar's own height.
+ *  BOTTOM_ROW_H — how far up the FlatList should draw content above the bar.
+ *                 72 + 52 + 8 px gap = 132 px total column.
  */
-const BOTTOM_ROW_H = 132;
-const NAVBAR_H   = 72;   // absolute bottom edge of BottomNavBar extends to here
+const NAVBAR_H      = 72;
+const BOTTOM_ROW_H = NAVBAR_H + BAR_H + 8;
 
 export default function ProductsScreen() {
   const [activeTab, setActiveTab] = useState<BottomNavTab>('inventory');
@@ -126,7 +127,7 @@ export default function ProductsScreen() {
             borderTopColor: '#e5e7eb',
             borderRadius: 16,
             marginHorizontal: 12,
-            height: 52,
+            height: BAR_H,
             justifyContent: 'space-between',
           }}
         >

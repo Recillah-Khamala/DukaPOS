@@ -1,5 +1,8 @@
 import { Text, View, Pressable } from 'react-native';
 
+/** Height of this bar in points — used by the parent to compute its own `bottom` offset. */
+export const BAR_H = 52;
+
 export type BasketPreviewBarProps = {
   itemCount: number;
   total: number;
@@ -17,7 +20,6 @@ export default function BasketPreviewBar({ itemCount, total, onPress }: BasketPr
         borderTopColor: '#e5e7eb',
         borderRadius: 16,
         marginHorizontal: 12,
-        bottom: 132,
       }}
     >
       {/* Item count */}
