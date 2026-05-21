@@ -22,9 +22,11 @@ export function useProducts() {
   }, []);
 
   const addProduct = async (product: Product) => {
-    const updated = [...products, product];
-    setProducts(updated);
-    await saveData(PRODUCTS_KEY, updated);
+    setProducts((prev) => {
+      const updated = [...prev, product];
+      saveData(PRODUCTS_KEY, updated).catch(console.error);
+      return updated;
+    });
   };
 
   return { products, addProduct };
