@@ -5,7 +5,15 @@ export function useBasket(initialItems: BasketItem[] = []) {
   const [items, setItems] = useState<BasketItem[]>(initialItems);
 
   const addItem = (item: BasketItem) => {
-    setItems((prev) => [...prev, item]);
+    setItems((prev) => {
+      const existing = prev.find((i) => i.id === item.id);
+      if (existing) {
+        return prev.map((i) =>
+          i.id === item.id ? { ...i, quantity: i.quantity + (item.quantity ?? 1) } : i
+        );
+      }
+      return [...prev, item];
+    });
   };
 
   const removeItem = (id: string) => {
