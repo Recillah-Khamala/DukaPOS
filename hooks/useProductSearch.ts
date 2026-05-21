@@ -3,18 +3,30 @@ import type { Product } from '../types';
 
 export type GroupedProducts = Record<string, Product[]>;
 
-export function useProductSearch(products: Product[]) {
+export function useProductSearch(products: Product[], initialCategory = 'All') {
   const [query, setQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
 
   const filteredProducts = useMemo(() => {
-    if (!query.trim()) return products;
-    const q = query.trim().toLowerCase();
-    return products.filter(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q)
-    );
-  }, [products, query]);
+    let result = products;
+
+    // Category filter
+    if (selectedCategory !== 'All') {
+      result = result.filter((p) => p.category === selectedCategory);
+    }
+
+    // Query filter (name or category, case-insensitive)
+    if (query.trim()) {
+      const q = query.trim().toLowerCase();
+      result = result.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q)
+      );
+    }
+
+    return result;
+  }, [products, query, selectedCategory]);
 
   const groupedProducts = useMemo(() => {
     return filteredProducts.reduce<GroupedProducts>((acc, product) => {
@@ -25,5 +37,5 @@ export function useProductSearch(products: Product[]) {
     }, {});
   }, [filteredProducts]);
 
-  return { query, setQuery, filteredProducts, groupedProducts };
+  return { query, setQuery, selectedCategory, setSelectedCategory, filteredProducts, groupedProducts };
 }

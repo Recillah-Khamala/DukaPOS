@@ -12,6 +12,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import BottomNavBar, { BottomNavTab } from '../components/layout/BottomNavBar';
 import TopAppBar from '../components/layout/TopAppBar';
 import SearchBar from '../components/ui/SearchBar';
+import CategoryTabs from '../components/ui/CategoryTabs';
 import ProductCard from '../components/ui/ProductCard';
 import { useProducts } from '../hooks/useProducts';
 import { useProductSearch } from '../hooks/useProductSearch';
@@ -36,7 +37,7 @@ export default function InventoryScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { products } = useProducts();
-  const { query, setQuery, groupedProducts } = useProductSearch(products);
+  const { query, setQuery, selectedCategory, setSelectedCategory, groupedProducts } = useProductSearch(products);
 
   const handleTabChange = (tab: BottomNavTab) => {
     setActiveTab(tab);
@@ -93,9 +94,19 @@ export default function InventoryScreen() {
       <View className="px-4 py-2">
         <Text className="text-sm text-neutral-500">
           {products.length} product{products.length !== 1 ? 's' : ''} registered
-          {query ? ` · ${Object.values(groupedProducts).flat().length} matched` : ''}
+          {query || selectedCategory !== 'All'
+            ? ` · ${Object.values(groupedProducts).flat().length} showing`
+            : ''}
         </Text>
       </View>
+
+      {/* Category tabs */}
+      <CategoryTabs
+        categories={categories}
+        selectedCategory={selectedCategory}
+        onSelect={setSelectedCategory}
+        className="mb-2"
+      />
 
       {/* Product list */}
       <FlatList

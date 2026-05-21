@@ -7,6 +7,8 @@ import BottomNavBar, { BottomNavTab } from '../components/layout/BottomNavBar';
 import TopAppBar from '../components/layout/TopAppBar';
 import { useSalesHistory } from '../hooks/useSalesHistory';
 import { useDateFilter } from '../hooks/useDateFilter';
+import { useProducts } from '../hooks/useProducts';
+import { useProductSearch } from '../hooks/useProductSearch';
 import { getTotalRevenue, getTotalTransactions, getTopProducts, getRevenueByDay, getPaymentMethodBreakdown } from '../utils/salesHelpers';
 import { seedSampleSales } from '../utils/seedData';
 import StatCard from '../components/ui/StatCard';
@@ -14,6 +16,7 @@ import RevenueChart from '../components/ui/RevenueChart';
 import TopProductsList from '../components/ui/TopProductsList';
 import DateRangeFilter from '../components/ui/DateRangeFilter';
 import PaymentBreakdown from '../components/ui/PaymentBreakdown';
+import CategoryTabs from '../components/ui/CategoryTabs';
 
 export default function ReportsScreen() {
   const [activeTab, setActiveTab] = useState<BottomNavTab>('reports');
@@ -21,16 +24,30 @@ export default function ReportsScreen() {
   const insets = useSafeAreaInsets();
   const { salesHistory, loading, addSale } = useSalesHistory();
   const { selectedRange, setRange, filterSales } = useDateFilter();
+  const { products } = useProducts();
+  const { selectedCategory, setSelectedCategory } = useProductSearch(products);
+  const allCategories = Array.from(new Set(products.map((p) => p.category)));
 
   const filteredSales = filterSales(salesHistory);
 
-  const totalRevenue = getTotalRevenue(filteredSales);
-  const totalTransactions = getTotalTransactions(filteredSales);
+  // Apply category filter: show only sales whose items belong to selectedCategory
+  const categoryFilteredSales =
+    selectedCategory === 'All'
+      ? filteredSales
+      : filteredSales.filter((sale) =>
+          sale.items.some((item) => {
+            const product = products.find((p) => p.id === item.id);
+            return product?.category === selectedCategory;
+          })
+        );
+
+  const totalRevenue = getTotalRevenue(categoryFilteredSales);
+  const totalTransactions = getTotalTransactions(categoryFilteredSales);
   const averageSale = totalRevenue / Math.max(totalTransactions, 1);
-  const bestSellingProduct = getTopProducts(filteredSales, 1)[0]?.name ?? 'N/A';
-  const topProductsData = getTopProducts(filteredSales, 5);
-  const revenueChartData = getRevenueByDay(filteredSales);
-  const paymentBreakdown = getPaymentMethodBreakdown(filteredSales);
+  const bestSellingProduct = getTopProducts(categoryFilteredSales, 1)[0]?.name ?? 'N/A';
+  const topProductsData = getTopProducts(categoryFilteredSales, 5);
+  const revenueChartData = getRevenueByDay(categoryFilteredSales);
+  const paymentBreakdown = getPaymentMethodBreakdown(categoryFilteredSales);
 
   const handleTabChange = (tab: BottomNavTab) => {
     if (tab === 'sales') {
@@ -61,7 +78,7 @@ export default function ReportsScreen() {
       <TopAppBar title="Reports" />
       <ScrollView className="flex-1 px-4">
         <View style={{ paddingBottom: insets.bottom + 100 }}>
-          {filteredSales.length === 0 ? (
+           {categoryFilteredSales.length === 0 ? (
             // Empty state
             <View className="items-center justify-center flex-1 space-y-6">
               <MaterialCommunityIcons name="chart-bar" size={80} color="text-neutral-400" />
@@ -94,6 +111,13 @@ export default function ReportsScreen() {
             // Normal content
             <View>
               <DateRangeFilter value={selectedRange} onChange={setRange} className="mb-4" />
+              
+              <CategoryTabs
+                categories={allCategories}
+                selectedCategory={selectedCategory}
+                onSelect={setSelectedCategory}
+                className="mb-3"
+              />
               
               {/* Stat Cards in horizontal ScrollView */}
               <ScrollView horizontal className="space-x-3 mb-6">
