@@ -15,6 +15,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import BottomNavBar, { BottomNavTab } from '../components/layout/BottomNavBar';
 import TopAppBar from '../components/layout/TopAppBar';
 import BasketItemCard from '../components/ui/BasketItemCard';
+import ProductCard from '../components/ui/ProductCard';
 import PaymentMethodSelector from '../components/ui/PaymentMethodSelector';
 import ChangeCalculator from '../components/ui/ChangeCalculator';
 import { mockProducts } from '../constants/mockProducts';
@@ -106,36 +107,11 @@ export default function HomeScreen() {
           {category}
         </Text>
         {categoryProducts.map((product) => (
-          <Pressable
+          <ProductCard
             key={product.id}
-            onPress={() => handleAddProductToBasket(product)}
-            className="flex-row items-center gap-3 rounded-lg bg-white p-3 mb-1.5"
-            style={{
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.05,
-              shadowRadius: 2,
-              elevation: 1,
-            }}
-          >
-            <View className="h-9 w-9 items-center justify-center rounded-md" style={{ backgroundColor: color + '14' }}>
-              <MaterialIcons name={ICON_MAP[product.category] || 'inventory'} size={18} color={color} />
-            </View>
-            <View className="flex-1">
-              <Text className="text-sm font-medium text-neutral-900" numberOfLines={1} ellipsizeMode="tail">
-                {product.name}
-              </Text>
-              <Text className="text-xs text-neutral-500">
-                KES {product.price.toLocaleString()} · {product.unit}
-              </Text>
-            </View>
-            <View className="items-end">
-              <Text className="text-xs font-semibold text-emerald-600">KES {product.price.toLocaleString()}</Text>
-              {(product.stock ?? 0) <= 5 && (
-                <Text className="text-[10px] text-red-500 mt-0.5">Low stock: {product.stock}</Text>
-              )}
-            </View>
-          </Pressable>
+            product={product}
+            onAdd={() => handleAddProductToBasket(product)}
+          />
         ))}
       </View>
     );
