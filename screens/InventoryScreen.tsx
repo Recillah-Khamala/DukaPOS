@@ -5,13 +5,13 @@ import {
   FlatList,
   TextInput,
   Pressable,
-  TouchableOpacity,
   Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import BottomNavBar, { BottomNavTab } from '../components/layout/BottomNavBar';
 import TopAppBar from '../components/layout/TopAppBar';
+import ProductCard from '../components/ui/ProductCard';
 import { useProducts } from '../hooks/useProducts';
 import { useProductSearch } from '../hooks/useProductSearch';
 import type { Product } from '../types';
@@ -66,7 +66,7 @@ export default function InventoryScreen() {
 
         {/* Product cards */}
         {items.map((product) => (
-          <ProductRow key={product.id} product={product} color={color} />
+          <InventoryProductCard key={product.id} product={product} color={color} />
         ))}
       </View>
     );
@@ -124,19 +124,19 @@ export default function InventoryScreen() {
   );
 }
 
-function ProductRow({ product, color }: { product: Product; color: string }) {
+function InventoryProductCard({ product, color }: { product: Product; color: string }) {
   const router = useRouter();
   const lowStock = (product.stock ?? 0) <= 5;
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={() =>
         Alert.alert(
           product.name,
           `Price: KES ${product.price}\nUnit: ${product.unit}\nStock: ${product.stock ?? 'N/A'}\nBarcode: ${product.barcode ?? 'N/A'}`
         )
       }
-      activeOpacity={0.7}
+      android_ripple={{ color: '#00000010' }}
     >
       <View
         className="flex-row items-center gap-3 rounded-lg bg-white p-3 mb-2"
@@ -196,6 +196,6 @@ function ProductRow({ product, color }: { product: Product; color: string }) {
           </View>
         </View>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
