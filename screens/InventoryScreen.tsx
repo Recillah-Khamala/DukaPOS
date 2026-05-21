@@ -1,19 +1,30 @@
 import { useState, useRef } from 'react';
-import { Text, View, FlatList, Animated } from 'react-native';
+import { Text, View, FlatList, Animated, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BottomNavBar, { BottomNavTab } from '../components/layout/BottomNavBar';
 import TopAppBar from '../components/layout/TopAppBar';
 import SearchBar from '../components/ui/SearchBar';
 import CategoryTabs from '../components/ui/CategoryTabs';
 import ProductCard from '../components/ui/ProductCard';
+import BasketPreviewBar from '../components/ui/BasketPreviewBar';
 import { useBasket } from '../hooks/useBasket';
 import { useProducts } from '../hooks/useProducts';
 import { useProductSearch } from '../hooks/useProductSearch';
 
+/** Approximate height consumed by BasketPreviewBar + BottomNavBar together.
+ *  Both their bottoms align with the device's safe-area bottom edge so the
+ *  FlatList knows exactly how much content to clear:
+ *    BasketPreviewBar ~52 px + BottomNavBar ~48 px + seals ≈ 132 px total.
+ *  We then divide that height between the preview bar and the nav bar via
+ *  absolute `bottom` positioning so they share that 132 px column.
+ */
+const BOTTOM_ROW_H = 132;
+const NAVBAR_H   = 72;   // absolute bottom edge of BottomNavBar extends to here
+
 export default function ProductsScreen() {
   const [activeTab, setActiveTab] = useState<BottomNavTab>('inventory');
   const insets = useSafeAreaInsets();
-  const { addItem } = useBasket();
+  const { items, total, addItem } = useBasket();
   const { products } = useProducts();
   const { query, setQuery, selectedCategory, setSelectedCategory, filteredProducts } = useProductSearch(products);
   const flash = useRef(new Animated.Value(0)).current;
@@ -34,6 +45,10 @@ export default function ProductsScreen() {
       icon: 'shopping-bag',
     });
     showFlash();
+  };
+
+  const handleCheckout = () => {
+    // Checkout placeholder
   };
 
   const handleTabChange = (tab: BottomNavTab) => {
@@ -80,7 +95,7 @@ export default function ProductsScreen() {
       <FlatList
         data={filteredProducts}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: insets.bottom + 80 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: BOTTOM_ROW_H }}
         renderItem={({ item }) => (
           <ProductCard
             product={item}
@@ -99,6 +114,39 @@ export default function ProductsScreen() {
         }
       />
 
+      {/* Basket preview bar — above BottomNavBar, shown only when basket is non-empty */}
+      {items.length > 0 && (
+        <View
+          className="absolute left-0 right-0 flex-row items-center justify-between px-4 bg-white shadow-lg shadow-black/8"
+          style={{
+            bottom: BOTTOM_ROW_H,
+            paddingTop: 10,
+            paddingBottom: 10,
+            borderTopWidth: 1,
+            borderTopColor: '#e5e7eb',
+            borderRadius: 16,
+            marginHorizontal: 12,
+            height: 52,
+            justifyContent: 'space-between',
+          }}
+        >
+          <Text className="text-sm text-neutral-500">
+            {items.length} item{items.length !== 1 ? 's' : ''}
+          </Text>
+          <Text className="text-xl font-bold text-neutral-900">
+            KES {total.toLocaleString()}
+          </Text>
+          <Pressable
+            onPress={handleCheckout}
+            className="px-5 py-2 rounded-full items-center justify-center"
+            style={{ backgroundColor: '#ffb702' }}
+          >
+            <Text className="text-sm font-semibold text-neutral-900">Go to Checkout →</Text>
+          </Pressable>
+        </View>
+      )}
+
+      {/* Bottom navigation bar */}
       <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
     </View>
   );
