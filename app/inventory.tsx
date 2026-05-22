@@ -57,9 +57,9 @@ export default function ProductsScreen() {
     }
   };
 
-  const handleCheckout = () => {
-    router.push('/checkout');
-  };
+   const handleCheckout = () => {
+     router.push('/(tabs)/checkout');
+   };
 
    const handleTabChange = (tab: BottomNavTab) => {
      setActiveTab(tab);
