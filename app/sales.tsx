@@ -17,7 +17,6 @@ import TopProductsList from '../components/ui/TopProductsList';
 import DateRangeFilter from '../components/ui/DateRangeFilter';
 import PaymentBreakdown from '../components/ui/PaymentBreakdown';
 import CategoryTabs from '../components/ui/CategoryTabs';
-import BasketPreviewBar, { BAR_H } from '../components/ui/BasketPreviewBar';
 
 export default function SalesScreen() {
   const [activeTab, setActiveTab] = useState<BottomNavTab>('sales');
@@ -28,8 +27,8 @@ export default function SalesScreen() {
   const { products } = useProducts();
   const { selectedCategory, setSelectedCategory } = useProductSearch(products);
   const allCategories = Array.from(new Set(products.map((p) => p.category)));
-  const NAVBAR_H      = 72;
-  const BOTTOM_ROW_H  = NAVBAR_H + BAR_H + 8;
+  const NAVBAR_H = 72;
+  const BOTTOM_OFFSET = NAVBAR_H + 8;
 
   const filteredSales = filterSales(salesHistory);
 
@@ -80,7 +79,7 @@ export default function SalesScreen() {
     <View className="flex-1 bg-gray-50">
       <TopAppBar title="Sales" />
       <ScrollView className="flex-1 px-4">
-        <View style={{ paddingBottom: insets.bottom + BOTTOM_ROW_H }}>
+        <View style={{ paddingBottom: insets.bottom + BOTTOM_OFFSET }}>
            {categoryFilteredSales.length === 0 ? (
              // Empty state
              <View className="items-center justify-center flex-1 space-y-6">
