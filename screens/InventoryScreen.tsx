@@ -27,12 +27,13 @@ export default function ProductsScreen() {
   const [activeTab, setActiveTab] = useState<BottomNavTab>('inventory');
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { items, total, addItem } = useSharedBasket();
+  const { items, total, addItem, removeItem, updateQuantity } = useSharedBasket();
   const { products } = useProducts();
   const { query, setQuery, selectedCategory, setSelectedCategory, filteredProducts } = useProductSearch(products);
   const flash = useRef(new Animated.Value(0)).current;
 
   const allCategories = Array.from(new Set(products.map((p) => p.category)));
+  const basketByProductId = Object.fromEntries(items.map((i) => [i.id, i.quantity]));
 
   const showFlash = () => {
     flash.setValue(1);
@@ -40,14 +41,28 @@ export default function ProductsScreen() {
   };
 
   const handleAdd = (product: typeof products[0]) => {
-    addItem({
-      id: product.id,
-      name: product.name,
-      unitPrice: product.price,
-      quantity: 1,
-      icon: 'shopping-bag',
-    });
+    const existing = basketByProductId[product.id] ?? 0;
+    if (existing > 0) {
+      updateQuantity(product.id, existing + 1);
+    } else {
+      addItem({
+        id: product.id,
+        name: product.name,
+        unitPrice: product.price,
+        quantity: 1,
+        icon: 'shopping-bag',
+      });
+    }
     showFlash();
+  };
+
+  const handleRemove = (product: typeof products[0]) => {
+    const existing = basketByProductId[product.id] ?? 0;
+    if (existing <= 1) {
+      removeItem(product.id);
+    } else {
+      updateQuantity(product.id, existing - 1);
+    }
   };
 
   const handleCheckout = () => {
@@ -102,7 +117,9 @@ export default function ProductsScreen() {
         renderItem={({ item }) => (
           <ProductCard
             product={item}
+            currentQty={basketByProductId[item.id] ?? 0}
             onAdd={() => handleAdd(item)}
+            onRemove={() => handleRemove(item)}
           />
         )}
         ListEmptyComponent={
