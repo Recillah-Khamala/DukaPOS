@@ -67,12 +67,12 @@ export default function HomeScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleTabChange = (tab: BottomNavTab) => {
-    setActiveTab(tab);
-    if (tab === 'inventory') router.push('/inventory');
-    else if (tab === 'reports') router.push('/reports');
-    else if (tab === 'credit') router.push('/credit');
-  };
+   const handleTabChange = (tab: BottomNavTab) => {
+     setActiveTab(tab);
+     if (tab === 'inventory') router.push('/(tabs)/inventory');
+     else if (tab === 'reports') router.push('/(tabs)/reports');
+     else if (tab === 'credit') router.push('/(tabs)/credit');
+   };
 
   const handleAddProductToBasket = (product: typeof mockProducts[0]) => {
     addItem({

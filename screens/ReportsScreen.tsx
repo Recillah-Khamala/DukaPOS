@@ -52,17 +52,19 @@ export default function ReportsScreen() {
   const revenueChartData = getRevenueByDay(categoryFilteredSales);
   const paymentBreakdown = getPaymentMethodBreakdown(categoryFilteredSales);
 
-  const handleTabChange = (tab: BottomNavTab) => {
-    if (tab === 'sales') {
-      router.push('/');
-    } else if (tab === 'inventory') {
-      router.push('/inventory');
-    } else if (tab === 'credit') {
-      router.push('/credit');
-    } else {
-      setActiveTab(tab);
-    }
-  };
+   const handleTabChange = (tab: BottomNavTab) => {
+     if (tab === 'sales') {
+       router.push('/(tabs)/sales');
+     } else if (tab === 'inventory') {
+       router.push('/(tabs)/inventory');
+     } else if (tab === 'reports') {
+       router.push('/(tabs)/reports');
+     } else if (tab === 'credit') {
+       router.push('/(tabs)/credit');
+     } else {
+       setActiveTab(tab);
+     }
+   };
 
   if (loading) {
     return (

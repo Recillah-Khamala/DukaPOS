@@ -8,16 +8,15 @@ export default function CreditScreen() {
   const [activeTab, setActiveTab] = useState<BottomNavTab>('credit');
   const router = useRouter();
 
-  const handleTabChange = (tab: BottomNavTab) => {
-    setActiveTab(tab);
-    if (tab === 'sales') {
-      router.push('/');
-    } else if (tab === 'inventory') {
-      router.push('/inventory');
-    } else if (tab === 'reports') {
-      router.push('/reports');
-    }
-  };
+   const handleTabChange = (tab: BottomNavTab) => {
+     if (tab === 'sales') {
+       router.push('/(tabs)/sales');
+     } else if (tab === 'inventory') {
+       router.push('/(tabs)/inventory');
+     } else if (tab === 'reports') {
+       router.push('/(tabs)/reports');
+     }
+   };
 
   return (
     <View className="flex-1 bg-gray-50">

@@ -61,12 +61,12 @@ export default function ProductsScreen() {
     router.push('/checkout');
   };
 
-  const handleTabChange = (tab: BottomNavTab) => {
-    setActiveTab(tab);
-    if (tab === 'sales') router.push('/');
-    else if (tab === 'reports') router.push('/reports');
-    else if (tab === 'credit') router.push('/credit');
-  };
+   const handleTabChange = (tab: BottomNavTab) => {
+     setActiveTab(tab);
+     if (tab === 'sales') router.push('/(tabs)/sales');
+     else if (tab === 'reports') router.push('/(tabs)/reports');
+     else if (tab === 'credit') router.push('/(tabs)/credit');
+   };
 
   return (
     <View className="flex-1 bg-gray-50">
