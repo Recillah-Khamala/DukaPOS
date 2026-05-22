@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import {
@@ -11,19 +11,19 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import BottomNavBar, { BottomNavTab } from '../components/layout/BottomNavBar';
-import TopAppBar from '../components/layout/TopAppBar';
-import BasketItemCard from '../components/ui/BasketItemCard';
-import ProductCard from '../components/ui/ProductCard';
-import SearchBar from '../components/ui/SearchBar';
-import PaymentMethodSelector from '../components/ui/PaymentMethodSelector';
-import ChangeCalculator from '../components/ui/ChangeCalculator';
-import { mockProducts } from '../constants/mockProducts';
-import { useSharedBasket } from '../context/BasketContext';
-import { useProducts } from '../hooks/useProducts';
-import { useProductSearch } from '../hooks/useProductSearch';
-import { useSalesHistory } from '../hooks/useSalesHistory';
-import type { PaymentMethod, Sale } from '../types';
+import BottomNavBar, { BottomNavTab } from '../../components/layout/BottomNavBar';
+import TopAppBar from '../../components/layout/TopAppBar';
+import BasketItemCard from '../../components/ui/BasketItemCard';
+import ProductCard from '../../components/ui/ProductCard';
+import SearchBar from '../../components/ui/SearchBar';
+import PaymentMethodSelector from '../../components/ui/PaymentMethodSelector';
+import ChangeCalculator from '../../components/ui/ChangeCalculator';
+import { mockProducts } from '../../constants/mockProducts';
+import { useSharedBasket } from '../../context/BasketContext';
+import { useProducts } from '../../hooks/useProducts';
+import { useProductSearch } from '../../hooks/useProductSearch';
+import { useSalesHistory } from '../../hooks/useSalesHistory';
+import type { PaymentMethod, Sale } from '../../types';
 
 const ICON_MAP: Record<string, keyof typeof MaterialIcons.glyphMap> = {
   'Grains & Flour': 'grain',
@@ -174,7 +174,7 @@ export default function HomeScreen() {
             </View>
           )}
         </View>
-        {/* ── End Quick Add ── */}
+        {/* ΓöÇΓöÇ End Quick Add ΓöÇΓöÇ */}
 
         <View className="flex justify-between items-center mb-4">
           <Text className="text-2xl font-semibold text-neutral-900">Basket Items</Text>
