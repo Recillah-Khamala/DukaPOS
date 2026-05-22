@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { Text, View, FlatList, Animated, Pressable } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BottomNavBar, { BottomNavTab } from '../components/layout/BottomNavBar';
 import TopAppBar from '../components/layout/TopAppBar';
@@ -7,7 +8,7 @@ import SearchBar from '../components/ui/SearchBar';
 import CategoryTabs from '../components/ui/CategoryTabs';
 import ProductCard from '../components/ui/ProductCard';
 import BasketPreviewBar, { BAR_H } from '../components/ui/BasketPreviewBar';
-import { useBasket } from '../hooks/useBasket';
+import { useSharedBasket } from '../context/BasketContext';
 import { useProducts } from '../hooks/useProducts';
 import { useProductSearch } from '../hooks/useProductSearch';
 
@@ -24,8 +25,9 @@ const BOTTOM_ROW_H = NAVBAR_H + BAR_H + 8;
 
 export default function ProductsScreen() {
   const [activeTab, setActiveTab] = useState<BottomNavTab>('inventory');
+  const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { items, total, addItem } = useBasket();
+  const { items, total, addItem } = useSharedBasket();
   const { products } = useProducts();
   const { query, setQuery, selectedCategory, setSelectedCategory, filteredProducts } = useProductSearch(products);
   const flash = useRef(new Animated.Value(0)).current;
@@ -49,7 +51,7 @@ export default function ProductsScreen() {
   };
 
   const handleCheckout = () => {
-    // Checkout placeholder
+    router.push('/checkout');
   };
 
   const handleTabChange = (tab: BottomNavTab) => {

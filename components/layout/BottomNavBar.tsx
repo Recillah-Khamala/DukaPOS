@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Colors from '../../constants/colors';
 
-export type BottomNavTab = 'sales' | 'inventory' | 'reports' | 'credit';
+export type BottomNavTab = 'sales' | 'inventory' | 'checkout' | 'reports' | 'credit';
 
 type TabConfig = {
   id: BottomNavTab;
@@ -16,6 +16,7 @@ type TabConfig = {
 const TABS: TabConfig[] = [
   { id: 'sales', label: 'Sales', icon: 'point-of-sale' },
   { id: 'inventory', label: 'Inventory', icon: 'inventory' },
+  { id: 'checkout', label: 'Checkout', icon: 'shopping-cart' },
   { id: 'reports', label: 'Reports', icon: 'assessment' },
   { id: 'credit', label: 'Credit', icon: 'menu-book' },
 ];

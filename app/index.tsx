@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import {
@@ -19,7 +19,7 @@ import SearchBar from '../components/ui/SearchBar';
 import PaymentMethodSelector from '../components/ui/PaymentMethodSelector';
 import ChangeCalculator from '../components/ui/ChangeCalculator';
 import { mockProducts } from '../constants/mockProducts';
-import { useBasket } from '../hooks/useBasket';
+import { useSharedBasket } from '../context/BasketContext';
 import { useProducts } from '../hooks/useProducts';
 import { useProductSearch } from '../hooks/useProductSearch';
 import { useSalesHistory } from '../hooks/useSalesHistory';
@@ -54,10 +54,18 @@ export default function HomeScreen() {
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { items, addItem, clearBasket, total } = useBasket(initialBasketItems);
+  const { items, addItem, clearBasket, total } = useSharedBasket();
   const { salesHistory, addSale } = useSalesHistory();
   const { products } = useProducts();
   const { query, setQuery, groupedProducts } = useProductSearch(products);
+
+  // Seed demo items into the shared basket on first mount
+  useEffect(() => {
+    if (items.length === 0) {
+      initialBasketItems.forEach(addItem);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleTabChange = (tab: BottomNavTab) => {
     setActiveTab(tab);
