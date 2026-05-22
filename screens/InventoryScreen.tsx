@@ -117,34 +117,11 @@ export default function ProductsScreen() {
 
       {/* Basket preview bar — above BottomNavBar, shown only when basket is non-empty */}
       {items.length > 0 && (
-        <View
-          className="absolute left-0 right-0 flex-row items-center justify-between px-4 bg-white shadow-lg shadow-black/8"
-          style={{
-            bottom: BOTTOM_ROW_H,
-            paddingTop: 10,
-            paddingBottom: 10,
-            borderTopWidth: 1,
-            borderTopColor: '#e5e7eb',
-            borderRadius: 16,
-            marginHorizontal: 12,
-            height: BAR_H,
-            justifyContent: 'space-between',
-          }}
-        >
-          <Text className="text-sm text-neutral-500">
-            {items.length} item{items.length !== 1 ? 's' : ''}
-          </Text>
-          <Text className="text-xl font-bold text-neutral-900">
-            KES {total.toLocaleString()}
-          </Text>
-          <Pressable
-            onPress={handleCheckout}
-            className="px-5 py-2 rounded-full items-center justify-center"
-            style={{ backgroundColor: '#ffb702' }}
-          >
-            <Text className="text-sm font-semibold text-neutral-900">Go to Checkout →</Text>
-          </Pressable>
-        </View>
+        <BasketPreviewBar
+          itemCount={items.length}
+          total={total}
+          onPress={handleCheckout}
+        />
       )}
 
       {/* Bottom navigation bar */}
