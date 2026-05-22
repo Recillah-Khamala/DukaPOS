@@ -1,4 +1,10 @@
-import '../global.css';
+import { StyleSheet } from 'react-native';
+
+// Set dark mode to class-based to allow manual color scheme setting
+const styleSheetAny = StyleSheet as any;
+if (styleSheetAny.setFlag) {
+  styleSheetAny.setFlag('darkMode', 'class');
+}
 
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
