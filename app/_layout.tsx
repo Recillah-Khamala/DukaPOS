@@ -12,15 +12,12 @@ import { BasketProvider } from '../context/BasketContext';
 
 export default function RootLayout() {
   return (
-    <GestureHandlerRootView className="flex-1">
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <BasketProvider>
         <Stack>
-          <Stack.Screen name="index" options={{ title: 'DukaPOS' }} />
-          <Stack.Screen name="details" options={{ title: 'Details' }} />
-          <Stack.Screen name="inventory" options={{ title: 'Inventory' }} />
-          <Stack.Screen name="checkout" options={{ title: 'Checkout' }} />
-          <Stack.Screen name="reports" options={{ title: 'Reports' }} />
-          <Stack.Screen name="credit" options={{ title: 'Credit Book' }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="details" options={{ title: 'Details', presentation: 'modal' }} />
+          <Stack.Screen name="checkout" options={{ title: 'Checkout', presentation: 'modal' }} />
         </Stack>
       </BasketProvider>
     </GestureHandlerRootView>

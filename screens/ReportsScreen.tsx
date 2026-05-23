@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { Text, View, ScrollView, Pressable } from 'react-native';
-import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import BottomNavBar, { BottomNavTab } from '../components/layout/BottomNavBar';
 import TopAppBar from '../components/layout/TopAppBar';
 import { useSalesHistory } from '../hooks/useSalesHistory';
 import { useDateFilter } from '../hooks/useDateFilter';
@@ -17,19 +15,14 @@ import TopProductsList from '../components/ui/TopProductsList';
 import DateRangeFilter from '../components/ui/DateRangeFilter';
 import PaymentBreakdown from '../components/ui/PaymentBreakdown';
 import CategoryTabs from '../components/ui/CategoryTabs';
-import BasketPreviewBar, { BAR_H } from '../components/ui/BasketPreviewBar';
 
 export default function ReportsScreen() {
-  const [activeTab, setActiveTab] = useState<BottomNavTab>('reports');
-  const router = useRouter();
   const insets = useSafeAreaInsets();
   const { salesHistory, loading, addSale } = useSalesHistory();
   const { selectedRange, setRange, filterSales } = useDateFilter();
   const { products } = useProducts();
   const { selectedCategory, setSelectedCategory } = useProductSearch(products);
   const allCategories = Array.from(new Set(products.map((p) => p.category)));
-  const NAVBAR_H      = 72;
-  const BOTTOM_ROW_H  = NAVBAR_H + BAR_H + 8;
 
   const filteredSales = filterSales(salesHistory);
 
@@ -52,20 +45,6 @@ export default function ReportsScreen() {
   const revenueChartData = getRevenueByDay(categoryFilteredSales);
   const paymentBreakdown = getPaymentMethodBreakdown(categoryFilteredSales);
 
-   const handleTabChange = (tab: BottomNavTab) => {
-     if (tab === 'sales') {
-       router.push('/(tabs)/sales');
-     } else if (tab === 'inventory') {
-       router.push('/(tabs)/inventory');
-     } else if (tab === 'reports') {
-       router.push('/(tabs)/reports');
-     } else if (tab === 'credit') {
-       router.push('/(tabs)/credit');
-     } else {
-       setActiveTab(tab);
-     }
-   };
-
   if (loading) {
     return (
       <View className="flex-1 bg-gray-50">
@@ -73,7 +52,6 @@ export default function ReportsScreen() {
         <View className="flex-1 items-center justify-center">
           <Text className="text-lg text-neutral-600">Loading...</Text>
         </View>
-        <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
       </View>
     );
   }
@@ -82,7 +60,7 @@ export default function ReportsScreen() {
     <View className="flex-1 bg-gray-50">
       <TopAppBar title="Reports" />
       <ScrollView className="flex-1 px-4">
-        <View style={{ paddingBottom: insets.bottom + BOTTOM_ROW_H }}>
+        <View style={{ paddingBottom: insets.bottom + 8 }}>
            {categoryFilteredSales.length === 0 ? (
             // Empty state
             <View className="items-center justify-center flex-1 space-y-6">
@@ -96,16 +74,9 @@ export default function ReportsScreen() {
               <Pressable
                 onPress={async () => {
                   const sampleSales = seedSampleSales();
-                  // Clear existing data and add all sample sales
-                  // First, we'll replace the entire sales history
-                  // Since useSalesHistory only provides addSale, we'll need to work around this
-                  // For simplicity in this test, we'll add each sale individually
-                  // In a real app, you might want to add a setSalesHistory function
                   for (const sale of sampleSales) {
                     await addSale(sale);
                   }
-                  // Note: This will append to existing data, not replace it
-                  // For a proper seed function that replaces data, we'd need to modify the hook
                 }}
                 className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
               >
@@ -180,7 +151,6 @@ export default function ReportsScreen() {
           )}
         </View>
       </ScrollView>
-      <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
     </View>
   );
 }

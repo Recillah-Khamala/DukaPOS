@@ -1,5 +1,4 @@
 ﻿import { useState, useEffect } from 'react';
-import { Link, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import {
   Alert,
@@ -11,7 +10,6 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import BottomNavBar, { BottomNavTab } from '../../components/layout/BottomNavBar';
 import TopAppBar from '../../components/layout/TopAppBar';
 import BasketItemCard from '../../components/ui/BasketItemCard';
 import ProductCard from '../../components/ui/ProductCard';
@@ -48,12 +46,10 @@ const CATEGORY_COLOR: Record<string, string> = {
 };
 
 export default function HomeScreen() {
-  const [activeTab, setActiveTab] = useState<BottomNavTab>('sales');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
   const [cashReceived, setCashReceived] = useState(0);
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   const insets = useSafeAreaInsets();
-  const router = useRouter();
   const { items, addItem, clearBasket, total } = useSharedBasket();
   const { salesHistory, addSale } = useSalesHistory();
   const { products } = useProducts();
@@ -66,13 +62,6 @@ export default function HomeScreen() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-   const handleTabChange = (tab: BottomNavTab) => {
-     setActiveTab(tab);
-     if (tab === 'inventory') router.push('/(tabs)/inventory');
-     else if (tab === 'reports') router.push('/(tabs)/reports');
-     else if (tab === 'credit') router.push('/(tabs)/credit');
-   };
 
   const handleAddProductToBasket = (product: typeof mockProducts[0]) => {
     addItem({
@@ -197,14 +186,6 @@ export default function HomeScreen() {
           </View>
         )}
         <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} className="my-6" />
-        <View className="my-6 items-center gap-3">
-          <Text className="mt-4 text-lg font-medium text-neutral-700">
-            Active Tab: {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-          </Text>
-          <Link href="/details" className="mt-2 text-lg font-medium text-blue-600">
-            Go to details
-          </Link>
-        </View>
         <ChangeCalculator totalBill={total} cashReceived={cashReceived} onCashReceivedChange={setCashReceived} className="my-6" />
         <View className="my-6">
           <Pressable
@@ -216,7 +197,6 @@ export default function HomeScreen() {
           </Pressable>
         </View>
       </ScrollView>
-      <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
       <StatusBar style="auto" />
     </View>
   );

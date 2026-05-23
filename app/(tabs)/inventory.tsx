@@ -1,22 +1,17 @@
 import { useState, useRef } from 'react';
-import { Text, View, FlatList, Animated, Pressable } from 'react-native';
+import { Text, View, FlatList, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import BottomNavBar, { BottomNavTab } from '../components/layout/BottomNavBar';
-import TopAppBar from '../components/layout/TopAppBar';
-import SearchBar from '../components/ui/SearchBar';
-import CategoryTabs from '../components/ui/CategoryTabs';
-import ProductCard from '../components/ui/ProductCard';
-import BasketPreviewBar, { BAR_H } from '../components/ui/BasketPreviewBar';
-import { useSharedBasket } from '../context/BasketContext';
-import { useProducts } from '../hooks/useProducts';
-import { useProductSearch } from '../hooks/useProductSearch';
-
-const NAVBAR_H      = 72;
-const BOTTOM_ROW_H = NAVBAR_H + BAR_H + 8;
+import TopAppBar from '../../components/layout/TopAppBar';
+import SearchBar from '../../components/ui/SearchBar';
+import CategoryTabs from '../../components/ui/CategoryTabs';
+import ProductCard from '../../components/ui/ProductCard';
+import BasketPreviewBar, { BAR_H } from '../../components/ui/BasketPreviewBar';
+import { useSharedBasket } from '../../context/BasketContext';
+import { useProducts } from '../../hooks/useProducts';
+import { useProductSearch } from '../../hooks/useProductSearch';
 
 export default function ProductsScreen() {
-  const [activeTab, setActiveTab] = useState<BottomNavTab>('inventory');
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { items, total, addItem, removeItem, updateQuantity } = useSharedBasket();
@@ -58,14 +53,7 @@ export default function ProductsScreen() {
   };
 
    const handleCheckout = () => {
-     router.push('/(tabs)/checkout');
-   };
-
-   const handleTabChange = (tab: BottomNavTab) => {
-     setActiveTab(tab);
-     if (tab === 'sales') router.push('/(tabs)/sales');
-     else if (tab === 'reports') router.push('/(tabs)/reports');
-     else if (tab === 'credit') router.push('/(tabs)/credit');
+     router.push('/checkout');
    };
 
   return (
@@ -85,7 +73,7 @@ export default function ProductsScreen() {
       <FlatList
         data={filteredProducts}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: BOTTOM_ROW_H }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: BAR_H + 8 }}
         renderItem={({ item }) => (
           <ProductCard
             product={item}
@@ -112,7 +100,6 @@ export default function ProductsScreen() {
           onPress={handleCheckout}
         />
       )}
-      <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
     </View>
   );
 }

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Text, View, FlatList, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import BottomNavBar, { BottomNavTab } from '../components/layout/BottomNavBar';
 import TopAppBar from '../components/layout/TopAppBar';
 import BasketItemCard from '../components/ui/BasketItemCard';
 import PaymentMethodSelector from '../components/ui/PaymentMethodSelector';
@@ -11,24 +10,15 @@ import { useSharedBasket } from '../context/BasketContext';
 import type { PaymentMethod } from '../types';
 
 export default function CheckoutScreen() {
-  const [activeTab, setActiveTab] = useState<BottomNavTab>('sales');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
   const [cashReceived, setCashReceived] = useState(0);
   const router = useRouter();
   const { items, updateQuantity, removeItem, total, clearBasket } = useSharedBasket();
 
-   const handleTabChange = (tab: BottomNavTab) => {
-     setActiveTab(tab);
-     if (tab === 'sales') router.push('/(tabs)/sales');
-     else if (tab === 'inventory') router.push('/(tabs)/inventory');
-     else if (tab === 'reports') router.push('/(tabs)/reports');
-     else if (tab === 'credit') router.push('/(tabs)/credit');
-   };
-
   const handleConfirm = () => {
     if (items.length === 0) return;
     clearBasket();
-    router.push('/');
+    router.dismissAll();
   };
 
   return (
@@ -93,7 +83,6 @@ export default function CheckoutScreen() {
           ) : null
         }
       />
-      <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
     </View>
   );
 }
