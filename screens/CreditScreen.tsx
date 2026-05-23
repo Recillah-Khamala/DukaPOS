@@ -1,5 +1,6 @@
 import { Text, View } from 'react-native';
 import TopAppBar from '../components/layout/TopAppBar';
+import BottomNavBar from '../components/layout/BottomNavBar';
 
 export default function CreditScreen() {
   return (
@@ -10,6 +11,7 @@ export default function CreditScreen() {
           Credit tracking coming soon
         </Text>
       </View>
+      <BottomNavBar activeTab="credit" />
     </View>
   );
 }

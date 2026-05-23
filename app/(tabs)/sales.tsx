@@ -11,6 +11,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import TopAppBar from '../../components/layout/TopAppBar';
+import BottomNavBar from '../../components/layout/BottomNavBar';
 import BasketItemCard from '../../components/ui/BasketItemCard';
 import ProductCard from '../../components/ui/ProductCard';
 import SearchBar from '../../components/ui/SearchBar';
@@ -163,7 +164,6 @@ export default function HomeScreen() {
             </View>
           )}
         </View>
-        {/* ΓöÇΓöÇ End Quick Add ΓöÇΓöÇ */}
 
         <View className="flex justify-between items-center mb-4">
           <Text className="text-2xl font-semibold text-neutral-900">Basket Items</Text>
@@ -197,6 +197,7 @@ export default function HomeScreen() {
           </Pressable>
         </View>
       </ScrollView>
+      <BottomNavBar activeTab="sales" />
       <StatusBar style="auto" />
     </View>
   );

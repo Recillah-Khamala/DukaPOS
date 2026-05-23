@@ -1,8 +1,8 @@
-import { useState } from 'react';
 import { Text, View, ScrollView, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import TopAppBar from '../components/layout/TopAppBar';
+import BottomNavBar from '../components/layout/BottomNavBar';
 import { useSalesHistory } from '../hooks/useSalesHistory';
 import { useDateFilter } from '../hooks/useDateFilter';
 import { useProducts } from '../hooks/useProducts';
@@ -149,8 +149,9 @@ export default function ReportsScreen() {
               </View>
             </View>
           )}
-        </View>
-      </ScrollView>
+</View>
+       </ScrollView>
+      <BottomNavBar activeTab="reports" />
     </View>
   );
 }

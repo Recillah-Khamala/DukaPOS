@@ -3,6 +3,7 @@ import { Text, View, FlatList, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import TopAppBar from '../../components/layout/TopAppBar';
+import BottomNavBar from '../../components/layout/BottomNavBar';
 import SearchBar from '../../components/ui/SearchBar';
 import CategoryTabs from '../../components/ui/CategoryTabs';
 import ProductCard from '../../components/ui/ProductCard';
@@ -100,6 +101,7 @@ export default function ProductsScreen() {
           onPress={handleCheckout}
         />
       )}
+      <BottomNavBar activeTab="inventory" />
     </View>
   );
 }
