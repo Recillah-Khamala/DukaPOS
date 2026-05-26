@@ -1,210 +1,108 @@
-﻿import { useState, useEffect } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import {
-  Alert,
-  FlatList,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+﻿import { useState, useRef } from 'react';
+import { Text, View, FlatList, Animated } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import TopAppBar from '../../components/layout/TopAppBar';
-import BasketItemCard from '../../components/ui/BasketItemCard';
-import ProductCard from '../../components/ui/ProductCard';
 import SearchBar from '../../components/ui/SearchBar';
-import PaymentMethodSelector from '../../components/ui/PaymentMethodSelector';
-import ChangeCalculator from '../../components/ui/ChangeCalculator';
-import { mockProducts } from '../../constants/mockProducts';
+import CategoryTabs from '../../components/ui/CategoryTabs';
+import ProductCard from '../../components/ui/ProductCard';
+import BasketPreviewBar, { BAR_H } from '../../components/ui/BasketPreviewBar';
 import { useSharedBasket } from '../../context/BasketContext';
 import { useProducts } from '../../hooks/useProducts';
 import { useProductSearch } from '../../hooks/useProductSearch';
-import { useSalesHistory } from '../../hooks/useSalesHistory';
-import type { PaymentMethod, Sale } from '../../types';
 
-const ICON_MAP: Record<string, keyof typeof MaterialIcons.glyphMap> = {
-  'Grains & Flour': 'grain',
-  'Cooking': 'local-dining',
-  'Beverages': 'local-cafe',
-  'Household': 'cleaning-services',
-};
+const NAVBAR_H = 72;
+const BOTTOM_ROW_H = NAVBAR_H + BAR_H + 8;
 
-const initialBasketItems = mockProducts.slice(0, 3).map((product, idx) => ({
-  id: product.id,
-  name: product.name,
-  unitPrice: product.price,
-  quantity: [2, 3, 1][idx] ?? 1,
-  icon: ICON_MAP[product.category] || 'shopping-bag' as const,
-}));
-
-const CATEGORY_COLOR: Record<string, string> = {
-  'Grains & Flour': '#7d5800',
-  'Cooking': '#b45309',
-  'Beverages': '#1d4ed8',
-  'Household': '#166534',
-};
-
-export default function HomeScreen() {
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
-  const [cashReceived, setCashReceived] = useState(0);
-  const [showQuickAdd, setShowQuickAdd] = useState(false);
+export default function ProductsScreen() {
+  const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { items, addItem, clearBasket, total } = useSharedBasket();
-  const { salesHistory, addSale } = useSalesHistory();
+  const { items, total, addItem, removeItem, updateQuantity } = useSharedBasket();
   const { products } = useProducts();
-  const { query, setQuery, groupedProducts } = useProductSearch(products);
+  const { query, setQuery, selectedCategory, setSelectedCategory, filteredProducts } = useProductSearch(products);
+  const flash = useRef(new Animated.Value(0)).current;
 
-  // Seed demo items into the shared basket on first mount
-  useEffect(() => {
-    if (items.length === 0) {
-      initialBasketItems.forEach(addItem);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const allCategories = Array.from(new Set(products.map((p) => p.category)));
+  const basketByProductId = Object.fromEntries(items.map((i) => [i.id, i.quantity]));
 
-  const handleAddProductToBasket = (product: typeof mockProducts[0]) => {
-    addItem({
-      id: product.id,
-      name: product.name,
-      unitPrice: product.price,
-      quantity: 1,
-      icon: ICON_MAP[product.category] || 'shopping-bag',
-    });
-    setShowQuickAdd(false);
-    setQuery('');
-    Alert.alert('Added', `${product.name} added to basket`);
+  const showFlash = () => {
+    flash.setValue(1);
+    Animated.timing(flash, { toValue: 0, duration: 1200, useNativeDriver: true }).start();
   };
 
-  const handleCompleteSale = () => {
-    if (items.length === 0) {
-      Alert.alert('Empty Basket', 'Add at least one item before completing a sale.');
-      return;
+  const handleAdd = (product: typeof products[0]) => {
+    const existing = basketByProductId[product.id] ?? 0;
+    if (existing > 0) {
+      updateQuantity(product.id, existing + 1);
+    } else {
+      addItem({
+        id: product.id,
+        name: product.name,
+        unitPrice: product.price,
+        quantity: 1,
+        icon: 'shopping-bag',
+      });
     }
-    const newSale: Sale = {
-      id: `sale-${Date.now()}`,
-      items,
-      total,
-      paymentMethod,
-      createdAt: new Date(),
-    };
-    addSale(newSale);
-    clearBasket();
-    Alert.alert('Sale Complete', `Sale completed with ${paymentMethod}\nChange: KES ${Math.max(0, cashReceived - total).toLocaleString()}`);
+    showFlash();
   };
 
-  const quickAddCategories = Object.keys(groupedProducts);
+  const handleRemove = (product: typeof products[0]) => {
+    const existing = basketByProductId[product.id] ?? 0;
+    if (existing <= 1) {
+      removeItem(product.id);
+    } else {
+      updateQuantity(product.id, existing - 1);
+    }
+  };
 
-  const renderQuickAddItem = ({ item: category }: { item: string }) => {
-    const categoryProducts = groupedProducts[category];
-    const color = CATEGORY_COLOR[category] || '#374151';
-    return (
-      <View className="mb-4">
-        <Text className="text-xs font-semibold uppercase tracking-wide mb-2 px-1" style={{ color }}>
-          {category}
-        </Text>
-        {categoryProducts.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            onAdd={() => handleAddProductToBasket(product)}
-          />
-        ))}
-      </View>
-    );
+  const handleCheckout = () => {
+    router.push('/checkout');
   };
 
   return (
     <View className="flex-1 bg-gray-50">
-      <TopAppBar title="DukaPOS" onHelp={handleHelp} onClose={handleClose} />
-      <ScrollView
-        contentContainerStyle={{ paddingBottom: Math.max(insets.bottom, 20) + 160 }}
-        className="px-4 py-4"
-      >
-        {/* Quick Add Products */}
-        <View className="mb-5">
-          <View className="flex-row items-center justify-between mb-3">
-            <Text className="text-lg font-semibold text-neutral-900">Quick Add</Text>
-            <Pressable onPress={() => setShowQuickAdd(!showQuickAdd)} className="flex-row items-center gap-1">
-              <MaterialIcons
-                name={showQuickAdd ? 'expand-less' : 'expand-more'}
-                size={22}
-                color="#012d1d"
-              />
-              <Text className="text-sm font-medium" style={{ color: '#012d1d' }}>
-                {showQuickAdd ? 'Hide' : 'Show'}
-              </Text>
-            </Pressable>
-          </View>
-
-          {showQuickAdd && (
-            <View className="rounded-xl bg-white shadow-sm overflow-hidden">
-              <SearchBar
-                value={query}
-                onChangeText={setQuery}
-                placeholder="Search products..."
-                className="mx-1 mt-1.5 mb-1"
-              />
-
-              <FlatList
-                data={quickAddCategories}
-                keyExtractor={(cat) => cat}
-                renderItem={renderQuickAddItem}
-                contentContainerStyle={{ paddingHorizontal: 8, paddingBottom: 8 }}
-                ListEmptyComponent={
-                  <View className="items-center py-6">
-                    <MaterialIcons name="search-off" size={36} color="#d1d5db" />
-                    <Text className="mt-2 text-sm text-neutral-400">No products match "{query}"</Text>
-                  </View>
-                }
-                scrollEnabled={false}
-                keyboardShouldPersistTaps="handled"
-              />
-            </View>
-          )}
+      <TopAppBar title="Products" />
+      <Animated.View pointerEvents="none" className="absolute top-16 left-0 right-0 items-center z-50" style={{ opacity: flash }}>
+        <View className="bg-[#012d1d] px-5 py-2.5 rounded-full shadow-lg">
+          <Text className="text-sm font-medium text-white">Added to basket</Text>
         </View>
-
-        <View className="flex justify-between items-center mb-4">
-          <Text className="text-2xl font-semibold text-neutral-900">Basket Items</Text>
-          <Pressable onPress={clearBasket} className="px-4 py-1.5 rounded-md bg-red-50">
-            <Text className="text-sm font-medium text-red-600">Clear All</Text>
-          </Pressable>
-        </View>
-
-        {items.length === 0 ? (
-          <View className="items-center py-8">
-            <MaterialIcons name="shopping-basket" size={48} color="#d1d5db" />
-            <Text className="mt-2 text-neutral-400">Your basket is empty</Text>
-            <Text className="mt-1 text-xs text-neutral-300">Tap a product above to add it</Text>
-          </View>
-        ) : (
-          <View className="gap-3">
-            {items.map((item) => (
-              <BasketItemCard key={item.id} item={item} />
-            ))}
-          </View>
+      </Animated.View>
+      <View className="px-4 pb-3 pt-2 bg-white border-b border-neutral-200">
+        <SearchBar value={query} onChangeText={setQuery} placeholder="Search products..." />
+      </View>
+      <View className="px-1 py-2 bg-white border-b border-neutral-100">
+        <CategoryTabs categories={allCategories} selectedCategory={selectedCategory} onSelect={setSelectedCategory} />
+      </View>
+      <FlatList
+        data={filteredProducts}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: BOTTOM_ROW_H }}
+        renderItem={({ item }) => (
+          <ProductCard
+            product={item}
+            currentQty={basketByProductId[item.id] ?? 0}
+            onAdd={() => handleAdd(item)}
+            onRemove={() => handleRemove(item)}
+          />
         )}
-        <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} className="my-6" />
-        <ChangeCalculator totalBill={total} cashReceived={cashReceived} onCashReceivedChange={setCashReceived} className="my-6" />
-        <View className="my-6">
-          <Pressable
-            onPress={handleCompleteSale}
-            className="w-full py-3 rounded-lg items-center"
-            style={{ backgroundColor: '#012d1d' }}
-          >
-            <Text className="text-base font-semibold text-white">COMPLETE SALE & PRINT</Text>
-          </Pressable>
-        </View>
-      </ScrollView>
-      <StatusBar style="auto" />
+        ListEmptyComponent={
+          <View className="items-center py-16">
+            <Text className="mt-3 text-base text-neutral-400">No products found</Text>
+            {query && (
+              <Text className="mt-1 text-sm text-neutral-300">
+                Try adjusting your search or category filter
+              </Text>
+            )}
+          </View>
+        }
+      />
+      {items.length > 0 && (
+        <BasketPreviewBar
+          itemCount={items.length}
+          total={total}
+          onPress={handleCheckout}
+        />
+      )}
     </View>
   );
-}
-
-function handleHelp() {
-  Alert.alert('Help', 'This is the DukaPOS help section');
-}
-
-function handleClose() {
-  Alert.alert('Close', 'Close button pressed');
 }
