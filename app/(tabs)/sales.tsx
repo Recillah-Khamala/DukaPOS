@@ -196,7 +196,6 @@ export default function HomeScreen() {
           </Pressable>
         </View>
       </ScrollView>
-      <BottomNavBar activeTab="sales" />
       <StatusBar style="auto" />
     </View>
   );
