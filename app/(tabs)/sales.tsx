@@ -11,7 +11,6 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import TopAppBar from '../../components/layout/TopAppBar';
-import BottomNavBar from '../../components/layout/BottomNavBar';
 import BasketItemCard from '../../components/ui/BasketItemCard';
 import ProductCard from '../../components/ui/ProductCard';
 import SearchBar from '../../components/ui/SearchBar';
