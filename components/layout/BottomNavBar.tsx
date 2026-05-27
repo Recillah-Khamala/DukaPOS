@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Pressable, Text, View } from 'react-native';
-import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Colors from '../../constants/colors';
@@ -12,31 +11,32 @@ type TabConfig = {
   id: BottomNavTab;
   label: string;
   icon: keyof typeof MaterialIcons.glyphMap;
-  route: string;
 };
 
 const TABS: TabConfig[] = [
-  { id: 'sales', label: 'Sales', icon: 'point-of-sale', route: '/(tabs)/sales' },
-  { id: 'inventory', label: 'Inventory', icon: 'inventory', route: '/(tabs)/inventory' },
-  { id: 'reports', label: 'Reports', icon: 'assessment', route: '/(tabs)/reports' },
-  { id: 'credit', label: 'Credit', icon: 'menu-book', route: '/(tabs)/credit' },
+  { id: 'sales', label: 'Sales', icon: 'point-of-sale' },
+  { id: 'inventory', label: 'Inventory', icon: 'inventory' },
+  { id: 'reports', label: 'Reports', icon: 'assessment' },
+  { id: 'credit', label: 'Credit', icon: 'menu-book' },
 ];
 
 export type BottomNavBarProps = {
   activeTab: BottomNavTab;
+  onTabChange: (tab: BottomNavTab) => void;
+  onHeightMeasured?: (height: number) => void;
 };
 
-export default function BottomNavBar({ activeTab }: BottomNavBarProps) {
-  const router = useRouter();
+export default function BottomNavBar({ activeTab, onTabChange, onHeightMeasured }: BottomNavBarProps) {
   const insets = useSafeAreaInsets();
 
-  const handlePress = useCallback((route: string) => {
-    router.push(route as any);
-  }, [router]);
+  const handleLayout = useCallback((e: any) => {
+    onHeightMeasured?.(e.nativeEvent.layout.height);
+  }, [onHeightMeasured]);
 
   return (
     <View
       className="absolute bottom-0 left-0 right-0 flex-row border-t bg-white"
+      onLayout={handleLayout}
       style={{
         paddingBottom: Math.max(insets.bottom, 8),
         paddingTop: 8,
@@ -51,7 +51,16 @@ export default function BottomNavBar({ activeTab }: BottomNavBarProps) {
             key={tab.id}
             accessibilityRole="tab"
             accessibilityState={{ selected: isActive }}
-            onPress={() => handlePress(tab.route)}
+            onPress={() => {
+              try {
+                if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
+                  document.activeElement.blur();
+                }
+              } catch {
+                // ignore non-browser envs
+              }
+              onTabChange(tab.id);
+            }}
             className="mx-0.5 flex-1 items-center justify-center rounded-lg py-1.5"
             style={{
               backgroundColor: isActive ? Colors.secondaryContainer : 'transparent',
