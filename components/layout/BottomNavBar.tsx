@@ -37,9 +37,9 @@ export default function BottomNavBar({ activeTab, onTabChange, onHeightMeasured 
     } else {
       const routes: Record<BottomNavTab, string> = {
         sales: '/',
-        inventory: '/inventory',
-        reports: '/reports',
-        credit: '/credit',
+        inventory: '/(tabs)/inventory',
+        reports: '/(tabs)/reports',
+        credit: '/(tabs)/credit',
       };
       router.push(routes[tab] as any);
     }
