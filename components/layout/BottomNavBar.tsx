@@ -54,18 +54,18 @@ export default function BottomNavBar({ activeTab }: BottomNavBarProps) {
             onPress={() => handlePress(tab.route)}
             className="mx-0.5 flex-1 items-center justify-center rounded-lg py-1.5"
             style={{
-              backgroundColor: isActive ? '#ffb702' : 'transparent',
+              backgroundColor: isActive ? Colors.secondaryContainer : 'transparent',
             }}
           >
             <MaterialIcons
               name={tab.icon}
               size={24}
-              color={isActive ? '#012d1d' : Colors.onSurfaceVariant}
+              color={isActive ? Colors.onSurface : Colors.onSurfaceVariant}
             />
             <Text
               className="mt-1 text-center text-xs font-medium"
               style={{
-                color: isActive ? '#012d1d' : Colors.onSurfaceVariant,
+                color: isActive ? Colors.onSurface : Colors.onSurfaceVariant,
               }}
             >
               {tab.label}
