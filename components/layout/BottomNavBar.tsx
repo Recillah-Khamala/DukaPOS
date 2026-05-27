@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Pressable, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Colors from '../../constants/colors';
@@ -22,12 +23,27 @@ const TABS: TabConfig[] = [
 
 export type BottomNavBarProps = {
   activeTab: BottomNavTab;
-  onTabChange: (tab: BottomNavTab) => void;
+  onTabChange?: (tab: BottomNavTab) => void;
   onHeightMeasured?: (height: number) => void;
 };
 
 export default function BottomNavBar({ activeTab, onTabChange, onHeightMeasured }: BottomNavBarProps) {
+  const router = useRouter();
   const insets = useSafeAreaInsets();
+
+  const handlePress = useCallback((tab: BottomNavTab) => {
+    if (onTabChange) {
+      onTabChange(tab);
+    } else {
+      const routes: Record<BottomNavTab, string> = {
+        sales: '/',
+        inventory: '/inventory',
+        reports: '/reports',
+        credit: '/credit',
+      };
+      router.push(routes[tab] as any);
+    }
+  }, [onTabChange, router]);
 
   const handleLayout = useCallback((e: any) => {
     onHeightMeasured?.(e.nativeEvent.layout.height);
@@ -59,7 +75,7 @@ export default function BottomNavBar({ activeTab, onTabChange, onHeightMeasured 
               } catch {
                 // ignore non-browser envs
               }
-              onTabChange(tab.id);
+              handlePress(tab.id);
             }}
             className="mx-0.5 flex-1 items-center justify-center rounded-lg py-1.5"
             style={{

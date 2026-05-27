@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 
+// Set dark mode to class-based to allow manual color scheme setting
 const styleSheetAny = StyleSheet as any;
 if (styleSheetAny.setFlag) {
   styleSheetAny.setFlag('darkMode', 'class');
@@ -15,7 +16,7 @@ export default function RootLayout() {
       <BasketProvider>
         <Stack>
           <Stack.Screen name="index" options={{ title: 'DukaPOS' }} />
-          <Stack.Screen name="details" options={{ title: 'Details' }} />
+          <Stack.Screen name="details" options={{ title: 'Details', presentation: 'modal' }} />
           <Stack.Screen name="inventory" options={{ title: 'Inventory' }} />
           <Stack.Screen name="checkout" options={{ title: 'Checkout', presentation: 'modal' }} />
           <Stack.Screen name="reports" options={{ title: 'Reports' }} />

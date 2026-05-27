@@ -1,3 +1,5 @@
-import SalesScreen from './(tabs)/sales';
+import TabsLayout from './(tabs)/_layout';
 
-export default SalesScreen;
+export default function Index() {
+  return <TabsLayout />;
+}

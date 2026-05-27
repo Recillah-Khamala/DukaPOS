@@ -2,8 +2,8 @@ import { useState, useRef } from 'react';
 import { Text, View, FlatList, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import BottomNavBar, { BottomNavTab } from '../../components/layout/BottomNavBar';
 import TopAppBar from '../../components/layout/TopAppBar';
+import BottomNavBar from '../../components/layout/BottomNavBar';
 import SearchBar from '../../components/ui/SearchBar';
 import CategoryTabs from '../../components/ui/CategoryTabs';
 import ProductCard from '../../components/ui/ProductCard';
@@ -104,12 +104,7 @@ export default function ProductsScreen() {
           onPress={handleCheckout}
         />
       )}
-      <BottomNavBar activeTab="inventory" onTabChange={(tab) => {
-        if (tab === 'sales') router.push('/');
-        else if (tab === 'inventory') router.push('/inventory');
-        else if (tab === 'reports') router.push('/reports');
-        else if (tab === 'credit') router.push('/credit');
-      }} />
+      <BottomNavBar activeTab="inventory" />
     </View>
   );
 }

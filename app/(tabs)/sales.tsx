@@ -1,9 +1,8 @@
-﻿import { useRouter } from 'expo-router';
-import { Text, View, ScrollView, Pressable } from 'react-native';
+﻿import { Text, View, ScrollView, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import TopAppBar from '../../components/layout/TopAppBar';
-import BottomNavBar, { BottomNavTab } from '../../components/layout/BottomNavBar';
+import BottomNavBar from '../../components/layout/BottomNavBar';
 import { useSalesHistory } from '../../hooks/useSalesHistory';
 import { useDateFilter } from '../../hooks/useDateFilter';
 import { useProducts } from '../../hooks/useProducts';
@@ -18,7 +17,6 @@ import PaymentBreakdown from '../../components/ui/PaymentBreakdown';
 import CategoryTabs from '../../components/ui/CategoryTabs';
 
 export default function SalesScreen() {
-  const router = useRouter();
   const insets = useSafeAreaInsets();
   const { salesHistory, loading, addSale } = useSalesHistory();
   const { selectedRange, setRange, filterSales } = useDateFilter();
@@ -147,12 +145,7 @@ export default function SalesScreen() {
           )}
         </View>
       </ScrollView>
-      <BottomNavBar activeTab="sales" onTabChange={(tab) => {
-        if (tab === 'sales') router.push('/');
-        else if (tab === 'inventory') router.push('/inventory');
-        else if (tab === 'reports') router.push('/reports');
-        else if (tab === 'credit') router.push('/credit');
-      }} />
+      <BottomNavBar activeTab="sales" />
     </View>
   );
 }
