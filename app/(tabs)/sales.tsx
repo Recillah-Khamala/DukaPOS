@@ -1,108 +1,149 @@
-﻿import { useState, useRef } from 'react';
-import { Text, View, FlatList, Animated } from 'react-native';
-import { useRouter } from 'expo-router';
+﻿import { Text, View, ScrollView, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import TopAppBar from '../../components/layout/TopAppBar';
-import SearchBar from '../../components/ui/SearchBar';
-import CategoryTabs from '../../components/ui/CategoryTabs';
-import ProductCard from '../../components/ui/ProductCard';
-import BasketPreviewBar, { BAR_H } from '../../components/ui/BasketPreviewBar';
-import { useSharedBasket } from '../../context/BasketContext';
+import { useSalesHistory } from '../../hooks/useSalesHistory';
+import { useDateFilter } from '../../hooks/useDateFilter';
 import { useProducts } from '../../hooks/useProducts';
 import { useProductSearch } from '../../hooks/useProductSearch';
+import { getTotalRevenue, getTotalTransactions, getTopProducts, getRevenueByDay, getPaymentMethodBreakdown } from '../../utils/salesHelpers';
+import { seedSampleSales } from '../../utils/seedData';
+import StatCard from '../../components/ui/StatCard';
+import RevenueChart from '../../components/ui/RevenueChart';
+import TopProductsList from '../../components/ui/TopProductsList';
+import DateRangeFilter from '../../components/ui/DateRangeFilter';
+import PaymentBreakdown from '../../components/ui/PaymentBreakdown';
+import CategoryTabs from '../../components/ui/CategoryTabs';
 
-const NAVBAR_H = 72;
-const BOTTOM_ROW_H = NAVBAR_H + BAR_H + 8;
-
-export default function ProductsScreen() {
-  const router = useRouter();
+export default function SalesScreen() {
   const insets = useSafeAreaInsets();
-  const { items, total, addItem, removeItem, updateQuantity } = useSharedBasket();
+  const { salesHistory, loading, addSale } = useSalesHistory();
+  const { selectedRange, setRange, filterSales } = useDateFilter();
   const { products } = useProducts();
-  const { query, setQuery, selectedCategory, setSelectedCategory, filteredProducts } = useProductSearch(products);
-  const flash = useRef(new Animated.Value(0)).current;
-
+  const { selectedCategory, setSelectedCategory } = useProductSearch(products);
   const allCategories = Array.from(new Set(products.map((p) => p.category)));
-  const basketByProductId = Object.fromEntries(items.map((i) => [i.id, i.quantity]));
+  const NAVBAR_H = 72;
+  const BOTTOM_OFFSET = NAVBAR_H + 8;
 
-  const showFlash = () => {
-    flash.setValue(1);
-    Animated.timing(flash, { toValue: 0, duration: 1200, useNativeDriver: true }).start();
-  };
+  const filteredSales = filterSales(salesHistory);
 
-  const handleAdd = (product: typeof products[0]) => {
-    const existing = basketByProductId[product.id] ?? 0;
-    if (existing > 0) {
-      updateQuantity(product.id, existing + 1);
-    } else {
-      addItem({
-        id: product.id,
-        name: product.name,
-        unitPrice: product.price,
-        quantity: 1,
-        icon: 'shopping-bag',
-      });
-    }
-    showFlash();
-  };
+  const categoryFilteredSales =
+    selectedCategory === 'All'
+      ? filteredSales
+      : filteredSales.filter((sale) =>
+          sale.items.some((item) => {
+            const product = products.find((p) => p.id === item.id);
+            return product?.category === selectedCategory;
+          })
+        );
 
-  const handleRemove = (product: typeof products[0]) => {
-    const existing = basketByProductId[product.id] ?? 0;
-    if (existing <= 1) {
-      removeItem(product.id);
-    } else {
-      updateQuantity(product.id, existing - 1);
-    }
-  };
+  const totalRevenue = getTotalRevenue(categoryFilteredSales);
+  const totalTransactions = getTotalTransactions(categoryFilteredSales);
+  const averageSale = totalRevenue / Math.max(totalTransactions, 1);
+  const bestSellingProduct = getTopProducts(categoryFilteredSales, 1)[0]?.name ?? 'N/A';
+  const topProductsData = getTopProducts(categoryFilteredSales, 5);
+  const revenueChartData = getRevenueByDay(categoryFilteredSales);
+  const paymentBreakdown = getPaymentMethodBreakdown(categoryFilteredSales);
 
-  const handleCheckout = () => {
-    router.push('/checkout');
-  };
+  if (loading) {
+    return (
+      <View className="flex-1 bg-gray-50">
+        <TopAppBar title="Sales" />
+        <View className="flex-1 items-center justify-center">
+          <Text className="text-lg text-neutral-600">Loading...</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-gray-50">
-      <TopAppBar title="Products" />
-      <Animated.View pointerEvents="none" className="absolute top-16 left-0 right-0 items-center z-50" style={{ opacity: flash }}>
-        <View className="bg-[#012d1d] px-5 py-2.5 rounded-full shadow-lg">
-          <Text className="text-sm font-medium text-white">Added to basket</Text>
-        </View>
-      </Animated.View>
-      <View className="px-4 pb-3 pt-2 bg-white border-b border-neutral-200">
-        <SearchBar value={query} onChangeText={setQuery} placeholder="Search products..." />
-      </View>
-      <View className="px-1 py-2 bg-white border-b border-neutral-100">
-        <CategoryTabs categories={allCategories} selectedCategory={selectedCategory} onSelect={setSelectedCategory} />
-      </View>
-      <FlatList
-        data={filteredProducts}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: BOTTOM_ROW_H }}
-        renderItem={({ item }) => (
-          <ProductCard
-            product={item}
-            currentQty={basketByProductId[item.id] ?? 0}
-            onAdd={() => handleAdd(item)}
-            onRemove={() => handleRemove(item)}
-          />
-        )}
-        ListEmptyComponent={
-          <View className="items-center py-16">
-            <Text className="mt-3 text-base text-neutral-400">No products found</Text>
-            {query && (
-              <Text className="mt-1 text-sm text-neutral-300">
-                Try adjusting your search or category filter
+      <TopAppBar title="Sales" />
+      <ScrollView className="flex-1 px-4">
+        <View style={{ paddingBottom: insets.bottom + BOTTOM_OFFSET }}>
+          {categoryFilteredSales.length === 0 ? (
+            <View className="items-center justify-center flex-1 space-y-6">
+              <MaterialCommunityIcons name="cart-plus" size={80} color="#9ca3af" />
+              <Text className="mt-4 text-lg font-semibold text-neutral-900">
+                No sales yet
               </Text>
-            )}
-          </View>
-        }
-      />
-      {items.length > 0 && (
-        <BasketPreviewBar
-          itemCount={items.length}
-          total={total}
-          onPress={handleCheckout}
-        />
-      )}
+              <Text className="mt-2 text-neutral-500 text-center">
+                Start selling to see your sales here.
+              </Text>
+              <Pressable
+                onPress={async () => {
+                  const sampleSales = seedSampleSales();
+                  for (const sale of sampleSales) {
+                    await addSale(sale);
+                  }
+                }}
+                className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-md"
+              >
+                Load Sample Data
+              </Pressable>
+            </View>
+          ) : (
+            <View>
+              <DateRangeFilter value={selectedRange} onChange={setRange} className="mb-4" />
+
+              <CategoryTabs
+                categories={allCategories}
+                selectedCategory={selectedCategory}
+                onSelect={setSelectedCategory}
+                className="mb-3"
+              />
+
+              <ScrollView horizontal className="space-x-3 mb-6">
+                <StatCard
+                  label="Total Revenue"
+                  value={`KES ${totalRevenue.toLocaleString()}`}
+                  icon="attach-money"
+                  accentColor="emerald"
+                />
+                <StatCard
+                  label="Total Transactions"
+                  value={totalTransactions.toString()}
+                  icon="shopping-cart"
+                  accentColor="blue"
+                />
+                <StatCard
+                  label="Average Sale"
+                  value={`KES ${averageSale.toLocaleString()}`}
+                  icon="show-chart"
+                  accentColor="purple"
+                />
+                <StatCard
+                  label="Best Selling"
+                  value={bestSellingProduct}
+                  icon="star"
+                  accentColor="pink"
+                />
+              </ScrollView>
+
+              <View className="mb-6">
+                <View className="bg-white rounded-lg p-4 shadow">
+                  <Text className="mb-2 text-lg font-semibold text-neutral-900">
+                    Daily Revenue Trend
+                  </Text>
+                  <RevenueChart data={revenueChartData} />
+                </View>
+              </View>
+
+              <View className="h-4" />
+
+              <View className="mb-6 bg-white rounded-lg p-4">
+                <Text className="mb-2 text-lg font-semibold text-neutral-900">Top Products</Text>
+                <TopProductsList products={topProductsData} />
+              </View>
+
+              <View className="mb-6 bg-white rounded-lg p-4">
+                <Text className="mb-2 text-lg font-semibold text-neutral-900">Payments</Text>
+                <PaymentBreakdown breakdown={paymentBreakdown} />
+              </View>
+            </View>
+          )}
+        </View>
+      </ScrollView>
     </View>
   );
 }
