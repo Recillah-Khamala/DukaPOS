@@ -1,4 +1,5 @@
-import { Text, View, useState } from 'react-native';
+import { Text, View } from 'react-native';
+import { useState } from 'react';
 import TopAppBar from '../../components/layout/TopAppBar';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 
