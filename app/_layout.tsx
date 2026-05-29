@@ -9,19 +9,18 @@ if (styleSheetAny.setFlag) {
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BasketProvider } from '../context/BasketContext';
-import { View } from 'react-native';
 
 export default function RootLayout() {
   return (
-    <GestureHandlerRootView style={{ flex: 1, minHeight: '100vh' }}>
+    <GestureHandlerRootView className="flex-1 bg-gray-50" style={{ minHeight: '100vh' }}>
       <BasketProvider>
-        <Stack>
-          <Stack.Screen name="index" options={{ title: 'DukaPOS' }} />
-          <Stack.Screen name="details" options={{ title: 'Details', presentation: 'modal' }} />
-          <Stack.Screen name="inventory" options={{ title: 'Inventory' }} />
-          <Stack.Screen name="checkout" options={{ title: 'Checkout', presentation: 'modal' }} />
-          <Stack.Screen name="reports" options={{ title: 'Reports' }} />
-          <Stack.Screen name="credit" options={{ title: 'Credit Book' }} />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="details" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="inventory" />
+          <Stack.Screen name="checkout" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="reports" />
+          <Stack.Screen name="credit" />
         </Stack>
       </BasketProvider>
     </GestureHandlerRootView>
