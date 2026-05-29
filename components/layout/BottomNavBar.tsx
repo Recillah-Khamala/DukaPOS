@@ -51,7 +51,7 @@ export default function BottomNavBar({ activeTab, onTabChange, onHeightMeasured 
 
   return (
     <View
-      className="w-full border-t bg-white"
+      className="absolute bottom-0 left-0 right-0 border-t bg-white w-full"
       onLayout={handleLayout}
       style={{
         paddingBottom: Math.max(insets.bottom, 8),
