@@ -44,105 +44,101 @@ export default function ReportsScreen() {
 
   if (loading) {
     return (
-      <>
-        <View className="flex-1 bg-gray-50 relative">
-          <TopAppBar title="Reports" />
-          <View className="flex-1 items-center justify-center">
-            <Text className="text-lg text-neutral-600">Loading...</Text>
-          </View>
+      <View className="flex-1 bg-gray-50 relative">
+        <TopAppBar title="Reports" />
+        <View className="flex-1 items-center justify-center">
+          <Text className="text-lg text-neutral-600">Loading...</Text>
         </View>
         <BottomNavBar activeTab="reports" />
-      </>
+      </View>
     );
   }
 
   return (
-    <>
-      <View className="flex-1 bg-gray-50 relative">
-        <TopAppBar title="Reports" />
-        <ScrollView className="px-4">
-          {categoryFilteredSales.length === 0 ? (
-            <View className="items-center justify-center flex-1 space-y-6">
-              <MaterialCommunityIcons name="chart-bar" size={80} color="#9ca3af" />
-              <Text className="mt-4 text-lg font-semibold text-neutral-900">
-                No sales yet
-              </Text>
-              <Text className="mt-2 text-neutral-500 text-center">
-                Complete your first sale to see your reports here.
-              </Text>
-              <Pressable
-                onPress={async () => {
-                  const sampleSales = seedSampleSales();
-                  for (const sale of sampleSales) {
-                    await addSale(sale);
-                  }
-                }}
-                className="mt-6 px-6 py-3 bg-blue-600 rounded-md"
-              >
-                <Text className="text-white font-semibold">Load Sample Data</Text>
-              </Pressable>
-            </View>
-          ) : (
-            <View>
-              <DateRangeFilter value={selectedRange} onChange={setRange} className="mb-4" />
+    <View className="flex-1 bg-gray-50 relative">
+      <TopAppBar title="Reports" />
+      <ScrollView className="px-4">
+        {categoryFilteredSales.length === 0 ? (
+          <View className="items-center justify-center flex-1 space-y-6">
+            <MaterialCommunityIcons name="chart-bar" size={80} color="#9ca3af" />
+            <Text className="mt-4 text-lg font-semibold text-neutral-900">
+              No sales yet
+            </Text>
+            <Text className="mt-2 text-neutral-500 text-center">
+              Complete your first sale to see your reports here.
+            </Text>
+            <Pressable
+              onPress={async () => {
+                const sampleSales = seedSampleSales();
+                for (const sale of sampleSales) {
+                  await addSale(sale);
+                }
+              }}
+              className="mt-6 px-6 py-3 bg-blue-600 rounded-md"
+            >
+              <Text className="text-white font-semibold">Load Sample Data</Text>
+            </Pressable>
+          </View>
+        ) : (
+          <View>
+            <DateRangeFilter value={selectedRange} onChange={setRange} className="mb-4" />
 
-              <CategoryTabs
-                categories={allCategories}
-                selectedCategory={selectedCategory}
-                onSelect={setSelectedCategory}
-                className="mb-3"
+            <CategoryTabs
+              categories={allCategories}
+              selectedCategory={selectedCategory}
+              onSelect={setSelectedCategory}
+              className="mb-3"
+            />
+
+            <ScrollView horizontal className="space-x-3 mb-6">
+              <StatCard
+                label="Total Revenue"
+                value={`KES ${totalRevenue.toLocaleString()}`}
+                icon="attach-money"
+                accentColor="emerald"
               />
+              <StatCard
+                label="Total Transactions"
+                value={totalTransactions.toString()}
+                icon="shopping-cart"
+                accentColor="blue"
+              />
+              <StatCard
+                label="Average Sale"
+                value={`KES ${averageSale.toLocaleString()}`}
+                icon="show-chart"
+                accentColor="purple"
+              />
+              <StatCard
+                label="Best Selling"
+                value={bestSellingProduct}
+                icon="star"
+                accentColor="pink"
+              />
+            </ScrollView>
 
-              <ScrollView horizontal className="space-x-3 mb-6">
-                <StatCard
-                  label="Total Revenue"
-                  value={`KES ${totalRevenue.toLocaleString()}`}
-                  icon="attach-money"
-                  accentColor="emerald"
-                />
-                <StatCard
-                  label="Total Transactions"
-                  value={totalTransactions.toString()}
-                  icon="shopping-cart"
-                  accentColor="blue"
-                />
-                <StatCard
-                  label="Average Sale"
-                  value={`KES ${averageSale.toLocaleString()}`}
-                  icon="show-chart"
-                  accentColor="purple"
-                />
-                <StatCard
-                  label="Best Selling"
-                  value={bestSellingProduct}
-                  icon="star"
-                  accentColor="pink"
-                />
-              </ScrollView>
-
-              <View className="mb-6">
-                <View className="bg-white rounded-lg p-4 shadow">
-                  <Text className="mb-2 text-lg font-semibold text-neutral-900">
-                    Daily Revenue Trend
-                  </Text>
-                  <RevenueChart data={revenueChartData} />
-                </View>
-              </View>
-
-              <View className="mb-6 bg-white rounded-lg p-4">
-                <Text className="mb-2 text-lg font-semibold text-neutral-900">Top Products</Text>
-                <TopProductsList products={topProductsData} />
-              </View>
-
-              <View className="mb-6 bg-white rounded-lg p-4">
-                <Text className="mb-2 text-lg font-semibold text-neutral-900">Payments</Text>
-                <PaymentBreakdown breakdown={paymentBreakdown} />
+            <View className="mb-6">
+              <View className="bg-white rounded-lg p-4 shadow">
+                <Text className="mb-2 text-lg font-semibold text-neutral-900">
+                  Daily Revenue Trend
+                </Text>
+                <RevenueChart data={revenueChartData} />
               </View>
             </View>
-          )}
-        </ScrollView>
-      </View>
+
+            <View className="mb-6 bg-white rounded-lg p-4">
+              <Text className="mb-2 text-lg font-semibold text-neutral-900">Top Products</Text>
+              <TopProductsList products={topProductsData} />
+            </View>
+
+            <View className="mb-6 bg-white rounded-lg p-4">
+              <Text className="mb-2 text-lg font-semibold text-neutral-900">Payments</Text>
+              <PaymentBreakdown breakdown={paymentBreakdown} />
+            </View>
+          </View>
+        )}
+      </ScrollView>
       <BottomNavBar activeTab="reports" />
-    </>
+    </View>
   );
 }
