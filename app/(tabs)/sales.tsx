@@ -1,4 +1,5 @@
-﻿import { Text, View, ScrollView, Pressable, useState } from 'react-native';
+﻿import { Text, View, ScrollView, Pressable } from 'react-native';
+import { useState } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import TopAppBar from '../../components/layout/TopAppBar';
@@ -93,17 +94,10 @@ export default function SalesScreen() {
                 </Text>
               </View>
             </View>
-          )))
-
+          ))}
           <Pressable
             className="w-full rounded-xl items-center justify-center"
-            style={{
-              height: 56,
-              backgroundColor: Colors.surface,
-              borderWidth: 1,
-              borderStyle: 'dashed',
-              borderColor: Colors.outline,
-            }}
+            style={{ height: 56, backgroundColor: Colors.surface, borderWidth: 1, borderStyle: 'dashed', borderColor: Colors.outline }}
           >
             <Text className="text-sm font-medium" style={{ color: Colors.primary }}>
               + Add Custom Item
