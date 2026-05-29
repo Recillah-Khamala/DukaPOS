@@ -1,12 +1,26 @@
-import { Tabs } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
+import { View } from 'react-native';
+import BottomNavBar from '../../components/layout/BottomNavBar';
+import { BottomNavTab } from '../../components/layout/BottomNavBar';
 
 export default function TabsLayout() {
+  const segments = useSegments();
+  const router = useRouter();
+  const currentTab = (segments[1] as BottomNavTab) || 'sales';
+
+  const handleTabChange = (tab: BottomNavTab) => {
+    router.push(`/(tabs)/${tab}` as any);
+  };
+
   return (
-    <Tabs screenOptions={{ headerShown: false }}>
-      <Tabs.Screen name="sales" options={{ title: 'Sales' }} />
-      <Tabs.Screen name="inventory" options={{ title: 'Inventory' }} />
-      <Tabs.Screen name="reports" options={{ title: 'Reports' }} />
-      <Tabs.Screen name="credit" options={{ title: 'Credit' }} />
-    </Tabs>
+    <View className="flex-1 bg-gray-50" style={{ minHeight: '100vh' }}>
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#f9fafb' } }}>
+        <Stack.Screen name="sales" />
+        <Stack.Screen name="inventory" />
+        <Stack.Screen name="reports" />
+        <Stack.Screen name="credit" />
+      </Stack>
+      <BottomNavBar activeTab={currentTab} onTabChange={handleTabChange} />
+    </View>
   );
 }

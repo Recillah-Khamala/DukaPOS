@@ -1,9 +1,7 @@
 ﻿import { Text, View, ScrollView, Pressable } from 'react-native';
-import { useState } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import TopAppBar from '../../components/layout/TopAppBar';
-import BottomNavBar from '../../components/layout/BottomNavBar';
 import Colors from '../../constants/colors';
 
 type Product = {
@@ -22,7 +20,6 @@ const PRODUCTS: Product[] = [
 
 export default function SalesScreen() {
   const insets = useSafeAreaInsets();
-  const [bottomHeight, setBottomHeight] = useState(0);
 
   return (
     <View className="flex-1 bg-gray-50 relative">
@@ -45,7 +42,6 @@ export default function SalesScreen() {
       </View>
       <ScrollView
         className="flex-1 px-4"
-        contentContainerStyle={{ paddingBottom: bottomHeight + 16 }}
       >
         <View className="flex-row items-center justify-between mt-4 mb-3">
           <Text className="text-lg font-semibold text-neutral-900">Cereal Sales</Text>
@@ -105,7 +101,6 @@ export default function SalesScreen() {
           </Pressable>
         </View>
       </ScrollView>
-      <BottomNavBar activeTab="sales" onHeightMeasured={setBottomHeight} />
     </View>
   );
 }

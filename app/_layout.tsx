@@ -9,10 +9,11 @@ if (styleSheetAny.setFlag) {
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BasketProvider } from '../context/BasketContext';
+import { View } from 'react-native';
 
 export default function RootLayout() {
   return (
-    <GestureHandlerRootView className="flex-1">
+    <GestureHandlerRootView style={{ flex: 1, minHeight: '100vh' }}>
       <BasketProvider>
         <Stack>
           <Stack.Screen name="index" options={{ title: 'DukaPOS' }} />

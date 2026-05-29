@@ -1,24 +1,19 @@
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 import { Text, View, FlatList, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import TopAppBar from '../../components/layout/TopAppBar';
-import BottomNavBar from '../../components/layout/BottomNavBar';
 import SearchBar from '../../components/ui/SearchBar';
 import CategoryTabs from '../../components/ui/CategoryTabs';
 import ProductCard from '../../components/ui/ProductCard';
-import BasketPreviewBar, { BAR_H } from '../../components/ui/BasketPreviewBar';
+import BasketPreviewBar from '../../components/ui/BasketPreviewBar';
 import { useSharedBasket } from '../../context/BasketContext';
 import { useProducts } from '../../hooks/useProducts';
 import { useProductSearch } from '../../hooks/useProductSearch';
 
-const NAVBAR_H = 72;
-const BOTTOM_ROW_H = NAVBAR_H + BAR_H + 8;
+const BOTTOM_ROW_H = 80;
 
 export default function ProductsScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
-  const [bottomHeight, setBottomHeight] = useState(0);
   const { items, total, addItem, removeItem, updateQuantity } = useSharedBasket();
   const { products } = useProducts();
   const { query, setQuery, selectedCategory, setSelectedCategory, filteredProducts } = useProductSearch(products);
@@ -61,7 +56,7 @@ export default function ProductsScreen() {
     router.push('/checkout');
   };
 
-  return (
+return (
     <View className="flex-1 bg-gray-50 relative">
       <TopAppBar title="Products" />
       <Animated.View pointerEvents="none" className="absolute top-16 left-0 right-0 items-center z-50" style={{ opacity: flash }}>
@@ -76,7 +71,7 @@ export default function ProductsScreen() {
         <View className="px-1 py-2 bg-white border-b border-neutral-100">
           <CategoryTabs categories={allCategories} selectedCategory={selectedCategory} onSelect={setSelectedCategory} />
         </View>
-        <View className="flex-1" style={{ paddingBottom: bottomHeight }}>
+        <View className="flex-1">
           <FlatList
             data={filteredProducts}
             keyExtractor={(item) => item.id}
@@ -109,7 +104,6 @@ export default function ProductsScreen() {
           )}
         </View>
       </View>
-      <BottomNavBar activeTab="inventory" onHeightMeasured={setBottomHeight} />
     </View>
   );
 }
