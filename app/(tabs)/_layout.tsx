@@ -13,7 +13,7 @@ export default function TabsLayout() {
   };
 
   return (
-    <>
+    <View className="flex-1 bg-gray-50 relative" style={{ minHeight: '100vh' }}>
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -26,6 +26,6 @@ export default function TabsLayout() {
         <Tabs.Screen name="credit" />
       </Tabs>
       <BottomNavBar activeTab={currentTab} onTabChange={handleTabChange} />
-    </>
+    </View>
   );
 }
