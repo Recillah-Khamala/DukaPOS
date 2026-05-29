@@ -4,7 +4,7 @@ import BottomNavBar from '../../components/layout/BottomNavBar';
 
 export default function CreditScreen() {
   return (
-    <View className="flex-1 bg-gray-50 relative">
+    <View className="flex-1 bg-gray-50">
       <TopAppBar title="Credit Book" />
       <View className="flex-1 items-center justify-center px-4">
         <Text className="text-xl font-medium text-neutral-700">

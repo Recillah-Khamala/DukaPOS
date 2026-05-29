@@ -44,7 +44,7 @@ export default function ReportsScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 bg-gray-50 relative">
+      <View className="flex-1 bg-gray-50">
         <TopAppBar title="Reports" />
         <View className="flex-1 items-center justify-center">
           <Text className="text-lg text-neutral-600">Loading...</Text>
@@ -55,7 +55,7 @@ export default function ReportsScreen() {
   }
 
   return (
-    <View className="flex-1 bg-gray-50 relative">
+    <View className="flex-1 bg-gray-50">
       <TopAppBar title="Reports" />
       <ScrollView className="px-4">
         {categoryFilteredSales.length === 0 ? (

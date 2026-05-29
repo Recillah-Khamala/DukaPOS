@@ -58,7 +58,7 @@ export default function ProductsScreen() {
   };
 
   return (
-    <View className="flex-1 bg-gray-50 relative">
+    <View className="flex-1 bg-gray-50">
       <TopAppBar title="Products" />
       <Animated.View 
         pointerEvents="none" 

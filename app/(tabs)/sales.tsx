@@ -20,7 +20,7 @@ const PRODUCTS: Product[] = [
 
 export default function SalesScreen() {
   return (
-    <View className="flex-1 bg-gray-50 relative">
+    <View className="flex-1 bg-gray-50">
       <View className="flex-1">
         <View className="flex-row items-center justify-between px-4 pt-12 pb-3" style={{ backgroundColor: '#012d1d' }}>
           <View className="flex-row items-center gap-3 flex-1">
