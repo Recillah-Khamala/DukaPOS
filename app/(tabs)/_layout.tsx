@@ -1,4 +1,4 @@
-import { Stack, useRouter, useSegments } from 'expo-router';
+import { Slot, useRouter, useSegments } from 'expo-router';
 import { View } from 'react-native';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import { BottomNavTab } from '../../components/layout/BottomNavBar';
@@ -14,12 +14,9 @@ export default function TabsLayout() {
 
   return (
     <View className="flex-1 bg-gray-50" style={{ minHeight: '100vh' }}>
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#f9fafb' } }}>
-        <Stack.Screen name="sales" />
-        <Stack.Screen name="inventory" />
-        <Stack.Screen name="reports" />
-        <Stack.Screen name="credit" />
-      </Stack>
+      <View className="flex-1">
+        <Slot />
+      </View>
       <BottomNavBar activeTab={currentTab} onTabChange={handleTabChange} />
     </View>
   );
