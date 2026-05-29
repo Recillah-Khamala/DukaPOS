@@ -51,7 +51,7 @@ export default function BottomNavBar({ activeTab, onTabChange, onHeightMeasured 
 
   return (
     <View
-      className="absolute bottom-0 left-0 right-0 border-t bg-white w-full"
+      className="absolute bottom-0 left-0 right-0 flex-row border-t bg-white"
       onLayout={handleLayout}
       style={{
         paddingBottom: Math.max(insets.bottom, 8),
@@ -60,46 +60,44 @@ export default function BottomNavBar({ activeTab, onTabChange, onHeightMeasured 
         backgroundColor: Colors.white,
       }}
     >
-      <View className="flex-row w-full justify-between px-2">
-        {TABS.map((tab) => {
-          const isActive = activeTab === tab.id;
-          return (
-            <Pressable
-              key={tab.id}
-              accessibilityRole="tab"
-              accessibilityState={{ selected: isActive }}
-              onPress={() => {
-                try {
-                  if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
-                    document.activeElement.blur();
-                  }
-                } catch {
-                  // ignore non-browser envs
+      {TABS.map((tab) => {
+        const isActive = activeTab === tab.id;
+        return (
+          <Pressable
+            key={tab.id}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: isActive }}
+            onPress={() => {
+              try {
+                if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
+                  document.activeElement.blur();
                 }
-                handlePress(tab.id);
-              }}
-              className="mx-0.5 flex-1 items-center justify-center rounded-lg py-1.5"
+              } catch {
+                // ignore non-browser envs
+              }
+              handlePress(tab.id);
+            }}
+            className="flex-1 items-center justify-center py-1.5"
+            style={{
+              backgroundColor: isActive ? Colors.secondaryContainer : 'transparent',
+            }}
+          >
+            <MaterialIcons
+              name={tab.icon}
+              size={24}
+              color={isActive ? Colors.onSurface : Colors.onSurfaceVariant}
+            />
+            <Text
+              className="mt-1 text-center text-xs font-medium"
               style={{
-                backgroundColor: isActive ? Colors.secondaryContainer : 'transparent',
+                color: isActive ? Colors.onSurface : Colors.onSurfaceVariant,
               }}
             >
-              <MaterialIcons
-                name={tab.icon}
-                size={24}
-                color={isActive ? Colors.onSurface : Colors.onSurfaceVariant}
-              />
-              <Text
-                className="mt-1 text-center text-xs font-medium"
-                style={{
-                  color: isActive ? Colors.onSurface : Colors.onSurfaceVariant,
-                }}
-              >
-                {tab.label}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
+              {tab.label}
+            </Text>
+          </Pressable>
+        );
+      })}
     </View>
   );
 }
