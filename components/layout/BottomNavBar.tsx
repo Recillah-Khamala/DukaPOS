@@ -36,10 +36,10 @@ export default function BottomNavBar({ activeTab, onTabChange, onHeightMeasured 
       onTabChange(tab);
     } else {
       const routes: Record<BottomNavTab, string> = {
-        sales: '/(tabs)/sales',
-        inventory: '/(tabs)/inventory',
-        reports: '/(tabs)/reports',
-        credit: '/(tabs)/credit',
+        sales: '/',
+        inventory: '/inventory',
+        reports: '/reports',
+        credit: '/credit',
       };
       router.push(routes[tab] as any);
     }
@@ -51,13 +51,18 @@ export default function BottomNavBar({ activeTab, onTabChange, onHeightMeasured 
 
   return (
     <View
-      className="absolute bottom-0 left-0 right-0 flex-row border-t bg-white"
       onLayout={handleLayout}
       style={{
-        paddingBottom: Math.max(insets.bottom, 8),
-        paddingTop: 8,
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        flexDirection: 'row',
+        borderTopWidth: 1,
         borderTopColor: Colors.outlineVariant,
         backgroundColor: Colors.white,
+        paddingBottom: Math.max(insets.bottom, 8),
+        paddingTop: 8,
       }}
     >
       {TABS.map((tab) => {
@@ -77,8 +82,11 @@ export default function BottomNavBar({ activeTab, onTabChange, onHeightMeasured 
               }
               handlePress(tab.id);
             }}
-            className="flex-1 items-center justify-center py-1.5"
             style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingVertical: 6,
               backgroundColor: isActive ? Colors.secondaryContainer : 'transparent',
             }}
           >
@@ -88,8 +96,11 @@ export default function BottomNavBar({ activeTab, onTabChange, onHeightMeasured 
               color={isActive ? Colors.onSurface : Colors.onSurfaceVariant}
             />
             <Text
-              className="mt-1 text-center text-xs font-medium"
               style={{
+                marginTop: 4,
+                textAlign: 'center',
+                fontSize: 12,
+                fontWeight: '500',
                 color: isActive ? Colors.onSurface : Colors.onSurfaceVariant,
               }}
             >

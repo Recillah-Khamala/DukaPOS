@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
-import TopAppBar from '../../components/layout/TopAppBar';
-import BottomNavBar from '../../components/layout/BottomNavBar';
+import TopAppBar from '../components/layout/TopAppBar';
+import BottomNavBar from '../components/layout/BottomNavBar';
 
 export default function CreditScreen() {
   return (

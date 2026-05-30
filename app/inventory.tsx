@@ -1,15 +1,15 @@
 import { useRef } from 'react';
 import { Text, View, FlatList, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
-import TopAppBar from '../../components/layout/TopAppBar';
-import BottomNavBar from '../../components/layout/BottomNavBar';
-import SearchBar from '../../components/ui/SearchBar';
-import CategoryTabs from '../../components/ui/CategoryTabs';
-import ProductCard from '../../components/ui/ProductCard';
-import BasketPreviewBar from '../../components/ui/BasketPreviewBar';
-import { useSharedBasket } from '../../context/BasketContext';
-import { useProducts } from '../../hooks/useProducts';
-import { useProductSearch } from '../../hooks/useProductSearch';
+import TopAppBar from '../components/layout/TopAppBar';
+import BottomNavBar from '../components/layout/BottomNavBar';
+import SearchBar from '../components/ui/SearchBar';
+import CategoryTabs from '../components/ui/CategoryTabs';
+import ProductCard from '../components/ui/ProductCard';
+import BasketPreviewBar from '../components/ui/BasketPreviewBar';
+import { useSharedBasket } from '../context/BasketContext';
+import { useProducts } from '../hooks/useProducts';
+import { useProductSearch } from '../hooks/useProductSearch';
 
 const BOTTOM_ROW_H = 80;
 

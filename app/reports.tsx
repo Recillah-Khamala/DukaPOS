@@ -1,19 +1,19 @@
 import { Text, View, ScrollView, Pressable } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import TopAppBar from '../../components/layout/TopAppBar';
-import BottomNavBar from '../../components/layout/BottomNavBar';
-import { useSalesHistory } from '../../hooks/useSalesHistory';
-import { useDateFilter } from '../../hooks/useDateFilter';
-import { useProducts } from '../../hooks/useProducts';
-import { useProductSearch } from '../../hooks/useProductSearch';
-import { getTotalRevenue, getTotalTransactions, getTopProducts, getRevenueByDay, getPaymentMethodBreakdown } from '../../utils/salesHelpers';
-import { seedSampleSales } from '../../utils/seedData';
-import StatCard from '../../components/ui/StatCard';
-import RevenueChart from '../../components/ui/RevenueChart';
-import TopProductsList from '../../components/ui/TopProductsList';
-import DateRangeFilter from '../../components/ui/DateRangeFilter';
-import PaymentBreakdown from '../../components/ui/PaymentBreakdown';
-import CategoryTabs from '../../components/ui/CategoryTabs';
+import TopAppBar from '../components/layout/TopAppBar';
+import BottomNavBar from '../components/layout/BottomNavBar';
+import { useSalesHistory } from '../hooks/useSalesHistory';
+import { useDateFilter } from '../hooks/useDateFilter';
+import { useProducts } from '../hooks/useProducts';
+import { useProductSearch } from '../hooks/useProductSearch';
+import { getTotalRevenue, getTotalTransactions, getTopProducts, getRevenueByDay, getPaymentMethodBreakdown } from '../utils/salesHelpers';
+import { seedSampleSales } from '../utils/seedData';
+import StatCard from '../components/ui/StatCard';
+import RevenueChart from '../components/ui/RevenueChart';
+import TopProductsList from '../components/ui/TopProductsList';
+import DateRangeFilter from '../components/ui/DateRangeFilter';
+import PaymentBreakdown from '../components/ui/PaymentBreakdown';
+import CategoryTabs from '../components/ui/CategoryTabs';
 
 export default function ReportsScreen() {
   const { salesHistory, loading, addSale } = useSalesHistory();
