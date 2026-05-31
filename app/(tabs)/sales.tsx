@@ -13,8 +13,8 @@ const CEREAL_PRODUCTS = [
   { id: 'maize', name: 'Maize', icon: 'grass' as const, priceKes: 95 },
   { id: 'beans', name: 'Beans', icon: 'eco' as const, priceKes: 160 },
   { id: 'groundnuts', name: 'Groundnuts', icon: 'grain' as const, priceKes: 220 },
-  { id: 'sorghum', name: 'Sorghum', icon: 'water_drop' as const, priceKes: 110 },
-  { id: 'millet', name: 'Millet', icon: 'filter_vintage' as const, priceKes: 145 },
+  { id: 'sorghum', name: 'Sorghum', icon: 'water-drop' as const, priceKes: 110 },
+  { id: 'millet', name: 'Millet', icon: 'filter-vintage' as const, priceKes: 145 },
 ];
 
 const POSHO_SERVICES = [
