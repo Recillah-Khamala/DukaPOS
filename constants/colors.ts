@@ -10,6 +10,7 @@ const Colors = {
   error: '#ba1a1a',
   primaryFixed: '#c1ecd4',
   white: '#ffffff',
+  surfaceContainerHigh: '#eceef1',
 } as const;
 
 export type DukaPOSColors = typeof Colors;
