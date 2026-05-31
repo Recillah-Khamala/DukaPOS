@@ -35,12 +35,12 @@ export default function BottomNavBar({ activeTab, onTabChange, onHeightMeasured 
     if (onTabChange) {
       onTabChange(tab);
     } else {
-      const routes: Record<BottomNavTab, string> = {
-        sales: '/(tabs)/sales',
-        inventory: '/(tabs)/inventory',
-        reports: '/(tabs)/reports',
-        credit: '/(tabs)/credit',
-      };
+const routes: Record<BottomNavTab, string> = {
+  sales: '/sales',
+  inventory: '/inventory',
+  reports: '/reports',
+  credit: '/credit',
+};
       router.push(routes[tab] as any);
     }
   }, [onTabChange, router]);
