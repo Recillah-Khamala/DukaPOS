@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Text, View, ScrollView, Pressable } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import BottomNavBar from '../../components/layout/BottomNavBar';
+import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
 
 type UnitToggle = 'kg' | 'korokoro';
@@ -13,6 +14,11 @@ const CEREAL_PRODUCTS = [
   { id: 'groundnuts', name: 'Groundnuts', icon: 'grain' as const, priceKes: 220 },
   { id: 'sorghum', name: 'Sorghum', icon: 'water_drop' as const, priceKes: 110 },
   { id: 'millet', name: 'Millet', icon: 'filter_vintage' as const, priceKes: 145 },
+];
+
+const POSHO_SERVICES = [
+  { id: 'grade1', name: 'Grade 1 Milling', subtitle: 'Per KG', priceKes: 20 },
+  { id: 'regular', name: 'Regular Milling', subtitle: 'Per KG', priceKes: 15 },
 ];
 
 const FRACTIONS = [
@@ -129,6 +135,59 @@ function CerealProductCard({ product }: { product: typeof CEREAL_PRODUCTS[number
   );
 }
 
+function PoshoServiceCard({ service }: { service: typeof POSHO_SERVICES[number] }) {
+  const { addItem } = useSharedBasket();
+  return (
+    <View className="flex-row items-center rounded-xl bg-white p-4 mb-3" style={{ borderLeftWidth: 4, borderLeftColor: '#7d5800' }}>
+      <View className="h-10 w-10 items-center justify-center rounded-full" style={{ backgroundColor: '#fef3c7' }}>
+        <MaterialIcons name="settings-suggest" size={24} color="#7d5800" />
+      </View>
+      <View className="ml-3 flex-1">
+        <Text className="text-sm font-bold text-neutral-900">{service.name}</Text>
+        <Text className="text-xs text-neutral-500">{service.subtitle}</Text>
+      </View>
+      <Text className="mr-3 text-base font-bold" style={{ color: Colors.primary }}>{service.priceKes} <Text className="text-xs">KES</Text></Text>
+      <Pressable
+        onPress={() => addItem({ id: `posho-${service.id}`, name: service.name, unitPrice: service.priceKes, quantity: 1, icon: 'settings-suggest' })}
+        className="h-12 w-12 items-center justify-center rounded-full"
+        style={{ backgroundColor: Colors.secondaryContainer }}
+      >
+        <Text className="text-lg font-bold" style={{ color: Colors.primary }}>+</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+function BasketChips() {
+  const { items, removeItem } = useSharedBasket();
+  if (items.length === 0) return null;
+  return (
+    <View className="mb-4">
+      <Text className="text-xs font-medium mb-2" style={{ color: Colors.onSurfaceVariant }}>
+        Current Basket ({items.length} {items.length === 1 ? 'item' : 'items'})
+      </Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+        {items.map((item) => (
+          <View
+            key={item.id}
+            className="flex-row items-center rounded-full pl-3 pr-1 py-1.5"
+            style={{ backgroundColor: Colors.primaryFixed }}
+          >
+            <Text className="text-sm font-semibold mr-2" style={{ color: Colors.primary }}>{item.name}</Text>
+            <Pressable
+              onPress={() => removeItem(item.id)}
+              className="h-6 w-6 items-center justify-center rounded-full"
+              style={{ backgroundColor: Colors.secondaryContainer }}
+            >
+              <MaterialIcons name="close" size={14} color={Colors.primary} />
+            </Pressable>
+          </View>
+        ))}
+      </ScrollView>
+    </View>
+  );
+}
+
 export default function SalesScreen() {
   const [unit, setUnit] = useState<UnitToggle>('kg');
 
@@ -160,6 +219,15 @@ export default function SalesScreen() {
         >
           <Text className="text-base font-semibold" style={{ color: Colors.outline }}>+ Add Custom Item</Text>
         </Pressable>
+
+        <View className="mt-6 mb-2">
+          <Text className="text-lg font-bold" style={{ color: Colors.onSurface }}>Poshomill Services</Text>
+        </View>
+        {POSHO_SERVICES.map((service) => (
+          <PoshoServiceCard key={service.id} service={service} />
+        ))}
+
+        <BasketChips />
       </ScrollView>
       <BottomNavBar activeTab="sales" />
     </View>
