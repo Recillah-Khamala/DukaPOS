@@ -3,6 +3,7 @@ import { Text, View, ScrollView, Pressable } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
+import TopAppBar from '../../components/layout/TopAppBar';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
 
