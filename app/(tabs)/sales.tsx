@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Text, View, ScrollView, Pressable } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useRouter } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
@@ -190,6 +191,8 @@ function BasketChips() {
 
 export default function SalesScreen() {
   const [unit, setUnit] = useState<UnitToggle>('kg');
+  const router = useRouter();
+  const { items, total } = useSharedBasket();
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
@@ -203,7 +206,7 @@ export default function SalesScreen() {
           <MaterialIcons name="notifications-none" size={24} color="white" />
         </View>
       </View>
-      <ScrollView style={{ flex: 1, paddingHorizontal: 16 }} contentContainerStyle={{ paddingBottom: 180 }}>
+      <ScrollView style={{ flex: 1, paddingHorizontal: 16 }} contentContainerStyle={{ paddingBottom: items.length > 0 ? 320 : 180 }}>
         <View className="flex-row items-center justify-between mt-6 mb-4">
           <Text className="text-lg font-bold" style={{ color: Colors.onSurface }}>Cereal Sales</Text>
           <UnitTogglePill value={unit} onChange={setUnit} />
@@ -229,6 +232,43 @@ export default function SalesScreen() {
 
         <BasketChips />
       </ScrollView>
+
+      {items.length > 0 && (
+        <View
+          className="flex-row items-center justify-between px-4"
+          style={{
+            position: 'absolute',
+            bottom: 80,
+            left: 0,
+            right: 0,
+            height: 80,
+            backgroundColor: 'white',
+            borderTopWidth: 1,
+            borderTopColor: Colors.outlineVariant,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: -4 },
+            shadowOpacity: 0.1,
+            shadowRadius: 12,
+            elevation: 8,
+          }}
+        >
+          <View>
+            <Text className="text-xs font-semibold uppercase" style={{ color: Colors.onSurfaceVariant }}>Total Due</Text>
+            <Text className="text-[28px] font-extrabold" style={{ color: Colors.secondary }}>
+              {total.toLocaleString()} <Text className="text-xs font-medium">KES</Text>
+            </Text>
+          </View>
+          <Pressable
+            onPress={() => router.push('/checkout')}
+            className="flex-row items-center justify-center rounded-xl px-6"
+            style={{ backgroundColor: Colors.primary, height: 56, flexGrow: 1, marginLeft: 16 }}
+          >
+            <MaterialIcons name="check-circle" size={20} color="white" />
+            <Text className="ml-2 text-base font-semibold text-white">Confirm Sale</Text>
+          </Pressable>
+        </View>
+      )}
+
       <BottomNavBar activeTab="sales" />
     </View>
   );

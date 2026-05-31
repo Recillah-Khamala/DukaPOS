@@ -3,6 +3,7 @@ import { Text, View, FlatList, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import TopAppBar from '../components/layout/TopAppBar';
+import BottomNavBar from '../components/layout/BottomNavBar';
 import BasketItemCard from '../components/ui/BasketItemCard';
 import PaymentMethodSelector from '../components/ui/PaymentMethodSelector';
 import ChangeCalculator from '../components/ui/ChangeCalculator';
@@ -23,7 +24,7 @@ export default function CheckoutScreen() {
 
   return (
     <View className="flex-1 bg-gray-50">
-      <TopAppBar title="Checkout" />
+      <TopAppBar title="Checkout" onBack={() => router.back()} />
       <FlatList
         data={items}
         keyExtractor={(item) => item.id}
@@ -83,6 +84,7 @@ export default function CheckoutScreen() {
           ) : null
         }
       />
+      <BottomNavBar activeTab="sales" />
     </View>
   );
 }

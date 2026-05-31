@@ -6,6 +6,7 @@ export type TopAppBarProps = {
   title: string;
   onHelp?: () => void;
   onClose?: () => void;
+  onBack?: () => void;
 };
 
 export default function TopAppBar({ title, onHelp, onClose }: TopAppBarProps) {
@@ -26,7 +27,7 @@ export default function TopAppBar({ title, onHelp, onClose }: TopAppBarProps) {
         <Text className="text-lg font-semibold text-white">{title}</Text>
       </View>
 
-      {/* Right: Help + Close Icons */}
+      {/* Right: Help + Back/Close Icons */}
       <View className="flex-row items-center gap-2">
         {onHelp && (
           <Pressable
@@ -38,15 +39,26 @@ export default function TopAppBar({ title, onHelp, onClose }: TopAppBarProps) {
             <MaterialIcons name="help-outline" size={24} color="white" />
           </Pressable>
         )}
-        {onClose && (
+        {onBack ? (
           <Pressable
-            onPress={onClose}
+            onPress={onBack}
             accessibilityRole="button"
-            accessibilityLabel="Close"
+            accessibilityLabel="Back"
             className="p-2 rounded-full active:opacity-70"
           >
-            <MaterialIcons name="close" size={24} color="white" />
+            <MaterialIcons name="arrow-back" size={24} color="white" />
           </Pressable>
+        ) : (
+          onClose && (
+            <Pressable
+              onPress={onClose}
+              accessibilityRole="button"
+              accessibilityLabel="Close"
+              className="p-2 rounded-full active:opacity-70"
+            >
+              <MaterialIcons name="close" size={24} color="white" />
+            </Pressable>
+          )
         )}
       </View>
     </View>
