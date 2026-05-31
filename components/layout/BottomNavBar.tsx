@@ -16,7 +16,7 @@ type TabConfig = {
 
 const TABS: TabConfig[] = [
     { id: 'sales', label: 'Sales', icon: 'point-of-sale' },
-    { id: 'inventory', label: 'Inventory', icon: 'inventory_2' },
+    { id: 'inventory', label: 'Inventory', icon: 'inventory-2' },
     { id: 'reports', label: 'Reports', icon: 'assessment' },
     { id: 'credit', label: 'Credit', icon: 'menu-book' },
   ];
@@ -91,9 +91,9 @@ const routes: Record<BottomNavTab, string> = {
             }}
           >
             <MaterialIcons
-              name={isActive ? tab.icon : `${tab.icon}-outline`}
+              name={tab.icon}
               size={24}
-              color={isActive ? Colors.onSecondaryContainer : Colors.onSurfaceVariant}
+              color={isActive ? Colors.onSurface : Colors.onSurfaceVariant}
             />
             <Text
               style={{
@@ -101,7 +101,7 @@ const routes: Record<BottomNavTab, string> = {
                 textAlign: 'center',
                 fontSize: 12,
                 fontWeight: '500',
-                color: isActive ? Colors.onSecondaryContainer : Colors.onSurfaceVariant,
+                color: isActive ? Colors.onSurface : Colors.onSurfaceVariant,
               }}
             >
               {tab.label}
