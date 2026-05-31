@@ -2,6 +2,8 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import Colors from '../../constants/colors';
+
 export type TopAppBarProps = {
   title: string;
   onHelp?: () => void;
@@ -14,52 +16,36 @@ export default function TopAppBar({ title, onHelp, onClose, onBack }: TopAppBarP
 
   return (
     <View
-      className="flex-row items-center justify-between px-4"
+      className="fixed left-0 right-0 flex-row items-center justify-between bg-primary text-on-primary h-[48px] shadow-md px-[16px] z-50"
       style={{
-        paddingTop: Math.max(insets.top, 12),
-        paddingBottom: 12,
-        backgroundColor: '#012d1d',
+        paddingTop: Math.max(insets.top, 0), // Account for status bar, but keep fixed height
+        minHeight: 48,
       }}
     >
       {/* Left: Storefront Icon + Title */}
-      <View className="flex-row items-center gap-3 flex-1">
-        <MaterialIcons name="storefront" size={24} color="white" />
-        <Text className="text-lg font-semibold text-white">{title}</Text>
+      <View className="flex-row items-center gap-[4px]">
+        <MaterialIcons name="storefront" size={24} color={Colors.onPrimary} />
+        <Text className="font-extrabold text-[24px] tracking-tight text-on-primary">
+          Kijiji Cereal Store
+        </Text>
       </View>
 
-      {/* Right: Help + Back/Close Icons */}
-      <View className="flex-row items-center gap-2">
-        {onHelp && (
-          <Pressable
-            onPress={onHelp}
-            accessibilityRole="button"
-            accessibilityLabel="Help"
-            className="p-2 rounded-full active:opacity-70"
-          >
-            <MaterialIcons name="help-outline" size={24} color="white" />
-          </Pressable>
-        )}
-        {onBack ? (
-          <Pressable
-            onPress={onBack}
-            accessibilityRole="button"
-            accessibilityLabel="Back"
-            className="p-2 rounded-full active:opacity-70"
-          >
-            <MaterialIcons name="arrow-back" size={24} color="white" />
-          </Pressable>
-        ) : (
-          onClose && (
-            <Pressable
-              onPress={onClose}
-              accessibilityRole="button"
-              accessibilityLabel="Close"
-              className="p-2 rounded-full active:opacity-70"
-            >
-              <MaterialIcons name="close" size={24} color="white" />
-            </Pressable>
-          )
-        )}
+      {/* Right: Search + Notifications Icons */}
+      <View className="flex-row items-center gap-[16px]">
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Search"
+          className="p-2 rounded-full active:scale-95"
+        >
+          <MaterialIcons name="search" size={24} color={Colors.onPrimary} />
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Notifications"
+          className="p-2 rounded-full active:scale-95"
+        >
+          <MaterialIcons name="notifications-none" size={24} color={Colors.onPrimary} />
+        </Pressable>
       </View>
     </View>
   );
