@@ -9,7 +9,7 @@ export type TopAppBarProps = {
   onBack?: () => void;
 };
 
-export default function TopAppBar({ title, onHelp, onClose }: TopAppBarProps) {
+export default function TopAppBar({ title, onHelp, onClose, onBack }: TopAppBarProps) {
   const insets = useSafeAreaInsets();
 
   return (
