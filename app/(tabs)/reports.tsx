@@ -1,7 +1,7 @@
 import { Text, View, ScrollView } from 'react-native';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 
-export default function ReportsShell() {
+export default function ReportsScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
       <View style={{ flex: 1 }}>

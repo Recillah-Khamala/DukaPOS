@@ -1,7 +1,7 @@
 import { Text, View, ScrollView } from 'react-native';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 
-export default function CreditShell() {
+export default function CreditScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
       <View style={{ flex: 1 }}>
