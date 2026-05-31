@@ -53,23 +53,40 @@ function UnitTogglePill({ value, onChange }: { value: UnitToggle; onChange: (v: 
 
 function CerealProductCard({ product }: { product: typeof CEREAL_PRODUCTS[number] }) {
   const [qty, setQty] = useState<Fraction>(0);
+  const { addItem, updateQuantity, removeItem, items } = useSharedBasket();
+
+  const inBasket = items.some((i) => i.id === product.id);
+
+  const syncToBasket = (fraction: Fraction) => {
+    if (fraction === 0) {
+      removeItem(product.id);
+    } else if (inBasket) {
+      updateQuantity(product.id, fraction);
+    } else {
+      addItem({ id: product.id, name: product.name, unitPrice: product.priceKes, quantity: fraction, icon: product.icon });
+    }
+  };
 
   const handlePress = () => {
     if (qty === 0) {
       setQty(0.25);
+      syncToBasket(0.25);
     }
   };
 
   const adjustQty = (delta: number) => {
     const idx = FRACTIONS.findIndex((f) => f.val === qty);
     const newIdx = idx + delta;
+    let next: Fraction;
     if (newIdx < 0) {
-      setQty(0);
+      next = 0;
     } else if (newIdx >= FRACTIONS.length) {
-      setQty(FRACTIONS[FRACTIONS.length - 1].val);
+      next = FRACTIONS[FRACTIONS.length - 1].val;
     } else {
-      setQty(FRACTIONS[newIdx].val);
+      next = FRACTIONS[newIdx].val;
     }
+    setQty(next);
+    syncToBasket(next);
   };
 
   const selectedFraction = FRACTIONS.find((f) => f.val === qty);
@@ -119,7 +136,10 @@ function CerealProductCard({ product }: { product: typeof CEREAL_PRODUCTS[number
               return (
                 <Pressable
                   key={f.label}
-                  onPress={() => setQty(f.val)}
+                  onPress={() => {
+                    setQty(f.val);
+                    updateQuantity(product.id, f.val);
+                  }}
                   className="h-7 flex-1 items-center justify-center rounded-md"
                   style={{ backgroundColor: active ? Colors.secondaryContainer : Colors.surfaceContainerHigh }}
                 >
