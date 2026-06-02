@@ -3,6 +3,7 @@ import { Text, View, ScrollView, Pressable } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
+import AdjustItemModal from '../../components/sales/AdjustItemModal';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
 import { CEREAL_PRODUCTS, POSHOMILL_SERVICES } from '../../constants/salesData';
@@ -30,6 +31,7 @@ export default function SalesScreen() {
   const [flashingId, setFlashingId] = useState<string | null>(null);
   const [activeFraction, setActiveFraction] = useState<Record<string, Fraction>>({});
   const [qtys, setQtys] = useState<Record<string, number>>({});
+  const [selectedProduct, setSelectedProduct] = useState<CEREAL_PRODUCTS[number] | POSHOMILL_SERVICES[number] | null>(null);
   const { items, total, addItem } = useSharedBasket();
 
   const handleQtyChange = useCallback(
@@ -93,7 +95,7 @@ export default function SalesScreen() {
               return (
                 <Pressable
                   key={product.id}
-                  onPress={() => addToBasket(product.id, product.name, product.pricePerKg, currentQty, 'cereal', product.id)}
+                  onPress={() => setSelectedProduct(product)}
                   className={`w-[48%] bg-surface-container-lowest rounded-xl p-[16px] border-2 active:scale-95 ${isFlashing ? 'border-secondary' : 'border-transparent'}`}
                   style={{
                     shadowColor: '#000',
@@ -230,6 +232,7 @@ export default function SalesScreen() {
         )}
       </ScrollView>
 
+      <AdjustItemModal product={selectedProduct as any} onClose={() => setSelectedProduct(null)} />
       <BottomNavBar activeTab="sales" onHeightMeasured={setBottomNavHeight} />
     </View>
   );
