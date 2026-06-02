@@ -16,29 +16,49 @@ const FRACTIONS: { label: string; value: Fraction }[] = [
   { label: '1', value: 1 },
 ];
 
+function qtyLabel(qty: number, activeFraction: Fraction | undefined): string {
+  if (activeFraction && qty === activeFraction) {
+    const match = FRACTIONS.find((f) => f.value === activeFraction);
+    if (match) return match.label;
+  }
+  return Number.isInteger(qty) ? String(qty) : qty.toFixed(3).replace(/\.?0+$/, '');
+}
+
 export default function SalesScreen() {
   const router = useRouter();
   const [flashingId, setFlashingId] = useState<string | null>(null);
-  const [selectedQty, setSelectedQty] = useState<Record<string, Fraction>>({});
+  const [activeFraction, setActiveFraction] = useState<Record<string, Fraction>>({});
+  const [qtys, setQtys] = useState<Record<string, number>>({});
   const { items, total, addItem } = useSharedBasket();
 
-  const handleCerealTap = useCallback((product: { id: string; name: string; pricePerKg: number }) => {
-    const qty = selectedQty[product.id] ?? 1;
-    addItem({
-      id: `${product.id}_${Date.now()}`,
-      productId: product.id,
-      name: product.name,
-      qty,
-      unitPrice: product.pricePerKg,
-      type: 'cereal',
-    });
-    setFlashingId(product.id);
-    setTimeout(() => setFlashingId(null), 300);
-  }, [addItem, selectedQty]);
+  const handleQtyChange = useCallback(
+    (id: string, delta: number, min: number, step: number) => {
+      setQtys((prev) => {
+        const current = prev[id] ?? 1;
+        const next = Math.max(min, current + delta);
+        return { ...prev, [id]: next };
+      });
+    },
+    []
+  );
 
-  const setFraction = useCallback((productId: string, value: Fraction) => {
-    setSelectedQty((prev) => ({ ...prev, [productId]: value }));
-  }, []);
+  const addToBasket = useCallback(
+    (id: string, name: string, unitPrice: number, qty: number, type: 'cereal' | 'service', productId: string) => {
+      addItem({
+        id: `${id}_${Date.now()}`,
+        productId,
+        name,
+        qty,
+        unitPrice,
+        type,
+      });
+      setFlashingId(id);
+      setTimeout(() => setFlashingId(null), 300);
+    },
+    [addItem]
+  );
+
+  const getQty = (id: string) => qtys[id] ?? 1;
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
@@ -66,11 +86,13 @@ export default function SalesScreen() {
           <View className="flex-row flex-wrap gap-[12px]">
             {CEREAL_PRODUCTS.map((product) => {
               const isFlashing = flashingId === product.id;
-              const activeFraction = selectedQty[product.id];
+              const currentQty = getQty(product.id);
+              const fraction = activeFraction[product.id];
+              const step = fraction ?? 1;
               return (
                 <Pressable
                   key={product.id}
-                  onPress={() => handleCerealTap(product)}
+                  onPress={() => addToBasket(product.id, product.name, product.pricePerKg, currentQty, 'cereal', product.id)}
                   className={`w-[48%] bg-surface-container-lowest rounded-xl p-[16px] border-2 active:scale-95 ${isFlashing ? 'border-secondary' : 'border-transparent'}`}
                   style={{
                     shadowColor: '#000',
@@ -87,13 +109,13 @@ export default function SalesScreen() {
                   <Text className="text-[28px] font-extrabold text-primary">{product.pricePerKg} <Text className="font-bold text-[14px] text-primary">KES</Text></Text>
                   <View className="flex-row flex-wrap gap-[8px] mt-3">
                     {FRACTIONS.map((chip) => {
-                      const isActive = activeFraction === chip.value;
+                      const isActive = fraction === chip.value;
                       return (
                         <Pressable
                           key={chip.label}
                           onPress={() => {
-                            setFraction(product.id, chip.value);
-                            handleCerealTap(product);
+                            setActiveFraction((prev) => ({ ...prev, [product.id]: chip.value }));
+                            setQtys((prev) => ({ ...prev, [product.id]: chip.value }));
                           }}
                           className={`h-10 min-w-[48px] flex-row items-center justify-center rounded-full border px-3 active:scale-95 ${isActive ? 'border-secondary bg-secondary-container' : 'border-outline-variant bg-surface-container-lowest'}`}
                         >
@@ -101,6 +123,27 @@ export default function SalesScreen() {
                         </Pressable>
                       );
                     })}
+                  </View>
+                  <View className="flex-row items-center gap-[12px] mt-3">
+                    <Pressable
+                      onPress={() => handleQtyChange(product.id, -step, 0.125, step)}
+                      disabled={currentQty <= 0.125}
+                      className={`h-12 w-12 items-center justify-center rounded-full border ${currentQty <= 0.125 ? 'border-outline-variant bg-surface-container-high' : 'border-outline-variant bg-surface-container-lowest active:scale-95'}`}
+                    >
+                      <Text className={`text-lg font-bold ${currentQty <= 0.125 ? 'text-on-surface-variant opacity-50' : 'text-on-surface-variant'}`}>−</Text>
+                    </Pressable>
+                    <Text className="text-[20px] font-bold text-primary w-10 text-center">{qtyLabel(currentQty, fraction)}</Text>
+                    <Pressable
+                      onPress={() => handleQtyChange(product.id, step, 0.125, step)}
+                      className="h-12 w-12 items-center justify-center rounded-full border border-outline-variant bg-surface-container-lowest active:scale-95"
+                    >
+                      <Text className="text-lg font-bold text-on-surface-variant">+</Text>
+                    </Pressable>
+                  </View>
+                  <View className="mt-2">
+                    <Text className="text-sm text-on-surface-variant">
+                      {qtyLabel(currentQty, fraction)} kg × {product.pricePerKg} KES = <Text className="text-base font-bold text-primary">{(currentQty * product.pricePerKg).toFixed(2)} KES</Text>
+                    </Text>
                   </View>
                 </Pressable>
               );
@@ -119,23 +162,12 @@ export default function SalesScreen() {
           <View className="flex-col gap-[8px]">
             {POSHOMILL_SERVICES.map((service) => {
               const isFlashing = flashingId === service.id;
-              const handlePress = () => {
-                addItem({
-                  id: `${service.id}_${Date.now()}`,
-                  productId: service.id,
-                  name: service.name,
-                  qty: 1,
-                  unitPrice: service.pricePerKg,
-                  type: 'service',
-                });
-                setFlashingId(service.id);
-                setTimeout(() => setFlashingId(null), 300);
-              };
+              const currentQty = getQty(service.id);
               return (
                 <Pressable
                   key={service.id}
-                  onPress={handlePress}
-                  className={`flex-row items-center justify-between bg-surface-container-lowest rounded-xl p-[16px] border-l-[4px] active:scale-95 ${isFlashing ? 'border-secondary' : 'border-secondary'}`}
+                  onPress={() => addToBasket(service.id, service.name, service.pricePerKg, currentQty, 'service', service.id)}
+                  className={`flex-row items-center justify-between bg-surface-container-lowest rounded-xl p-[16px] border-l-[4px] active:scale-95 ${isFlashing ? 'border-secondary' : 'border-[#7d5800]'}`}
                   style={{
                     shadowColor: '#000',
                     shadowOffset: { width: 0, height: 4 },
@@ -145,19 +177,26 @@ export default function SalesScreen() {
                   }}
                 >
                   <View className="flex-row items-center gap-[16px]">
-                    <MaterialIcons name={service.icon.replace('_', '-') as any} size={28} color={Colors.secondary} />
+                    <MaterialIcons name={service.icon.replace('_', '-') as any} size={28} color="#7d5800" />
                     <View>
                       <Text className="font-bold text-[16px] text-on-surface">{service.name}</Text>
                       <Text className="font-bold text-[14px] text-on-surface-variant">Per KG</Text>
                     </View>
                   </View>
-                  <View className="flex-row items-center gap-[16px]">
-                    <Text className="text-[20px] font-semibold text-primary">{service.pricePerKg} KES</Text>
+                  <View className="flex-row items-center gap-[12px]">
                     <Pressable
-                      onPress={handlePress}
-                      className="w-[48px] h-[48px] bg-secondary-container text-on-secondary-container rounded-full items-center justify-center active:scale-90"
+                      onPress={() => handleQtyChange(service.id, -1, 1, 1)}
+                      disabled={currentQty <= 1}
+                      className={`h-12 w-12 items-center justify-center rounded-full border ${currentQty <= 1 ? 'border-outline-variant bg-surface-container-high' : 'border-outline-variant bg-surface-container-lowest active:scale-95'}`}
                     >
-                      <MaterialIcons name="add" size={24} color={Colors.onSecondaryContainer} />
+                      <Text className={`text-lg font-bold ${currentQty <= 1 ? 'text-on-surface-variant opacity-50' : 'text-on-surface-variant'}`}>−</Text>
+                    </Pressable>
+                    <Text className="text-[20px] font-bold text-primary w-10 text-center">{currentQty}</Text>
+                    <Pressable
+                      onPress={() => handleQtyChange(service.id, 1, 1, 1)}
+                      className="h-12 w-12 items-center justify-center rounded-full border border-outline-variant bg-surface-container-lowest active:scale-95"
+                    >
+                      <Text className="text-lg font-bold text-on-surface-variant">+</Text>
                     </Pressable>
                   </View>
                 </Pressable>
