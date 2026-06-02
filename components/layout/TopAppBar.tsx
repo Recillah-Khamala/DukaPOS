@@ -16,7 +16,7 @@ export default function TopAppBar({ title, onHelp, onClose, onBack }: TopAppBarP
 
   return (
     <View
-      className="fixed left-0 right-0 flex-row items-center justify-between bg-primary text-on-primary h-[48px] shadow-md px-[16px] z-50"
+      className="fixed left-0 right-0 flex-row items-center justify-between bg-primary h-[48px] shadow-md px-[16px] z-50"
       style={{
         paddingTop: Math.max(insets.top, 0),
         minHeight: 48,
@@ -24,16 +24,16 @@ export default function TopAppBar({ title, onHelp, onClose, onBack }: TopAppBarP
     >
       {/* Left: Storefront Icon + Title */}
       <View className="flex-row items-center gap-3 flex-1">
-        <MaterialIcons name="storefront" size={24} color={Colors.onPrimary} />
-        <Text className="font-semibold text-base" style={{ color: Colors.onPrimary }}>
+        <MaterialIcons name="storefront" size={24} color="white" />
+        <Text className="font-semibold text-[18px]" style={{ color: 'white' }}>
           {title}
         </Text>
       </View>
 
       {/* Right: Search + Notifications Icons */}
       <View className="flex-row items-center gap-2">
-        <MaterialIcons name="search" size={24} color={Colors.onPrimary} />
-        <MaterialIcons name="notifications-none" size={24} color={Colors.onPrimary} />
+        <MaterialIcons name="search" size={24} color="white" />
+        <MaterialIcons name="notifications-none" size={24} color="white" />
       </View>
     </View>
   );
