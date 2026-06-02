@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Text, View, ScrollView, Pressable } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
@@ -9,7 +9,8 @@ import { CEREAL_PRODUCTS, POSHOMILL_SERVICES } from '../../constants/salesData';
 
 export default function SalesScreen() {
   const router = useRouter();
-  const { items, total } = useSharedBasket();
+  const [flashingId, setFlashingId] = useState<string | null>(null);
+  const { items, total, addItem } = useSharedBasket();
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
@@ -35,26 +36,41 @@ export default function SalesScreen() {
             </View>
           </View>
           <View className="flex-row flex-wrap gap-[12px]">
-            {CEREAL_PRODUCTS.map((product) => (
-              <Pressable
-                key={product.id}
-                onPress={() => console.log('tapped cereal', product.name)}
-                className="w-[48%] bg-surface-container-lowest rounded-xl p-[16px] border-2 border-transparent active:scale-95"
-                style={{
-                  shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.08,
-                  shadowRadius: 12,
-                  elevation: 3,
-                }}
-              >
-                <View className="w-[48px] h-[48px] bg-primary-fixed rounded-lg mb-[8px] items-center justify-center">
-                  <MaterialIcons name={product.icon.replace('_', '-') as any} size={32} color={Colors.primary} />
-                </View>
-                <Text className="font-bold text-[14px] text-on-surface-variant">{product.name}</Text>
-                <Text className="text-[28px] font-extrabold text-primary">{product.pricePerKg} <Text className="font-bold text-[14px] text-primary">KES</Text></Text>
-              </Pressable>
-            ))}
+            {CEREAL_PRODUCTS.map((product) => {
+              const isFlashing = flashingId === product.id;
+              const handlePress = () => {
+                addItem({
+                  id: `${product.id}_${Date.now()}`,
+                  productId: product.id,
+                  name: product.name,
+                  qty: 1,
+                  unitPrice: product.pricePerKg,
+                  type: 'cereal',
+                });
+                setFlashingId(product.id);
+                setTimeout(() => setFlashingId(null), 300);
+              };
+              return (
+                <Pressable
+                  key={product.id}
+                  onPress={handlePress}
+                  className={`w-[48%] bg-surface-container-lowest rounded-xl p-[16px] border-2 active:scale-95 ${isFlashing ? 'border-secondary' : 'border-transparent'}`}
+                  style={{
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.08,
+                    shadowRadius: 12,
+                    elevation: 3,
+                  }}
+                >
+                  <View className="w-[48px] h-[48px] bg-primary-fixed rounded-lg mb-[8px] items-center justify-center">
+                    <MaterialIcons name={product.icon.replace('_', '-') as any} size={32} color={Colors.primary} />
+                  </View>
+                  <Text className="font-bold text-[14px] text-on-surface-variant">{product.name}</Text>
+                  <Text className="text-[28px] font-extrabold text-primary">{product.pricePerKg} <Text className="font-bold text-[14px] text-primary">KES</Text></Text>
+                </Pressable>
+              );
+            })}
           </View>
         </View>
         <Pressable
