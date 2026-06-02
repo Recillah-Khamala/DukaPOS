@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
-import { CEREAL_PRODUCTS } from '../../constants/salesData';
+import { CEREAL_PRODUCTS, POSHOMILL_SERVICES } from '../../constants/salesData';
 
 export default function SalesScreen() {
   const router = useRouter();
@@ -66,7 +66,39 @@ export default function SalesScreen() {
 
         <View className="px-[16px] mt-[8px]">
           <Text className="text-[20px] font-semibold text-primary mb-[8px]">Poshomill Services</Text>
-          <View style={{ height: 8 }} />
+          <View className="flex-col gap-[8px]">
+            {POSHOMILL_SERVICES.map((service) => (
+              <Pressable
+                key={service.id}
+                onPress={() => console.log('tapped service', service.name)}
+                className="flex-row items-center justify-between bg-surface-container-lowest rounded-xl p-[16px] border-l-[4px] border-secondary active:scale-95"
+                style={{
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.08,
+                  shadowRadius: 12,
+                  elevation: 3,
+                }}
+              >
+                <View className="flex-row items-center gap-[16px]">
+                  <MaterialIcons name={service.icon.replace('_', '-') as any} size={28} color={Colors.secondary} />
+                  <View>
+                    <Text className="font-bold text-[16px] text-on-surface">{service.name}</Text>
+                    <Text className="font-bold text-[14px] text-on-surface-variant">Per KG</Text>
+                  </View>
+                </View>
+                <View className="flex-row items-center gap-[16px]">
+                  <Text className="text-[20px] font-semibold text-primary">{service.pricePerKg} KES</Text>
+                  <Pressable
+                    onPress={() => console.log('tapped service', service.name)}
+                    className="w-[48px] h-[48px] bg-secondary-container text-on-secondary-container rounded-full items-center justify-center active:scale-90"
+                  >
+                    <MaterialIcons name="add" size={24} color={Colors.onSecondaryContainer} />
+                  </Pressable>
+                </View>
+              </Pressable>
+            ))}
+          </View>
         </View>
 
         <View style={{ height: 16 }} />
