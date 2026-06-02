@@ -27,4 +27,5 @@ export interface Product {
   category: string;
   barcode?: string;
   stock?: number;
+  stockLevel?: number;
 }

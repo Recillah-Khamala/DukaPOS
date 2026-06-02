@@ -21,6 +21,8 @@ const FRACTIONS: { label: string; value: Fraction }[] = [
   { label: '1', value: 1 },
 ];
 
+const MAX_QTY = 99;
+
 export default function AdjustItemModal({ product, onClose }: AdjustItemModalProps) {
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(0)).current;
@@ -70,8 +72,11 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
 
   const step = fraction ?? 1;
   const minQty = 0.125;
+  const maxQty = 99;
+  const minQty = 0.125;
   const canDecrement = qty > minQty;
-  const canAdd = qty >= minQty;
+  const atMax = qty >= maxQty;
+  const canAdd = qty >= minQty && qty <= maxQty;
 
   const handleDecrement = () => {
     if (!canDecrement) return;
@@ -79,7 +84,7 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
   };
 
   const handleIncrement = () => {
-    setQty((prev) => +(prev + step).toFixed(3));
+    setQty((prev) => Math.min(maxQty, +(prev + step).toFixed(3)));
   };
 
   const handleAddToBasket = () => {
@@ -181,6 +186,19 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
             <Text className="text-sm text-on-surface-variant">
               {displayQty} × {product.price} KES = <Text className="text-base font-bold text-primary">{(qty * product.price).toFixed(2)} KES</Text>
             </Text>
+            {product.stockLevel != null && qty > product.stockLevel && (
+              <View className="mt-1 flex-row items-center gap-2">
+                <View className="rounded-full bg-yellow-100 px-2 py-0.5">
+                  <Text className="text-xs font-semibold text-yellow-700">Only {product.stockLevel} {product.unit} in stock</Text>
+                </View>
+              </View>
+            )}
+            {atMax && (
+              <Text className="mt-1 text-xs font-semibold text-on-surface-variant">Max 99</Text>
+            )}
+            {qty <= minQty && (
+              <Text className="mt-1 text-sm text-on-surface-variant">Select a quantity</Text>
+            )}
           </View>
 
           {isUpdate ? (
