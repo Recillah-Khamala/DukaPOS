@@ -46,14 +46,6 @@ export function useBasket(initialItems: BasketItem[] = []) {
     setItems([]);
   };
 
-  const updateItemQty = (productId: string, newQty: number) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.productId === productId ? { ...item, qty: newQty } : item
-      )
-    );
-  };
-
   const total = useMemo(() => {
     return items.reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
   }, [items]);
