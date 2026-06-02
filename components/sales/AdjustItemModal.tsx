@@ -58,12 +58,26 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
         />
       </Pressable>
       <Animated.View
-        className="rounded-t-2xl bg-surface-container-lowest"
+        className="rounded-t-2xl bg-surface-container-lowest overflow-hidden"
         style={{
           transform: [{ translateY }],
           paddingBottom: insets.bottom,
         }}
       >
+        <View className="bg-primary-container px-[16px] py-4 flex-row items-center justify-between">
+          <View className="flex-row items-center gap-3 flex-1">
+            <View className="h-12 w-12 items-center justify-center rounded-lg bg-primary-fixed">
+              <MaterialIcons name={product.icon.replace('_', '-') as any} size={28} color={Colors.primary} />
+            </View>
+            <View className="flex-1">
+              <Text className="text-[20px] font-semibold" style={{ color: Colors.onPrimaryContainer }}>{product.name}</Text>
+              <Text className="text-sm" style={{ color: Colors.onPrimaryContainer }}>{product.price} KES / {product.unit}</Text>
+            </View>
+          </View>
+          <Pressable onPress={handleClose} className="h-10 w-10 items-center justify-center rounded-full active:scale-95">
+            <MaterialIcons name="close" size={24} color={Colors.onPrimaryContainer} />
+          </Pressable>
+        </View>
         <View className="items-center pt-3 pb-2">
           <View className="h-1.5 w-10 rounded-full bg-gray-300" />
         </View>

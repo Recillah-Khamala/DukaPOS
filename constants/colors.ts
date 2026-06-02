@@ -14,6 +14,8 @@ const Colors = {
   surfaceContainerHigh: '#eceef1',
   surfaceContainerLowest: '#ffffff',
   onSecondaryContainer: '#292200',
+  primaryContainer: '#00412f',
+  onPrimaryContainer: '#c1ecd4',
 } as const;
 
 export type DukaPOSColors = typeof Colors;
