@@ -1,9 +1,11 @@
 export interface BasketItem {
   id: string;
+  productId: string;
   name: string;
+  qty: number;
   unitPrice: number;
-  quantity: number;
-  icon: string;
+  type: 'cereal' | 'service';
+  icon?: string;
   isService?: boolean;
 }
 

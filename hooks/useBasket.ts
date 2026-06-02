@@ -9,7 +9,7 @@ export function useBasket(initialItems: BasketItem[] = []) {
       const existing = prev.find((i) => i.id === item.id);
       if (existing) {
         return prev.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + (item.quantity ?? 1) } : i
+          i.id === item.id ? { ...i, qty: i.qty + (item.qty ?? 1) } : i
         );
       }
       return [...prev, item];
@@ -20,10 +20,10 @@ export function useBasket(initialItems: BasketItem[] = []) {
     setItems((prev) => prev.filter((item) => item.id !== id));
   };
 
-  const updateQuantity = (id: string, quantity: number) => {
+  const updateQuantity = (id: string, qty: number) => {
     setItems((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, quantity } : item
+        item.id === id ? { ...item, qty } : item
       )
     );
   };
@@ -33,7 +33,7 @@ export function useBasket(initialItems: BasketItem[] = []) {
   };
 
   const total = useMemo(() => {
-    return items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
+    return items.reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
   }, [items]);
 
   return { items, addItem, removeItem, updateQuantity, clearBasket, total, clear: clearBasket };
