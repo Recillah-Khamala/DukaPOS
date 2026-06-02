@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Modal, Pressable, Text, View } from 'react-native';
+import { Animated, BackHandler, Keyboard, Modal, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
-import type { Product } from '../../types';
 import type { CerealProduct } from '../../constants/salesData';
 
 type AdjustItemModalProps = {
@@ -30,27 +29,31 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
   const { addItem, updateItemQty, items } = useSharedBasket();
   const [qty, setQty] = useState(1);
   const [fraction, setFraction] = useState<Fraction | undefined>(undefined);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
+    const hideSub = Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(false));
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   useEffect(() => {
     setQty(1);
-    setFraction(undefined);
+    setFraction(0.25);
   }, [product]);
 
   useEffect(() => {
-    if (product) {
-      Animated.timing(slideAnim, {
-        toValue: 1,
-        duration: 260,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 220,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [product, slideAnim]);
+    if (!product) return;
+    const onBackPress = () => {
+      handleClose();
+      return true;
+    };
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => sub.remove();
+  }, [product]);
 
   const handleClose = () => {
     Animated.timing(slideAnim, {
@@ -60,6 +63,14 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
     }).start(() => {
       onClose();
     });
+  };
+
+  const handleBackdropPress = () => {
+    if (keyboardVisible) {
+      Keyboard.dismiss();
+    } else {
+      handleClose();
+    }
   };
 
   if (!product) {
@@ -73,10 +84,9 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
 
   const step = fraction ?? 1;
   const minQty = 0.125;
-  const maxQty = 99;
   const canDecrement = qty > minQty;
-  const atMax = qty >= maxQty;
-  const canAdd = qty >= minQty && qty <= maxQty;
+  const atMax = qty >= MAX_QTY;
+  const canAdd = qty >= minQty && qty <= MAX_QTY;
 
   const handleDecrement = () => {
     if (!canDecrement) return;
@@ -84,7 +94,7 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
   };
 
   const handleIncrement = () => {
-    setQty((prev) => Math.min(maxQty, +(prev + step).toFixed(3)));
+    setQty((prev) => Math.min(MAX_QTY, +(prev + step).toFixed(3)));
   };
 
   const handleAddToBasket = () => {
@@ -115,7 +125,7 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
 
   return (
     <Modal visible={!!product} transparent animationType="none" onRequestClose={handleClose}>
-      <Pressable className="flex-1" onPress={handleClose} pointerEvents="box-none">
+      <Pressable className="flex-1" onPress={handleBackdropPress} pointerEvents="box-none">
         <Animated.View
           className="flex-1"
           style={{ backgroundColor: 'rgba(0,0,0,0.45)', opacity: slideAnim }}
