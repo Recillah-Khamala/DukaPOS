@@ -5,17 +5,11 @@ import { useRouter } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
+import { CEREAL_PRODUCTS } from '../../constants/salesData';
 
 type UnitToggle = 'kg' | 'korokoro';
 type Fraction = 0 | 0.125 | 0.25 | 0.5 | 1;
 
-const CEREAL_PRODUCTS = [
-  { id: 'maize', name: 'Maize', icon: 'grass' as const, priceKes: 95 },
-  { id: 'beans', name: 'Beans', icon: 'eco' as const, priceKes: 160 },
-  { id: 'groundnuts', name: 'Groundnuts', icon: 'grain' as const, priceKes: 220 },
-  { id: 'sorghum', name: 'Sorghum', icon: 'water-drop' as const, priceKes: 110 },
-  { id: 'millet', name: 'Millet', icon: 'filter-vintage' as const, priceKes: 145 },
-];
 
 const POSHO_SERVICES = [
   { id: 'grade1', name: 'Grade 1 Milling', subtitle: 'Per KG', priceKes: 20 },
@@ -237,7 +231,28 @@ export default function SalesScreen() {
               <Text>Unit: KG</Text>
             </View>
           </View>
-          <View style={{ height: 8 }} />
+          <View className="flex-row flex-wrap gap-[12px]">
+            {CEREAL_PRODUCTS.map((product) => (
+              <Pressable
+                key={product.id}
+                onPress={() => console.log('tapped cereal', product.name)}
+                className="w-[48%] bg-surface-container-lowest rounded-xl p-[16px] border-2 border-transparent active:scale-95"
+                style={{
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.08,
+                  shadowRadius: 12,
+                  elevation: 3,
+                }}
+              >
+                <View className="w-[48px] h-[48px] bg-primary-fixed rounded-lg mb-[8px] items-center justify-center">
+                  <MaterialIcons name={product.icon.replace('_', '-')} size={32} color={Colors.primary} />
+                </View>
+                <Text className="font-bold text-[14px] text-on-surface-variant">{product.name}</Text>
+                <Text className="text-[28px] font-extrabold text-primary">{product.pricePerKg} <Text className="font-bold text-[14px] text-primary">KES</Text></Text>
+              </Pressable>
+            ))}
+          </View>
         </View>
         <Pressable
           className="mt-4 w-full items-center justify-center rounded-xl border-2 border-dashed py-4"
