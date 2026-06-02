@@ -36,5 +36,5 @@ export function useBasket(initialItems: BasketItem[] = []) {
     return items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
   }, [items]);
 
-  return { items, addItem, removeItem, updateQuantity, clearBasket, total };
+  return { items, addItem, removeItem, updateQuantity, clearBasket, total, clear: clearBasket };
 }
