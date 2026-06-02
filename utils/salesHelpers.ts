@@ -39,8 +39,8 @@ export function getTopProducts(sales: Sale[], limit: number): { name: string, un
     sale.items.forEach(item => {
       const existing = productStats.get(item.name) || { unitsSold: 0, revenue: 0 };
       productStats.set(item.name, {
-        unitsSold: existing.unitsSold + item.quantity,
-        revenue: existing.revenue + (item.unitPrice * item.quantity)
+        unitsSold: existing.unitsSold + item.qty,
+        revenue: existing.revenue + (item.unitPrice * item.qty)
       });
     });
   });

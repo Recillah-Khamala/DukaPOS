@@ -20,7 +20,7 @@ export default function ProductsScreen() {
   const { query, setQuery, selectedCategory, setSelectedCategory, filteredProducts } = useProductSearch(products);
 
   const allCategories = Array.from(new Set(products.map((p) => p.category)));
-  const basketByProductId = Object.fromEntries(items.map((i) => [i.id, i.quantity]));
+  const basketByProductId = Object.fromEntries(items.map((i) => [i.id, i.qty]));
   const flash = useRef(new Animated.Value(0)).current;
 
   const showFlash = () => {

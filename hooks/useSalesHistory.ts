@@ -42,11 +42,11 @@ export function useSalesHistory() {
           const items = [
             { ...productToBasketItem(product) },
           ];
-          const quantity = items[0].quantity;
+          const qty = items[0].qty;
           return {
             id: `s-${String(i + 1).padStart(3, '0')}`,
             items,
-            total: product.price * quantity,
+            total: product.price * qty,
             paymentMethod: i % 2 === 0 ? 'cash' : 'mpesa',
             createdAt: new Date(today.getTime() - (i + 1) * 2 * 24 * 60 * 60 * 1000),
           };

@@ -41,16 +41,16 @@ export default function CheckoutScreen() {
             <View className="flex-row items-center justify-between mt-2 pl-14">
               <View className="flex-row items-center gap-3">
                 <Pressable
-                  onPress={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                  onPress={() => updateQuantity(item.id, Math.max(1, item.qty - 1))}
                   className="h-8 w-8 items-center justify-center rounded-md bg-gray-100"
                 >
                   <Text className="text-base font-semibold text-neutral-700">−</Text>
                 </Pressable>
                 <Text className="text-base font-medium text-neutral-900 w-8 text-center">
-                  {item.quantity}
+                  {item.qty}
                 </Text>
                 <Pressable
-                  onPress={() => updateQuantity(item.id, item.quantity + 1)}
+                  onPress={() => updateQuantity(item.id, item.qty + 1)}
                   className="h-8 w-8 items-center justify-center rounded-md bg-gray-100"
                 >
                   <Text className="text-base font-semibold text-neutral-700">+</Text>

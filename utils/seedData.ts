@@ -47,7 +47,7 @@ const ICON_MAP: Record<string, string> = {
  */
 const generateRandomBasketItem = (): BasketItem => {
   const product = mockProducts[randomInt(0, mockProducts.length - 1)];
-  const quantity = randomInt(1, 5); // 1 to 5 units
+  const qty = randomInt(1, 5); // 1 to 5 units
   const unitPrice = randomFloat(product.price, product.price * 1.2);
 
   // Round unitPrice to 2 decimal places for currency
@@ -57,7 +57,7 @@ const generateRandomBasketItem = (): BasketItem => {
     id: product.id,
     name: product.name,
     unitPrice: roundedUnitPrice,
-    quantity,
+    qty,
     icon: ICON_MAP[product.category] || 'shopping-bag',
   };
 };
@@ -88,7 +88,7 @@ export function seedSampleSales(): Sale[] {
     }
 
     // Calculate total from items
-    const total = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
+    const total = items.reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
 
     // Round total to 2 decimal places
     const roundedTotal = Math.round(total * 100) / 100;

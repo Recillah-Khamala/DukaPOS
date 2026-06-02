@@ -7,7 +7,7 @@ export type BasketItemCardProps = {
 };
 
 export default function BasketItemCard({ item }: BasketItemCardProps) {
-  const totalPrice = item.unitPrice * item.quantity;
+  const totalPrice = item.unitPrice * item.qty;
 
   return (
     <View
@@ -44,7 +44,7 @@ export default function BasketItemCard({ item }: BasketItemCardProps) {
         <Text className="text-lg font-bold text-neutral-900">
           KSh {totalPrice.toLocaleString()}
         </Text>
-        <Text className="text-sm text-neutral-600">Qty: {item.quantity}</Text>
+        <Text className="text-sm text-neutral-600">Qty: {item.qty}</Text>
       </View>
     </View>
   );
