@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Text, View, ScrollView, Pressable } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
@@ -7,10 +7,38 @@ import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
 import { CEREAL_PRODUCTS, POSHOMILL_SERVICES } from '../../constants/salesData';
 
+type Fraction = 0 | 0.125 | 0.25 | 0.5 | 1;
+
+const FRACTIONS: { label: string; value: Fraction }[] = [
+  { label: '1/8', value: 0.125 },
+  { label: '1/4', value: 0.25 },
+  { label: '1/2', value: 0.5 },
+  { label: '1', value: 1 },
+];
+
 export default function SalesScreen() {
   const router = useRouter();
   const [flashingId, setFlashingId] = useState<string | null>(null);
+  const [selectedQty, setSelectedQty] = useState<Record<string, Fraction>>({});
   const { items, total, addItem } = useSharedBasket();
+
+  const handleCerealTap = useCallback((product: { id: string; name: string; pricePerKg: number }) => {
+    const qty = selectedQty[product.id] ?? 1;
+    addItem({
+      id: `${product.id}_${Date.now()}`,
+      productId: product.id,
+      name: product.name,
+      qty,
+      unitPrice: product.pricePerKg,
+      type: 'cereal',
+    });
+    setFlashingId(product.id);
+    setTimeout(() => setFlashingId(null), 300);
+  }, [addItem, selectedQty]);
+
+  const setFraction = useCallback((productId: string, value: Fraction) => {
+    setSelectedQty((prev) => ({ ...prev, [productId]: value }));
+  }, []);
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
@@ -38,22 +66,11 @@ export default function SalesScreen() {
           <View className="flex-row flex-wrap gap-[12px]">
             {CEREAL_PRODUCTS.map((product) => {
               const isFlashing = flashingId === product.id;
-              const handlePress = () => {
-                addItem({
-                  id: `${product.id}_${Date.now()}`,
-                  productId: product.id,
-                  name: product.name,
-                  qty: 1,
-                  unitPrice: product.pricePerKg,
-                  type: 'cereal',
-                });
-                setFlashingId(product.id);
-                setTimeout(() => setFlashingId(null), 300);
-              };
+              const activeFraction = selectedQty[product.id];
               return (
                 <Pressable
                   key={product.id}
-                  onPress={handlePress}
+                  onPress={() => handleCerealTap(product)}
                   className={`w-[48%] bg-surface-container-lowest rounded-xl p-[16px] border-2 active:scale-95 ${isFlashing ? 'border-secondary' : 'border-transparent'}`}
                   style={{
                     shadowColor: '#000',
@@ -68,6 +85,23 @@ export default function SalesScreen() {
                   </View>
                   <Text className="font-bold text-[14px] text-on-surface-variant">{product.name}</Text>
                   <Text className="text-[28px] font-extrabold text-primary">{product.pricePerKg} <Text className="font-bold text-[14px] text-primary">KES</Text></Text>
+                  <View className="flex-row flex-wrap gap-[8px] mt-3">
+                    {FRACTIONS.map((chip) => {
+                      const isActive = activeFraction === chip.value;
+                      return (
+                        <Pressable
+                          key={chip.label}
+                          onPress={() => {
+                            setFraction(product.id, chip.value);
+                            handleCerealTap(product);
+                          }}
+                          className={`h-10 min-w-[48px] flex-row items-center justify-center rounded-full border px-3 active:scale-95 ${isActive ? 'border-secondary bg-secondary-container' : 'border-outline-variant bg-surface-container-lowest'}`}
+                        >
+                          <Text className={`text-sm font-semibold ${isActive ? 'text-on-secondary-container' : 'text-on-surface-variant'}`}>{chip.label}</Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
                 </Pressable>
               );
             })}

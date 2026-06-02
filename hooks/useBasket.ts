@@ -6,10 +6,16 @@ export function useBasket(initialItems: BasketItem[] = []) {
 
   const addItem = (item: BasketItem) => {
     setItems((prev) => {
-      const existing = prev.find((i) => i.id === item.id);
-      if (existing) {
+      const sameId = prev.find((i) => i.id === item.id);
+      if (sameId) {
         return prev.map((i) =>
           i.id === item.id ? { ...i, qty: i.qty + (item.qty ?? 1) } : i
+        );
+      }
+      const sameProduct = prev.find((i) => i.productId === item.productId && i.type === item.type);
+      if (sameProduct) {
+        return prev.map((i) =>
+          i.productId === item.productId && i.type === item.type ? { ...i, qty: i.qty + (item.qty ?? 1) } : i
         );
       }
       return [...prev, item];
