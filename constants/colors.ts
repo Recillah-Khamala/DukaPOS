@@ -16,6 +16,7 @@ const Colors = {
   onSecondaryContainer: '#292200',
   primaryContainer: '#00412f',
   onPrimaryContainer: '#c1ecd4',
+  onSurfaceDisabled: 'rgba(65, 72, 68, 0.38)',
 } as const;
 
 export type DukaPOSColors = typeof Colors;

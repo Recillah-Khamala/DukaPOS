@@ -1,7 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Animated, Modal, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as Haptics from 'expo-haptics';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
 import type { Product } from '../../types';
 
@@ -10,9 +12,26 @@ type AdjustItemModalProps = {
   onClose: () => void;
 };
 
+type Fraction = 0 | 0.125 | 0.25 | 0.5 | 1;
+
+const FRACTIONS: { label: string; value: Fraction }[] = [
+  { label: '1/8', value: 0.125 },
+  { label: '1/4', value: 0.25 },
+  { label: '1/2', value: 0.5 },
+  { label: '1', value: 1 },
+];
+
 export default function AdjustItemModal({ product, onClose }: AdjustItemModalProps) {
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(0)).current;
+  const { addItem } = useSharedBasket();
+  const [qty, setQty] = useState(1);
+  const [fraction, setFraction] = useState<Fraction | undefined>(undefined);
+
+  useEffect(() => {
+    setQty(1);
+    setFraction(undefined);
+  }, [product]);
 
   useEffect(() => {
     if (product) {
@@ -49,6 +68,36 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
     outputRange: [400, 0],
   });
 
+  const step = fraction ?? 1;
+  const minQty = 0.125;
+  const canDecrement = qty > minQty;
+  const canAdd = qty >= minQty;
+
+  const handleDecrement = () => {
+    if (!canDecrement) return;
+    setQty((prev) => Math.max(minQty, +(prev - step).toFixed(3)));
+  };
+
+  const handleIncrement = () => {
+    setQty((prev) => +(prev + step).toFixed(3));
+  };
+
+  const handleAddToBasket = () => {
+    if (!canAdd) return;
+    addItem({
+      id: `${product.id}_${Date.now()}`,
+      productId: product.id,
+      name: product.name,
+      qty,
+      unitPrice: product.price,
+      type: 'cereal',
+    });
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    handleClose();
+  };
+
+  const displayQty = fraction ? `${FRACTIONS.find((f) => f.value === fraction)?.label} kg` : `${qty} kg`;
+
   return (
     <Modal visible={!!product} transparent animationType="none" onRequestClose={handleClose}>
       <Pressable className="flex-1" onPress={handleClose} pointerEvents="box-none">
@@ -80,6 +129,58 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
         </View>
         <View className="items-center pt-3 pb-2">
           <View className="h-1.5 w-10 rounded-full bg-gray-300" />
+        </View>
+
+        <View className="px-[16px] pb-4">
+          <View className="flex-row flex-wrap gap-[8px] mt-2">
+            {FRACTIONS.map((chip) => {
+              const isActive = fraction === chip.value;
+              return (
+                <Pressable
+                  key={chip.label}
+                  onPress={() => {
+                    setFraction(chip.value);
+                    setQty(chip.value);
+                  }}
+                  className={`h-10 min-w-[48px] flex-row items-center justify-center rounded-full border px-3 active:scale-95 ${isActive ? 'border-secondary bg-secondary-container' : 'border-outline-variant bg-surface-container-lowest'}`}
+                >
+                  <Text className={`text-sm font-semibold ${isActive ? 'text-on-secondary-container' : 'text-on-surface-variant'}`}>{chip.label}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          <View className="flex-row items-center gap-[12px] mt-4">
+            <Pressable
+              onPress={handleDecrement}
+              disabled={!canDecrement}
+              className={`h-12 w-12 items-center justify-center rounded-full border ${canDecrement ? 'border-outline-variant bg-surface-container-lowest active:scale-95' : 'border-outline-variant bg-surface-container-high'}`}
+            >
+              <Text className={`text-lg font-bold ${canDecrement ? 'text-on-surface-variant' : 'text-on-surface-variant'}`} style={{ opacity: canDecrement ? 1 : 0.38 }}>−</Text>
+            </Pressable>
+            <Text className="text-[20px] font-bold text-primary w-16 text-center">{qty}</Text>
+            <Pressable
+              onPress={handleIncrement}
+              className="h-12 w-12 items-center justify-center rounded-full border border-outline-variant bg-surface-container-lowest active:scale-95"
+            >
+              <Text className="text-lg font-bold text-on-surface-variant">+</Text>
+            </Pressable>
+          </View>
+
+          <View className="mt-3">
+            <Text className="text-sm text-on-surface-variant">
+              {displayQty} × {product.price} KES = <Text className="text-base font-bold text-primary">{(qty * product.price).toFixed(2)} KES</Text>
+            </Text>
+          </View>
+
+          <Pressable
+            onPress={handleAddToBasket}
+            disabled={!canAdd}
+            className={`mt-4 w-full flex-row items-center justify-center rounded-xl py-3.5 ${canAdd ? 'bg-primary active:scale-95' : 'bg-gray-300'}`}
+          >
+            <MaterialIcons name="check-circle" size={20} color={canAdd ? Colors.onPrimary : '#9ca3af'} />
+            <Text className={`ml-2 text-base font-semibold ${canAdd ? 'text-on-primary' : 'text-gray-500'}`}>Add to Basket</Text>
+          </Pressable>
         </View>
       </Animated.View>
     </Modal>
