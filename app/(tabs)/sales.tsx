@@ -31,7 +31,7 @@ export default function SalesScreen() {
   const [flashingId, setFlashingId] = useState<string | null>(null);
   const [activeFraction, setActiveFraction] = useState<Record<string, Fraction>>({});
   const [qtys, setQtys] = useState<Record<string, number>>({});
-  const [selectedProduct, setSelectedProduct] = useState<CEREAL_PRODUCTS[number] | POSHOMILL_SERVICES[number] | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<typeof CEREAL_PRODUCTS[number] | typeof POSHOMILL_SERVICES[number] | null>(null);
   const { items, total, addItem } = useSharedBasket();
 
   const handleQtyChange = useCallback(
