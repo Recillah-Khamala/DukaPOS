@@ -1,6 +1,6 @@
 import { Text, View, ScrollView } from 'react-native';
 import BottomNavBar from '../components/layout/BottomNavBar';
-import TopAppBar from '../../components/layout/TopAppBar';
+import TopAppBar from '../components/layout/TopAppBar';
 
 export default function Index() {
   return (
