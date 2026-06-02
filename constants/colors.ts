@@ -12,6 +12,8 @@ const Colors = {
   primaryFixed: '#c1ecd4',
   white: '#ffffff',
   surfaceContainerHigh: '#eceef1',
+  surfaceContainerLowest: '#ffffff',
+  onSecondaryContainer: '#292200',
 } as const;
 
 export type DukaPOSColors = typeof Colors;
