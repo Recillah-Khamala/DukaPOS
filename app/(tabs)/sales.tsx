@@ -226,18 +226,18 @@ export default function SalesScreen() {
           <MaterialIcons name="notifications-none" size={24} color="white" />
         </View>
       </View>
-      <ScrollView 
-        style={{ flex: 1, paddingHorizontal: 16 }} 
+      <ScrollView
+        style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: items.length > 0 ? 320 : 180 }}
       >
-        <View className="flex-row items-center justify-between mt-6 mb-4">
-          <Text className="text-lg font-bold" style={{ color: Colors.onSurface }}>Cereal Sales</Text>
-          <UnitTogglePill value={unit} onChange={setUnit} />
-        </View>
-        <View className="flex-row flex-wrap gap-3">
-          {CEREAL_PRODUCTS.map((product) => (
-            <CerealProductCard key={product.id} product={product} />
-          ))}
+        <View className="mt-[16px] px-[16px]">
+          <View className="flex-row justify-between items-center mb-[8px]">
+            <Text className="text-[20px] font-semibold text-primary">Cereal Sales</Text>
+            <View className="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-bold text-[14px]">
+              <Text>Unit: KG</Text>
+            </View>
+          </View>
+          <View style={{ height: 8 }} />
         </View>
         <Pressable
           className="mt-4 w-full items-center justify-center rounded-xl border-2 border-dashed py-4"
