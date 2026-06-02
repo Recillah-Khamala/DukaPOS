@@ -3,7 +3,6 @@ import { Text, View, ScrollView, Pressable } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
-import TopAppBar from '../../components/layout/TopAppBar';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
 
@@ -217,7 +216,16 @@ export default function SalesScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
-      <TopAppBar title="Kijiji Cereal Store" />
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 48, paddingBottom: 12, backgroundColor: '#012d1d' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}>
+          <MaterialIcons name="storefront" size={24} color="white" />
+          <Text style={{ fontSize: 18, fontWeight: '600', color: 'white' }}>Kijiji Cereal Store</Text>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <MaterialIcons name="search" size={24} color="white" />
+          <MaterialIcons name="notifications-none" size={24} color="white" />
+        </View>
+      </View>
       <ScrollView 
         style={{ flex: 1, paddingHorizontal: 16 }} 
         contentContainerStyle={{ paddingBottom: items.length > 0 ? 320 : 180 }}
