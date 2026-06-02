@@ -74,8 +74,8 @@ export default function SalesScreen() {
         </View>
       </View>
       <ScrollView
-        style={{ marginBottom: bottomNavHeight }}
-        contentContainerStyle={{ paddingBottom: items.length > 0 ? 120 : 32 }}
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 180 }}
       >
         <View className="mt-[16px] px-[16px]">
           <View className="flex-row justify-between items-center mb-[8px]">
@@ -207,28 +207,28 @@ export default function SalesScreen() {
         </View>
 
         <View style={{ height: 16 }} />
-      </ScrollView>
 
-      {items.length > 0 && (
-        <View className="px-4 pt-3 pb-3 border-t" style={{ borderTopColor: Colors.outlineVariant, backgroundColor: 'white' }}>
-          <View className="flex-row items-center justify-between">
-            <View>
-              <Text className="text-xs font-semibold uppercase" style={{ color: Colors.onSurfaceVariant }}>Total Due</Text>
-              <Text className="text-[28px] font-extrabold" style={{ color: Colors.secondary }}>
-                {total.toLocaleString()} <Text className="text-xs font-medium">KES</Text>
-              </Text>
+        {items.length > 0 && (
+          <View className="px-4 pt-3 pb-3 border-t" style={{ marginBottom: bottomNavHeight + 12, borderTopColor: Colors.outlineVariant, backgroundColor: 'white' }}>
+            <View className="flex-row items-center justify-between">
+              <View>
+                <Text className="text-xs font-semibold uppercase" style={{ color: Colors.onSurfaceVariant }}>Total Due</Text>
+                <Text className="text-[28px] font-extrabold" style={{ color: Colors.secondary }}>
+                  {total.toLocaleString()} <Text className="text-xs font-medium">KES</Text>
+                </Text>
+              </View>
+              <Pressable
+                onPress={() => router.push('/checkout')}
+                className="flex-row items-center justify-center rounded-xl px-6"
+                style={{ backgroundColor: Colors.primary, height: 56, flexGrow: 1, marginLeft: 16 }}
+              >
+                <MaterialIcons name="check-circle" size={20} color="white" />
+                <Text className="ml-2 text-base font-semibold text-white">Confirm Sale</Text>
+              </Pressable>
             </View>
-            <Pressable
-              onPress={() => router.push('/checkout')}
-              className="flex-row items-center justify-center rounded-xl px-6"
-              style={{ backgroundColor: Colors.primary, height: 56, flexGrow: 1, marginLeft: 16 }}
-            >
-              <MaterialIcons name="check-circle" size={20} color="white" />
-              <Text className="ml-2 text-base font-semibold text-white">Confirm Sale</Text>
-            </Pressable>
           </View>
-        </View>
-      )}
+        )}
+      </ScrollView>
 
       <BottomNavBar activeTab="sales" onHeightMeasured={setBottomNavHeight} />
     </View>
