@@ -26,6 +26,7 @@ function qtyLabel(qty: number, activeFraction: Fraction | undefined): string {
 
 export default function SalesScreen() {
   const router = useRouter();
+  const [bottomNavHeight, setBottomNavHeight] = useState(0);
   const [flashingId, setFlashingId] = useState<string | null>(null);
   const [activeFraction, setActiveFraction] = useState<Record<string, Fraction>>({});
   const [qtys, setQtys] = useState<Record<string, number>>({});
@@ -73,8 +74,8 @@ export default function SalesScreen() {
         </View>
       </View>
       <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: items.length > 0 ? 320 : 180 }}
+        style={{ marginBottom: bottomNavHeight }}
+        contentContainerStyle={{ paddingBottom: items.length > 0 ? 120 : 32 }}
       >
         <View className="mt-[16px] px-[16px]">
           <View className="flex-row justify-between items-center mb-[8px]">
@@ -209,42 +210,27 @@ export default function SalesScreen() {
       </ScrollView>
 
       {items.length > 0 && (
-        <View
-          className="flex-row items-center justify-between px-4"
-          style={{
-            position: 'absolute',
-            bottom: 80,
-            left: 0,
-            right: 0,
-            height: 80,
-            backgroundColor: 'white',
-            borderTopWidth: 1,
-            borderTopColor: Colors.outlineVariant,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: -4 },
-            shadowOpacity: 0.1,
-            shadowRadius: 12,
-            elevation: 8,
-          }}
-        >
-          <View>
-            <Text className="text-xs font-semibold uppercase" style={{ color: Colors.onSurfaceVariant }}>Total Due</Text>
-            <Text className="text-[28px] font-extrabold" style={{ color: Colors.secondary }}>
-              {total.toLocaleString()} <Text className="text-xs font-medium">KES</Text>
-            </Text>
+        <View className="px-4 pt-3 pb-3 border-t" style={{ borderTopColor: Colors.outlineVariant, backgroundColor: 'white' }}>
+          <View className="flex-row items-center justify-between">
+            <View>
+              <Text className="text-xs font-semibold uppercase" style={{ color: Colors.onSurfaceVariant }}>Total Due</Text>
+              <Text className="text-[28px] font-extrabold" style={{ color: Colors.secondary }}>
+                {total.toLocaleString()} <Text className="text-xs font-medium">KES</Text>
+              </Text>
+            </View>
+            <Pressable
+              onPress={() => router.push('/checkout')}
+              className="flex-row items-center justify-center rounded-xl px-6"
+              style={{ backgroundColor: Colors.primary, height: 56, flexGrow: 1, marginLeft: 16 }}
+            >
+              <MaterialIcons name="check-circle" size={20} color="white" />
+              <Text className="ml-2 text-base font-semibold text-white">Confirm Sale</Text>
+            </Pressable>
           </View>
-          <Pressable
-            onPress={() => router.push('/checkout')}
-            className="flex-row items-center justify-center rounded-xl px-6"
-            style={{ backgroundColor: Colors.primary, height: 56, flexGrow: 1, marginLeft: 16 }}
-          >
-            <MaterialIcons name="check-circle" size={20} color="white" />
-            <Text className="ml-2 text-base font-semibold text-white">Confirm Sale</Text>
-          </Pressable>
         </View>
       )}
 
-      <BottomNavBar activeTab="sales" />
+      <BottomNavBar activeTab="sales" onHeightMeasured={setBottomNavHeight} />
     </View>
   );
 }
