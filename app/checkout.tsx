@@ -13,6 +13,7 @@ import type { PaymentMethod } from '../types';
 export default function CheckoutScreen() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
   const [cashReceived, setCashReceived] = useState(0);
+  const [bottomNavHeight, setBottomNavHeight] = useState(0);
   const router = useRouter();
   const { items, updateQuantity, removeItem, total, clearBasket } = useSharedBasket();
 
@@ -26,9 +27,10 @@ export default function CheckoutScreen() {
     <View className="flex-1 bg-gray-50">
       <TopAppBar title="Checkout" onBack={() => router.back()} />
       <FlatList
+        className="flex-1"
         data={items}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 12 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 12, paddingBottom: bottomNavHeight + 24 }}
         ListEmptyComponent={
           <View className="items-center py-16">
             <MaterialIcons name="shopping-basket" size={48} color="#d1d5db" />
@@ -84,7 +86,7 @@ export default function CheckoutScreen() {
           ) : null
         }
       />
-      <BottomNavBar activeTab="sales" />
+      <BottomNavBar activeTab="sales" onHeightMeasured={setBottomNavHeight} />
     </View>
   );
 }
