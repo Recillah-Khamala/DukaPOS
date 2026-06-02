@@ -1,210 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Text, View, ScrollView, Pressable } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
-import { CEREAL_PRODUCTS } from '../../constants/salesData';
-
-type UnitToggle = 'kg' | 'korokoro';
-type Fraction = 0 | 0.125 | 0.25 | 0.5 | 1;
-
-
-const POSHO_SERVICES = [
-  { id: 'grade1', name: 'Grade 1 Milling', subtitle: 'Per KG', priceKes: 20 },
-  { id: 'regular', name: 'Regular Milling', subtitle: 'Per KG', priceKes: 15 },
-];
-
-const FRACTIONS = [
-  { val: 0.125 as Fraction, label: '1/8' },
-  { val: 0.25 as Fraction, label: '1/4' },
-  { val: 0.5 as Fraction, label: '1/2' },
-  { val: 1 as Fraction, label: '1' },
-];
-
-function UnitTogglePill({ value, onChange }: { value: UnitToggle; onChange: (v: UnitToggle) => void }) {
-  return (
-    <View className="flex-row items-center rounded-full p-1" style={{ backgroundColor: Colors.secondaryContainer }}>
-      {(['kg', 'korokoro'] as UnitToggle[]).map((unit) => {
-        const active = value === unit;
-        return (
-          <Pressable
-            key={unit}
-            onPress={() => onChange(unit)}
-            className="h-8 items-center justify-center rounded-full px-3"
-            style={{ backgroundColor: active ? Colors.primary : 'transparent' }}
-          >
-            <Text className="text-xs font-semibold" style={{ color: active ? 'white' : 'black' }}>
-              {unit === 'kg' ? 'KG' : 'Korokoro'}
-            </Text>
-          </Pressable>
-        );
-      })}
-    </View>
-  );
-}
-
-function CerealProductCard({ product }: { product: typeof CEREAL_PRODUCTS[number] }) {
-  const [qty, setQty] = useState<Fraction>(0);
-  const { addItem, updateQuantity, removeItem, items } = useSharedBasket();
-
-  const inBasket = items.some((i) => i.id === product.id);
-
-  const syncToBasket = (fraction: Fraction) => {
-    if (fraction === 0) {
-      removeItem(product.id);
-    } else if (inBasket) {
-      updateQuantity(product.id, fraction);
-    } else {
-      addItem({ id: product.id, name: product.name, unitPrice: product.priceKes, quantity: fraction, icon: product.icon });
-    }
-  };
-
-  const handlePress = () => {
-    if (qty === 0) {
-      setQty(0.25);
-      syncToBasket(0.25);
-    }
-  };
-
-  const adjustQty = (delta: number) => {
-    const idx = FRACTIONS.findIndex((f) => f.val === qty);
-    const newIdx = idx + delta;
-    let next: Fraction;
-    if (newIdx < 0) {
-      next = 0;
-    } else if (newIdx >= FRACTIONS.length) {
-      next = FRACTIONS[FRACTIONS.length - 1].val;
-    } else {
-      next = FRACTIONS[newIdx].val;
-    }
-    setQty(next);
-    syncToBasket(next);
-  };
-
-  const selectedFraction = FRACTIONS.find((f) => f.val === qty);
-
-  return (
-    <Pressable
-      onPress={handlePress}
-      className="w-[48%] rounded-xl bg-white p-4"
-      style={{
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.08,
-        shadowRadius: 12,
-        elevation: 4,
-      }}
-    >
-      <View className="h-12 w-12 items-center justify-center rounded-xl" style={{ backgroundColor: Colors.primaryFixed }}>
-        <MaterialIcons name={product.icon} size={28} color={Colors.primary} />
-      </View>
-      <Text className="mt-2 text-sm font-bold text-neutral-500">{product.name}</Text>
-      <View className="mt-1 flex-row items-baseline gap-1">
-        <Text className="text-[28px] font-extrabold" style={{ color: Colors.primary }}>{product.priceKes}</Text>
-        <Text className="text-xs font-medium" style={{ color: Colors.primary }}>KES</Text>
-      </View>
-
-      {qty > 0 && (
-        <>
-          <View className="my-2 border-t border-neutral-200" />
-          <View className="flex-row items-center justify-between">
-            <Pressable
-              onPress={() => adjustQty(-1)}
-              className="h-8 w-8 items-center justify-center rounded-full border-2 border-neutral-300"
-            >
-              <Text className="text-base font-bold text-neutral-500">−</Text>
-            </Pressable>
-            <Text className="text-sm font-bold text-neutral-900">{selectedFraction?.label}</Text>
-            <Pressable
-              onPress={() => adjustQty(1)}
-              className="h-8 w-8 items-center justify-center rounded-full border-2 border-neutral-300"
-            >
-              <Text className="text-base font-bold text-neutral-500">+</Text>
-            </Pressable>
-          </View>
-          <View className="mt-2 flex-row gap-1">
-            {FRACTIONS.map((f) => {
-              const active = qty === f.val;
-              return (
-                <Pressable
-                  key={f.label}
-                  onPress={() => {
-                    setQty(f.val);
-                    updateQuantity(product.id, f.val);
-                  }}
-                  className="h-7 flex-1 items-center justify-center rounded-md"
-                  style={{ backgroundColor: active ? Colors.secondaryContainer : Colors.surfaceContainerHigh }}
-                >
-                  <Text className="text-xs font-semibold" style={{ color: active ? '#191c1d' : '#414844' }}>
-                    {f.label}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        </>
-      )}
-    </Pressable>
-  );
-}
-
-function PoshoServiceCard({ service }: { service: typeof POSHO_SERVICES[number] }) {
-  const { addItem } = useSharedBasket();
-  return (
-    <View className="flex-row items-center rounded-xl bg-white p-4 mb-3" style={{ borderLeftWidth: 4, borderLeftColor: '#7d5800' }}>
-      <View className="h-10 w-10 items-center justify-center rounded-full" style={{ backgroundColor: '#fef3c7' }}>
-        <MaterialIcons name="settings-suggest" size={24} color="#7d5800" />
-      </View>
-      <View className="ml-3 flex-1">
-        <Text className="text-sm font-bold text-neutral-900">{service.name}</Text>
-        <Text className="text-xs text-neutral-500">{service.subtitle}</Text>
-      </View>
-      <Text className="mr-3 text-base font-bold" style={{ color: Colors.primary }}>{service.priceKes} <Text className="text-xs">KES</Text></Text>
-      <Pressable
-        onPress={() => addItem({ id: `posho-${service.id}`, name: service.name, unitPrice: service.priceKes, quantity: 1, icon: 'settings-suggest' })}
-        className="h-12 w-12 items-center justify-center rounded-full"
-        style={{ backgroundColor: Colors.secondaryContainer }}
-      >
-        <Text className="text-lg font-bold" style={{ color: Colors.primary }}>+</Text>
-      </Pressable>
-    </View>
-  );
-}
-
-function BasketChips() {
-  const { items, removeItem } = useSharedBasket();
-  if (items.length === 0) return null;
-  return (
-    <View className="mb-4">
-      <Text className="text-xs font-medium mb-2" style={{ color: Colors.onSurfaceVariant }}>
-        Current Basket ({items.length} {items.length === 1 ? 'item' : 'items'})
-      </Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
-        {items.map((item) => (
-          <View
-            key={item.id}
-            className="flex-row items-center rounded-full pl-3 pr-1 py-1.5"
-            style={{ backgroundColor: Colors.primaryFixed }}
-          >
-            <Text className="text-sm font-semibold mr-2" style={{ color: Colors.primary }}>{item.name}</Text>
-            <Pressable
-              onPress={() => removeItem(item.id)}
-              className="h-6 w-6 items-center justify-center rounded-full"
-              style={{ backgroundColor: Colors.secondaryContainer }}
-            >
-              <MaterialIcons name="close" size={14} color={Colors.primary} />
-            </Pressable>
-          </View>
-        ))}
-      </ScrollView>
-    </View>
-  );
-}
+import { CEREAL_PRODUCTS, POSHOMILL_SERVICES } from '../../constants/salesData';
 
 export default function SalesScreen() {
-  const [unit, setUnit] = useState<UnitToggle>('kg');
   const router = useRouter();
   const { items, total } = useSharedBasket();
 
@@ -246,7 +49,7 @@ export default function SalesScreen() {
                 }}
               >
                 <View className="w-[48px] h-[48px] bg-primary-fixed rounded-lg mb-[8px] items-center justify-center">
-                  <MaterialIcons name={product.icon.replace('_', '-')} size={32} color={Colors.primary} />
+                  <MaterialIcons name={product.icon.replace('_', '-') as any} size={32} color={Colors.primary} />
                 </View>
                 <Text className="font-bold text-[14px] text-on-surface-variant">{product.name}</Text>
                 <Text className="text-[28px] font-extrabold text-primary">{product.pricePerKg} <Text className="font-bold text-[14px] text-primary">KES</Text></Text>
@@ -255,20 +58,40 @@ export default function SalesScreen() {
           </View>
         </View>
         <Pressable
-          className="mt-4 w-full items-center justify-center rounded-xl border-2 border-dashed py-4"
+          className="mt-4 mx-[16px] w-full items-center justify-center rounded-xl border-2 border-dashed py-4"
           style={{ borderColor: Colors.outlineVariant, backgroundColor: Colors.surfaceContainerHigh, height: 56 }}
         >
           <Text className="text-base font-semibold" style={{ color: Colors.outline }}>+ Add Custom Item</Text>
         </Pressable>
 
-        <View className="mt-6 mb-2">
+        <View className="mt-6 mb-2 px-[16px]">
           <Text className="text-lg font-bold" style={{ color: Colors.onSurface }}>Poshomill Services</Text>
         </View>
-        {POSHO_SERVICES.map((service) => (
-          <PoshoServiceCard key={service.id} service={service} />
+        {POSHOMILL_SERVICES.map((service) => (
+          <View
+            key={service.id}
+            className="flex-row items-center rounded-xl bg-white p-4 mx-[16px] mb-3"
+            style={{ borderLeftWidth: 4, borderLeftColor: '#7d5800' }}
+          >
+            <View className="h-10 w-10 items-center justify-center rounded-full" style={{ backgroundColor: '#fef3c7' }}>
+              <MaterialIcons name={service.icon.replace('_', '-') as any} size={24} color="#7d5800" />
+            </View>
+            <View className="ml-3 flex-1">
+              <Text className="text-sm font-bold text-neutral-900">{service.name}</Text>
+              <Text className="text-xs text-neutral-500">Per KG</Text>
+            </View>
+            <Text className="mr-3 text-base font-bold" style={{ color: Colors.primary }}>{service.pricePerKg} <Text className="text-xs">KES</Text></Text>
+            <Pressable
+              onPress={() => console.log('tapped service', service.name)}
+              className="h-12 w-12 items-center justify-center rounded-full"
+              style={{ backgroundColor: Colors.secondaryContainer }}
+            >
+              <Text className="text-lg font-bold" style={{ color: Colors.primary }}>+</Text>
+            </Pressable>
+          </View>
         ))}
 
-        <BasketChips />
+        <View style={{ height: 16 }} />
       </ScrollView>
 
       {items.length > 0 && (
