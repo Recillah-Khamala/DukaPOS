@@ -5,6 +5,7 @@ const Colors = {
   surface: '#f8f9fa',
   onSurface: '#191c1d',
   onSurfaceVariant: '#414844',
+  onPrimary: '#ffffff',
   outline: '#717973',
   outlineVariant: '#c1c8c2',
   error: '#ba1a1a',
