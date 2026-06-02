@@ -24,7 +24,7 @@ const FRACTIONS: { label: string; value: Fraction }[] = [
 export default function AdjustItemModal({ product, onClose }: AdjustItemModalProps) {
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(0)).current;
-  const { addItem } = useSharedBasket();
+  const { addItem, updateItemQty, items } = useSharedBasket();
   const [qty, setQty] = useState(1);
   const [fraction, setFraction] = useState<Fraction | undefined>(undefined);
 
@@ -95,6 +95,16 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     handleClose();
   };
+
+  const handleUpdateBasket = () => {
+    if (!canAdd) return;
+    updateItemQty(product.id, qty);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    handleClose();
+  };
+
+  const existingItem = items.find((i) => i.productId === product.id && i.type === 'cereal');
+  const isUpdate = !!existingItem;
 
   const displayQty = fraction ? `${FRACTIONS.find((f) => f.value === fraction)?.label} kg` : `${qty} kg`;
 
@@ -173,14 +183,28 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
             </Text>
           </View>
 
-          <Pressable
-            onPress={handleAddToBasket}
-            disabled={!canAdd}
-            className={`mt-4 w-full flex-row items-center justify-center rounded-xl py-3.5 ${canAdd ? 'bg-primary active:scale-95' : 'bg-gray-300'}`}
-          >
-            <MaterialIcons name="check-circle" size={20} color={canAdd ? Colors.onPrimary : '#9ca3af'} />
-            <Text className={`ml-2 text-base font-semibold ${canAdd ? 'text-on-primary' : 'text-gray-500'}`}>Add to Basket</Text>
-          </Pressable>
+          {isUpdate ? (
+            <Pressable
+              onPress={handleUpdateBasket}
+              disabled={!canAdd}
+              className={`mt-2 w-full flex-row items-center justify-center rounded-xl py-3.5 ${canAdd ? 'bg-primary active:scale-95' : 'bg-gray-300'}`}
+            >
+              <MaterialIcons name="check-circle" size={20} color={canAdd ? Colors.onPrimary : '#9ca3af'} />
+              <Text className={`ml-2 text-base font-semibold ${canAdd ? 'text-on-primary' : 'text-gray-500'}`}>Update</Text>
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={handleAddToBasket}
+              disabled={!canAdd}
+              className={`mt-4 w-full flex-row items-center justify-center rounded-xl py-3.5 ${canAdd ? 'bg-primary active:scale-95' : 'bg-gray-300'}`}
+            >
+              <MaterialIcons name="check-circle" size={20} color={canAdd ? Colors.onPrimary : '#9ca3af'} />
+              <Text className={`ml-2 text-base font-semibold ${canAdd ? 'text-on-primary' : 'text-gray-500'}`}>Add to Basket</Text>
+            </Pressable>
+          )}
+          {isUpdate && (
+            <Text className="text-sm text-on-surface-variant mt-2 text-center">Already in basket — tap to update qty</Text>
+          )}
         </View>
       </Animated.View>
     </Modal>

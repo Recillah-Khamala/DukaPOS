@@ -7,6 +7,7 @@ interface BasketContextValue {
   addItem: (item: BasketItem) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
+  updateItemQty: (productId: string, newQty: number) => void;
   clearBasket: () => void;
   clear: () => void;
   total: number;

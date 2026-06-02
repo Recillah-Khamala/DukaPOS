@@ -34,13 +34,29 @@ export function useBasket(initialItems: BasketItem[] = []) {
     );
   };
 
+  const updateItemQty = (productId: string, newQty: number) => {
+    setItems((prev) =>
+      prev.map((item) =>
+        item.productId === productId ? { ...item, qty: newQty } : item
+      )
+    );
+  };
+
   const clearBasket = () => {
     setItems([]);
+  };
+
+  const updateItemQty = (productId: string, newQty: number) => {
+    setItems((prev) =>
+      prev.map((item) =>
+        item.productId === productId ? { ...item, qty: newQty } : item
+      )
+    );
   };
 
   const total = useMemo(() => {
     return items.reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
   }, [items]);
 
-  return { items, addItem, removeItem, updateQuantity, clearBasket, total, clear: clearBasket };
+  return { items, addItem, removeItem, updateQuantity, updateItemQty, clearBasket, total, clear: clearBasket };
 }
