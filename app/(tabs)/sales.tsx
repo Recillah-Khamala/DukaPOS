@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
-import { CEREAL_PRODUCTS, POSHOMILL_SERVICES } from '../../constants/salesData';
+import { CEREAL_PRODUCTS } from '../../constants/salesData';
 
 export default function SalesScreen() {
   const router = useRouter();
@@ -64,32 +64,10 @@ export default function SalesScreen() {
           <Text className="text-base font-semibold" style={{ color: Colors.outline }}>+ Add Custom Item</Text>
         </Pressable>
 
-        <View className="mt-6 mb-2 px-[16px]">
-          <Text className="text-lg font-bold" style={{ color: Colors.onSurface }}>Poshomill Services</Text>
+        <View className="px-[16px] mt-[8px]">
+          <Text className="text-[20px] font-semibold text-primary mb-[8px]">Poshomill Services</Text>
+          <View style={{ height: 8 }} />
         </View>
-        {POSHOMILL_SERVICES.map((service) => (
-          <View
-            key={service.id}
-            className="flex-row items-center rounded-xl bg-white p-4 mx-[16px] mb-3"
-            style={{ borderLeftWidth: 4, borderLeftColor: '#7d5800' }}
-          >
-            <View className="h-10 w-10 items-center justify-center rounded-full" style={{ backgroundColor: '#fef3c7' }}>
-              <MaterialIcons name={service.icon.replace('_', '-') as any} size={24} color="#7d5800" />
-            </View>
-            <View className="ml-3 flex-1">
-              <Text className="text-sm font-bold text-neutral-900">{service.name}</Text>
-              <Text className="text-xs text-neutral-500">Per KG</Text>
-            </View>
-            <Text className="mr-3 text-base font-bold" style={{ color: Colors.primary }}>{service.pricePerKg} <Text className="text-xs">KES</Text></Text>
-            <Pressable
-              onPress={() => console.log('tapped service', service.name)}
-              className="h-12 w-12 items-center justify-center rounded-full"
-              style={{ backgroundColor: Colors.secondaryContainer }}
-            >
-              <Text className="text-lg font-bold" style={{ color: Colors.primary }}>+</Text>
-            </Pressable>
-          </View>
-        ))}
 
         <View style={{ height: 16 }} />
       </ScrollView>
