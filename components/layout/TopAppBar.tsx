@@ -16,17 +16,16 @@ export default function TopAppBar({ title, onHelp, onClose, onBack }: TopAppBarP
 
   return (
     <View
-      className="fixed left-0 right-0 flex-row items-center justify-between h-[48px] shadow-md px-[16px] z-50"
+      className="fixed left-0 right-0 flex-row items-center justify-between bg-primary text-on-primary h-[48px] shadow-md px-[16px] z-50"
       style={{
         paddingTop: Math.max(insets.top, 0), // Account for status bar, but keep fixed height
         minHeight: 48,
-        backgroundColor: Colors.primary,
       }}
     >
       {/* Left: Storefront Icon + Title */}
       <View className="flex-row items-center gap-[4px]">
         <MaterialIcons name="storefront" size={24} color={Colors.onPrimary} />
-        <Text className="font-extrabold text-[24px] tracking-tight" style={{ color: Colors.onPrimary }}>
+        <Text className="font-extrabold text-[24px] tracking-tight">
           Kijiji Cereal Store
         </Text>
       </View>
