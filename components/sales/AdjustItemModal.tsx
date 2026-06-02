@@ -6,9 +6,10 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
 import type { Product } from '../../types';
+import type { CerealProduct } from '../../constants/salesData';
 
 type AdjustItemModalProps = {
-  product: Product | null;
+  product: CerealProduct | null;
   onClose: () => void;
 };
 
@@ -73,7 +74,6 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
   const step = fraction ?? 1;
   const minQty = 0.125;
   const maxQty = 99;
-  const minQty = 0.125;
   const canDecrement = qty > minQty;
   const atMax = qty >= maxQty;
   const canAdd = qty >= minQty && qty <= maxQty;
