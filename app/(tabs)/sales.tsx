@@ -58,10 +58,12 @@ export default function SalesScreen() {
           <MaterialIcons name="notifications-none" size={24} color="white" />
         </View>
       </View>
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 180 }}
-      >
+      <View style={{ flex: 1 }}>
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{ paddingBottom: 180, flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
         <View className="mt-[16px] px-[16px]">
           <View className="flex-row justify-between items-center mb-[8px]">
             <Text className="text-[20px] font-semibold text-primary">Cereal Sales</Text>
@@ -194,7 +196,8 @@ export default function SalesScreen() {
             </View>
           </View>
         )}
-      </ScrollView>
+        </ScrollView>
+      </View>
 
       <AdjustItemModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
       <BottomNavBar activeTab="sales" onHeightMeasured={setBottomNavHeight} />
