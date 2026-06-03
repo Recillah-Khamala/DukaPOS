@@ -13,7 +13,6 @@ export default function SalesScreen() {
   const router = useRouter();
   const [bottomNavHeight, setBottomNavHeight] = useState(0);
   const [flashingId, setFlashingId] = useState<string | null>(null);
-  const [activeFraction, setActiveFraction] = useState<Record<string, Fraction>>({});
   const [qtys, setQtys] = useState<Record<string, number>>({});
   const [selectedProduct, setSelectedProduct] = useState<typeof CEREAL_PRODUCTS[number] | typeof POSHOMILL_SERVICES[number] | null>(null);
   const { items, total, addItem } = useSharedBasket();
@@ -74,8 +73,6 @@ export default function SalesScreen() {
             {CEREAL_PRODUCTS.map((product) => {
               const isFlashing = flashingId === product.id;
               const currentQty = getQty(product.id);
-              const fraction = activeFraction[product.id];
-              const step = fraction ?? 1;
               return (
                 <Pressable
                   key={product.id}
@@ -94,43 +91,26 @@ export default function SalesScreen() {
                   </View>
                   <Text className="font-bold text-[14px] text-on-surface-variant">{product.name}</Text>
                   <Text className="text-[28px] font-extrabold text-primary">{product.pricePerKg} <Text className="font-bold text-[14px] text-primary">KES</Text></Text>
-                  <View className="flex-row flex-wrap gap-[8px] mt-3">
-                    {FRACTIONS.map((chip) => {
-                      const isActive = fraction === chip.value;
-                      return (
-                        <Pressable
-                          key={chip.label}
-                          onPress={() => {
-                            setActiveFraction((prev) => ({ ...prev, [product.id]: chip.value }));
-                            setQtys((prev) => ({ ...prev, [product.id]: chip.value }));
-                          }}
-                          className={`h-10 min-w-[48px] flex-row items-center justify-center rounded-full border px-3 active:scale-95 ${isActive ? 'border-secondary bg-secondary-container' : 'border-outline-variant bg-surface-container-lowest'}`}
-                        >
-                          <Text className={`text-sm font-semibold ${isActive ? 'text-on-secondary-container' : 'text-on-surface-variant'}`}>{chip.label}</Text>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
                   <View className="flex-row items-center gap-[12px] mt-3">
                     <Pressable
-                      onPress={() => handleQtyChange(product.id, -step, 0.125, step)}
+                      onPress={() => handleQtyChange(product.id, -0.125, 0.125, 0.125)}
                       disabled={currentQty <= 0.125}
                       className={`h-12 w-12 items-center justify-center rounded-full border ${currentQty <= 0.125 ? 'border-outline-variant bg-surface-container-high' : 'border-outline-variant bg-surface-container-lowest active:scale-95'}`}
                     >
                       <Text className={`text-lg font-bold ${currentQty <= 0.125 ? 'text-on-surface-variant opacity-50' : 'text-on-surface-variant'}`}>−</Text>
                     </Pressable>
-                     <Text className="text-[20px] font-bold text-primary w-10 text-center">{formatQty(currentQty)}</Text>
+                    <Text className="text-[20px] font-bold text-primary w-10 text-center">{formatQty(currentQty)}</Text>
                     <Pressable
-                      onPress={() => handleQtyChange(product.id, step, 0.125, step)}
+                      onPress={() => handleQtyChange(product.id, 0.125, 0.125, 0.125)}
                       className="h-12 w-12 items-center justify-center rounded-full border border-outline-variant bg-surface-container-lowest active:scale-95"
                     >
                       <Text className="text-lg font-bold text-on-surface-variant">+</Text>
                     </Pressable>
                   </View>
                   <View className="mt-2">
-                   <Text className="text-sm text-on-surface-variant">
-                     {formatQty(currentQty)} kg × {product.pricePerKg} KES = <Text className="text-base font-bold text-primary">{(currentQty * product.pricePerKg).toFixed(2)} KES</Text>
-                   </Text>
+                    <Text className="text-sm text-on-surface-variant">
+                      {formatQty(currentQty)} kg × {product.pricePerKg} KES = <Text className="text-base font-bold text-primary">{(currentQty * product.pricePerKg).toFixed(2)} KES</Text>
+                    </Text>
                   </View>
                 </Pressable>
               );
@@ -153,7 +133,7 @@ export default function SalesScreen() {
               return (
                 <Pressable
                   key={service.id}
-                   onPress={() => setSelectedProduct(service)}
+                  onPress={() => setSelectedProduct(service)}
                   className={`flex-row items-center justify-between bg-surface-container-lowest rounded-xl p-[16px] border-l-[4px] active:scale-95 ${isFlashing ? 'border-secondary' : 'border-[#7d5800]'}`}
                   style={{
                     shadowColor: '#000',
@@ -178,7 +158,7 @@ export default function SalesScreen() {
                     >
                       <Text className={`text-lg font-bold ${currentQty <= 1 ? 'text-on-surface-variant opacity-50' : 'text-on-surface-variant'}`}>−</Text>
                     </Pressable>
-                     <Text className="text-[20px] font-bold text-primary w-10 text-center">{formatQty(currentQty)}</Text>
+                    <Text className="text-[20px] font-bold text-primary w-10 text-center">{formatQty(currentQty)}</Text>
                     <Pressable
                       onPress={() => handleQtyChange(service.id, 1, 1, 1)}
                       className="h-12 w-12 items-center justify-center rounded-full border border-outline-variant bg-surface-container-lowest active:scale-95"
@@ -216,7 +196,7 @@ export default function SalesScreen() {
         )}
       </ScrollView>
 
-       <AdjustItemModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
+      <AdjustItemModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
       <BottomNavBar activeTab="sales" onHeightMeasured={setBottomNavHeight} />
     </View>
   );
