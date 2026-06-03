@@ -6,6 +6,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
 import type { CerealProduct, PoshomillService } from '../../constants/salesData';
+import { DEFAULT_QTY } from '../../constants/sales';
 
 type AdjustItemModalProps = {
   product: CerealProduct | PoshomillService | null;
@@ -40,10 +41,17 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
     };
   }, []);
 
-  useEffect(() => {
-    setQty(1);
-    setFraction(0.25);
-  }, [product]);
+   useEffect(() => {
+     if (!product) return;
+     const isCereal = 'type' in product ? product.type === 'cereal' : false;
+     const defaultQty = DEFAULT_QTY[product.id] ?? (isCereal ? 0.25 : 1);
+     setQty(defaultQty);
+     if (isCereal) {
+       setFraction(defaultQty);
+     } else {
+       setFraction(undefined);
+     }
+   }, [product]);
 
   useEffect(() => {
     if (!product) return;
