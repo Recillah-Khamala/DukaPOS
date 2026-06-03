@@ -169,7 +169,7 @@ export default function SalesScreen() {
               return (
                 <Pressable
                   key={service.id}
-                  onPress={() => addToBasket(service.id, service.name, service.pricePerKg, currentQty, 'service', service.id)}
+                   onPress={() => setSelectedProduct(service)}
                   className={`flex-row items-center justify-between bg-surface-container-lowest rounded-xl p-[16px] border-l-[4px] active:scale-95 ${isFlashing ? 'border-secondary' : 'border-[#7d5800]'}`}
                   style={{
                     shadowColor: '#000',
@@ -232,7 +232,7 @@ export default function SalesScreen() {
         )}
       </ScrollView>
 
-      <AdjustItemModal product={selectedProduct as any} onClose={() => setSelectedProduct(null)} />
+       <AdjustItemModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
       <BottomNavBar activeTab="sales" onHeightMeasured={setBottomNavHeight} />
     </View>
   );

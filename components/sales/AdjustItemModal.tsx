@@ -5,10 +5,10 @@ import * as Haptics from 'expo-haptics';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
-import type { CerealProduct } from '../../constants/salesData';
+import type { CerealProduct, PoshomillService } from '../../constants/salesData';
 
 type AdjustItemModalProps = {
-  product: CerealProduct | null;
+  product: CerealProduct | PoshomillService | null;
   onClose: () => void;
 };
 
@@ -73,11 +73,17 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
     }
   };
 
-  if (!product) {
-    return null;
-  }
+   if (!product) {
+     return null;
+   }
 
-  const translateY = slideAnim.interpolate({
+   // Extract fields with fallbacks for compatibility with both CerealProduct and PoshomillService
+   const pricePerUnit = 'price' in product ? product.price : product.pricePerKg;
+   const unit = 'unit' in product ? product.unit : 'kg';
+   const stockLevel = 'stockLevel' in product ? product.stockLevel : undefined;
+   const isCereal = 'type' in product ? product.type === 'cereal' : false;
+
+   const translateY = slideAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [400, 0],
   });
@@ -100,12 +106,12 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
   const handleAddToBasket = () => {
     if (!canAdd) return;
     addItem({
-      id: `${product.id}_${Date.now()}`,
-      productId: product.id,
-      name: product.name,
-      qty,
-      unitPrice: product.price,
-      type: 'cereal',
+       id: `${product.id}_${Date.now()}`,
+       productId: product.id,
+       name: product.name,
+       qty,
+       unitPrice: pricePerUnit,
+       type: isCereal ? 'cereal' : 'service',
     });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     handleClose();
@@ -118,7 +124,7 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
     handleClose();
   };
 
-  const existingItem = items.find((i) => i.productId === product.id && i.type === 'cereal');
+   const existingItem = items.find((i) => i.productId === product.id && i.type === (isCereal ? 'cereal' : 'service'));
   const isUpdate = !!existingItem;
 
   const displayQty = fraction ? `${FRACTIONS.find((f) => f.value === fraction)?.label} kg` : `${qty} kg`;
@@ -143,10 +149,10 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
             <View className="h-12 w-12 items-center justify-center rounded-lg bg-primary-fixed">
               <MaterialIcons name={product.icon.replace('_', '-') as any} size={28} color={Colors.primary} />
             </View>
-            <View className="flex-1">
-              <Text className="text-[20px] font-semibold" style={{ color: Colors.onPrimaryContainer }}>{product.name}</Text>
-              <Text className="text-sm" style={{ color: Colors.onPrimaryContainer }}>{product.price} KES / {product.unit}</Text>
-            </View>
+             <View className="flex-1">
+               <Text className="text-[20px] font-semibold" style={{ color: Colors.onPrimaryContainer }}>{product.name}</Text>
+               <Text className="text-sm" style={{ color: Colors.onPrimaryContainer }}>{pricePerUnit} KES / {unit}</Text>
+             </View>
           </View>
           <Pressable onPress={handleClose} className="h-10 w-10 items-center justify-center rounded-full active:scale-95">
             <MaterialIcons name="close" size={24} color={Colors.onPrimaryContainer} />
@@ -193,16 +199,16 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
           </View>
 
           <View className="mt-3">
-            <Text className="text-sm text-on-surface-variant">
-              {displayQty} × {product.price} KES = <Text className="text-base font-bold text-primary">{(qty * product.price).toFixed(2)} KES</Text>
-            </Text>
-            {product.stockLevel != null && qty > product.stockLevel && (
-              <View className="mt-1 flex-row items-center gap-2">
-                <View className="rounded-full bg-yellow-100 px-2 py-0.5">
-                  <Text className="text-xs font-semibold text-yellow-700">Only {product.stockLevel} {product.unit} in stock</Text>
-                </View>
-              </View>
-            )}
+             <Text className="text-sm text-on-surface-variant">
+               {displayQty} × {pricePerUnit} KES = <Text className="text-base font-bold text-primary">{(qty * pricePerUnit).toFixed(2)} KES</Text>
+             </Text>
+             {stockLevel != null && qty > stockLevel && (
+               <View className="mt-1 flex-row items-center gap-2">
+                 <View className="rounded-full bg-yellow-100 px-2 py-0.5">
+                   <Text className="text-xs font-semibold text-yellow-700">Only {stockLevel} {unit} in stock</Text>
+                 </View>
+               </View>
+             )}
             {atMax && (
               <Text className="mt-1 text-xs font-semibold text-on-surface-variant">Max 99</Text>
             )}
