@@ -7,6 +7,7 @@ import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
 import type { CerealProduct, PoshomillService } from '../../constants/salesData';
 import { DEFAULT_QTY } from '../../constants/sales';
+import { formatQty, formatLineTotal } from '../../utils/formatQuantity';
 
 type AdjustItemModalProps = {
   product: CerealProduct | PoshomillService | null;
@@ -132,10 +133,8 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
     handleClose();
   };
 
-   const existingItem = items.find((i) => i.productId === product.id && i.type === (isCereal ? 'cereal' : 'service'));
-  const isUpdate = !!existingItem;
-
-  const displayQty = fraction ? `${FRACTIONS.find((f) => f.value === fraction)?.label} kg` : `${qty} kg`;
+    const existingItem = items.find((i) => i.productId === product.id && i.type === (isCereal ? 'cereal' : 'service'));
+   const isUpdate = !!existingItem;
 
   return (
     <Modal visible={!!product} transparent animationType="none" onRequestClose={handleClose}>
@@ -197,7 +196,7 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
             >
               <Text className={`text-lg font-bold ${canDecrement ? 'text-on-surface-variant' : 'text-on-surface-variant'}`} style={{ opacity: canDecrement ? 1 : 0.38 }}>−</Text>
             </Pressable>
-            <Text className="text-[20px] font-bold text-primary w-16 text-center">{qty}</Text>
+             <Text className="text-[20px] font-bold text-primary w-16 text-center">{formatQty(qty)}</Text>
             <Pressable
               onPress={handleIncrement}
               className="h-12 w-12 items-center justify-center rounded-full border border-outline-variant bg-surface-container-lowest active:scale-95"
@@ -207,9 +206,9 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
           </View>
 
           <View className="mt-3">
-             <Text className="text-sm text-on-surface-variant">
-               {displayQty} × {pricePerUnit} KES = <Text className="text-base font-bold text-primary">{(qty * pricePerUnit).toFixed(2)} KES</Text>
-             </Text>
+              <Text className="text-sm text-on-surface-variant">
+                {formatQty(qty)} {unit} × {pricePerUnit} KES = {formatLineTotal(qty, pricePerUnit)}
+              </Text>
              {stockLevel != null && qty > stockLevel && (
                <View className="mt-1 flex-row items-center gap-2">
                  <View className="rounded-full bg-yellow-100 px-2 py-0.5">

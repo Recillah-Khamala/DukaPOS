@@ -1,15 +1,15 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Text, View } from 'react-native';
 import type { BasketItem } from '../../types';
+import { formatQty, formatLineTotal } from '../../utils/formatQuantity';
 
 export type BasketItemCardProps = {
   item: BasketItem;
 };
 
 export default function BasketItemCard({ item }: BasketItemCardProps) {
-  const totalPrice = item.unitPrice * item.qty;
 
-  return (
+   return (
     <View
       className="flex-row items-center gap-3 rounded-lg bg-white p-3"
       style={{
@@ -39,13 +39,13 @@ export default function BasketItemCard({ item }: BasketItemCardProps) {
         </Text>
       </View>
 
-      {/* Right: Total Price and Quantity */}
-      <View className="items-end">
-        <Text className="text-lg font-bold text-neutral-900">
-          KSh {totalPrice.toLocaleString()}
-        </Text>
-        <Text className="text-sm text-neutral-600">Qty: {item.qty}</Text>
-      </View>
+       {/* Right: Total Price and Quantity */}
+       <View className="items-end">
+         <Text className="text-lg font-bold text-neutral-900">
+           {formatLineTotal(item.qty, item.unitPrice)}
+         </Text>
+         <Text className="text-sm text-neutral-600">Qty: {formatQty(item.qty)}</Text>
+       </View>
     </View>
   );
 }

@@ -7,23 +7,7 @@ import AdjustItemModal from '../../components/sales/AdjustItemModal';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
 import { CEREAL_PRODUCTS, POSHOMILL_SERVICES } from '../../constants/salesData';
-
-type Fraction = 0 | 0.125 | 0.25 | 0.5 | 1;
-
-const FRACTIONS: { label: string; value: Fraction }[] = [
-  { label: '1/8', value: 0.125 },
-  { label: '1/4', value: 0.25 },
-  { label: '1/2', value: 0.5 },
-  { label: '1', value: 1 },
-];
-
-function qtyLabel(qty: number, activeFraction: Fraction | undefined): string {
-  if (activeFraction && qty === activeFraction) {
-    const match = FRACTIONS.find((f) => f.value === activeFraction);
-    if (match) return match.label;
-  }
-  return Number.isInteger(qty) ? String(qty) : qty.toFixed(3).replace(/\.?0+$/, '');
-}
+import { formatQty } from '../../utils/formatQuantity';
 
 export default function SalesScreen() {
   const router = useRouter();
@@ -135,7 +119,7 @@ export default function SalesScreen() {
                     >
                       <Text className={`text-lg font-bold ${currentQty <= 0.125 ? 'text-on-surface-variant opacity-50' : 'text-on-surface-variant'}`}>−</Text>
                     </Pressable>
-                    <Text className="text-[20px] font-bold text-primary w-10 text-center">{qtyLabel(currentQty, fraction)}</Text>
+                     <Text className="text-[20px] font-bold text-primary w-10 text-center">{formatQty(currentQty)}</Text>
                     <Pressable
                       onPress={() => handleQtyChange(product.id, step, 0.125, step)}
                       className="h-12 w-12 items-center justify-center rounded-full border border-outline-variant bg-surface-container-lowest active:scale-95"
@@ -144,9 +128,9 @@ export default function SalesScreen() {
                     </Pressable>
                   </View>
                   <View className="mt-2">
-                    <Text className="text-sm text-on-surface-variant">
-                      {qtyLabel(currentQty, fraction)} kg × {product.pricePerKg} KES = <Text className="text-base font-bold text-primary">{(currentQty * product.pricePerKg).toFixed(2)} KES</Text>
-                    </Text>
+                   <Text className="text-sm text-on-surface-variant">
+                     {formatQty(currentQty)} kg × {product.pricePerKg} KES = <Text className="text-base font-bold text-primary">{(currentQty * product.pricePerKg).toFixed(2)} KES</Text>
+                   </Text>
                   </View>
                 </Pressable>
               );
@@ -194,7 +178,7 @@ export default function SalesScreen() {
                     >
                       <Text className={`text-lg font-bold ${currentQty <= 1 ? 'text-on-surface-variant opacity-50' : 'text-on-surface-variant'}`}>−</Text>
                     </Pressable>
-                    <Text className="text-[20px] font-bold text-primary w-10 text-center">{currentQty}</Text>
+                     <Text className="text-[20px] font-bold text-primary w-10 text-center">{formatQty(currentQty)}</Text>
                     <Pressable
                       onPress={() => handleQtyChange(service.id, 1, 1, 1)}
                       className="h-12 w-12 items-center justify-center rounded-full border border-outline-variant bg-surface-container-lowest active:scale-95"
