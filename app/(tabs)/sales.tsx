@@ -179,8 +179,11 @@ export default function SalesScreen() {
         </ScrollView>
       </View>
 
+      <AdjustItemModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
+      <BottomNavBar activeTab="sales" onHeightMeasured={setBottomNavHeight} />
+
       {items.length > 0 && (
-        <View className="px-4 pt-3 pb-3 border-t absolute left-0 right-0" pointerEvents="box-none" style={{ bottom: bottomNavHeight + 12, borderTopColor: Colors.outlineVariant, backgroundColor: 'white', shadowColor: '#000', shadowOffset: { width: 0, height: -2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 5 }}>
+        <View className="px-4 pt-3 pb-3 border-t absolute left-0 right-0" pointerEvents="box-none" style={{ bottom: bottomNavHeight + 12, borderTopColor: Colors.outlineVariant, backgroundColor: 'white', shadowColor: '#000', shadowOffset: { width: 0, height: -2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 5, zIndex: 10 }}>
           <View className="flex-row items-center justify-between">
             <View pointerEvents="none">
               <Text className="text-xs font-semibold uppercase" style={{ color: Colors.onSurfaceVariant }}>Total Due</Text>
@@ -200,9 +203,6 @@ export default function SalesScreen() {
           </View>
         </View>
       )}
-
-      <AdjustItemModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
-      <BottomNavBar activeTab="sales" onHeightMeasured={setBottomNavHeight} />
     </View>
   );
 }
