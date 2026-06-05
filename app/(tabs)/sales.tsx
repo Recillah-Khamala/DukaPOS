@@ -61,7 +61,7 @@ export default function SalesScreen() {
       <View style={{ flex: 1 }}>
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingBottom: 180 }}
+          contentContainerStyle={{ paddingBottom: 120 }}
           keyboardShouldPersistTaps="handled"
           scrollEnabled={true}
         >
@@ -176,30 +176,30 @@ export default function SalesScreen() {
         </View>
 
         <View style={{ height: 16 }} />
-
-        {items.length > 0 && (
-          <View className="px-4 pt-3 pb-3 border-t" pointerEvents="box-none" style={{ marginBottom: bottomNavHeight + 12, borderTopColor: Colors.outlineVariant, backgroundColor: 'white' }}>
-            <View className="flex-row items-center justify-between">
-              <View pointerEvents="none">
-                <Text className="text-xs font-semibold uppercase" style={{ color: Colors.onSurfaceVariant }}>Total Due</Text>
-                <Text className="text-[28px] font-extrabold" style={{ color: Colors.secondary }}>
-                  {total.toLocaleString()} <Text className="text-xs font-medium">KES</Text>
-                </Text>
-              </View>
-              <Pressable
-                onPress={() => router.push('/checkout')}
-                pointerEvents="auto"
-                className="flex-row items-center justify-center rounded-xl px-6"
-                style={{ backgroundColor: Colors.primary, height: 56, flexGrow: 1, marginLeft: 16 }}
-              >
-                <MaterialIcons name="check-circle" size={20} color="white" />
-                <Text className="ml-2 text-base font-semibold text-white">Confirm Sale</Text>
-              </Pressable>
-            </View>
-          </View>
-        )}
         </ScrollView>
       </View>
+
+      {items.length > 0 && (
+        <View className="px-4 pt-3 pb-3 border-t absolute left-0 right-0" pointerEvents="box-none" style={{ bottom: bottomNavHeight + 12, borderTopColor: Colors.outlineVariant, backgroundColor: 'white', shadowColor: '#000', shadowOffset: { width: 0, height: -2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 5 }}>
+          <View className="flex-row items-center justify-between">
+            <View pointerEvents="none">
+              <Text className="text-xs font-semibold uppercase" style={{ color: Colors.onSurfaceVariant }}>Total Due</Text>
+              <Text className="text-[28px] font-extrabold" style={{ color: Colors.secondary }}>
+                {total.toLocaleString()} <Text className="text-xs font-medium">KES</Text>
+              </Text>
+            </View>
+            <Pressable
+              onPress={() => router.push('/checkout')}
+              pointerEvents="auto"
+              className="flex-row items-center justify-center rounded-xl px-6"
+              style={{ backgroundColor: Colors.primary, height: 56, flexGrow: 1, marginLeft: 16 }}
+            >
+              <MaterialIcons name="check-circle" size={20} color="white" />
+              <Text className="ml-2 text-base font-semibold text-white">Confirm Sale</Text>
+            </Pressable>
+          </View>
+        </View>
+      )}
 
       <AdjustItemModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
       <BottomNavBar activeTab="sales" onHeightMeasured={setBottomNavHeight} />
