@@ -55,6 +55,17 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
    }, [product]);
 
   useEffect(() => {
+    if (!product) {
+      return;
+    }
+    Animated.timing(slideAnim, {
+      toValue: 1,
+      duration: 250,
+      useNativeDriver: true,
+    }).start();
+  }, [product, slideAnim]);
+
+  useEffect(() => {
     if (!product) return;
     const onBackPress = () => {
       handleClose();
