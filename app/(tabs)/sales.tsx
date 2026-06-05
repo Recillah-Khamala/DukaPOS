@@ -179,6 +179,45 @@ export default function SalesScreen() {
         </ScrollView>
       </View>
 
+      {items.length > 0 && (
+        <View
+          style={{
+            position: 'absolute',
+            bottom: bottomNavHeight + 12,
+            left: 12,
+            right: 12,
+            backgroundColor: Colors.primary,
+            borderRadius: 12,
+            padding: 16,
+            zIndex: 10,
+            pointerEvents: 'auto',
+          }}
+        >
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <Text style={{ fontSize: 16, fontWeight: '600', color: Colors.onPrimary }}>
+              Total Due: Ksh {total.toFixed(2)}
+            </Text>
+            <Text style={{ fontSize: 14, fontWeight: '500', color: Colors.onPrimary, opacity: 0.9 }}>
+              {items.length} item{items.length !== 1 ? 's' : ''}
+            </Text>
+          </View>
+          <Pressable
+            onPress={() => router.push('/checkout')}
+            style={({ pressed }) => ({
+              backgroundColor: Colors.onPrimary,
+              paddingVertical: 12,
+              paddingHorizontal: 16,
+              borderRadius: 8,
+              opacity: pressed ? 0.8 : 1,
+            })}
+          >
+            <Text style={{ fontSize: 16, fontWeight: '600', color: Colors.primary, textAlign: 'center' }}>
+              Confirm Sale
+            </Text>
+          </Pressable>
+        </View>
+      )}
+
       <AdjustItemModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
       <BottomNavBar activeTab="sales" onHeightMeasured={setBottomNavHeight} />
     </View>
