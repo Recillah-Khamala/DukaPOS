@@ -61,9 +61,8 @@ export default function ProductsScreen() {
     <View className="flex-1 bg-gray-50">
       <TopAppBar title="Products" />
       <Animated.View 
-        pointerEvents="none" 
         className="absolute top-16 left-0 right-0 items-center z-50" 
-        style={{ opacity: flash }}
+        style={{ opacity: flash, pointerEvents: 'none' }}
       >
         <View className="bg-[#012d1d] px-5 py-2.5 rounded-full shadow-lg">
           <Text className="text-sm font-medium text-white">Added to basket</Text>
