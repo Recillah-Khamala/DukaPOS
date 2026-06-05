@@ -34,10 +34,12 @@ export default function ProductsScreen() {
       updateQuantity(product.id, existing + 1);
     } else {
       addItem({
-        id: product.id,
+        id: `${product.id}_${Date.now()}`,
+        productId: product.id,
         name: product.name,
         unitPrice: product.price,
-        quantity: 1,
+        qty: 1,
+        type: 'cereal',
         icon: 'shopping-bag',
       });
     }
