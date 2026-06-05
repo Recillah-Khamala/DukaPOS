@@ -183,8 +183,8 @@ export default function SalesScreen() {
       <BottomNavBar activeTab="sales" onHeightMeasured={setBottomNavHeight} />
 
       {items.length > 0 && (
-        <View className="px-4 pt-3 pb-3 border-t absolute left-0 right-0" pointerEvents="box-none" style={{ bottom: bottomNavHeight + 12, borderTopColor: Colors.outlineVariant, backgroundColor: 'white', shadowColor: '#000', shadowOffset: { width: 0, height: -2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 5, zIndex: 10 }}>
-          <View className="flex-row items-center justify-between">
+        <View className="px-4 pt-3 pb-3 border-t absolute left-0 right-0" pointerEvents="auto" style={{ bottom: bottomNavHeight + 12, borderTopColor: Colors.outlineVariant, backgroundColor: 'white', shadowColor: '#000', shadowOffset: { width: 0, height: -2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 5, zIndex: 10 }}>
+          <View className="flex-row items-center justify-between" pointerEvents="auto">
             <View pointerEvents="none">
               <Text className="text-xs font-semibold uppercase" style={{ color: Colors.onSurfaceVariant }}>Total Due</Text>
               <Text className="text-[28px] font-extrabold" style={{ color: Colors.secondary }}>
@@ -193,7 +193,6 @@ export default function SalesScreen() {
             </View>
             <Pressable
               onPress={() => router.push('/checkout')}
-              pointerEvents="auto"
               className="flex-row items-center justify-center rounded-xl px-6"
               style={{ backgroundColor: Colors.primary, height: 56, flexGrow: 1, marginLeft: 16 }}
             >
