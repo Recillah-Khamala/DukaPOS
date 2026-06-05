@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+﻿import React, { useState, useCallback, useRef } from 'react';
 import { Text, View, ScrollView, Pressable } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
@@ -61,8 +61,9 @@ export default function SalesScreen() {
       <View style={{ flex: 1 }}>
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingBottom: 180, flexGrow: 1 }}
+          contentContainerStyle={{ paddingBottom: 180 }}
           keyboardShouldPersistTaps="handled"
+          scrollEnabled={true}
         >
         <View className="mt-[16px] px-[16px]">
           <View className="flex-row justify-between items-center mb-[8px]">
