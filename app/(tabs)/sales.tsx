@@ -190,7 +190,7 @@ export default function SalesScreen() {
             borderRadius: 12,
             padding: 16,
             zIndex: 10,
-            pointerEvents: 'auto',
+            pointerEvents: 'box-none',
           }}
         >
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
