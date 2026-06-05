@@ -1,1 +1,1 @@
-export const DEFAULT_QTY = {};
+export const DEFAULT_QTY: Record<string, number> = {};

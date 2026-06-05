@@ -48,7 +48,7 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
      const defaultQty = DEFAULT_QTY[product.id] ?? (isCereal ? 0.25 : 1);
      setQty(defaultQty);
      if (isCereal) {
-       setFraction(defaultQty);
+       setFraction(defaultQty as Fraction);
      } else {
        setFraction(undefined);
      }
