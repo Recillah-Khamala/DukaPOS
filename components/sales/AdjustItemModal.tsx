@@ -138,7 +138,7 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
 
   return (
     <Modal visible={!!product} transparent animationType="none" onRequestClose={handleClose}>
-      <Pressable className="flex-1" onPress={handleBackdropPress} pointerEvents="box-none">
+      <Pressable className="flex-1" onPress={handleBackdropPress}>
         <Animated.View
           className="flex-1"
           style={{ backgroundColor: 'rgba(0,0,0,0.45)', opacity: slideAnim }}
