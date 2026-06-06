@@ -190,10 +190,10 @@ export default function SalesScreen() {
             borderRadius: 12,
             padding: 16,
             zIndex: 10,
-            pointerEvents: 'none',
+            pointerEvents: 'box-none',
           }}
         >
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, pointerEvents: 'none' }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
             <Text style={{ fontSize: 16, fontWeight: '600', color: Colors.onPrimary }}>
               Total Due: Ksh {total.toFixed(2)}
             </Text>
@@ -203,7 +203,6 @@ export default function SalesScreen() {
           </View>
           <Pressable
             onPress={() => router.push('/checkout')}
-            pointerEvents="auto"
             style={({ pressed }) => ({
               backgroundColor: Colors.onPrimary,
               paddingVertical: 12,
