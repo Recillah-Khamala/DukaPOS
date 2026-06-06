@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Animated, BackHandler, Keyboard, Modal, Pressable, Text, View } from 'react-native';
+import { Animated, BackHandler, Keyboard, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -32,7 +32,6 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
   const [qty, setQty] = useState(1);
   const [fraction, setFraction] = useState<Fraction | undefined>(undefined);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
-  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const showSub = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
@@ -42,19 +41,6 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
       hideSub.remove();
     };
   }, []);
-
-  // Control Modal visibility and open animation separately from product state
-  useEffect(() => {
-    if (product) {
-      setVisible(true);
-      slideAnim.setValue(0);
-      Animated.timing(slideAnim, {
-        toValue: 1,
-        duration: 260,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [product]);
 
   useEffect(() => {
     if (!product) return;
@@ -66,6 +52,13 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
     } else {
       setFraction(undefined);
     }
+    // Animate sheet up on open
+    slideAnim.setValue(0);
+    Animated.timing(slideAnim, {
+      toValue: 1,
+      duration: 260,
+      useNativeDriver: true,
+    }).start();
   }, [product]);
 
   useEffect(() => {
@@ -79,17 +72,12 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
   }, [product]);
 
   const handleClose = () => {
-    // Call onClose immediately — this sets product to null in parent,
-    // which stops the freeze. The animation plays out visually but
-    // the Modal will hide as soon as visible is set to false below.
     Animated.timing(slideAnim, {
       toValue: 0,
       duration: 220,
       useNativeDriver: true,
-    }).start(() => {
-      setVisible(false);
-    });
-    onClose(); // ← immediate, does not wait for animation
+    }).start();
+    onClose();
   };
 
   const handleBackdropPress = () => {
@@ -100,19 +88,18 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
     }
   };
 
-  if (!product && !visible) {
+  if (!product) {
     return null;
   }
 
-  // Extract fields with fallbacks for compatibility with both CerealProduct and PoshomillService
-  const pricePerUnit = product ? ('price' in product ? product.price : product.pricePerKg) : 0;
-  const unit = product ? ('unit' in product ? product.unit : 'kg') : 'kg';
-  const stockLevel = product ? ('stockLevel' in product ? product.stockLevel : undefined) : undefined;
-  const isCereal = product ? ('type' in product ? product.type === 'cereal' : false) : false;
+  const pricePerUnit = 'price' in product ? product.price : product.pricePerKg;
+  const unit = 'unit' in product ? product.unit : 'kg';
+  const stockLevel = 'stockLevel' in product ? product.stockLevel : undefined;
+  const isCereal = 'type' in product ? product.type === 'cereal' : false;
 
   const translateY = slideAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [400, 0],
+    outputRange: [600, 0],
   });
 
   const step = fraction ?? 1;
@@ -131,7 +118,7 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
   };
 
   const handleAddToBasket = () => {
-    if (!canAdd || !product) return;
+    if (!canAdd) return;
     addItem({
       id: `${product.id}_${Date.now()}`,
       productId: product.id,
@@ -145,143 +132,214 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
   };
 
   const handleUpdateBasket = () => {
-    if (!canAdd || !product) return;
+    if (!canAdd) return;
     updateItemQty(product.id, qty);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     handleClose();
   };
 
-  const existingItem = product
-    ? items.find((i) => i.productId === product.id && i.type === (isCereal ? 'cereal' : 'service'))
-    : undefined;
+  const existingItem = items.find(
+    (i) => i.productId === product.id && i.type === (isCereal ? 'cereal' : 'service')
+  );
   const isUpdate = !!existingItem;
 
   return (
-    <Modal visible={visible} transparent animationType="none" onRequestClose={handleClose}>
-      {/* Backdrop — fills remaining space above the sheet */}
-      <Pressable
-        style={{ flex: 1 }}
-        onPress={handleBackdropPress}
-      >
-        <Animated.View
-          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', opacity: slideAnim }}
-        />
-      </Pressable>
+    <Modal visible={!!product} transparent animationType="none" onRequestClose={handleClose}>
+      {/* Outer container — flex-end anchors sheet to bottom */}
+      <View style={{ flex: 1, justifyContent: 'flex-end' }}>
 
-      {/* Sheet — sits below the backdrop Pressable, outside it so it receives its own touches */}
-      <Animated.View
-        className="rounded-t-2xl bg-surface-container-lowest overflow-hidden"
-        style={{
-          transform: [{ translateY }],
-          paddingBottom: insets.bottom,
-        }}
-      >
-        {/* Header */}
-        <View className="bg-primary-container px-[16px] py-4 flex-row items-center justify-between">
-          <View className="flex-row items-center gap-3 flex-1">
-            <View className="h-12 w-12 items-center justify-center rounded-lg bg-primary-fixed">
-              <MaterialIcons name={product?.icon.replace('_', '-') as any} size={28} color={Colors.primary} />
+        {/* Backdrop — absoluteFill behind the sheet */}
+        <Pressable onPress={handleBackdropPress} style={StyleSheet.absoluteFill}>
+          <Animated.View
+            style={[StyleSheet.absoluteFill, { opacity: slideAnim, backgroundColor: 'rgba(0,0,0,0.45)' }]}
+          />
+        </Pressable>
+
+        {/* Sheet */}
+        <View className="rounded-t-3xl bg-white overflow-hidden"
+          style={{
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: -4 },
+            shadowOpacity: 0.12,
+            shadowRadius: 16,
+            elevation: 16,
+          }}
+        >
+          <Animated.View
+            style={{
+              transform: [{ translateY }],
+              paddingBottom: insets.bottom + 8,
+            }}
+          >
+            {/* Drag handle */}
+            <View className="items-center pt-3 pb-1">
+              <View className="w-10 h-1.5 rounded-full bg-gray-300" />
             </View>
-            <View className="flex-1">
-              <Text className="text-[20px] font-semibold" style={{ color: Colors.onPrimaryContainer }}>{product?.name}</Text>
-              <Text className="text-sm" style={{ color: Colors.onPrimaryContainer }}>{pricePerUnit} KES / {unit}</Text>
+
+          {/* Header */}
+          <View
+            className="flex-row items-center justify-between px-4 py-4"
+            style={{ backgroundColor: Colors.primaryContainer }}
+          >
+            <View className="flex-row items-center gap-3 flex-1">
+              <View
+                className="w-12 h-12 items-center justify-center rounded-xl"
+                style={{ backgroundColor: Colors.primaryFixed }}
+              >
+                <MaterialIcons
+                  name={product.icon.replace('_', '-') as any}
+                  size={28}
+                  color={Colors.primary}
+                />
+              </View>
+              <View className="flex-1">
+                <Text className="text-xl font-semibold" style={{ color: Colors.onPrimaryContainer }}>
+                  {product.name}
+                </Text>
+                <Text className="text-sm mt-0.5" style={{ color: Colors.onPrimaryContainer }}>
+                  {pricePerUnit} KES / {unit}
+                </Text>
+              </View>
             </View>
-          </View>
-          <Pressable onPress={handleClose} className="h-10 w-10 items-center justify-center rounded-full active:scale-95">
-            <MaterialIcons name="close" size={24} color={Colors.onPrimaryContainer} />
-          </Pressable>
-        </View>
-
-        {/* Drag handle */}
-        <View className="items-center pt-3 pb-2">
-          <View className="h-1.5 w-10 rounded-full bg-gray-300" />
-        </View>
-
-        <View className="px-[16px] pb-4">
-          {/* Fraction chips — cereal only */}
-          {isCereal && (
-            <View className="flex-row flex-wrap gap-[8px] mt-2">
-              {FRACTIONS.map((chip) => {
-                const isActive = fraction === chip.value;
-                return (
-                  <Pressable
-                    key={chip.label}
-                    onPress={() => {
-                      setFraction(chip.value);
-                      setQty(chip.value);
-                    }}
-                    className={`h-10 min-w-[48px] flex-row items-center justify-center rounded-full border px-3 active:scale-95 ${isActive ? 'border-secondary bg-secondary-container' : 'border-outline-variant bg-surface-container-lowest'}`}
-                  >
-                    <Text className={`text-sm font-semibold ${isActive ? 'text-on-secondary-container' : 'text-on-surface-variant'}`}>{chip.label}</Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-          )}
-
-          {/* Stepper */}
-          <View className="flex-row items-center gap-[12px] mt-4">
             <Pressable
-              onPress={handleDecrement}
-              disabled={!canDecrement}
-              className={`h-12 w-12 items-center justify-center rounded-full border ${canDecrement ? 'border-outline-variant bg-surface-container-lowest active:scale-95' : 'border-outline-variant bg-surface-container-high'}`}
+              onPress={handleClose}
+              className="w-10 h-10 items-center justify-center rounded-full active:scale-95"
             >
-              <Text className="text-lg font-bold text-on-surface-variant" style={{ opacity: canDecrement ? 1 : 0.38 }}>−</Text>
-            </Pressable>
-            <Text className="text-[20px] font-bold text-primary w-16 text-center">{formatQty(qty)}</Text>
-            <Pressable
-              onPress={handleIncrement}
-              className="h-12 w-12 items-center justify-center rounded-full border border-outline-variant bg-surface-container-lowest active:scale-95"
-            >
-              <Text className="text-lg font-bold text-on-surface-variant">+</Text>
+              <MaterialIcons name="close" size={24} color={Colors.onPrimaryContainer} />
             </Pressable>
           </View>
 
-          {/* Live price preview */}
-          <View className="mt-3">
-            <Text className="text-sm text-on-surface-variant">
-              {formatQty(qty)} {unit} × {pricePerUnit} KES = {formatLineTotal(qty, pricePerUnit)}
-            </Text>
-            {stockLevel != null && qty > stockLevel && (
-              <View className="mt-1 flex-row items-center gap-2">
-                <View className="rounded-full bg-yellow-100 px-2 py-0.5">
-                  <Text className="text-xs font-semibold text-yellow-700">Only {stockLevel} {unit} in stock</Text>
-                </View>
+          <View className="px-4 pt-4 pb-2">
+            {/* Fraction chips — cereal only */}
+            {isCereal && (
+              <View className="flex-row gap-2 mb-2">
+                {FRACTIONS.map((chip) => {
+                  const isActive = fraction === chip.value;
+                  return (
+                    <Pressable
+                      key={chip.label}
+                      onPress={() => {
+                        setFraction(chip.value);
+                        setQty(chip.value);
+                      }}
+                      className="flex-1 h-11 items-center justify-center rounded-full border active:scale-95"
+                      style={{
+                        backgroundColor: isActive ? Colors.secondaryContainer : Colors.surfaceContainerHigh,
+                        borderColor: isActive ? Colors.secondary : Colors.outlineVariant,
+                      }}
+                    >
+                      <Text
+                        className="text-sm font-bold"
+                        style={{ color: isActive ? Colors.onSecondaryContainer : Colors.onSurfaceVariant }}
+                      >
+                        {chip.label}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
               </View>
             )}
-            {atMax && (
-              <Text className="mt-1 text-xs font-semibold text-on-surface-variant">Max 99</Text>
-            )}
-            {qty <= minQty && (
-              <Text className="mt-1 text-sm text-on-surface-variant">Select a quantity</Text>
+
+            {/* Stepper */}
+            <View className="flex-row items-center gap-4 mt-4">
+              <Pressable
+                onPress={handleDecrement}
+                disabled={!canDecrement}
+                className="w-12 h-12 items-center justify-center rounded-full border border-outlineVariant active:scale-95"
+                style={{
+                  backgroundColor: Colors.surfaceContainerHigh,
+                  opacity: canDecrement ? 1 : 0.38,
+                }}
+              >
+                <Text className="text-2xl font-bold" style={{ color: Colors.onSurfaceVariant }}>−</Text>
+              </Pressable>
+
+              <Text
+                className="text-3xl font-extrabold text-center"
+                style={{ minWidth: 64, color: Colors.primary }}
+              >
+                {formatQty(qty)}
+              </Text>
+
+              <Pressable
+                onPress={handleIncrement}
+                className="w-12 h-12 items-center justify-center rounded-full border border-outlineVariant active:scale-95"
+                style={{ backgroundColor: Colors.surfaceContainerHigh }}
+              >
+                <Text className="text-2xl font-bold" style={{ color: Colors.onSurfaceVariant }}>+</Text>
+              </Pressable>
+            </View>
+
+            {/* Live price preview */}
+            <View className="mt-3 mb-2">
+              <Text className="text-sm" style={{ color: Colors.onSurfaceVariant }}>
+                {formatQty(qty)} {unit} × {pricePerUnit} KES ={' '}
+                <Text className="text-base font-bold" style={{ color: Colors.primary }}>
+                  {formatLineTotal(qty, pricePerUnit)}
+                </Text>
+              </Text>
+
+              {stockLevel != null && qty > stockLevel && (
+                <View className="mt-2 self-start rounded-full bg-yellow-100 px-3 py-0.5">
+                  <Text className="text-xs font-semibold text-yellow-700">
+                    Only {stockLevel} {unit} in stock
+                  </Text>
+                </View>
+              )}
+              {atMax && (
+                <Text className="mt-1 text-xs" style={{ color: Colors.onSurfaceVariant }}>Max 99</Text>
+              )}
+            </View>
+
+            {/* CTA */}
+            {isUpdate ? (
+              <>
+                <Pressable
+                  onPress={handleUpdateBasket}
+                  disabled={!canAdd}
+                  className="mt-2 mb-1 w-full flex-row items-center justify-center rounded-xl py-3.5 active:scale-95"
+                  style={{ backgroundColor: canAdd ? Colors.primary : '#d1d5db' }}
+                >
+                  <MaterialIcons
+                    name="check-circle"
+                    size={20}
+                    color={canAdd ? Colors.onPrimary : '#9ca3af'}
+                  />
+                  <Text
+                    className="ml-2 text-base font-semibold"
+                    style={{ color: canAdd ? Colors.onPrimary : '#6b7280' }}
+                  >
+                    Update
+                  </Text>
+                </Pressable>
+                <Text className="text-sm text-center mb-1" style={{ color: Colors.onSurfaceVariant }}>
+                  Already in basket — tap to update qty
+                </Text>
+              </>
+            ) : (
+              <Pressable
+                onPress={handleAddToBasket}
+                disabled={!canAdd}
+                className="mt-3 mb-1 w-full flex-row items-center justify-center rounded-xl py-3.5 active:scale-95"
+                style={{ backgroundColor: canAdd ? Colors.primary : '#d1d5db' }}
+              >
+                <MaterialIcons
+                  name="check-circle"
+                  size={20}
+                  color={canAdd ? Colors.onPrimary : '#9ca3af'}
+                />
+                <Text
+                  className="ml-2 text-base font-semibold"
+                  style={{ color: canAdd ? Colors.onPrimary : '#6b7280' }}
+                >
+                  Add to Basket
+                </Text>
+              </Pressable>
             )}
           </View>
-
-          {/* CTA */}
-          {isUpdate ? (
-            <Pressable
-              onPress={handleUpdateBasket}
-              disabled={!canAdd}
-              className={`mt-2 w-full flex-row items-center justify-center rounded-xl py-3.5 ${canAdd ? 'bg-primary active:scale-95' : 'bg-gray-300'}`}
-            >
-              <MaterialIcons name="check-circle" size={20} color={canAdd ? Colors.onPrimary : '#9ca3af'} />
-              <Text className={`ml-2 text-base font-semibold ${canAdd ? 'text-on-primary' : 'text-gray-500'}`}>Update</Text>
-            </Pressable>
-          ) : (
-            <Pressable
-              onPress={handleAddToBasket}
-              disabled={!canAdd}
-              className={`mt-4 w-full flex-row items-center justify-center rounded-xl py-3.5 ${canAdd ? 'bg-primary active:scale-95' : 'bg-gray-300'}`}
-            >
-              <MaterialIcons name="check-circle" size={20} color={canAdd ? Colors.onPrimary : '#9ca3af'} />
-              <Text className={`ml-2 text-base font-semibold ${canAdd ? 'text-on-primary' : 'text-gray-500'}`}>Add to Basket</Text>
-            </Pressable>
-          )}
-          {isUpdate && (
-            <Text className="text-sm text-on-surface-variant mt-2 text-center">Already in basket — tap to update qty</Text>
-          )}
+        </Animated.View>
         </View>
-      </Animated.View>
+      </View>
     </Modal>
   );
 }
