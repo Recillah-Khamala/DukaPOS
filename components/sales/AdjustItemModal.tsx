@@ -32,6 +32,7 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
   const [qty, setQty] = useState(1);
   const [fraction, setFraction] = useState<Fraction | undefined>(undefined);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const showSub = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
@@ -42,17 +43,30 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
     };
   }, []);
 
-   useEffect(() => {
-     if (!product) return;
-     const isCereal = 'type' in product ? product.type === 'cereal' : false;
-     const defaultQty = DEFAULT_QTY[product.id] ?? (isCereal ? 0.25 : 1);
-     setQty(defaultQty);
-     if (isCereal) {
-       setFraction(defaultQty as Fraction);
-     } else {
-       setFraction(undefined);
-     }
-   }, [product]);
+  // Control Modal visibility and open animation separately from product state
+  useEffect(() => {
+    if (product) {
+      setVisible(true);
+      slideAnim.setValue(0);
+      Animated.timing(slideAnim, {
+        toValue: 1,
+        duration: 260,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [product]);
+
+  useEffect(() => {
+    if (!product) return;
+    const isCereal = 'type' in product ? product.type === 'cereal' : false;
+    const defaultQty = DEFAULT_QTY[product.id] ?? (isCereal ? 0.25 : 1);
+    setQty(defaultQty);
+    if (isCereal) {
+      setFraction(defaultQty as Fraction);
+    } else {
+      setFraction(undefined);
+    }
+  }, [product]);
 
   useEffect(() => {
     if (!product) return;
@@ -65,13 +79,17 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
   }, [product]);
 
   const handleClose = () => {
+    // Call onClose immediately — this sets product to null in parent,
+    // which stops the freeze. The animation plays out visually but
+    // the Modal will hide as soon as visible is set to false below.
     Animated.timing(slideAnim, {
       toValue: 0,
       duration: 220,
       useNativeDriver: true,
     }).start(() => {
-      onClose();
+      setVisible(false);
     });
+    onClose(); // ← immediate, does not wait for animation
   };
 
   const handleBackdropPress = () => {
@@ -82,17 +100,17 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
     }
   };
 
-   if (!product) {
-     return null;
-   }
+  if (!product && !visible) {
+    return null;
+  }
 
-   // Extract fields with fallbacks for compatibility with both CerealProduct and PoshomillService
-   const pricePerUnit = 'price' in product ? product.price : product.pricePerKg;
-   const unit = 'unit' in product ? product.unit : 'kg';
-   const stockLevel = 'stockLevel' in product ? product.stockLevel : undefined;
-   const isCereal = 'type' in product ? product.type === 'cereal' : false;
+  // Extract fields with fallbacks for compatibility with both CerealProduct and PoshomillService
+  const pricePerUnit = product ? ('price' in product ? product.price : product.pricePerKg) : 0;
+  const unit = product ? ('unit' in product ? product.unit : 'kg') : 'kg';
+  const stockLevel = product ? ('stockLevel' in product ? product.stockLevel : undefined) : undefined;
+  const isCereal = product ? ('type' in product ? product.type === 'cereal' : false) : false;
 
-   const translateY = slideAnim.interpolate({
+  const translateY = slideAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [400, 0],
   });
@@ -113,37 +131,44 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
   };
 
   const handleAddToBasket = () => {
-    if (!canAdd) return;
+    if (!canAdd || !product) return;
     addItem({
-       id: `${product.id}_${Date.now()}`,
-       productId: product.id,
-       name: product.name,
-       qty,
-       unitPrice: pricePerUnit,
-       type: isCereal ? 'cereal' : 'service',
+      id: `${product.id}_${Date.now()}`,
+      productId: product.id,
+      name: product.name,
+      qty,
+      unitPrice: pricePerUnit,
+      type: isCereal ? 'cereal' : 'service',
     });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     handleClose();
   };
 
   const handleUpdateBasket = () => {
-    if (!canAdd) return;
+    if (!canAdd || !product) return;
     updateItemQty(product.id, qty);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     handleClose();
   };
 
-    const existingItem = items.find((i) => i.productId === product.id && i.type === (isCereal ? 'cereal' : 'service'));
-   const isUpdate = !!existingItem;
+  const existingItem = product
+    ? items.find((i) => i.productId === product.id && i.type === (isCereal ? 'cereal' : 'service'))
+    : undefined;
+  const isUpdate = !!existingItem;
 
   return (
-    <Modal visible={!!product} transparent animationType="none" onRequestClose={handleClose}>
-      <Pressable className="flex-1" onPress={handleBackdropPress}>
+    <Modal visible={visible} transparent animationType="none" onRequestClose={handleClose}>
+      {/* Backdrop — fills remaining space above the sheet */}
+      <Pressable
+        style={{ flex: 1 }}
+        onPress={handleBackdropPress}
+      >
         <Animated.View
-          className="flex-1"
-          style={{ backgroundColor: 'rgba(0,0,0,0.45)', opacity: slideAnim }}
+          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', opacity: slideAnim }}
         />
       </Pressable>
+
+      {/* Sheet — sits below the backdrop Pressable, outside it so it receives its own touches */}
       <Animated.View
         className="rounded-t-2xl bg-surface-container-lowest overflow-hidden"
         style={{
@@ -151,52 +176,59 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
           paddingBottom: insets.bottom,
         }}
       >
+        {/* Header */}
         <View className="bg-primary-container px-[16px] py-4 flex-row items-center justify-between">
           <View className="flex-row items-center gap-3 flex-1">
             <View className="h-12 w-12 items-center justify-center rounded-lg bg-primary-fixed">
-              <MaterialIcons name={product.icon.replace('_', '-') as any} size={28} color={Colors.primary} />
+              <MaterialIcons name={product?.icon.replace('_', '-') as any} size={28} color={Colors.primary} />
             </View>
-             <View className="flex-1">
-               <Text className="text-[20px] font-semibold" style={{ color: Colors.onPrimaryContainer }}>{product.name}</Text>
-               <Text className="text-sm" style={{ color: Colors.onPrimaryContainer }}>{pricePerUnit} KES / {unit}</Text>
-             </View>
+            <View className="flex-1">
+              <Text className="text-[20px] font-semibold" style={{ color: Colors.onPrimaryContainer }}>{product?.name}</Text>
+              <Text className="text-sm" style={{ color: Colors.onPrimaryContainer }}>{pricePerUnit} KES / {unit}</Text>
+            </View>
           </View>
           <Pressable onPress={handleClose} className="h-10 w-10 items-center justify-center rounded-full active:scale-95">
             <MaterialIcons name="close" size={24} color={Colors.onPrimaryContainer} />
           </Pressable>
         </View>
+
+        {/* Drag handle */}
         <View className="items-center pt-3 pb-2">
           <View className="h-1.5 w-10 rounded-full bg-gray-300" />
         </View>
 
         <View className="px-[16px] pb-4">
-          <View className="flex-row flex-wrap gap-[8px] mt-2">
-            {FRACTIONS.map((chip) => {
-              const isActive = fraction === chip.value;
-              return (
-                <Pressable
-                  key={chip.label}
-                  onPress={() => {
-                    setFraction(chip.value);
-                    setQty(chip.value);
-                  }}
-                  className={`h-10 min-w-[48px] flex-row items-center justify-center rounded-full border px-3 active:scale-95 ${isActive ? 'border-secondary bg-secondary-container' : 'border-outline-variant bg-surface-container-lowest'}`}
-                >
-                  <Text className={`text-sm font-semibold ${isActive ? 'text-on-secondary-container' : 'text-on-surface-variant'}`}>{chip.label}</Text>
-                </Pressable>
-              );
-            })}
-          </View>
+          {/* Fraction chips — cereal only */}
+          {isCereal && (
+            <View className="flex-row flex-wrap gap-[8px] mt-2">
+              {FRACTIONS.map((chip) => {
+                const isActive = fraction === chip.value;
+                return (
+                  <Pressable
+                    key={chip.label}
+                    onPress={() => {
+                      setFraction(chip.value);
+                      setQty(chip.value);
+                    }}
+                    className={`h-10 min-w-[48px] flex-row items-center justify-center rounded-full border px-3 active:scale-95 ${isActive ? 'border-secondary bg-secondary-container' : 'border-outline-variant bg-surface-container-lowest'}`}
+                  >
+                    <Text className={`text-sm font-semibold ${isActive ? 'text-on-secondary-container' : 'text-on-surface-variant'}`}>{chip.label}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          )}
 
+          {/* Stepper */}
           <View className="flex-row items-center gap-[12px] mt-4">
             <Pressable
               onPress={handleDecrement}
               disabled={!canDecrement}
               className={`h-12 w-12 items-center justify-center rounded-full border ${canDecrement ? 'border-outline-variant bg-surface-container-lowest active:scale-95' : 'border-outline-variant bg-surface-container-high'}`}
             >
-              <Text className={`text-lg font-bold ${canDecrement ? 'text-on-surface-variant' : 'text-on-surface-variant'}`} style={{ opacity: canDecrement ? 1 : 0.38 }}>−</Text>
+              <Text className="text-lg font-bold text-on-surface-variant" style={{ opacity: canDecrement ? 1 : 0.38 }}>−</Text>
             </Pressable>
-             <Text className="text-[20px] font-bold text-primary w-16 text-center">{formatQty(qty)}</Text>
+            <Text className="text-[20px] font-bold text-primary w-16 text-center">{formatQty(qty)}</Text>
             <Pressable
               onPress={handleIncrement}
               className="h-12 w-12 items-center justify-center rounded-full border border-outline-variant bg-surface-container-lowest active:scale-95"
@@ -205,17 +237,18 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
             </Pressable>
           </View>
 
+          {/* Live price preview */}
           <View className="mt-3">
-              <Text className="text-sm text-on-surface-variant">
-                {formatQty(qty)} {unit} × {pricePerUnit} KES = {formatLineTotal(qty, pricePerUnit)}
-              </Text>
-             {stockLevel != null && qty > stockLevel && (
-               <View className="mt-1 flex-row items-center gap-2">
-                 <View className="rounded-full bg-yellow-100 px-2 py-0.5">
-                   <Text className="text-xs font-semibold text-yellow-700">Only {stockLevel} {unit} in stock</Text>
-                 </View>
-               </View>
-             )}
+            <Text className="text-sm text-on-surface-variant">
+              {formatQty(qty)} {unit} × {pricePerUnit} KES = {formatLineTotal(qty, pricePerUnit)}
+            </Text>
+            {stockLevel != null && qty > stockLevel && (
+              <View className="mt-1 flex-row items-center gap-2">
+                <View className="rounded-full bg-yellow-100 px-2 py-0.5">
+                  <Text className="text-xs font-semibold text-yellow-700">Only {stockLevel} {unit} in stock</Text>
+                </View>
+              </View>
+            )}
             {atMax && (
               <Text className="mt-1 text-xs font-semibold text-on-surface-variant">Max 99</Text>
             )}
@@ -224,6 +257,7 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
             )}
           </View>
 
+          {/* CTA */}
           {isUpdate ? (
             <Pressable
               onPress={handleUpdateBasket}
