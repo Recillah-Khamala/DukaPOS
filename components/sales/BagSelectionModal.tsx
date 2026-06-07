@@ -5,6 +5,7 @@ import * as Haptics from 'expo-haptics';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Colors from '../../constants/colors';
 import { BAG_SIZES, BAG_TYPES, DEFAULT_BAG_TYPE, DEFAULT_BAG_SIZE, type BagSize, type BagType } from '../../constants/bagData';
+import { formatLineTotal } from '../../utils/formatQuantity';
 import type { CerealProduct } from '../../constants/salesData';
 
 type BagSelectionModalProps = {
@@ -13,11 +14,14 @@ type BagSelectionModalProps = {
   onConfirm: (bagType: BagType, bagSize: BagSize, qty: number) => void;
 };
 
+const MAX_QTY = 99;
+
 export default function BagSelectionModal({ product, onClose, onConfirm }: BagSelectionModalProps) {
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(0)).current;
   const [bagType, setBagType] = useState<BagType>(DEFAULT_BAG_TYPE);
   const [bagSize, setBagSize] = useState<BagSize>(DEFAULT_BAG_SIZE);
+  const [qty, setQty] = useState(1);
 
   useEffect(() => {
     if (!product) return;
@@ -48,9 +52,17 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
     onClose();
   };
 
+  const handleDecrement = () => {
+    setQty((prev) => Math.max(1, prev - 1));
+  };
+
+  const handleIncrement = () => {
+    setQty((prev) => Math.min(MAX_QTY, prev + 1));
+  };
+
   const handleConfirm = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    onConfirm(bagType, bagSize, bagSize === 'small' ? 5 : bagSize === 'medium' ? 10 : 20);
+    onConfirm(bagType, bagSize, qty);
     handleClose();
   };
 
@@ -158,8 +170,43 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
                 })}
               </View>
 
+              <Text className="text-[12px] font-bold text-on-surface-variant uppercase mb-2">
+                QUANTITY
+              </Text>
+              <View className="flex-row items-center gap-4 mb-4">
+                <Pressable
+                  onPress={handleDecrement}
+                  disabled={qty <= 1}
+                  className="w-12 h-12 items-center justify-center rounded-full border"
+                  style={{
+                    backgroundColor: qty <= 1 ? Colors.surfaceContainerHigh : Colors.surfaceContainerHigh,
+                    borderColor: qty <= 1 ? Colors.outlineVariant : Colors.outlineVariant,
+                    opacity: qty <= 1 ? 0.38 : 1,
+                  }}
+                >
+                  <Text className="text-2xl font-bold" style={{ color: Colors.onSurfaceVariant }}>−</Text>
+                </Pressable>
+
+                <Text className="text-3xl font-extrabold text-center" style={{ minWidth: 64, color: Colors.primary }}>
+                  {qty}
+                </Text>
+
+                <Pressable
+                  onPress={handleIncrement}
+                  disabled={qty >= MAX_QTY}
+                  className="w-12 h-12 items-center justify-center rounded-full border"
+                  style={{
+                    backgroundColor: Colors.surfaceContainerHigh,
+                    borderColor: Colors.outlineVariant,
+                  }}
+                >
+                  <Text className="text-2xl font-bold" style={{ color: Colors.onSurfaceVariant }}>+</Text>
+                </Pressable>
+              </View>
+
               <Text className="text-sm text-on-surface-variant mb-4">
-                {sizeInfo?.label} {bagType === 'plastic' ? 'Plastic' : 'Woven'} Bag — {bagPrice} KES
+                {qty} × {sizeInfo?.label} {bagType === 'plastic' ? 'Plastic' : 'Woven'} Bag ={' '}
+                <Text className="font-bold text-primary">{formatLineTotal(qty, bagPrice)}</Text>
               </Text>
 
               <Pressable
