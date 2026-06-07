@@ -1,3 +1,5 @@
+import type { BagType, BagSize } from '../constants/bagData';
+
 export interface BasketItem {
   id: string;
   productId: string;
@@ -7,6 +9,9 @@ export interface BasketItem {
   type: 'cereal' | 'service';
   icon?: string;
   isService?: boolean;
+  bagType?: BagType;
+  bagSize?: BagSize;
+  packagingMode?: 'kg' | 'bag' | 'pack';
 }
 
 export type PaymentMethod = 'cash' | 'mpesa';
