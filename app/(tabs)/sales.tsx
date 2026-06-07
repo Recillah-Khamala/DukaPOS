@@ -115,7 +115,13 @@ export default function SalesScreen() {
               return (
                 <Pressable
                   key={product.id}
-                  onPress={() => setSelectedProduct(product)}
+                  onPress={() => {
+                    if (currentMode === 'bag' || currentMode === 'pack') {
+                      setBagProduct(product);
+                    } else {
+                      setSelectedProduct(product);
+                    }
+                  }}
                   className={`w-[48%] bg-surface-container-lowest rounded-xl p-[16px] border-2 active:scale-95 ${isFlashing ? 'border-secondary' : 'border-transparent'}`}
                   style={{
                     shadowColor: '#000',
