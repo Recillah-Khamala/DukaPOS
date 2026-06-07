@@ -4,10 +4,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Colors from '../../constants/colors';
-import { BAG_SIZES, BAG_TYPES, type BagType, type BagSize } from '../../constants/bagData';
+import { BAG_SIZES, BAG_TYPES, type BagSize, type BagType } from '../../constants/bagData';
+import type { CerealProduct } from '../../constants/salesData';
 
 type BagSelectionModalProps = {
-  product: { id: string; name: string; pricePerKg: number; icon: string } | null;
+  product: CerealProduct | null;
   onClose: () => void;
   onConfirm: (bagType: BagType, bagSize: BagSize, qty: number) => void;
 };
