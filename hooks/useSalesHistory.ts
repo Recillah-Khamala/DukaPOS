@@ -14,9 +14,11 @@ function productToBasketItem(product: typeof mockProducts[0]): BasketItem {
   };
   return {
     id: product.id,
+    productId: product.id,
     name: product.name,
+    qty: Math.floor(Math.random() * 20) + 5,
     unitPrice: product.price,
-    quantity: Math.floor(Math.random() * 20) + 5,
+    type: 'cereal',
     icon: iconMap[product.category] || 'shopping-bag',
   };
 }

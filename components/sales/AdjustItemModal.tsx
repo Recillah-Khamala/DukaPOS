@@ -145,6 +145,10 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
       qty,
       unitPrice,
       type: isCereal ? 'cereal' : 'service',
+      fractionLabel: isPiece ? undefined : fraction ? quantityLabel as '1/8' | '1/4' | '1/2' | '1' : undefined,
+      unitLabel: unitLabel,
+      unitType: unitType,
+      icon: product.icon,
     });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     handleClose();

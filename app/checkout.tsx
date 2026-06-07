@@ -8,7 +8,25 @@ import BasketItemCard from '../components/ui/BasketItemCard';
 import PaymentMethodSelector from '../components/ui/PaymentMethodSelector';
 import ChangeCalculator from '../components/ui/ChangeCalculator';
 import { useSharedBasket } from '../context/BasketContext';
-import type { PaymentMethod } from '../types';
+import type { PaymentMethod, UnitType } from '../types';
+
+const FRACTION_CYCLE: UnitType[] = ['korokoro', 'kg'];
+
+const fractionValues: number[] = [0.125, 0.25, 0.5, 1];
+
+const getNextFraction = (current: number): number | null => {
+  const idx = fractionValues.indexOf(current);
+  if (idx >= 0 && idx < fractionValues.length - 1) return fractionValues[idx + 1];
+  // If value doesn't match exactly, find next standard fraction
+  return fractionValues.find((v) => v > current) ?? null;
+};
+
+const getPrevFraction = (current: number): number | null => {
+  const idx = fractionValues.indexOf(current);
+  if (idx > 0) return fractionValues[idx - 1];
+  // If value doesn't match exactly (e.g., 1.25 or 2), snap to largest fraction below
+  return fractionValues.filter((v) => v < current).pop() ?? null;
+};
 
 export default function CheckoutScreen() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
@@ -41,37 +59,56 @@ export default function CheckoutScreen() {
             <Text className="mt-2 text-neutral-400">Your basket is empty</Text>
           </View>
         }
-        renderItem={({ item }) => (
-          <View className="mb-3">
-            <BasketItemCard item={item} />
-            <View className="flex-row items-center justify-between mt-2 pl-14">
-              <View className="flex-row items-center gap-3">
+        renderItem={({ item }) => {
+          const isFractional = item.unitType && FRACTION_CYCLE.includes(item.unitType);
+          return (
+            <View className="mb-3">
+              <BasketItemCard item={item} />
+              <View className="flex-row items-center justify-between mt-2 pl-14">
+                <View className="flex-row items-center gap-3">
+                  <Pressable
+                    onPress={() => {
+                      if (isFractional && item.qty === 0.125) {
+                        removeItem(item.id);
+                      } else if (isFractional) {
+                        const next = getPrevFraction(item.qty);
+                        if (next !== null) updateQuantity(item.id, next);
+                      } else {
+                        updateQuantity(item.id, Math.max(1, item.qty - 1));
+                      }
+                    }}
+                    className="h-8 w-8 items-center justify-center rounded-md bg-gray-100"
+                  >
+                    <Text className="text-base font-semibold text-neutral-700">−</Text>
+                  </Pressable>
+                  <Text className="text-base font-medium text-neutral-900 w-8 text-center">
+                    {isFractional ? item.fractionLabel : item.qty}
+                  </Text>
+                  <Pressable
+                    onPress={() => {
+                      if (isFractional) {
+                        const next = getNextFraction(item.qty);
+                        if (next !== null) updateQuantity(item.id, next);
+                      } else {
+                        updateQuantity(item.id, item.qty + 1);
+                      }
+                    }}
+                    className="h-8 w-8 items-center justify-center rounded-md bg-gray-100"
+                  >
+                    <Text className="text-base font-semibold text-neutral-700">+</Text>
+                  </Pressable>
+                </View>
                 <Pressable
-                  onPress={() => updateQuantity(item.id, Math.max(1, item.qty - 1))}
-                  className="h-8 w-8 items-center justify-center rounded-md bg-gray-100"
+                  onPress={() => removeItem(item.id)}
+                  className="flex-row items-center gap-1 px-3 py-1.5 rounded-md bg-red-50"
                 >
-                  <Text className="text-base font-semibold text-neutral-700">−</Text>
-                </Pressable>
-                <Text className="text-base font-medium text-neutral-900 w-8 text-center">
-                  {item.qty}
-                </Text>
-                <Pressable
-                  onPress={() => updateQuantity(item.id, item.qty + 1)}
-                  className="h-8 w-8 items-center justify-center rounded-md bg-gray-100"
-                >
-                  <Text className="text-base font-semibold text-neutral-700">+</Text>
+                  <MaterialIcons name="delete" size={16} color="#dc2626" />
+                  <Text className="text-sm font-medium text-red-600">Remove</Text>
                 </Pressable>
               </View>
-              <Pressable
-                onPress={() => removeItem(item.id)}
-                className="flex-row items-center gap-1 px-3 py-1.5 rounded-md bg-red-50"
-              >
-                <MaterialIcons name="delete" size={16} color="#dc2626" />
-                <Text className="text-sm font-medium text-red-600">Remove</Text>
-              </Pressable>
             </View>
-          </View>
-        )}
+          );
+        }}
         ListFooterComponent={
           items.length > 0 ? (
             <View className="mt-4 gap-4">

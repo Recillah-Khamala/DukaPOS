@@ -73,14 +73,16 @@ export default function BagSelectionModal({ product, onClose }: BagSelectionModa
     const variant = product.variants.find(v => v.size === selectedSize);
     if (variant) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      const displayName = `${variant.label} ${product.name}`;
       addItem({
         id: `${product.id}_${Date.now()}`,
         productId: product.id,
-        name: displayName,
+        name: product.name,
         qty,
         unitPrice: variant.price,
         type: 'bag',
+        variantLabel: variant.label,
+        unitType: product.unitType,
+        icon: product.icon,
       });
       handleClose();
     }

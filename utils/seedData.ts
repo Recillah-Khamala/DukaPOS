@@ -54,10 +54,12 @@ const generateRandomBasketItem = (): BasketItem => {
   const roundedUnitPrice = Math.round(unitPrice * 100) / 100;
 
   return {
-    id: product.id,
+    id: `${product.id}-${Date.now()}-${Math.random()}`,
+    productId: product.id,
     name: product.name,
     unitPrice: roundedUnitPrice,
     qty,
+    type: 'cereal',
     icon: ICON_MAP[product.category] || 'shopping-bag',
   };
 };

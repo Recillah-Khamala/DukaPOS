@@ -1,13 +1,33 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Text, View } from 'react-native';
 import type { BasketItem } from '../../types';
-import { formatQty, formatLineTotal } from '../../utils/formatQuantity';
+import { formatLineTotal } from '../../utils/formatQuantity';
 
 export type BasketItemCardProps = {
   item: BasketItem;
 };
 
 export default function BasketItemCard({ item }: BasketItemCardProps) {
+  const getQuantityDisplay = () => {
+    if (item.type === 'bag') {
+      return item.qty;
+    }
+    if (item.fractionLabel) {
+      return item.fractionLabel;
+    }
+    return item.qty;
+  };
+
+  const getUnitDisplay = () => {
+    if (item.unitLabel) {
+      return item.unitLabel;
+    }
+    return 'Piece';
+  };
+
+  const isFraction = !!item.fractionLabel;
+  const isBag = item.type === 'bag';
+
   return (
     <View
       className="flex-row items-center gap-3 rounded-lg bg-white p-3"
@@ -33,17 +53,34 @@ export default function BasketItemCard({ item }: BasketItemCardProps) {
       {/* Middle: Item Name and Unit Price */}
       <View className="flex-1">
         <Text className="text-base font-semibold text-neutral-900">{item.name}</Text>
+        {isBag && (
+          <View className="mt-1 self-start rounded-full bg-surface-container-high px-2 py-0.5">
+            <Text className="text-xs font-bold text-on-surface-variant">Bag</Text>
+          </View>
+        )}
         <Text className="text-sm text-neutral-500">
           KSh {item.unitPrice.toLocaleString()} each
         </Text>
       </View>
 
-      {/* Right: Total Price and Quantity */}
+{/* Right: Total Price and Quantity */}
       <View className="items-end">
         <Text className="text-lg font-bold text-neutral-900">
           {formatLineTotal(item.qty, item.unitPrice)}
         </Text>
-        <Text className="text-sm text-neutral-600">Qty: {formatQty(item.qty)}</Text>
+        {isBag ? (
+          <Text className="text-sm text-neutral-600">
+            {getQuantityDisplay()} × {item.variantLabel} {item.name}
+          </Text>
+        ) : isFraction ? (
+          <Text className="text-sm text-neutral-600">
+            {getQuantityDisplay()} {getUnitDisplay()}
+          </Text>
+        ) : (
+          <Text className="text-sm text-neutral-600">
+            {getQuantityDisplay()} × {getUnitDisplay()}
+          </Text>
+        )}
       </View>
     </View>
   );

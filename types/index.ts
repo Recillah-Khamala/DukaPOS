@@ -43,6 +43,7 @@ export interface BasketItem {
   unitType?: UnitType;
   fractionLabel?: FractionLabel;
   unitLabel?: string;
+  variantLabel?: string;
 }
 
 export type PaymentMethod = 'cash' | 'mpesa';
