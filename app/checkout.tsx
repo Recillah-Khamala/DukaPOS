@@ -30,7 +30,11 @@ export default function CheckoutScreen() {
         className="flex-1"
         data={items}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 12, paddingBottom: bottomNavHeight + 24 }}
+        contentContainerStyle={{
+          paddingTop: 72,
+          paddingHorizontal: 16,
+          paddingBottom: bottomNavHeight + 24,
+        }}
         ListEmptyComponent={
           <View className="items-center py-16">
             <MaterialIcons name="shopping-basket" size={48} color="#d1d5db" />
@@ -72,7 +76,11 @@ export default function CheckoutScreen() {
           items.length > 0 ? (
             <View className="mt-4 gap-4">
               <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} />
-              <ChangeCalculator totalBill={total} cashReceived={cashReceived} onCashReceivedChange={setCashReceived} />
+              <ChangeCalculator
+                totalBill={total}
+                cashReceived={cashReceived}
+                onCashReceivedChange={setCashReceived}
+              />
               <Pressable
                 onPress={handleConfirm}
                 className="w-full py-3.5 rounded-lg items-center"
