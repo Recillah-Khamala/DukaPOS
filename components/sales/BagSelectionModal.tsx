@@ -5,6 +5,7 @@ import * as Haptics from 'expo-haptics';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
+import { formatLineTotal, roundToNearest5 } from '../../utils/formatQuantity';
 import type { BagProduct } from '../../types';
 
 type BagSelectionModalProps = {
@@ -96,7 +97,7 @@ export default function BagSelectionModal({ product, onClose }: BagSelectionModa
   });
 
   const selectedVariant = product.variants.find(v => v.size === selectedSize);
-  const totalPrice = (qty * (selectedVariant?.price ?? 0));
+  const totalPrice = roundToNearest5(qty * (selectedVariant?.price ?? 0));
 
   return (
     <Modal visible={!!product} transparent animationType="none" onRequestClose={handleClose}>
@@ -232,7 +233,7 @@ export default function BagSelectionModal({ product, onClose }: BagSelectionModa
               {/* Live price preview */}
               <Text className="text-sm text-on-surface-variant mb-4">
                 {qty} × {selectedVariant?.label} {product.name} ={' '}
-                <Text className="font-bold text-primary">{totalPrice.toLocaleString()} KES</Text>
+                <Text className="font-bold text-primary">{formatLineTotal(qty, selectedVariant?.price ?? 0)}</Text>
               </Text>
 
               {/* CTA */}

@@ -71,7 +71,8 @@ export function useBasket(initialItems: BasketItem[] = []) {
   };
 
   const total = useMemo(() => {
-    return items.reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
+    const sum = items.reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
+    return Math.round(sum / 5) * 5; // Round to nearest 5
   }, [items]);
 
   return { items, addItem, removeItem, updateQuantity, updateItemQty, clearBasket, total, clear: clearBasket };

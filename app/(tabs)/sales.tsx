@@ -8,7 +8,7 @@ import BagSelectionModal from '../../components/sales/BagSelectionModal';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
 import { CEREAL_PRODUCTS, POSHOMILL_SERVICES, BAG_PRODUCTS } from '../../constants/salesData';
-import { formatQty } from '../../utils/formatQuantity';
+import { formatQty, formatLineTotal } from '../../utils/formatQuantity';
 import type { BagProduct } from '../../types';
 
 export default function SalesScreen() {
@@ -111,7 +111,7 @@ export default function SalesScreen() {
                   </View>
                   <View className="mt-2">
                     <Text className="text-sm text-on-surface-variant">
-                      {formatQty(currentQty)} {unitLabel} × {unitPrice} KES = <Text className="text-base font-bold text-primary">{(currentQty * unitPrice).toFixed(2)} KES</Text>
+                      {formatQty(currentQty)} {unitLabel} × {unitPrice} KES = <Text className="text-base font-bold text-primary">{formatLineTotal(currentQty, unitPrice)}</Text>
                     </Text>
                   </View>
                 </Pressable>
@@ -229,9 +229,9 @@ export default function SalesScreen() {
           }}
         >
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <Text style={{ fontSize: 16, fontWeight: '600', color: Colors.onPrimary }}>
-              Total Due: Ksh {total.toFixed(2)}
-            </Text>
+<Text style={{ fontSize: 16, fontWeight: '600', color: Colors.onPrimary }}>
+               Total Due: Ksh {total}
+             </Text>
             <Text style={{ fontSize: 14, fontWeight: '500', color: Colors.onPrimary, opacity: 0.9 }}>
               {items.length} item{items.length !== 1 ? 's' : ''}
             </Text>
