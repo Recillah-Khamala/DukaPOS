@@ -54,10 +54,25 @@ export default function SalesScreen() {
   const handleBagConfirm = useCallback(
     (bagType: BagType, bagSize: BagSize, qty: number) => {
       if (!bagProduct) return;
-      addToBasket(bagProduct.id, bagProduct.name, bagProduct.pricePerKg, qty, 'cereal', bagProduct.id, bagType, bagSize, modes[bagProduct.id] ?? 'bag');
+      const sizeLabel = bagSize === 'small' ? 'Small' : bagSize === 'medium' ? 'Medium' : 'Big';
+      const typeLabel = bagType === 'plastic' ? 'Plastic' : 'Woven';
+      const sizeMultiplier = bagSize === 'small' ? 0.5 : bagSize === 'medium' ? 1 : 2;
+      addItem({
+        id: `${bagProduct.id}_bag_${Date.now()}`,
+        productId: bagProduct.id,
+        name: `${bagProduct.name} — ${sizeLabel} ${typeLabel} Bag`,
+        qty,
+        unitPrice: (bagProduct.pricePerBag ?? 5) * sizeMultiplier,
+        type: 'cereal',
+        bagType,
+        bagSize,
+        packagingMode: 'bag',
+      });
+      setFlashingId(bagProduct.id);
+      setTimeout(() => setFlashingId(null), 300);
       setBagProduct(null);
     },
-    [bagProduct, addToBasket, modes]
+    [bagProduct, addItem]
   );
 
   const getQty = (id: string) => qtys[id] ?? 1;
@@ -93,11 +108,11 @@ export default function SalesScreen() {
             </View>
           </View>
           <View className="flex-row flex-wrap gap-[12px]">
-{CEREAL_PRODUCTS.map((product) => {
-               const isFlashing = flashingId === product.id;
-               const currentQty = getQty(product.id);
-               const currentMode = modes[product.id] ?? 'kg';
-               return (
+            {CEREAL_PRODUCTS.map((product) => {
+              const isFlashing = flashingId === product.id;
+              const currentQty = getQty(product.id);
+              const currentMode = modes[product.id] ?? 'kg';
+              return (
                 <Pressable
                   key={product.id}
                   onPress={() => setSelectedProduct(product)}

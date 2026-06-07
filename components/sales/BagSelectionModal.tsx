@@ -214,9 +214,9 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
                 className="w-full flex-row items-center justify-center rounded-xl py-3.5 active:scale-95"
                 style={{ backgroundColor: Colors.primary }}
               >
-                <MaterialIcons name="check-circle" size={20} color={Colors.onPrimary} />
+                <MaterialIcons name="add" size={20} color={Colors.onPrimary} />
                 <Text className="ml-2 text-base font-semibold" style={{ color: Colors.onPrimary }}>
-                  Add to Basket
+                  Add Bag to Basket
                 </Text>
               </Pressable>
             </View>
