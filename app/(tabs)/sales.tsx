@@ -4,10 +4,12 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import AdjustItemModal from '../../components/sales/AdjustItemModal';
+import BagSelectionModal from '../../components/sales/BagSelectionModal';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
-import { CEREAL_PRODUCTS, POSHOMILL_SERVICES } from '../../constants/salesData';
+import { CEREAL_PRODUCTS, POSHOMILL_SERVICES, BAG_PRODUCTS } from '../../constants/salesData';
 import { formatQty } from '../../utils/formatQuantity';
+import type { BagProduct } from '../../types';
 
 export default function SalesScreen() {
   const router = useRouter();
@@ -15,6 +17,7 @@ export default function SalesScreen() {
   const [flashingId, setFlashingId] = useState<string | null>(null);
   const [qtys, setQtys] = useState<Record<string, number>>({});
   const [selectedProduct, setSelectedProduct] = useState<typeof CEREAL_PRODUCTS[number] | typeof POSHOMILL_SERVICES[number] | null>(null);
+  const [selectedBagProduct, setSelectedBagProduct] = useState<BagProduct | null>(null);
   const { items, total, addItem } = useSharedBasket();
 
   const handleQtyChange = useCallback(
@@ -166,6 +169,42 @@ export default function SalesScreen() {
           </View>
         </View>
 
+        {/* Packaging Section */}
+        <View className="px-[16px] mt-[8px]">
+          <Text className="text-[20px] font-semibold text-primary mb-[8px]">Packaging</Text>
+          <View className="flex-col gap-[8px]">
+            {BAG_PRODUCTS.map((bag) => {
+              const isFlashing = flashingId === bag.id;
+              const minVariant = bag.variants[0];
+              const maxVariant = bag.variants[bag.variants.length - 1];
+              return (
+                <Pressable
+                  key={bag.id}
+                  onPress={() => setSelectedBagProduct(bag)}
+                  className={`flex-row items-center justify-between bg-surface-container-lowest rounded-xl p-[16px] border-l-[4px] active:scale-95 ${isFlashing ? 'border-secondary' : 'border-secondary'}`}
+                  style={{
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.08,
+                    shadowRadius: 12,
+                    elevation: 3,
+                  }}
+                >
+                  <View className="flex-row items-center gap-[16px]">
+                    <MaterialIcons name={bag.icon.replace('_', '-') as any} size={28} color={Colors.secondary} />
+                    <View>
+                      <Text className="font-bold text-[16px] text-on-surface">{bag.name}</Text>
+                      <Text className="font-bold text-[14px] text-on-surface-variant">
+                        {minVariant?.price} – {maxVariant?.price} KES
+                      </Text>
+                    </View>
+                  </View>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+
         <View style={{ height: 16 }} />
         </ScrollView>
       </View>
@@ -210,6 +249,7 @@ export default function SalesScreen() {
       )}
 
       <AdjustItemModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
+      <BagSelectionModal product={selectedBagProduct} onClose={() => setSelectedBagProduct(null)} />
       <BottomNavBar activeTab="sales" onHeightMeasured={setBottomNavHeight} />
     </View>
   );
