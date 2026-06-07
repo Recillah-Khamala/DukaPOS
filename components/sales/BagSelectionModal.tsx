@@ -10,13 +10,14 @@ import type { CerealProduct } from '../../constants/salesData';
 
 type BagSelectionModalProps = {
   product: CerealProduct | null;
+  initialMode?: 'bag' | 'pack';
   onClose: () => void;
   onConfirm: (bagType: BagType, bagSize: BagSize, qty: number) => void;
 };
 
 const MAX_QTY = 99;
 
-export default function BagSelectionModal({ product, onClose, onConfirm }: BagSelectionModalProps) {
+export default function BagSelectionModal({ product, initialMode = 'bag', onClose, onConfirm }: BagSelectionModalProps) {
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(0)).current;
   const [bagType, setBagType] = useState<BagType>(DEFAULT_BAG_TYPE);
@@ -75,6 +76,7 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
 
   const sizeInfo = BAG_SIZES.find((s) => s.value === bagSize);
   const bagPrice = (product.pricePerBag ?? 5) * sizeInfo!.priceMultiplier;
+  const packPrice = product.pricePerPack ?? 50;
 
   return (
     <Modal visible={!!product} transparent animationType="none" onRequestClose={handleClose}>
@@ -107,7 +109,7 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
                 </View>
                 <View className="flex-1">
                   <Text className="text-xl font-semibold" style={{ color: Colors.onPrimaryContainer }}>
-                    Packaging (Bags)
+                    {initialMode === 'pack' ? 'Packaging (Packs)' : 'Packaging (Bags)'}
                   </Text>
                   <Text className="text-sm" style={{ color: Colors.onPrimaryContainer }}>
                     {product.name}
@@ -120,55 +122,69 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
             </View>
 
             <View className="px-4 pt-4 pb-2">
-              <Text className="text-[12px] font-bold text-on-surface-variant uppercase mb-2">
-                BAG TYPE
-              </Text>
-              <View className="flex-row gap-2 mb-4">
-                {BAG_TYPES.map((t) => {
-                  const isActive = bagType === t.value;
-                  return (
-                    <Pressable
-                      key={t.value}
-                      onPress={() => setBagType(t.value)}
-                      className="flex-1 items-center px-2 py-1 rounded-md"
-                      style={{
-                        backgroundColor: isActive ? Colors.secondaryContainer : Colors.surfaceContainerHigh,
-                        borderColor: isActive ? Colors.secondary : undefined,
-                        borderWidth: 1,
-                      }}
-                    >
-                      <Text className="text-[12px] font-bold" style={{ color: isActive ? Colors.onSecondaryContainer : Colors.onSurfaceVariant }}>
-                        {t.label}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
+              {initialMode === 'pack' ? (
+                <>
+                  <Text className="text-[12px] font-bold text-on-surface-variant uppercase mb-2">
+                    {product.packSize ?? '500g'} Pack
+                  </Text>
+                  <Text className="text-sm text-on-surface-variant mb-4">
+                    {qty} × {product.packSize ?? '500g'} Pack ={' '}
+                    <Text className="font-bold text-primary">{formatLineTotal(qty, packPrice)}</Text>
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <Text className="text-[12px] font-bold text-on-surface-variant uppercase mb-2">
+                    BAG TYPE
+                  </Text>
+                  <View className="flex-row gap-2 mb-4">
+                    {BAG_TYPES.map((t) => {
+                      const isActive = bagType === t.value;
+                      return (
+                        <Pressable
+                          key={t.value}
+                          onPress={() => setBagType(t.value)}
+                          className="flex-1 items-center px-2 py-1 rounded-md"
+                          style={{
+                            backgroundColor: isActive ? Colors.secondaryContainer : Colors.surfaceContainerHigh,
+                            borderColor: isActive ? Colors.secondary : undefined,
+                            borderWidth: 1,
+                          }}
+                        >
+                          <Text className="text-[12px] font-bold" style={{ color: isActive ? Colors.onSecondaryContainer : Colors.onSurfaceVariant }}>
+                            {t.label}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
 
-              <Text className="text-[12px] font-bold text-on-surface-variant uppercase mb-2">
-                SIZE
-              </Text>
-              <View className="flex-row gap-2 mb-4">
-                {BAG_SIZES.map((s) => {
-                  const isActive = bagSize === s.value;
-                  return (
-                    <Pressable
-                      key={s.value}
-                      onPress={() => setBagSize(s.value)}
-                      className="flex-1 items-center px-2 py-1 rounded-md"
-                      style={{
-                        backgroundColor: isActive ? Colors.secondaryContainer : Colors.surfaceContainerHigh,
-                        borderColor: isActive ? Colors.secondary : undefined,
-                        borderWidth: 1,
-                      }}
-                    >
-                      <Text className="text-[12px] font-bold" style={{ color: isActive ? Colors.onSecondaryContainer : Colors.onSurfaceVariant }}>
-                        {s.label}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
+                  <Text className="text-[12px] font-bold text-on-surface-variant uppercase mb-2">
+                    SIZE
+                  </Text>
+                  <View className="flex-row gap-2 mb-4">
+                    {BAG_SIZES.map((s) => {
+                      const isActive = bagSize === s.value;
+                      return (
+                        <Pressable
+                          key={s.value}
+                          onPress={() => setBagSize(s.value)}
+                          className="flex-1 items-center px-2 py-1 rounded-md"
+                          style={{
+                            backgroundColor: isActive ? Colors.secondaryContainer : Colors.surfaceContainerHigh,
+                            borderColor: isActive ? Colors.secondary : undefined,
+                            borderWidth: 1,
+                          }}
+                        >
+                          <Text className="text-[12px] font-bold" style={{ color: isActive ? Colors.onSecondaryContainer : Colors.onSurfaceVariant }}>
+                            {s.label}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                </>
+              )}
 
               <Text className="text-[12px] font-bold text-on-surface-variant uppercase mb-2">
                 QUANTITY
@@ -204,10 +220,17 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
                 </Pressable>
               </View>
 
-              <Text className="text-sm text-on-surface-variant mb-4">
-                {qty} × {sizeInfo?.label} {bagType === 'plastic' ? 'Plastic' : 'Woven'} Bag ={' '}
-                <Text className="font-bold text-primary">{formatLineTotal(qty, bagPrice)}</Text>
-              </Text>
+              {initialMode === 'pack' ? (
+                <Text className="text-sm text-on-surface-variant mb-4">
+                  {qty} × {product.packSize ?? '500g'} Pack ={' '}
+                  <Text className="font-bold text-primary">{formatLineTotal(qty, packPrice)}</Text>
+                </Text>
+              ) : (
+                <Text className="text-sm text-on-surface-variant mb-4">
+                  {qty} × {sizeInfo?.label} {bagType === 'plastic' ? 'Plastic' : 'Woven'} Bag ={' '}
+                  <Text className="font-bold text-primary">{formatLineTotal(qty, bagPrice)}</Text>
+                </Text>
+              )}
 
               <Pressable
                 onPress={handleConfirm}
@@ -216,7 +239,7 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
               >
                 <MaterialIcons name="add" size={20} color={Colors.onPrimary} />
                 <Text className="ml-2 text-base font-semibold" style={{ color: Colors.onPrimary }}>
-                  Add Bag to Basket
+                  {initialMode === 'pack' ? 'Add Pack to Basket' : 'Add Bag to Basket'}
                 </Text>
               </Pressable>
             </View>

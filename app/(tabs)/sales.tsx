@@ -19,6 +19,7 @@ export default function SalesScreen() {
   const [modes, setModes] = useState<Record<string, 'kg' | 'bag' | 'pack'>>({});
   const [selectedProduct, setSelectedProduct] = useState<typeof CEREAL_PRODUCTS[number] | typeof POSHOMILL_SERVICES[number] | null>(null);
   const [bagProduct, setBagProduct] = useState<typeof CEREAL_PRODUCTS[number] | null>(null);
+  const [packagingMode, setPackagingMode] = useState<'bag' | 'pack'>('bag');
   const { items, total, addItem } = useSharedBasket();
 
   const handleQtyChange = useCallback(
@@ -54,25 +55,38 @@ export default function SalesScreen() {
   const handleBagConfirm = useCallback(
     (bagType: BagType, bagSize: BagSize, qty: number) => {
       if (!bagProduct) return;
-      const sizeLabel = bagSize === 'small' ? 'Small' : bagSize === 'medium' ? 'Medium' : 'Big';
-      const typeLabel = bagType === 'plastic' ? 'Plastic' : 'Woven';
-      const sizeMultiplier = bagSize === 'small' ? 0.5 : bagSize === 'medium' ? 1 : 2;
-      addItem({
-        id: `${bagProduct.id}_bag_${Date.now()}`,
-        productId: bagProduct.id,
-        name: `${bagProduct.name} — ${sizeLabel} ${typeLabel} Bag`,
-        qty,
-        unitPrice: (bagProduct.pricePerBag ?? 5) * sizeMultiplier,
-        type: 'cereal',
-        bagType,
-        bagSize,
-        packagingMode: 'bag',
-      });
+      if (packagingMode === 'pack') {
+        const packLabel = bagProduct.packSize ?? '500g';
+        addItem({
+          id: `${bagProduct.id}_pack_${Date.now()}`,
+          productId: bagProduct.id,
+          name: `${bagProduct.name} — ${packLabel} Pack × ${qty}`,
+          qty,
+          unitPrice: bagProduct.pricePerPack ?? 50,
+          type: 'cereal',
+          packagingMode: 'pack',
+        });
+      } else {
+        const sizeLabel = bagSize === 'small' ? 'Small' : bagSize === 'medium' ? 'Medium' : 'Big';
+        const typeLabel = bagType === 'plastic' ? 'Plastic' : 'Woven';
+        const sizeMultiplier = bagSize === 'small' ? 0.5 : bagSize === 'medium' ? 1 : 2;
+        addItem({
+          id: `${bagProduct.id}_bag_${Date.now()}`,
+          productId: bagProduct.id,
+          name: `${bagProduct.name} — ${sizeLabel} ${typeLabel} Bag`,
+          qty,
+          unitPrice: (bagProduct.pricePerBag ?? 5) * sizeMultiplier,
+          type: 'cereal',
+          bagType,
+          bagSize,
+          packagingMode: 'bag',
+        });
+      }
       setFlashingId(bagProduct.id);
       setTimeout(() => setFlashingId(null), 300);
       setBagProduct(null);
     },
-    [bagProduct, addItem]
+    [bagProduct, addItem, packagingMode]
   );
 
   const getQty = (id: string) => qtys[id] ?? 1;
@@ -117,6 +131,7 @@ export default function SalesScreen() {
                   key={product.id}
                   onPress={() => {
                     if (currentMode === 'bag' || currentMode === 'pack') {
+                      setPackagingMode(currentMode);
                       setBagProduct(product);
                     } else {
                       setSelectedProduct(product);
@@ -146,6 +161,7 @@ export default function SalesScreen() {
                           onPress={() => {
                             setModes((prev) => ({ ...prev, [product.id]: m }));
                             if (m === 'bag' || m === 'pack') {
+                              setPackagingMode(m);
                               setBagProduct(product);
                             } else {
                               setSelectedProduct(product);
@@ -287,7 +303,7 @@ export default function SalesScreen() {
       )}
 
       <AdjustItemModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
-      <BagSelectionModal product={bagProduct} onClose={() => setBagProduct(null)} onConfirm={handleBagConfirm} />
+      <BagSelectionModal product={bagProduct} initialMode={packagingMode} onClose={() => setBagProduct(null)} onConfirm={handleBagConfirm} />
       <BottomNavBar activeTab="sales" onHeightMeasured={setBottomNavHeight} />
     </View>
   );
