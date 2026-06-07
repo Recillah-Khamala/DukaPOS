@@ -6,7 +6,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
 import type { CerealProduct, PoshomillService } from '../../constants/salesData';
-import { formatQty, formatLineTotal } from '../../utils/formatQuantity';
+import { formatLineTotal } from '../../utils/formatQuantity';
 
 type AdjustItemModalProps = {
   product: CerealProduct | PoshomillService | null;
@@ -93,10 +93,13 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
 
   const isCereal = 'type' in product ? product.type === 'cereal' : false;
   const firstUnit = product.units[0];
-  const unitLabel = firstUnit?.label ?? 'kg';
-  const unitType = firstUnit?.type ?? 'kg';
+  const unitLabel = firstUnit?.label ?? 'KG';
   const fractionPrices = firstUnit?.fractionPrices ?? [];
-  const unitPrice = fractionPrices.find(fp => fp.fraction === 1)?.price ?? product.pricePerKg;
+  
+  // Look up price for the selected fraction (or 1 if no fraction selected)
+  const activeFraction = fraction ?? 1;
+  const unitPrice = fractionPrices.find(fp => fp.fraction === activeFraction)?.price ?? product.pricePerKg;
+  const fractionLabel = fractionPrices.find(fp => fp.fraction === activeFraction)?.label ?? '1';
 
   const translateY = slideAnim.interpolate({
     inputRange: [0, 1],
@@ -259,7 +262,7 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
                 className="text-3xl font-extrabold text-center"
                 style={{ minWidth: 64, color: Colors.primary }}
               >
-                {formatQty(qty)}
+                {fractionLabel}
               </Text>
 
               <Pressable
@@ -274,7 +277,7 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
             {/* Live price preview */}
             <View className="mt-3 mb-2">
               <Text className="text-sm" style={{ color: Colors.onSurfaceVariant }}>
-                {formatQty(qty)} {unitLabel} × {unitPrice} KES ={' '}
+                {fractionLabel} {unitLabel} × {unitPrice} KES ={' '}
                 <Text className="text-base font-bold" style={{ color: Colors.primary }}>
                   {formatLineTotal(qty, unitPrice)}
                 </Text>
