@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Colors from '../../constants/colors';
-import { BAG_SIZES, BAG_TYPES, type BagSize, type BagType } from '../../constants/bagData';
+import { BAG_SIZES, BAG_TYPES, DEFAULT_BAG_TYPE, DEFAULT_BAG_SIZE, type BagSize, type BagType } from '../../constants/bagData';
 import type { CerealProduct } from '../../constants/salesData';
 
 type BagSelectionModalProps = {
@@ -16,8 +16,8 @@ type BagSelectionModalProps = {
 export default function BagSelectionModal({ product, onClose, onConfirm }: BagSelectionModalProps) {
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(0)).current;
-  const [selectedBagType, setSelectedBagType] = useState<BagType>('plastic');
-  const [selectedBagSize, setSelectedBagSize] = useState<BagSize>('medium');
+  const [bagType, setBagType] = useState<BagType>(DEFAULT_BAG_TYPE);
+  const [selectedBagSize, setSelectedBagSize] = useState<BagSize>(DEFAULT_BAG_SIZE);
 
   useEffect(() => {
     if (!product) return;
@@ -50,7 +50,7 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
 
   const handleConfirm = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    onConfirm(selectedBagType, selectedBagSize, selectedBagSize === 'small' ? 5 : selectedBagSize === 'medium' ? 10 : 20);
+    onConfirm(bagType, selectedBagSize, selectedBagSize === 'small' ? 5 : selectedBagSize === 'medium' ? 10 : 20);
     handleClose();
   };
 
@@ -105,16 +105,21 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
             </View>
 
             <View className="px-4 pt-4 pb-2">
-              <View className="flex-row gap-2 mb-3">
+              <Text className="text-[12px] font-bold text-on-surface-variant uppercase mb-2">
+                BAG TYPE
+              </Text>
+              <View className="flex-row gap-2 mb-4">
                 {BAG_TYPES.map((t) => {
-                  const isActive = selectedBagType === t.value;
+                  const isActive = bagType === t.value;
                   return (
                     <Pressable
                       key={t.value}
-                      onPress={() => setSelectedBagType(t.value)}
+                      onPress={() => setBagType(t.value)}
                       className="flex-1 items-center px-2 py-1 rounded-md"
                       style={{
-                        backgroundColor: isActive ? Colors.secondaryContainer : 'transparent',
+                        backgroundColor: isActive ? Colors.secondaryContainer : Colors.surfaceContainerHigh,
+                        borderColor: isActive ? Colors.secondary : undefined,
+                        borderWidth: 1,
                       }}
                     >
                       <Text className="text-[12px] font-bold" style={{ color: isActive ? Colors.onSecondaryContainer : Colors.onSurfaceVariant }}>
