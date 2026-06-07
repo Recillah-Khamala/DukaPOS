@@ -3,13 +3,13 @@ import { Animated, BackHandler, Modal, Pressable, StyleSheet, Text, View } from 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
 import type { BagProduct } from '../../types';
 
 type BagSelectionModalProps = {
   product: BagProduct | null;
   onClose: () => void;
-  onConfirm?: (variant: { size: string; label: string; price: number; qty: number }) => void;
 };
 
 const SIZE_OPTIONS: { size: string; label: string }[] = [
@@ -20,9 +20,10 @@ const SIZE_OPTIONS: { size: string; label: string }[] = [
 
 const MAX_QTY = 99;
 
-export default function BagSelectionModal({ product, onClose, onConfirm }: BagSelectionModalProps) {
+export default function BagSelectionModal({ product, onClose }: BagSelectionModalProps) {
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(0)).current;
+  const { addItem } = useSharedBasket();
   const [selectedSize, setSelectedSize] = useState<string>('medium');
   const [qty, setQty] = useState(1);
 
@@ -67,12 +68,20 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
     setQty((prev) => Math.min(MAX_QTY, prev + 1));
   };
 
-  const handleConfirm = () => {
+  const handleAddToBasket = () => {
     if (!product) return;
     const variant = product.variants.find(v => v.size === selectedSize);
-    if (variant && onConfirm) {
+    if (variant) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      onConfirm({ ...variant, qty });
+      const displayName = `${variant.label} ${product.name}`;
+      addItem({
+        id: `${product.id}_${Date.now()}`,
+        productId: product.id,
+        name: displayName,
+        qty,
+        unitPrice: variant.price,
+        type: 'bag',
+      });
       handleClose();
     }
   };
@@ -223,6 +232,18 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
                 {qty} × {selectedVariant?.label} {product.name} ={' '}
                 <Text className="font-bold text-primary">{totalPrice.toLocaleString()} KES</Text>
               </Text>
+
+              {/* CTA */}
+              <Pressable
+                onPress={handleAddToBasket}
+                className="w-full flex-row items-center justify-center rounded-xl py-3.5 active:scale-95"
+                style={{ backgroundColor: Colors.primary }}
+              >
+                <MaterialIcons name="add" size={20} color={Colors.onPrimary} />
+                <Text className="ml-2 text-base font-semibold" style={{ color: Colors.onPrimary }}>
+                  Add Bag to Basket
+                </Text>
+              </Pressable>
             </View>
           </Animated.View>
         </View>

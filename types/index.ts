@@ -37,7 +37,7 @@ export interface BasketItem {
   name: string;
   qty: number;
   unitPrice: number;
-  type: 'cereal' | 'service';
+  type: 'cereal' | 'service' | 'bag';
   icon?: string;
   isService?: boolean;
   unitType?: UnitType;
