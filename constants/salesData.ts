@@ -1,4 +1,4 @@
-import type { ProductUnit, UnitType, FractionPrice } from '../types';
+import type { ProductUnit, UnitType, FractionPrice, BagProduct } from '../types';
 
 export type CerealProduct = {
   id: string
@@ -123,6 +123,31 @@ export const POSHOMILL_SERVICES: PoshomillService[] = [
         label: 'KG',
         fractionPrices: createFractionPrices({ '1/8': 2, '1/4': 4, '1/2': 7, '1': 15 }),
       },
+    ],
+  },
+]
+
+export const BAG_PRODUCTS: BagProduct[] = [
+  {
+    id: 'b1',
+    name: 'Plastic Bag',
+    icon: 'shopping-bag',
+    unitType: 'bag_size',
+    variants: [
+      { size: 'small', label: 'Small', price: 5 },
+      { size: 'medium', label: 'Medium', price: 10 },
+      { size: 'big', label: 'Big', price: 20 },
+    ],
+  },
+  {
+    id: 'b2',
+    name: 'Woven Bag',
+    icon: 'work-outline',
+    unitType: 'bag_size',
+    variants: [
+      { size: 'small', label: 'Small', price: 10 },
+      { size: 'medium', label: 'Medium', price: 20 },
+      { size: 'big', label: 'Big', price: 40 },
     ],
   },
 ]

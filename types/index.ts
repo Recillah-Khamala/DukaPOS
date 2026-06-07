@@ -17,6 +17,20 @@ export interface ProductUnit {
   pricePerUnit?: number;
 }
 
+export interface BagVariant {
+  size: string;
+  label: string;
+  price: number;
+}
+
+export interface BagProduct {
+  id: string;
+  name: string;
+  icon: string;
+  variants: BagVariant[];
+  unitType: 'bag_size';
+}
+
 export interface BasketItem {
   id: string;
   productId: string;
