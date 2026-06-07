@@ -1,33 +1,128 @@
+import type { ProductUnit, UnitType, FractionPrice } from '../types';
+
 export type CerealProduct = {
   id: string
   name: string
-  pricePerKg: number
-  price: number
   icon: string
   type: 'cereal'
-  unit?: string
+  units: ProductUnit[]
   stockLevel?: number
-  pricePerBag?: number
-  packSize?: string
-  pricePerPack?: number
+  pricePerKg: number
 }
 
 export type PoshomillService = {
   id: string
   name: string
-  pricePerKg: number
   icon: string
+  units: ProductUnit[]
+  pricePerKg: number
 }
 
+const createFractionPrices = (prices: { '1/8': number; '1/4': number; '1/2': number; '1': number }): FractionPrice[] => [
+  { fraction: 0.125, label: '1/8', price: prices['1/8'] },
+  { fraction: 0.25, label: '1/4', price: prices['1/4'] },
+  { fraction: 0.5, label: '1/2', price: prices['1/2'] },
+  { fraction: 1, label: '1', price: prices['1'] },
+];
+
 export const CEREAL_PRODUCTS: CerealProduct[] = [
-  { id: 'c1', name: 'Maize',      pricePerKg: 95,  price: 95,  icon: 'grass',          type: 'cereal', unit: 'kg', pricePerBag: 5, pricePerPack: 50 },
-  { id: 'c2', name: 'Beans',      pricePerKg: 160, price: 160, icon: 'eco',            type: 'cereal', unit: 'kg', pricePerBag: 5, pricePerPack: 50 },
-  { id: 'c3', name: 'Groundnuts', pricePerKg: 220, price: 220, icon: 'grain',          type: 'cereal', unit: 'kg', pricePerBag: 5, pricePerPack: 50 },
-  { id: 'c4', name: 'Sorghum',    pricePerKg: 110, price: 110, icon: 'water_drop',     type: 'cereal', unit: 'kg', pricePerBag: 5, pricePerPack: 50 },
-  { id: 'c5', name: 'Millet',     pricePerKg: 145, price: 145, icon: 'filter_vintage', type: 'cereal', unit: 'kg', pricePerBag: 5, pricePerPack: 50, packSize: '500g' },
+  {
+    id: 'c1',
+    name: 'Maize',
+    icon: 'grass',
+    type: 'cereal',
+    pricePerKg: 130,
+    units: [
+      {
+        type: 'korokoro',
+        label: 'Korokoro',
+        fractionPrices: createFractionPrices({ '1/8': 15, '1/4': 30, '1/2': 65, '1': 130 }),
+      },
+    ],
+  },
+  {
+    id: 'c2',
+    name: 'Beans',
+    icon: 'eco',
+    type: 'cereal',
+    pricePerKg: 160,
+    units: [
+      {
+        type: 'korokoro',
+        label: 'Korokoro',
+        fractionPrices: createFractionPrices({ '1/8': 20, '1/4': 40, '1/2': 80, '1': 160 }),
+      },
+    ],
+  },
+  {
+    id: 'c3',
+    name: 'Groundnuts',
+    icon: 'grain',
+    type: 'cereal',
+    pricePerKg: 220,
+    units: [
+      {
+        type: 'korokoro',
+        label: 'Korokoro',
+        fractionPrices: createFractionPrices({ '1/8': 25, '1/4': 50, '1/2': 110, '1': 220 }),
+      },
+    ],
+  },
+  {
+    id: 'c4',
+    name: 'Sorghum',
+    icon: 'water_drop',
+    type: 'cereal',
+    pricePerKg: 110,
+    units: [
+      {
+        type: 'korokoro',
+        label: 'Korokoro',
+        fractionPrices: createFractionPrices({ '1/8': 15, '1/4': 30, '1/2': 55, '1': 110 }),
+      },
+    ],
+  },
+  {
+    id: 'c5',
+    name: 'Millet',
+    icon: 'filter_vintage',
+    type: 'cereal',
+    pricePerKg: 145,
+    units: [
+      {
+        type: 'korokoro',
+        label: 'Korokoro',
+        fractionPrices: createFractionPrices({ '1/8': 20, '1/4': 40, '1/2': 80, '1': 145 }),
+      },
+    ],
+  },
 ]
 
 export const POSHOMILL_SERVICES: PoshomillService[] = [
-  { id: 'p1', name: 'Grade 1 Milling', pricePerKg: 20, icon: 'settings_suggest' },
-  { id: 'p2', name: 'Regular Milling',  pricePerKg: 15, icon: 'shutter_speed'    },
+  {
+    id: 'p1',
+    name: 'Grade 1 Milling',
+    icon: 'settings_suggest',
+    pricePerKg: 20,
+    units: [
+      {
+        type: 'kg',
+        label: 'KG',
+        fractionPrices: createFractionPrices({ '1/8': 3, '1/4': 5, '1/2': 10, '1': 20 }),
+      },
+    ],
+  },
+  {
+    id: 'p2',
+    name: 'Regular Milling',
+    icon: 'shutter_speed',
+    pricePerKg: 15,
+    units: [
+      {
+        type: 'kg',
+        label: 'KG',
+        fractionPrices: createFractionPrices({ '1/8': 2, '1/4': 4, '1/2': 7, '1': 15 }),
+      },
+    ],
+  },
 ]
