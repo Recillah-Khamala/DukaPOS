@@ -67,8 +67,11 @@ export default function SalesScreen() {
             {CEREAL_PRODUCTS.map((product) => {
               const isFlashing = flashingId === product.id;
               const currentQty = getQty(product.id);
-              const unitPrice = product.units[0]?.fractionPrices?.find(fp => fp.fraction === 1)?.price ?? product.pricePerKg;
+              const fractionPrices = product.units[0]?.fractionPrices ?? [];
+              const minFractionPrice = fractionPrices[0]?.price ?? 0;
+              const maxFractionPrice = fractionPrices[fractionPrices.length - 1]?.price ?? 0;
               const unitLabel = product.units[0]?.label ?? 'korokoro';
+              const unitPrice = fractionPrices.find(fp => fp.fraction === 1)?.price ?? maxFractionPrice;
               return (
                 <Pressable
                   key={product.id}
@@ -86,7 +89,9 @@ export default function SalesScreen() {
                     <MaterialIcons name={product.icon.replace('_', '-') as any} size={32} color={Colors.primary} />
                   </View>
                   <Text className="font-bold text-[14px] text-on-surface-variant">{product.name}</Text>
-                  <Text className="text-[28px] font-extrabold text-primary">{unitPrice} <Text className="font-bold text-[14px] text-primary">KES</Text></Text>
+                  <Text className="text-[28px] font-extrabold text-primary">
+                    {minFractionPrice} – {maxFractionPrice} KES / {unitLabel}
+                  </Text>
 
                   <View className="flex-row items-center gap-[12px] mt-3">
                     <Pressable
