@@ -61,7 +61,11 @@ export default function SalesScreen() {
       <View style={{ flex: 1 }}>
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingBottom: 120 }}
+          contentContainerStyle={{
+            paddingHorizontal: 16,
+            paddingTop: 16,
+            paddingBottom: items.length > 0 ? bottomNavHeight + 140 : bottomNavHeight + 24,
+          }}
           keyboardShouldPersistTaps="handled"
           scrollEnabled={true}
         >
