@@ -151,3 +151,8 @@ export const BAG_PRODUCTS: BagProduct[] = [
     ],
   },
 ]
+
+export const PACKAGING_SECTION = {
+  title: 'Packaging',
+  products: BAG_PRODUCTS,
+}
