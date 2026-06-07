@@ -1,25 +1,20 @@
-﻿import React, { useState, useCallback, useRef } from 'react';
+﻿import React, { useState, useCallback } from 'react';
 import { Text, View, ScrollView, Pressable } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import AdjustItemModal from '../../components/sales/AdjustItemModal';
-import BagSelectionModal from '../../components/sales/BagSelectionModal';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
 import { CEREAL_PRODUCTS, POSHOMILL_SERVICES } from '../../constants/salesData';
-import { formatQty, formatPackLabel, formatBagLabel } from '../../utils/formatQuantity';
-import type { BagType, BagSize } from '../../constants/bagData';
+import { formatQty } from '../../utils/formatQuantity';
 
 export default function SalesScreen() {
   const router = useRouter();
   const [bottomNavHeight, setBottomNavHeight] = useState(0);
   const [flashingId, setFlashingId] = useState<string | null>(null);
   const [qtys, setQtys] = useState<Record<string, number>>({});
-  const [modes, setModes] = useState<Record<string, 'kg' | 'bag' | 'pack'>>({});
   const [selectedProduct, setSelectedProduct] = useState<typeof CEREAL_PRODUCTS[number] | typeof POSHOMILL_SERVICES[number] | null>(null);
-  const [bagProduct, setBagProduct] = useState<typeof CEREAL_PRODUCTS[number] | null>(null);
-  const [packagingMode, setPackagingMode] = useState<'bag' | 'pack'>('bag');
   const { items, total, addItem } = useSharedBasket();
 
   const handleQtyChange = useCallback(
@@ -31,60 +26,6 @@ export default function SalesScreen() {
       });
     },
     []
-  );
-
-  const addToBasket = useCallback(
-    (id: string, name: string, unitPrice: number, qty: number, type: 'cereal' | 'service', productId: string, bagType?: BagType, bagSize?: BagSize, packagingMode?: 'kg' | 'bag' | 'pack') => {
-      addItem({
-        id: `${id}_${Date.now()}`,
-        productId,
-        name,
-        qty,
-        unitPrice,
-        type,
-        bagType,
-        bagSize,
-        packagingMode,
-      });
-      setFlashingId(id);
-      setTimeout(() => setFlashingId(null), 300);
-    },
-    [addItem]
-  );
-
-  const handleBagConfirm = useCallback(
-    (bagType: BagType | undefined, bagSize: BagSize | undefined, qty: number, packSize?: string) => {
-      if (!bagProduct) return;
-      if (packSize) {
-        addItem({
-          id: `${bagProduct.id}_pack_${Date.now()}`,
-          productId: bagProduct.id,
-          name: `${bagProduct.name} — ${formatPackLabel(qty, packSize)}`,
-          qty,
-          unitPrice: bagProduct.pricePerPack ?? 50,
-          type: 'cereal',
-          packagingMode: 'pack',
-          packSize,
-        });
-      } else if (bagType && bagSize) {
-        const sizeMultiplier = bagSize === 'small' ? 0.5 : bagSize === 'medium' ? 1 : 2;
-        addItem({
-          id: `${bagProduct.id}_bag_${Date.now()}`,
-          productId: bagProduct.id,
-          name: `${bagProduct.name} — ${formatBagLabel(qty, bagSize, bagType)}`,
-          qty,
-          unitPrice: (bagProduct.pricePerBag ?? 5) * sizeMultiplier,
-          type: 'cereal',
-          bagType,
-          bagSize,
-          packagingMode: 'bag',
-        });
-      }
-      setFlashingId(bagProduct.id);
-      setTimeout(() => setFlashingId(null), 300);
-      setBagProduct(null);
-    },
-    [bagProduct, addItem]
   );
 
   const getQty = (id: string) => qtys[id] ?? 1;
@@ -123,18 +64,10 @@ export default function SalesScreen() {
             {CEREAL_PRODUCTS.map((product) => {
               const isFlashing = flashingId === product.id;
               const currentQty = getQty(product.id);
-              const currentMode = modes[product.id] ?? 'kg';
               return (
                 <Pressable
                   key={product.id}
-                  onPress={() => {
-                    if (currentMode === 'bag' || currentMode === 'pack') {
-                      setPackagingMode(currentMode);
-                      setBagProduct(product);
-                    } else {
-                      setSelectedProduct(product);
-                    }
-                  }}
+                  onPress={() => setSelectedProduct(product)}
                   className={`w-[48%] bg-surface-container-lowest rounded-xl p-[16px] border-2 active:scale-95 ${isFlashing ? 'border-secondary' : 'border-transparent'}`}
                   style={{
                     shadowColor: '#000',
@@ -149,32 +82,6 @@ export default function SalesScreen() {
                   </View>
                   <Text className="font-bold text-[14px] text-on-surface-variant">{product.name}</Text>
                   <Text className="text-[28px] font-extrabold text-primary">{product.pricePerKg} <Text className="font-bold text-[14px] text-primary">KES</Text></Text>
-
-                  <View className="flex-row gap-1 mt-2">
-                    {(['kg', 'bag', 'pack'] as const).map((m) => {
-                      const isActive = currentMode === m;
-                      return (
-                        <Pressable
-                          key={m}
-                          onPress={() => {
-                            setModes((prev) => ({ ...prev, [product.id]: m }));
-                            if (m === 'bag' || m === 'pack') {
-                              setPackagingMode(m);
-                              setBagProduct(product);
-                            } else {
-                              setSelectedProduct(product);
-                            }
-                          }}
-                          className="flex-1 items-center px-2 py-1 rounded-md active:scale-95"
-                          style={{ backgroundColor: isActive ? Colors.secondaryContainer : 'transparent' }}
-                        >
-                          <Text className="text-[12px] font-bold" style={{ color: isActive ? Colors.onSecondaryContainer : Colors.onSurfaceVariant }}>
-                            {m.toUpperCase()}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
 
                   <View className="flex-row items-center gap-[12px] mt-3">
                     <Pressable
@@ -301,7 +208,6 @@ export default function SalesScreen() {
       )}
 
       <AdjustItemModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
-      <BagSelectionModal product={bagProduct} initialMode={packagingMode} onClose={() => setBagProduct(null)} onConfirm={handleBagConfirm} />
       <BottomNavBar activeTab="sales" onHeightMeasured={setBottomNavHeight} />
     </View>
   );
