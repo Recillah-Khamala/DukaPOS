@@ -88,14 +88,14 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
             <View className="flex-row items-center justify-between px-4 py-4" style={{ backgroundColor: Colors.primaryContainer }}>
               <View className="flex-row items-center gap-3 flex-1">
                 <View className="w-12 h-12 items-center justify-center rounded-xl" style={{ backgroundColor: Colors.primaryFixed }}>
-                  <MaterialIcons name={product.icon.replace('_', '-') as any} size={28} color={Colors.primary} />
+                  <MaterialIcons name="shopping-bag" size={28} color={Colors.primary} />
                 </View>
                 <View className="flex-1">
                   <Text className="text-xl font-semibold" style={{ color: Colors.onPrimaryContainer }}>
-                    {product.name}
+                    Packaging (Bags)
                   </Text>
-                  <Text className="text-sm mt-0.5" style={{ color: Colors.onPrimaryContainer }}>
-                    {product.pricePerKg} KES / kg
+                  <Text className="text-sm" style={{ color: Colors.onPrimaryContainer }}>
+                    {product.name}
                   </Text>
                 </View>
               </View>
