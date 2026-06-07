@@ -17,7 +17,7 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(0)).current;
   const [bagType, setBagType] = useState<BagType>(DEFAULT_BAG_TYPE);
-  const [selectedBagSize, setSelectedBagSize] = useState<BagSize>(DEFAULT_BAG_SIZE);
+  const [bagSize, setBagSize] = useState<BagSize>(DEFAULT_BAG_SIZE);
 
   useEffect(() => {
     if (!product) return;
@@ -50,7 +50,7 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
 
   const handleConfirm = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    onConfirm(bagType, selectedBagSize, selectedBagSize === 'small' ? 5 : selectedBagSize === 'medium' ? 10 : 20);
+    onConfirm(bagType, bagSize, bagSize === 'small' ? 5 : bagSize === 'medium' ? 10 : 20);
     handleClose();
   };
 
@@ -60,6 +60,9 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
     inputRange: [0, 1],
     outputRange: [600, 0],
   });
+
+  const sizeInfo = BAG_SIZES.find((s) => s.value === bagSize);
+  const bagPrice = (product.pricePerBag ?? 5) * sizeInfo!.priceMultiplier;
 
   return (
     <Modal visible={!!product} transparent animationType="none" onRequestClose={handleClose}>
@@ -130,16 +133,21 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
                 })}
               </View>
 
+              <Text className="text-[12px] font-bold text-on-surface-variant uppercase mb-2">
+                SIZE
+              </Text>
               <View className="flex-row gap-2 mb-4">
                 {BAG_SIZES.map((s) => {
-                  const isActive = selectedBagSize === s.value;
+                  const isActive = bagSize === s.value;
                   return (
                     <Pressable
                       key={s.value}
-                      onPress={() => setSelectedBagSize(s.value)}
+                      onPress={() => setBagSize(s.value)}
                       className="flex-1 items-center px-2 py-1 rounded-md"
                       style={{
-                        backgroundColor: isActive ? Colors.secondaryContainer : 'transparent',
+                        backgroundColor: isActive ? Colors.secondaryContainer : Colors.surfaceContainerHigh,
+                        borderColor: isActive ? Colors.secondary : undefined,
+                        borderWidth: 1,
                       }}
                     >
                       <Text className="text-[12px] font-bold" style={{ color: isActive ? Colors.onSecondaryContainer : Colors.onSurfaceVariant }}>
@@ -149,6 +157,10 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
                   );
                 })}
               </View>
+
+              <Text className="text-sm text-on-surface-variant mb-4">
+                {sizeInfo?.label} {bagType === 'plastic' ? 'Plastic' : 'Woven'} Bag — {bagPrice} KES
+              </Text>
 
               <Pressable
                 onPress={handleConfirm}
