@@ -9,7 +9,7 @@ import type { BagProduct } from '../../types';
 type BagSelectionModalProps = {
   product: BagProduct | null;
   onClose: () => void;
-  onConfirm?: (variant: { size: string; label: string; price: number }) => void;
+  onConfirm?: (variant: { size: string; label: string; price: number; qty: number }) => void;
 };
 
 const SIZE_OPTIONS: { size: string; label: string }[] = [
@@ -18,13 +18,19 @@ const SIZE_OPTIONS: { size: string; label: string }[] = [
   { size: 'big', label: 'Big' },
 ];
 
+const MAX_QTY = 99;
+
 export default function BagSelectionModal({ product, onClose, onConfirm }: BagSelectionModalProps) {
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(0)).current;
   const [selectedSize, setSelectedSize] = useState<string>('medium');
+  const [qty, setQty] = useState(1);
 
   useEffect(() => {
     if (!product) return;
+    // Reset state when product changes
+    setSelectedSize('medium');
+    setQty(1);
     // Animate sheet up on open
     slideAnim.setValue(0);
     Animated.timing(slideAnim, {
@@ -53,12 +59,20 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
     onClose();
   };
 
+  const handleDecrement = () => {
+    setQty((prev) => Math.max(1, prev - 1));
+  };
+
+  const handleIncrement = () => {
+    setQty((prev) => Math.min(MAX_QTY, prev + 1));
+  };
+
   const handleConfirm = () => {
     if (!product) return;
     const variant = product.variants.find(v => v.size === selectedSize);
     if (variant && onConfirm) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      onConfirm(variant);
+      onConfirm({ ...variant, qty });
       handleClose();
     }
   };
@@ -69,6 +83,9 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
     inputRange: [0, 1],
     outputRange: [600, 0],
   });
+
+  const selectedVariant = product.variants.find(v => v.size === selectedSize);
+  const totalPrice = (qty * (selectedVariant?.price ?? 0));
 
   return (
     <Modal visible={!!product} transparent animationType="none" onRequestClose={handleClose}>
@@ -142,7 +159,6 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
               <View className="flex-row gap-2 mb-4">
                 {SIZE_OPTIONS.map((option) => {
                   const isActive = selectedSize === option.size;
-                  const variant = product.variants.find(v => v.size === option.size);
                   return (
                     <Pressable
                       key={option.size}
@@ -164,6 +180,49 @@ export default function BagSelectionModal({ product, onClose, onConfirm }: BagSe
                   );
                 })}
               </View>
+
+              {/* Quantity label */}
+              <Text className="text-[12px] font-bold text-on-surface-variant uppercase mb-2">
+                QUANTITY
+              </Text>
+
+              {/* Stepper */}
+              <View className="flex-row items-center gap-4 mb-4">
+                <Pressable
+                  onPress={handleDecrement}
+                  disabled={qty <= 1}
+                  className="w-12 h-12 items-center justify-center rounded-full border"
+                  style={{
+                    backgroundColor: qty <= 1 ? Colors.surfaceContainerHigh : Colors.surfaceContainerHigh,
+                    borderColor: qty <= 1 ? Colors.outlineVariant : Colors.outlineVariant,
+                    opacity: qty <= 1 ? 0.38 : 1,
+                  }}
+                >
+                  <Text className="text-2xl font-bold" style={{ color: Colors.onSurfaceVariant }}>−</Text>
+                </Pressable>
+
+                <Text className="text-3xl font-extrabold text-center" style={{ minWidth: 64, color: Colors.primary }}>
+                  {qty}
+                </Text>
+
+                <Pressable
+                  onPress={handleIncrement}
+                  disabled={qty >= MAX_QTY}
+                  className="w-12 h-12 items-center justify-center rounded-full border"
+                  style={{
+                    backgroundColor: Colors.surfaceContainerHigh,
+                    borderColor: Colors.outlineVariant,
+                  }}
+                >
+                  <Text className="text-2xl font-bold" style={{ color: Colors.onSurfaceVariant }}>+</Text>
+                </Pressable>
+              </View>
+
+              {/* Live price preview */}
+              <Text className="text-sm text-on-surface-variant mb-4">
+                {qty} × {selectedVariant?.label} {product.name} ={' '}
+                <Text className="font-bold text-primary">{totalPrice.toLocaleString()} KES</Text>
+              </Text>
             </View>
           </Animated.View>
         </View>
