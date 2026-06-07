@@ -57,13 +57,15 @@ export default function SalesScreen() {
           <View className="flex-row justify-between items-center mb-[8px]">
             <Text className="text-[20px] font-semibold text-primary">Cereal Sales</Text>
             <View className="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-bold text-[14px]">
-              <Text>Unit: KG</Text>
+              <Text>Unit: Korokoro</Text>
             </View>
           </View>
           <View className="flex-row flex-wrap gap-[12px]">
             {CEREAL_PRODUCTS.map((product) => {
               const isFlashing = flashingId === product.id;
               const currentQty = getQty(product.id);
+              const unitPrice = product.units[0]?.fractionPrices?.find(fp => fp.fraction === 1)?.price ?? product.pricePerKg;
+              const unitLabel = product.units[0]?.label ?? 'korokoro';
               return (
                 <Pressable
                   key={product.id}
@@ -81,7 +83,7 @@ export default function SalesScreen() {
                     <MaterialIcons name={product.icon.replace('_', '-') as any} size={32} color={Colors.primary} />
                   </View>
                   <Text className="font-bold text-[14px] text-on-surface-variant">{product.name}</Text>
-                  <Text className="text-[28px] font-extrabold text-primary">{product.pricePerKg} <Text className="font-bold text-[14px] text-primary">KES</Text></Text>
+                  <Text className="text-[28px] font-extrabold text-primary">{unitPrice} <Text className="font-bold text-[14px] text-primary">KES</Text></Text>
 
                   <View className="flex-row items-center gap-[12px] mt-3">
                     <Pressable
@@ -101,7 +103,7 @@ export default function SalesScreen() {
                   </View>
                   <View className="mt-2">
                     <Text className="text-sm text-on-surface-variant">
-                      {formatQty(currentQty)} kg × {product.pricePerKg} KES = <Text className="text-base font-bold text-primary">{(currentQty * product.pricePerKg).toFixed(2)} KES</Text>
+                      {formatQty(currentQty)} {unitLabel} × {unitPrice} KES = <Text className="text-base font-bold text-primary">{(currentQty * unitPrice).toFixed(2)} KES</Text>
                     </Text>
                   </View>
                 </Pressable>
