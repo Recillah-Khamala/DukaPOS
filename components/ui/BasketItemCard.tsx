@@ -8,8 +8,19 @@ export type BasketItemCardProps = {
 };
 
 export default function BasketItemCard({ item }: BasketItemCardProps) {
+  const getBagLabel = () => {
+    if (item.packagingMode === 'pack') return 'Pack';
+    if (item.bagSize && item.bagType) {
+      const sizeLabel = item.bagSize === 'small' ? 'Small' : item.bagSize === 'medium' ? 'Medium' : 'Big';
+      const typeLabel = item.bagType === 'plastic' ? 'Plastic' : 'Woven';
+      return `${sizeLabel} · ${typeLabel}`;
+    }
+    return null;
+  };
 
-   return (
+  const bagLabel = getBagLabel();
+
+  return (
     <View
       className="flex-row items-center gap-3 rounded-lg bg-white p-3"
       style={{
@@ -34,18 +45,23 @@ export default function BasketItemCard({ item }: BasketItemCardProps) {
       {/* Middle: Item Name and Unit Price */}
       <View className="flex-1">
         <Text className="text-base font-semibold text-neutral-900">{item.name}</Text>
+        {bagLabel && (
+          <View className="mt-1 self-start rounded-full bg-neutral-200 px-2 py-0.5">
+            <Text className="text-xs text-neutral-600">{bagLabel}</Text>
+          </View>
+        )}
         <Text className="text-sm text-neutral-500">
           KSh {item.unitPrice.toLocaleString()} each
         </Text>
       </View>
 
-       {/* Right: Total Price and Quantity */}
-       <View className="items-end">
-         <Text className="text-lg font-bold text-neutral-900">
-           {formatLineTotal(item.qty, item.unitPrice)}
-         </Text>
-         <Text className="text-sm text-neutral-600">Qty: {formatQty(item.qty)}</Text>
-       </View>
+      {/* Right: Total Price and Quantity */}
+      <View className="items-end">
+        <Text className="text-lg font-bold text-neutral-900">
+          {formatLineTotal(item.qty, item.unitPrice)}
+        </Text>
+        <Text className="text-sm text-neutral-600">Qty: {formatQty(item.qty)}</Text>
+      </View>
     </View>
   );
 }
