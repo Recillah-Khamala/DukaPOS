@@ -26,6 +26,9 @@ export default function BagSelectionModal({ product, initialMode = 'bag', onClos
 
   useEffect(() => {
     if (!product) return;
+    setBagType(DEFAULT_BAG_TYPE);
+    setBagSize(DEFAULT_BAG_SIZE);
+    setQty(1);
     slideAnim.setValue(0);
     Animated.timing(slideAnim, {
       toValue: 1,
