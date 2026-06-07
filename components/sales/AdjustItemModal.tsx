@@ -14,7 +14,7 @@ type AdjustItemModalProps = {
   onClose: () => void;
 };
 
-type Fraction = 0 | 0.125 | 0.25 | 0.5 | 1;
+type Fraction = 0.125 | 0.25 | 0.5 | 1;
 
 const FRACTIONS: { label: string; value: Fraction }[] = [
   { label: '1/8', value: 0.125 },
@@ -92,10 +92,12 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
     return null;
   }
 
-  const pricePerUnit = 'price' in product ? product.price : product.pricePerKg;
-  const unit = 'unit' in product ? product.unit : 'kg';
-  const stockLevel = 'stockLevel' in product ? product.stockLevel : undefined;
   const isCereal = 'type' in product ? product.type === 'cereal' : false;
+  const firstUnit = product.units[0];
+  const unitLabel = firstUnit?.label ?? 'kg';
+  const unitType = firstUnit?.type ?? 'kg';
+  const fractionPrices = firstUnit?.fractionPrices ?? [];
+  const unitPrice = fractionPrices.find(fp => fp.fraction === 1)?.price ?? product.pricePerKg;
 
   const translateY = slideAnim.interpolate({
     inputRange: [0, 1],
@@ -124,7 +126,7 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
       productId: product.id,
       name: product.name,
       qty,
-      unitPrice: pricePerUnit,
+      unitPrice,
       type: isCereal ? 'cereal' : 'service',
     });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -197,7 +199,7 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
                   {product.name}
                 </Text>
                 <Text className="text-sm mt-0.5" style={{ color: Colors.onPrimaryContainer }}>
-                  {pricePerUnit} KES / {unit}
+                  {unitPrice} KES / {unitLabel}
                 </Text>
               </View>
             </View>
@@ -273,19 +275,12 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
             {/* Live price preview */}
             <View className="mt-3 mb-2">
               <Text className="text-sm" style={{ color: Colors.onSurfaceVariant }}>
-                {formatQty(qty)} {unit} × {pricePerUnit} KES ={' '}
+                {formatQty(qty)} {unitLabel} × {unitPrice} KES ={' '}
                 <Text className="text-base font-bold" style={{ color: Colors.primary }}>
-                  {formatLineTotal(qty, pricePerUnit)}
+                  {formatLineTotal(qty, unitPrice)}
                 </Text>
               </Text>
 
-              {stockLevel != null && qty > stockLevel && (
-                <View className="mt-2 self-start rounded-full bg-yellow-100 px-3 py-0.5">
-                  <Text className="text-xs font-semibold text-yellow-700">
-                    Only {stockLevel} {unit} in stock
-                  </Text>
-                </View>
-              )}
               {atMax && (
                 <Text className="mt-1 text-xs" style={{ color: Colors.onSurfaceVariant }}>Max 99</Text>
               )}
