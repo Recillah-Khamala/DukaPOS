@@ -43,10 +43,13 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
 
   useEffect(() => {
     if (!product) return;
+    const firstUnit = product.units[0];
+    const unitType = firstUnit?.type ?? 'kg';
+    const isPiece = unitType === 'piece';
     const isCereal = 'type' in product ? product.type === 'cereal' : false;
-    const defaultQty = isCereal ? 0.25 : 1;
+    const defaultQty = isPiece ? 1 : (isCereal ? 0.25 : 1);
     setQty(defaultQty);
-    if (isCereal) {
+    if (isCereal && !isPiece) {
       setFraction(defaultQty as Fraction);
     } else {
       setFraction(undefined);
@@ -94,20 +97,32 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
   const isCereal = 'type' in product ? product.type === 'cereal' : false;
   const firstUnit = product.units[0];
   const unitLabel = firstUnit?.label ?? 'KG';
-  const fractionPrices = firstUnit?.fractionPrices ?? [];
+  const unitType = firstUnit?.type ?? 'kg';
+  const isPiece = unitType === 'piece';
   
-  // Look up price for the selected fraction (or 1 if no fraction selected)
-  const activeFraction = fraction ?? 1;
-  const unitPrice = fractionPrices.find(fp => fp.fraction === activeFraction)?.price ?? product.pricePerKg;
-  const fractionLabel = fractionPrices.find(fp => fp.fraction === activeFraction)?.label ?? '1';
+  // For piece items: use pricePerUnit directly, no fractions
+  // For fraction units: look up price for the selected fraction
+  let unitPrice: number;
+  let quantityLabel: string | number;
+  
+  if (isPiece) {
+    unitPrice = firstUnit.pricePerUnit ?? product.pricePerKg;
+    quantityLabel = qty;
+  } else {
+    const fractionPrices = firstUnit?.fractionPrices ?? [];
+    const activeFraction = fraction ?? 1;
+    unitPrice = fractionPrices.find(fp => fp.fraction === activeFraction)?.price ?? product.pricePerKg;
+    quantityLabel = fractionPrices.find(fp => fp.fraction === activeFraction)?.label ?? '1';
+  }
 
   const translateY = slideAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [600, 0],
   });
 
-  const step = fraction ?? 1;
-  const minQty = 0.125;
+  // Piece items: step=1, min=1. Fraction units: step=fraction, min=0.125
+  const step = isPiece ? 1 : (fraction ?? 1);
+  const minQty = isPiece ? 1 : 0.125;
   const canDecrement = qty > minQty;
   const atMax = qty >= MAX_QTY;
   const canAdd = qty >= minQty && qty <= MAX_QTY;
@@ -214,8 +229,8 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
           </View>
 
           <View className="px-4 pt-4 pb-2">
-            {/* Fraction chips — cereal only */}
-            {isCereal && (
+            {/* Fraction chips — cereal only, not piece */}
+            {isCereal && !isPiece && (
               <View className="flex-row gap-2 mb-2">
                 {FRACTIONS.map((chip) => {
                   const isActive = fraction === chip.value;
@@ -262,7 +277,7 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
                 className="text-3xl font-extrabold text-center"
                 style={{ minWidth: 64, color: Colors.primary }}
               >
-                {fractionLabel}
+                {quantityLabel}
               </Text>
 
               <Pressable
@@ -276,12 +291,21 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
 
             {/* Live price preview */}
             <View className="mt-3 mb-2">
-              <Text className="text-sm" style={{ color: Colors.onSurfaceVariant }}>
-                {fractionLabel} {unitLabel} × {unitPrice} KES ={' '}
-                <Text className="text-base font-bold" style={{ color: Colors.primary }}>
-                  {formatLineTotal(qty, unitPrice)}
+              {isPiece ? (
+                <Text className="text-sm" style={{ color: Colors.onSurfaceVariant }}>
+                  {qty} × {product.name} ={' '}
+                  <Text className="text-base font-bold" style={{ color: Colors.primary }}>
+                    {formatLineTotal(qty, unitPrice)}
+                  </Text>
                 </Text>
-              </Text>
+              ) : (
+                <Text className="text-sm" style={{ color: Colors.onSurfaceVariant }}>
+                  {quantityLabel} {unitLabel} × {unitPrice} KES ={' '}
+                  <Text className="text-base font-bold" style={{ color: Colors.primary }}>
+                    {formatLineTotal(qty, unitPrice)}
+                  </Text>
+                </Text>
+              )}
 
               {atMax && (
                 <Text className="mt-1 text-xs" style={{ color: Colors.onSurfaceVariant }}>Max 99</Text>
