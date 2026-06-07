@@ -1,4 +1,4 @@
-﻿import { formatQty, formatLineTotal } from '../utils/formatQuantity';
+﻿import { formatQty, formatLineTotal, formatBagLabel, formatPackLabel } from '../utils/formatQuantity';
 
 describe('formatQty', () => {
   it('formats 1/8 as fraction', () => {
@@ -35,5 +35,45 @@ describe('formatLineTotal', () => {
     expect(formatLineTotal(1, 50)).toBe('50.00 KES');
     expect(formatLineTotal(0.25, 100)).toBe('25.00 KES');
     expect(formatLineTotal(2.5, 40)).toBe('100.00 KES');
+  });
+});
+
+describe('formatBagLabel', () => {
+  it('formats qty 1 with small plastic bag', () => {
+    expect(formatBagLabel(1, 'small', 'plastic')).toBe('1 × Small Plastic Bag');
+  });
+
+  it('formats qty 1 with medium woven bag', () => {
+    expect(formatBagLabel(1, 'medium', 'woven')).toBe('1 × Medium Woven Bag');
+  });
+
+  it('formats qty 2 with big plastic bag', () => {
+    expect(formatBagLabel(2, 'big', 'plastic')).toBe('2 × Big Plastic Bag');
+  });
+
+  it('formats large quantities correctly', () => {
+    expect(formatBagLabel(99, 'medium', 'woven')).toBe('99 × Medium Woven Bag');
+  });
+
+  it('formats decimal quantities', () => {
+    expect(formatBagLabel(1.5, 'big', 'plastic')).toBe('1.5 × Big Plastic Bag');
+  });
+});
+
+describe('formatPackLabel', () => {
+  it('formats qty 1 with pack size', () => {
+    expect(formatPackLabel(1, '500g')).toBe('1 × 500g Pack');
+  });
+
+  it('formats qty 3 with pack size', () => {
+    expect(formatPackLabel(3, '1kg')).toBe('3 × 1kg Pack');
+  });
+
+  it('formats large quantities correctly', () => {
+    expect(formatPackLabel(99, '500g')).toBe('99 × 500g Pack');
+  });
+
+  it('formats decimal quantities', () => {
+    expect(formatPackLabel(2.5, '250g')).toBe('2.5 × 250g Pack');
   });
 });
