@@ -9,7 +9,9 @@ export type BasketItemCardProps = {
 
 export default function BasketItemCard({ item }: BasketItemCardProps) {
   const getBagLabel = () => {
-    if (item.packagingMode === 'pack') return 'Pack';
+    if (item.packagingMode === 'pack' && item.packSize) {
+      return item.packSize + ' Pack';
+    }
     if (item.bagSize && item.bagType) {
       const sizeLabel = item.bagSize === 'small' ? 'Small' : item.bagSize === 'medium' ? 'Medium' : 'Big';
       const typeLabel = item.bagType === 'plastic' ? 'Plastic' : 'Woven';

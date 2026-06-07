@@ -12,6 +12,7 @@ export interface BasketItem {
   bagType?: BagType;
   bagSize?: BagSize;
   packagingMode?: 'kg' | 'bag' | 'pack';
+  packSize?: string;
 }
 
 export type PaymentMethod = 'cash' | 'mpesa';

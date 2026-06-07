@@ -8,7 +8,7 @@ import BagSelectionModal from '../../components/sales/BagSelectionModal';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
 import { CEREAL_PRODUCTS, POSHOMILL_SERVICES } from '../../constants/salesData';
-import { formatQty } from '../../utils/formatQuantity';
+import { formatQty, formatPackLabel, formatBagLabel } from '../../utils/formatQuantity';
 import type { BagType, BagSize } from '../../constants/bagData';
 
 export default function SalesScreen() {
@@ -53,27 +53,25 @@ export default function SalesScreen() {
   );
 
   const handleBagConfirm = useCallback(
-    (bagType: BagType, bagSize: BagSize, qty: number) => {
+    (bagType: BagType | undefined, bagSize: BagSize | undefined, qty: number, packSize?: string) => {
       if (!bagProduct) return;
-      if (packagingMode === 'pack') {
-        const packLabel = bagProduct.packSize ?? '500g';
+      if (packSize) {
         addItem({
           id: `${bagProduct.id}_pack_${Date.now()}`,
           productId: bagProduct.id,
-          name: `${bagProduct.name} — ${packLabel} Pack × ${qty}`,
+          name: `${bagProduct.name} — ${formatPackLabel(qty, packSize)}`,
           qty,
           unitPrice: bagProduct.pricePerPack ?? 50,
           type: 'cereal',
           packagingMode: 'pack',
+          packSize,
         });
-      } else {
-        const sizeLabel = bagSize === 'small' ? 'Small' : bagSize === 'medium' ? 'Medium' : 'Big';
-        const typeLabel = bagType === 'plastic' ? 'Plastic' : 'Woven';
+      } else if (bagType && bagSize) {
         const sizeMultiplier = bagSize === 'small' ? 0.5 : bagSize === 'medium' ? 1 : 2;
         addItem({
           id: `${bagProduct.id}_bag_${Date.now()}`,
           productId: bagProduct.id,
-          name: `${bagProduct.name} — ${sizeLabel} ${typeLabel} Bag`,
+          name: `${bagProduct.name} — ${formatBagLabel(qty, bagSize, bagType)}`,
           qty,
           unitPrice: (bagProduct.pricePerBag ?? 5) * sizeMultiplier,
           type: 'cereal',
@@ -86,7 +84,7 @@ export default function SalesScreen() {
       setTimeout(() => setFlashingId(null), 300);
       setBagProduct(null);
     },
-    [bagProduct, addItem, packagingMode]
+    [bagProduct, addItem]
   );
 
   const getQty = (id: string) => qtys[id] ?? 1;
