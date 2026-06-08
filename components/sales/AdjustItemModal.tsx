@@ -7,7 +7,7 @@ import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
 import type { CerealProduct, PoshomillService } from '../../constants/salesData';
 import type { FractionPrice } from '../../types';
-import { formatLineTotal } from '../../utils/formatQuantity';
+
 
 type AdjustItemModalProps = {
   product: CerealProduct | PoshomillService | null;
@@ -128,14 +128,6 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
   const atMax = qty >= MAX_QTY;
   const canAdd = qty >= minQty && qty <= MAX_QTY;
 
-  const handleDecrement = () => {
-    if (!canDecrement) return;
-    setQty((prev) => Math.max(minQty, +(prev - step).toFixed(3)));
-  };
-
-  const handleIncrement = () => {
-    setQty((prev) => Math.min(MAX_QTY, +(prev + step).toFixed(3)));
-  };
 
   const handleAddToBasket = () => {
     if (!canAdd) return;
@@ -166,6 +158,30 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
     (i) => i.productId === product.id && i.type === (isCereal ? 'cereal' : 'service')
   );
   const isUpdate = !!existingItem;
+
+  const handleChipPress = (chip: { label: string; value: number }) => {
+    const target = firstUnit?.fractionPrices?.find(fp => fp.fraction === chip.value);
+    if (!target) return;
+    if (mode === 'add') {
+      setSelectedFractions((prev) => [...prev, target]);
+    } else {
+      setSelectedFractions((prev) => {
+        const reversed = [...prev].reverse();
+        const idx = reversed.findIndex((fp) => fp.fraction === target.fraction);
+        if (idx === -1) return prev;
+        const actualIndex = prev.length - 1 - idx;
+        return prev.filter((_, i) => i !== actualIndex);
+      });
+      setMode('add');
+    }
+  };
+
+  const fractionBreakdown =
+    selectedFractions.length === 0
+      ? null
+      : selectedFractions.map((f) => f.label).join(' + ') + ' ' + unitLabel;
+
+  const totalPrice = selectedFractions.reduce((sum, f) => sum + f.price, 0);
 
   return (
     <Modal visible={!!product} transparent animationType="none" onRequestClose={handleClose}>
@@ -237,42 +253,37 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
             {/* Fraction chips — cereal only, not piece */}
             {isCereal && !isPiece && (
               <View className="flex-row gap-2 mb-2">
-                {FRACTIONS.map((chip) => {
-                  const isActive = fraction === chip.value;
-                  return (
-                    <Pressable
-                      key={chip.label}
-                      onPress={() => {
-                        setFraction(chip.value);
-                        setQty(chip.value);
-                      }}
-                      className="flex-1 h-11 items-center justify-center rounded-full border active:scale-95"
-                      style={{
-                        backgroundColor: isActive ? Colors.secondaryContainer : Colors.surfaceContainerHigh,
-                        borderColor: isActive ? Colors.secondary : Colors.outlineVariant,
-                      }}
+                {FRACTIONS.map((chip) => (
+                  <Pressable
+                    key={chip.label}
+                    onPress={() => handleChipPress(chip)}
+                    className="flex-1 h-11 items-center justify-center rounded-full border active:scale-95"
+                    style={{
+                      backgroundColor: Colors.surfaceContainerHigh,
+                      borderColor: Colors.outlineVariant,
+                    }}
+                  >
+                    <Text
+                      className="text-sm font-bold"
+                      style={{ color: Colors.onSurfaceVariant }}
                     >
-                      <Text
-                        className="text-sm font-bold"
-                        style={{ color: isActive ? Colors.onSecondaryContainer : Colors.onSurfaceVariant }}
-                      >
-                        {chip.label}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
+                      {chip.label}
+                    </Text>
+                  </Pressable>
+                ))}
               </View>
             )}
 
             {/* Stepper */}
             <View className="flex-row items-center gap-4 mt-4">
               <Pressable
-                onPress={handleDecrement}
-                disabled={!canDecrement}
-                className="w-12 h-12 items-center justify-center rounded-full border border-outlineVariant active:scale-95"
+                onPress={() => setMode('remove')}
+                disabled={selectedFractions.length === 0 || mode === 'remove'}
+                className="w-12 h-12 items-center justify-center rounded-full border active:scale-95"
                 style={{
-                  backgroundColor: Colors.surfaceContainerHigh,
-                  opacity: canDecrement ? 1 : 0.38,
+                  backgroundColor: mode === 'remove' ? Colors.errorContainer : Colors.surfaceContainerHigh,
+                  borderColor: mode === 'remove' ? Colors.error : Colors.outlineVariant,
+                  opacity: selectedFractions.length === 0 ? 0.38 : 1,
                 }}
               >
                 <Text className="text-2xl font-bold" style={{ color: Colors.onSurfaceVariant }}>−</Text>
@@ -282,35 +293,35 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
                 className="text-3xl font-extrabold text-center"
                 style={{ minWidth: 64, color: Colors.primary }}
               >
-                {quantityLabel}
+                {fractionBreakdown ?? '0'}
               </Text>
 
               <Pressable
-                onPress={handleIncrement}
-                className="w-12 h-12 items-center justify-center rounded-full border border-outlineVariant active:scale-95"
-                style={{ backgroundColor: Colors.surfaceContainerHigh }}
+                onPress={() => setMode('add')}
+                className="w-12 h-12 items-center justify-center rounded-full border active:scale-95"
+                style={{
+                  backgroundColor: mode === 'add' ? Colors.primaryFixed : Colors.surfaceContainerHigh,
+                  borderColor: mode === 'add' ? Colors.primary : Colors.outlineVariant,
+                }}
               >
-                <Text className="text-2xl font-bold" style={{ color: Colors.onSurfaceVariant }}>+</Text>
+                <Text className="text-2xl font-bold" style={{ color: mode === 'add' ? Colors.primary : Colors.onSurfaceVariant }}>+</Text>
               </Pressable>
             </View>
 
             {/* Live price preview */}
             <View className="mt-3 mb-2">
-              {isPiece ? (
-                <Text className="text-sm" style={{ color: Colors.onSurfaceVariant }}>
-                  {qty} × {product.name} ={' '}
-                  <Text className="text-base font-bold" style={{ color: Colors.primary }}>
-                    {formatLineTotal(qty, unitPrice)}
-                  </Text>
-                </Text>
-              ) : (
-                <Text className="text-sm" style={{ color: Colors.onSurfaceVariant }}>
-                  {quantityLabel} {unitLabel} × {unitPrice} KES ={' '}
-                  <Text className="text-base font-bold" style={{ color: Colors.primary }}>
-                    {formatLineTotal(qty, unitPrice)}
-                  </Text>
-                </Text>
-              )}
+              <Text className="text-sm" style={{ color: Colors.onSurfaceVariant }}>
+                {fractionBreakdown ? (
+                  <>
+                    {fractionBreakdown} ={' '}
+                    <Text className="text-base font-bold" style={{ color: Colors.primary }}>
+                      {totalPrice} KES
+                    </Text>
+                  </>
+                ) : (
+                  'Select a fraction to begin'
+                )}
+              </Text>
 
               {atMax && (
                 <Text className="mt-1 text-xs" style={{ color: Colors.onSurfaceVariant }}>Max 99</Text>
