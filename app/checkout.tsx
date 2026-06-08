@@ -8,7 +8,8 @@ import BasketItemCard from '../components/ui/BasketItemCard';
 import PaymentMethodSelector from '../components/ui/PaymentMethodSelector';
 import ChangeCalculator from '../components/ui/ChangeCalculator';
 import { useSharedBasket } from '../context/BasketContext';
-import type { PaymentMethod, UnitType } from '../types';
+import { useSalesHistory } from '../hooks/useSalesHistory';
+import type { PaymentMethod, UnitType, CompletedSale } from '../types';
 
 const FRACTION_CYCLE: UnitType[] = ['korokoro', 'kg'];
 
@@ -34,11 +35,20 @@ export default function CheckoutScreen() {
   const [bottomNavHeight, setBottomNavHeight] = useState(0);
   const router = useRouter();
   const { items, updateQuantity, removeItem, total, clearBasket } = useSharedBasket();
+  const { addSale } = useSalesHistory();
 
   const handleConfirm = () => {
     if (items.length === 0) return;
+    const completedSale: CompletedSale = {
+      id: new Date().toISOString(),
+      items: JSON.parse(JSON.stringify(items)),
+      total,
+      paymentMethod,
+      completedAt: new Date().toISOString(),
+    };
+    addSale(completedSale);
     clearBasket();
-    router.dismissAll();
+    router.replace('/(tabs)/sales?saleSuccess=true&total=' + encodeURIComponent(String(total)));
   };
 
   return (

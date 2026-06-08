@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { loadData, saveData } from '../utils/storage';
 import { mockProducts } from '../constants/mockProducts';
-import type { Sale, BasketItem } from '../types';
+import type { Sale, BasketItem, CompletedSale } from '../types';
 
 const SALES_KEY = 'duka_sales';
+const SALES_HISTORY_KEY = 'sales_history';
 
 function productToBasketItem(product: typeof mockProducts[0]): BasketItem {
   const iconMap: Record<string, string> = {
@@ -31,14 +32,12 @@ export function useSalesHistory() {
     const loadSales = async () => {
       const savedSales = await loadData<Sale[]>(SALES_KEY);
       if (savedSales !== null) {
-        // Convert createdAt strings back to Date objects
         const salesWithDates = savedSales.map(sale => ({
           ...sale,
           createdAt: new Date(sale.createdAt)
         }));
         setSalesHistory(salesWithDates);
       } else {
-        // Seed deterministic mock sales derived from mockProducts for visual testing
         const today = new Date();
         const mockSales: Sale[] = mockProducts.slice(0, 4).map((product, i) => {
           const items = [
@@ -62,10 +61,15 @@ export function useSalesHistory() {
     loadSales();
   }, []);
 
-  const addSale = async (sale: Sale) => {
-    const updatedSales = [...salesHistory, sale];
+  const addSale = async (sale: CompletedSale) => {
+    const newSale: Sale = {
+      ...sale,
+      createdAt: new Date(),
+    };
+    const updatedSales = [...salesHistory, newSale];
     setSalesHistory(updatedSales);
     await saveData(SALES_KEY, updatedSales);
+    await saveData(SALES_HISTORY_KEY, updatedSales);
   };
 
   return { salesHistory, loading, addSale };

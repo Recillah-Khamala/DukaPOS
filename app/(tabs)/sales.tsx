@@ -1,7 +1,7 @@
-﻿import React, { useState, useCallback } from 'react';
-import { Text, View, ScrollView, Pressable } from 'react-native';
+﻿import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { Text, View, ScrollView, Pressable, Animated } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import AdjustItemModal from '../../components/sales/AdjustItemModal';
 import BagSelectionModal from '../../components/sales/BagSelectionModal';
@@ -13,12 +13,38 @@ import type { BagProduct } from '../../types';
 
 export default function SalesScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ saleSuccess?: string; total?: string }>();
   const [bottomNavHeight, setBottomNavHeight] = useState(0);
   const [flashingId, setFlashingId] = useState<string | null>(null);
   const [qtys, setQtys] = useState<Record<string, number>>({});
   const [selectedProduct, setSelectedProduct] = useState<typeof CEREAL_PRODUCTS[number] | typeof POSHOMILL_SERVICES[number] | null>(null);
   const [selectedBagProduct, setSelectedBagProduct] = useState<BagProduct | null>(null);
+  const [showBanner, setShowBanner] = useState(false);
+  const bannerAnim = useRef(new Animated.Value(-60)).current;
   const { items, total, addItem } = useSharedBasket();
+
+  useEffect(() => {
+    if (params.saleSuccess === 'true') {
+      setShowBanner(true);
+      Animated.timing(bannerAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+
+      const timeout = setTimeout(() => {
+        Animated.timing(bannerAnim, {
+          toValue: -60,
+          duration: 200,
+          useNativeDriver: true,
+        }).start(() => {
+          setShowBanner(false);
+        });
+      }, 2000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [params.saleSuccess, bannerAnim]);
 
   const handleQtyChange = useCallback(
     (id: string, delta: number, min: number, step: number) => {
@@ -45,6 +71,24 @@ export default function SalesScreen() {
           <MaterialIcons name="notifications-none" size={24} color="white" />
         </View>
       </View>
+
+      {showBanner && (
+        <Animated.View
+          style={{
+            transform: [{ translateY: bannerAnim }],
+            backgroundColor: '#012d1d',
+            paddingVertical: 12,
+            paddingHorizontal: 16,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Text style={{ fontSize: 14, fontWeight: '600', color: 'white' }}>
+            ✓ Sale of KES {params.total ? Number(params.total).toLocaleString() : total.toLocaleString()} recorded
+          </Text>
+        </Animated.View>
+      )}
+
       <View style={{ flex: 1 }}>
         <ScrollView
           style={{ flex: 1 }}
@@ -229,9 +273,9 @@ export default function SalesScreen() {
           }}
         >
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-<Text style={{ fontSize: 16, fontWeight: '600', color: Colors.onPrimary }}>
-               Total Due: Ksh {total}
-             </Text>
+            <Text style={{ fontSize: 16, fontWeight: '600', color: Colors.onPrimary }}>
+              Total Due: KES {total}
+            </Text>
             <Text style={{ fontSize: 14, fontWeight: '500', color: Colors.onPrimary, opacity: 0.9 }}>
               {items.length} item{items.length !== 1 ? 's' : ''}
             </Text>

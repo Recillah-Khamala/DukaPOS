@@ -48,12 +48,21 @@ export interface BasketItem {
 
 export type PaymentMethod = 'cash' | 'mpesa';
 
+export interface CompletedSale {
+  id: string;
+  items: BasketItem[];
+  total: number;
+  paymentMethod: PaymentMethod;
+  completedAt: string;
+}
+
 export interface Sale {
   id: string;
   items: BasketItem[];
   total: number;
   paymentMethod: PaymentMethod;
   createdAt: Date;
+  completedAt?: string;
 }
 
 export interface Product {
