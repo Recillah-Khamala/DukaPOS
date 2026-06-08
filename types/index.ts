@@ -41,7 +41,7 @@ export interface BasketItem {
   icon?: string;
   isService?: boolean;
   unitType?: UnitType;
-  fractionLabel?: FractionLabel;
+  fractionLabel?: string;
   unitLabel?: string;
   variantLabel?: string;
 }
