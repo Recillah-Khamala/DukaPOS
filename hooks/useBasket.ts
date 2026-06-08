@@ -27,11 +27,10 @@ export function useBasket(initialItems: BasketItem[] = []) {
 
   const addItem = (item: BasketItem) => {
     setItems((prev) => {
-      // For bags, check both productId and variantLabel to avoid merging different sizes
       const matchingKey = (i: BasketItem) =>
         i.type === 'bag'
           ? i.productId === item.productId && i.variantLabel === item.variantLabel
-          : i.id === item.id || (i.productId === item.productId && i.type === item.type);
+          : i.id === item.id || (i.productId === item.productId && i.type === item.type && i.fractionLabel === item.fractionLabel);
       const sameItem = prev.find(matchingKey);
       if (sameItem) {
         return prev.map((i) =>
@@ -71,8 +70,13 @@ export function useBasket(initialItems: BasketItem[] = []) {
   };
 
   const total = useMemo(() => {
-    const sum = items.reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
-    return Math.round(sum / 5) * 5; // Round to nearest 5
+    const sum = items.reduce((sum, item) => {
+      if (item.fractionLabel) {
+        return sum + item.unitPrice;
+      }
+      return sum + item.unitPrice * item.qty;
+    }, 0);
+    return Math.round(sum / 5) * 5;
   }, [items]);
 
   return { items, addItem, removeItem, updateQuantity, updateItemQty, clearBasket, total, clear: clearBasket };
