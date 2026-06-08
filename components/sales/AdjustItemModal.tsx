@@ -5,7 +5,8 @@ import * as Haptics from 'expo-haptics';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
-import type { CerealProduct, PoshomillService, FractionPrice } from '../../constants/salesData';
+import type { CerealProduct, PoshomillService } from '../../constants/salesData';
+import type { FractionPrice } from '../../types';
 import { formatLineTotal } from '../../utils/formatQuantity';
 
 type AdjustItemModalProps = {
