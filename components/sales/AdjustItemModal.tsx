@@ -281,7 +281,7 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
                 disabled={selectedFractions.length === 0 || mode === 'remove'}
                 className="w-12 h-12 items-center justify-center rounded-full border active:scale-95"
                 style={{
-                  backgroundColor: mode === 'remove' ? Colors.errorContainer : Colors.surfaceContainerHigh,
+                  backgroundColor: mode === 'remove' ? 'rgba(186, 26, 26, 0.12)' : Colors.surfaceContainerHigh,
                   borderColor: mode === 'remove' ? Colors.error : Colors.outlineVariant,
                   opacity: selectedFractions.length === 0 ? 0.38 : 1,
                 }}
