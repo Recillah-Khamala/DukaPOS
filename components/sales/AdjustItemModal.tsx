@@ -5,7 +5,7 @@ import * as Haptics from 'expo-haptics';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
-import type { CerealProduct, PoshomillService } from '../../constants/salesData';
+import type { CerealProduct, PoshomillService, FractionPrice } from '../../constants/salesData';
 import { formatLineTotal } from '../../utils/formatQuantity';
 
 type AdjustItemModalProps = {
@@ -30,6 +30,8 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
   const { addItem, updateItemQty, items } = useSharedBasket();
   const [qty, setQty] = useState(1);
   const [fraction, setFraction] = useState<Fraction | undefined>(undefined);
+  const [selectedFractions, setSelectedFractions] = useState<FractionPrice[]>([]);
+  const [mode, setMode] = useState<'add' | 'remove'>('add');
   const [keyboardVisible, setKeyboardVisible] = useState(false);
 
   useEffect(() => {
@@ -54,7 +56,8 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
     } else {
       setFraction(undefined);
     }
-    // Animate sheet up on open
+    setSelectedFractions([]);
+    setMode('add');
     slideAnim.setValue(0);
     Animated.timing(slideAnim, {
       toValue: 1,
@@ -100,8 +103,6 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
   const unitType = firstUnit?.type ?? 'kg';
   const isPiece = unitType === 'piece';
   
-  // For piece items: use pricePerUnit directly, no fractions
-  // For fraction units: look up price for the selected fraction
   let unitPrice: number;
   let quantityLabel: string | number;
   
@@ -120,7 +121,6 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
     outputRange: [600, 0],
   });
 
-  // Piece items: step=1, min=1. Fraction units: step=fraction, min=0.125
   const step = isPiece ? 1 : (fraction ?? 1);
   const minQty = isPiece ? 1 : 0.125;
   const canDecrement = qty > minQty;
