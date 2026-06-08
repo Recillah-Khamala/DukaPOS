@@ -18,15 +18,32 @@ const fractionValues: number[] = [0.125, 0.25, 0.5, 1];
 const getNextFraction = (current: number): number | null => {
   const idx = fractionValues.indexOf(current);
   if (idx >= 0 && idx < fractionValues.length - 1) return fractionValues[idx + 1];
-  // If value doesn't match exactly, find next standard fraction
   return fractionValues.find((v) => v > current) ?? null;
 };
 
 const getPrevFraction = (current: number): number | null => {
   const idx = fractionValues.indexOf(current);
   if (idx > 0) return fractionValues[idx - 1];
-  // If value doesn't match exactly (e.g., 1.25 or 2), snap to largest fraction below
   return fractionValues.filter((v) => v < current).pop() ?? null;
+};
+
+const getSmallestFractionFromLabel = (label?: string): number => {
+  if (!label) return 0.125;
+  const parts = label.split('+').map((p) => p.trim());
+  const fractionMap: Record<string, number> = {
+    '1/8': 0.125,
+    '1/4': 0.25,
+    '1/2': 0.5,
+    '1': 1,
+  };
+  let smallest = 0.125;
+  for (const part of parts) {
+    const value = fractionMap[part];
+    if (value !== undefined && value < smallest) {
+      smallest = value;
+    }
+  }
+  return smallest;
 };
 
 export default function CheckoutScreen() {
@@ -71,6 +88,7 @@ export default function CheckoutScreen() {
         }
         renderItem={({ item }) => {
           const isFractional = item.unitType && FRACTION_CYCLE.includes(item.unitType);
+          const smallestFraction = getSmallestFractionFromLabel(item.fractionLabel);
           return (
             <View className="mb-3">
               <BasketItemCard item={item} />
@@ -78,11 +96,11 @@ export default function CheckoutScreen() {
                 <View className="flex-row items-center gap-3">
                   <Pressable
                     onPress={() => {
-                      if (isFractional && item.qty === 0.125) {
+                      if (isFractional && item.qty <= smallestFraction) {
                         removeItem(item.id);
                       } else if (isFractional) {
-                        const next = getPrevFraction(item.qty);
-                        if (next !== null) updateQuantity(item.id, next);
+                        const next = +(item.qty - smallestFraction).toFixed(3);
+                        if (next > 0) updateQuantity(item.id, next);
                       } else {
                         updateQuantity(item.id, Math.max(1, item.qty - 1));
                       }
@@ -97,8 +115,7 @@ export default function CheckoutScreen() {
                   <Pressable
                     onPress={() => {
                       if (isFractional) {
-                        const next = getNextFraction(item.qty);
-                        if (next !== null) updateQuantity(item.id, next);
+                        updateQuantity(item.id, +(item.qty + smallestFraction).toFixed(3));
                       } else {
                         updateQuantity(item.id, item.qty + 1);
                       }

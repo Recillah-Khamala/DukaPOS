@@ -63,10 +63,10 @@ export default function BasketItemCard({ item }: BasketItemCardProps) {
         </Text>
       </View>
 
-{/* Right: Total Price and Quantity */}
+      {/* Right: Total Price and Quantity */}
       <View className="items-end">
         <Text className="text-lg font-bold text-neutral-900">
-          {formatLineTotal(item.qty, item.unitPrice)}
+          {isFraction ? item.unitPrice.toLocaleString() : formatLineTotal(item.qty, item.unitPrice)}
         </Text>
         {isBag ? (
           <Text className="text-sm text-neutral-600">
@@ -74,7 +74,7 @@ export default function BasketItemCard({ item }: BasketItemCardProps) {
           </Text>
         ) : isFraction ? (
           <Text className="text-sm text-neutral-600">
-            {getQuantityDisplay()} {getUnitDisplay()}
+            {getQuantityDisplay()} {getUnitDisplay()} @ {item.unitPrice.toLocaleString()} KES
           </Text>
         ) : (
           <Text className="text-sm text-neutral-600">

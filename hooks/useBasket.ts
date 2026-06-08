@@ -52,7 +52,7 @@ export function useBasket(initialItems: BasketItem[] = []) {
         if (item.id !== id) return item;
         const isFractional = item.unitType === 'korokoro' || item.unitType === 'kg';
         const finalQty = isFractional ? snapToFraction(qty) : qty;
-        const fractionLabel = isFractional && FRACTION_MAP[finalQty] ? FRACTION_MAP[finalQty] : item.fractionLabel;
+        const fractionLabel = item.fractionLabel ?? (isFractional && FRACTION_MAP[finalQty] ? FRACTION_MAP[finalQty] : undefined);
         return { ...item, qty: finalQty, fractionLabel };
       })
     );

@@ -126,11 +126,13 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
   const minQty = isPiece ? 1 : 0.125;
   const canDecrement = qty > minQty;
   const atMax = qty >= MAX_QTY;
-  const canAdd = qty >= minQty && qty <= MAX_QTY;
-
+  const canAdd = selectedFractions.length > 0;
 
   const handleAddToBasket = () => {
     if (!canAdd) return;
+    const qty = selectedFractions.reduce((sum, f) => sum + f.fraction, 0);
+    const fractionLabel = selectedFractions.map((f) => f.label).join(' + ');
+    const unitPrice = selectedFractions.reduce((sum, f) => sum + f.price, 0);
     addItem({
       id: `${product.id}_${Date.now()}`,
       productId: product.id,
@@ -138,7 +140,7 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
       qty,
       unitPrice,
       type: isCereal ? 'cereal' : 'service',
-      fractionLabel: isPiece ? undefined : fraction ? quantityLabel as '1/8' | '1/4' | '1/2' | '1' : undefined,
+      fractionLabel,
       unitLabel: unitLabel,
       unitType: unitType,
       icon: product.icon,
