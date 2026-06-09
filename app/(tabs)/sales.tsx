@@ -1,5 +1,5 @@
-﻿import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { Text, View, ScrollView, Pressable, Animated } from 'react-native';
+﻿import React, { useState, useCallback, useEffect } from 'react';
+import { Text, View, ScrollView, Pressable } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
@@ -20,31 +20,20 @@ export default function SalesScreen() {
   const [selectedProduct, setSelectedProduct] = useState<typeof CEREAL_PRODUCTS[number] | typeof POSHOMILL_SERVICES[number] | null>(null);
   const [selectedBagProduct, setSelectedBagProduct] = useState<BagProduct | null>(null);
   const [showBanner, setShowBanner] = useState(false);
-  const bannerAnim = useRef(new Animated.Value(-60)).current;
+  const [bannerTotal, setBannerTotal] = useState('');
   const { items, total, addItem } = useSharedBasket();
 
   useEffect(() => {
     if (params.saleSuccess === 'true') {
       setShowBanner(true);
-      Animated.timing(bannerAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
-
+      setBannerTotal(params.total ? Number(params.total).toLocaleString() : total.toLocaleString());
       const timeout = setTimeout(() => {
-        Animated.timing(bannerAnim, {
-          toValue: -60,
-          duration: 200,
-          useNativeDriver: true,
-        }).start(() => {
-          setShowBanner(false);
-        });
+        setShowBanner(false);
+        router.replace('/(tabs)/sales');
       }, 2000);
-
       return () => clearTimeout(timeout);
     }
-  }, [params.saleSuccess, bannerAnim]);
+  }, [params.saleSuccess, params.total, total, router]);
 
   const handleQtyChange = useCallback(
     (id: string, delta: number, min: number, step: number) => {
@@ -73,20 +62,11 @@ export default function SalesScreen() {
       </View>
 
       {showBanner && (
-        <Animated.View
-          style={{
-            transform: [{ translateY: bannerAnim }],
-            backgroundColor: '#012d1d',
-            paddingVertical: 12,
-            paddingHorizontal: 16,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Text style={{ fontSize: 14, fontWeight: '600', color: 'white' }}>
-            ✓ Sale of KES {params.total ? Number(params.total).toLocaleString() : total.toLocaleString()} recorded
+        <View className="bg-primary px-4 py-3">
+          <Text className="text-sm font-semibold text-on-primary">
+            ✓ Sale of KES {bannerTotal} recorded
           </Text>
-        </Animated.View>
+        </View>
       )}
 
       <View style={{ flex: 1 }}>
