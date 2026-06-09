@@ -54,7 +54,7 @@ export default function CheckoutScreen() {
   const { items, updateQuantity, removeItem, total, clearBasket } = useSharedBasket();
   const { addSale } = useSalesHistory();
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (items.length === 0) return;
     const completedSale: CompletedSale = {
       id: new Date().toISOString(),
@@ -63,7 +63,11 @@ export default function CheckoutScreen() {
       paymentMethod,
       completedAt: new Date().toISOString(),
     };
-    addSale(completedSale);
+    try {
+      await addSale(completedSale);
+    } catch (e) {
+      console.warn('Failed to save sale:', e);
+    }
     clearBasket();
     router.replace('/(tabs)/sales?saleSuccess=true&total=' + encodeURIComponent(String(total)));
   };
