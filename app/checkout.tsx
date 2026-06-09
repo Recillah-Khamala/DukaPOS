@@ -7,9 +7,11 @@ import BottomNavBar from '../components/layout/BottomNavBar';
 import BasketItemCard from '../components/ui/BasketItemCard';
 import PaymentMethodSelector from '../components/ui/PaymentMethodSelector';
 import ChangeCalculator from '../components/ui/ChangeCalculator';
+import AdjustItemModal from '../components/sales/AdjustItemModal';
 import { useSharedBasket } from '../context/BasketContext';
 import { useSalesHistory } from '../hooks/useSalesHistory';
-import type { PaymentMethod, UnitType, CompletedSale } from '../types';
+import { CEREAL_PRODUCTS, POSHOMILL_SERVICES, BAG_PRODUCTS } from '../../constants/salesData';
+import type { PaymentMethod, UnitType, CompletedSale, BasketItem } from '../types';
 
 const FRACTION_CYCLE: UnitType[] = ['korokoro', 'kg'];
 
@@ -50,9 +52,24 @@ export default function CheckoutScreen() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
   const [cashReceived, setCashReceived] = useState(0);
   const [bottomNavHeight, setBottomNavHeight] = useState(0);
+  const [selectedEditItem, setSelectedEditItem] = useState<BasketItem | null>(null);
   const router = useRouter();
-  const { items, updateQuantity, removeItem, total, clearBasket } = useSharedBasket();
+  const { items, updateQuantity, removeItem, updateItem, total, clearBasket } = useSharedBasket();
   const { addSale } = useSalesHistory();
+
+  const selectedEditProduct = selectedEditItem
+    ? [...CEREAL_PRODUCTS, ...POSHOMILL_SERVICES, ...BAG_PRODUCTS].find(
+        (p) => p.id === selectedEditItem.productId
+      ) || null
+    : null;
+
+  const handleEdit = (item: BasketItem) => {
+    setSelectedEditItem(item);
+  };
+
+  const handleCloseEdit = () => {
+    setSelectedEditItem(null);
+  };
 
   const handleConfirm = async () => {
     if (items.length === 0) return;
@@ -192,6 +209,7 @@ export default function CheckoutScreen() {
           ) : null
         }
       />
+      <AdjustItemModal product={selectedEditProduct} editItem={selectedEditItem} onClose={handleCloseEdit} />
       <BottomNavBar activeTab="sales" onHeightMeasured={setBottomNavHeight} />
     </View>
   );

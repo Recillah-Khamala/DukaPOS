@@ -8,6 +8,7 @@ interface BasketContextValue {
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   updateItemQty: (productId: string, newQty: number) => void;
+  updateItem: (id: string, updates: Partial<BasketItem>) => void;
   clearBasket: () => void;
   clear: () => void;
   total: number;
@@ -20,7 +21,16 @@ export function BasketProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(() => basket, [basket.items, basket.total]);
 
-  return <BasketContext.Provider value={value}>{children}</BasketContext.Provider>;
+  return (
+    <BasketContext.Provider
+      value={{
+        ...basket,
+        updateItem,
+      }}
+    >
+      {children}
+    </BasketContext.Provider>
+  );
 }
 
 /** Shared basket hook — use this inside any component wrapped by BasketProvider. */

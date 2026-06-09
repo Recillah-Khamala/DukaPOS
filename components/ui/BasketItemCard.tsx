@@ -6,9 +6,10 @@ import { formatLineTotal, formatQty } from '../../utils/formatQuantity';
 export type BasketItemCardProps = {
   item: BasketItem;
   onDelete?: (id: string) => void;
+  onEdit?: (id: string) => void;
 };
 
-export default function BasketItemCard({ item, onDelete }: BasketItemCardProps) {
+export default function BasketItemCard({ item, onDelete, onEdit }: BasketItemCardProps) {
   const isBag = item.type === 'bag';
   const hasFraction = !!item.fractionLabel;
 
@@ -50,10 +51,16 @@ export default function BasketItemCard({ item, onDelete }: BasketItemCardProps) 
         )}
       </View>
 
-      {/* Right: Total + delete icon */}
+      {/* Right: Total + edit + delete icons */}
       <View className="items-end">
         <View className="flex-row items-center gap-1">
           <Text className="text-lg font-bold text-primary">{lineTotal}</Text>
+          <Pressable
+            onPress={() => onEdit?.(item.id)}
+            className="h-8 w-8 items-center justify-center rounded-full"
+          >
+            <MaterialIcons name="edit" size={20} color="#6b7280" />
+          </Pressable>
           <Pressable
             onPress={() => onDelete?.(item.id)}
             className="h-8 w-8 items-center justify-center rounded-full"

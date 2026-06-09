@@ -69,6 +69,12 @@ export function useBasket(initialItems: BasketItem[] = []) {
     setItems([]);
   };
 
+  const updateItem = (id: string, updates: Partial<BasketItem>) => {
+    setItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, ...updates } : item))
+    );
+  };
+
   const total = useMemo(() => {
     const sum = items.reduce((sum, item) => {
       if (item.fractionLabel) {

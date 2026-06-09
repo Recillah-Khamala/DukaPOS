@@ -6,10 +6,11 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSharedBasket } from '../../context/BasketContext';
 import Colors from '../../constants/colors';
 import type { CerealProduct, PoshomillService } from '../../constants/salesData';
-import type { FractionPrice } from '../../types';
+import type { BasketItem, FractionPrice } from '../../types';
 
 type AdjustItemModalProps = {
   product: CerealProduct | PoshomillService | null;
+  editItem?: BasketItem | null;
   onClose: () => void;
 };
 
@@ -22,10 +23,10 @@ const FRACTIONS: { label: string; value: Fraction }[] = [
   { label: '1', value: 1 },
 ];
 
-export default function AdjustItemModal({ product, onClose }: AdjustItemModalProps) {
+export default function AdjustItemModal({ product, editItem, onClose }: AdjustItemModalProps) {
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(0)).current;
-  const { addItem, updateItemQty, items } = useSharedBasket();
+  const { addItem, updateItem, items } = useSharedBasket();
   const [qty, setQty] = useState(1);
   const [selectedFractions, setSelectedFractions] = useState<FractionPrice[]>([]);
   const [mode, setMode] = useState<'add' | 'remove'>('add');
@@ -51,17 +52,22 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
       duration: 260,
       useNativeDriver: true,
     }).start();
-  }, [product]);
+  }, [product, editItem]);
 
   useEffect(() => {
-    if (!product) return;
-    const onBackPress = () => {
-      handleClose();
-      return true;
-    };
-    const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-    return () => sub.remove();
-  }, [product]);
+    if (!product || !editItem) return;
+    setQty(editItem.qty || 1);
+    if (editItem.fractionLabel) {
+      const labels = editItem.fractionLabel.split('+').map((l) => l.trim());
+      const matched = labels
+        .map((label) => fractionPrices.find((fp) => fp.label === label))
+        .filter((fp): fp is FractionPrice => !!fp);
+      setSelectedFractions(matched);
+    } else {
+      setSelectedFractions([]);
+    }
+    setMode('add');
+  }, [product, editItem, fractionPrices]);
 
   const handleClose = () => {
     Animated.timing(slideAnim, {
@@ -107,33 +113,48 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
   const handleAddToBasket = () => {
     if (!canAdd) return;
     if (isPiece) {
-      addItem({
-        id: `${product.id}_${Date.now()}`,
-        productId: product.id,
-        name: product.name,
-        qty,
-        unitPrice: piecePrice,
-        type: isCereal ? 'cereal' : 'service',
-        unitLabel,
-        unitType,
-        icon: product.icon,
-      });
+      if (editItem) {
+        updateItem(editItem.id, {
+          qty,
+          unitPrice: piecePrice,
+        });
+      } else {
+        addItem({
+          id: `${product.id}_${Date.now()}`,
+          productId: product.id,
+          name: product.name,
+          qty,
+          unitPrice: piecePrice,
+          type: isCereal ? 'cereal' : 'service',
+          unitLabel,
+          unitType,
+          icon: product.icon,
+        });
+      }
     } else {
       const totalQty = selectedFractions.reduce((sum, f) => sum + f.fraction, 0);
       const fractionLabel = selectedFractions.map((f) => f.label).join(' + ');
       const totalPrice = selectedFractions.reduce((sum, f) => sum + f.price, 0);
-      addItem({
-        id: `${product.id}_${Date.now()}`,
-        productId: product.id,
-        name: product.name,
-        qty: totalQty,
-        unitPrice: totalPrice,
-        type: isCereal ? 'cereal' : 'service',
-        fractionLabel,
-        unitLabel,
-        unitType,
-        icon: product.icon,
-      });
+      if (editItem) {
+        updateItem(editItem.id, {
+          qty: totalQty,
+          unitPrice: totalPrice,
+          fractionLabel,
+        });
+      } else {
+        addItem({
+          id: `${product.id}_${Date.now()}`,
+          productId: product.id,
+          name: product.name,
+          qty: totalQty,
+          unitPrice: totalPrice,
+          type: isCereal ? 'cereal' : 'service',
+          fractionLabel,
+          unitLabel,
+          unitType,
+          icon: product.icon,
+        });
+      }
     }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     handleClose();
@@ -149,7 +170,7 @@ export default function AdjustItemModal({ product, onClose }: AdjustItemModalPro
   const existingItem = items.find(
     (i) => i.productId === product.id && i.type === (isCereal ? 'cereal' : 'service')
   );
-  const isUpdate = !!existingItem;
+  const isUpdate = !!existingItem || !!editItem;
 
   const handleChipPress = (chip: { label: string; value: number }) => {
     const target = fractionPrices.find(fp => fp.fraction === chip.value);
