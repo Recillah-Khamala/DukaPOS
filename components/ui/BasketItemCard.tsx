@@ -1,32 +1,22 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { Text, View } from 'react-native';
+import { Text, View, Pressable } from 'react-native';
 import type { BasketItem } from '../../types';
-import { formatLineTotal } from '../../utils/formatQuantity';
+import { formatLineTotal, formatQty } from '../../utils/formatQuantity';
 
 export type BasketItemCardProps = {
   item: BasketItem;
+  onDelete?: (id: string) => void;
 };
 
-export default function BasketItemCard({ item }: BasketItemCardProps) {
-  const getQuantityDisplay = () => {
-    if (item.type === 'bag') {
-      return item.qty;
-    }
-    if (item.fractionLabel) {
-      return item.fractionLabel;
-    }
-    return item.qty;
-  };
-
-  const getUnitDisplay = () => {
-    if (item.unitLabel) {
-      return item.unitLabel;
-    }
-    return 'Piece';
-  };
-
-  const isFraction = !!item.fractionLabel;
+export default function BasketItemCard({ item, onDelete }: BasketItemCardProps) {
   const isBag = item.type === 'bag';
+  const hasFraction = !!item.fractionLabel;
+
+  const qtyText = hasFraction ? item.fractionLabel : formatQty(item.qty);
+  const unitLabel = item.unitLabel ?? (isBag ? 'Bag' : 'Piece');
+  const lineTotal = hasFraction
+    ? `${item.unitPrice.toLocaleString()} KES`
+    : formatLineTotal(item.qty, item.unitPrice);
 
   return (
     <View
@@ -50,7 +40,7 @@ export default function BasketItemCard({ item }: BasketItemCardProps) {
         />
       </View>
 
-      {/* Middle: Item Name and Unit Price */}
+      {/* Middle: Item Name */}
       <View className="flex-1">
         <Text className="text-base font-semibold text-neutral-900">{item.name}</Text>
         {isBag && (
@@ -58,27 +48,26 @@ export default function BasketItemCard({ item }: BasketItemCardProps) {
             <Text className="text-xs font-bold text-on-surface-variant">Bag</Text>
           </View>
         )}
-        <Text className="text-sm text-neutral-500">
-          KSh {item.unitPrice.toLocaleString()} each
-        </Text>
       </View>
 
-      {/* Right: Total Price and Quantity */}
+      {/* Right: Total + delete icon */}
       <View className="items-end">
-        <Text className="text-lg font-bold text-neutral-900">
-          {isFraction ? item.unitPrice.toLocaleString() : formatLineTotal(item.qty, item.unitPrice)}
-        </Text>
+        <View className="flex-row items-center gap-1">
+          <Text className="text-lg font-bold text-primary">{lineTotal}</Text>
+          <Pressable
+            onPress={() => onDelete?.(item.id)}
+            className="h-8 w-8 items-center justify-center rounded-full"
+          >
+            <MaterialIcons name="delete-sweep" size={20} color="#9ca3af" />
+          </Pressable>
+        </View>
         {isBag ? (
           <Text className="text-sm text-neutral-600">
-            {getQuantityDisplay()} × {item.variantLabel} {item.name}
-          </Text>
-        ) : isFraction ? (
-          <Text className="text-sm text-neutral-600">
-            {getQuantityDisplay()} {getUnitDisplay()} @ {item.unitPrice.toLocaleString()} KES
+            {item.qty} × {item.variantLabel}
           </Text>
         ) : (
           <Text className="text-sm text-neutral-600">
-            {getQuantityDisplay()} × {getUnitDisplay()}
+            {qtyText} {unitLabel} @ {item.unitPrice.toLocaleString()} KES
           </Text>
         )}
       </View>

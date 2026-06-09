@@ -91,7 +91,7 @@ export default function CheckoutScreen() {
           const smallestFraction = getSmallestFractionFromLabel(item.fractionLabel);
           return (
             <View className="mb-3">
-              <BasketItemCard item={item} />
+              <BasketItemCard item={item} onDelete={(id) => removeItem(id)} />
               <View className="flex-row items-center justify-between mt-2 pl-14">
                 <View className="flex-row items-center gap-3">
                   <Pressable
