@@ -1,28 +1,32 @@
-import type { ProductUnit, UnitType, FractionPrice, BagProduct } from '../types';
+import type { ProductUnit, BagProduct } from '../types';
 
 export type CerealProduct = {
-  id: string
-  name: string
-  icon: string
-  type: 'cereal'
-  units: ProductUnit[]
-  stockLevel?: number
-  pricePerKg: number
-}
+  id: string;
+  name: string;
+  icon: string;
+  type: 'cereal';
+  units: ProductUnit[];
+  stockLevel?: number;
+};
 
 export type PoshomillService = {
-  id: string
-  name: string
-  icon: string
-  units: ProductUnit[]
-  pricePerKg: number
-}
+  id: string;
+  name: string;
+  icon: string;
+  units: ProductUnit[];
+  // pricePerKg removed — prices now live in fractionPrices
+};
 
-const createFractionPrices = (prices: { '1/8': number; '1/4': number; '1/2': number; '1': number }): FractionPrice[] => [
-  { fraction: 0.125, label: '1/8', price: prices['1/8'] },
-  { fraction: 0.25, label: '1/4', price: prices['1/4'] },
-  { fraction: 0.5, label: '1/2', price: prices['1/2'] },
-  { fraction: 1, label: '1', price: prices['1'] },
+const createFractionPrices = (prices: {
+  '1/8': number;
+  '1/4': number;
+  '1/2': number;
+  '1': number;
+}) => [
+  { fraction: 0.125 as const, label: '1/8' as const, price: prices['1/8'] },
+  { fraction: 0.25 as const, label: '1/4' as const, price: prices['1/4'] },
+  { fraction: 0.5 as const, label: '1/2' as const, price: prices['1/2'] },
+  { fraction: 1 as const, label: '1' as const, price: prices['1'] },
 ];
 
 export const CEREAL_PRODUCTS: CerealProduct[] = [
@@ -31,7 +35,6 @@ export const CEREAL_PRODUCTS: CerealProduct[] = [
     name: 'Maize',
     icon: 'grass',
     type: 'cereal',
-    pricePerKg: 130,
     units: [
       {
         type: 'korokoro',
@@ -45,7 +48,6 @@ export const CEREAL_PRODUCTS: CerealProduct[] = [
     name: 'Beans',
     icon: 'eco',
     type: 'cereal',
-    pricePerKg: 160,
     units: [
       {
         type: 'korokoro',
@@ -59,7 +61,6 @@ export const CEREAL_PRODUCTS: CerealProduct[] = [
     name: 'Groundnuts',
     icon: 'grain',
     type: 'cereal',
-    pricePerKg: 220,
     units: [
       {
         type: 'korokoro',
@@ -73,7 +74,6 @@ export const CEREAL_PRODUCTS: CerealProduct[] = [
     name: 'Sorghum',
     icon: 'water_drop',
     type: 'cereal',
-    pricePerKg: 110,
     units: [
       {
         type: 'korokoro',
@@ -87,7 +87,6 @@ export const CEREAL_PRODUCTS: CerealProduct[] = [
     name: 'Millet',
     icon: 'filter_vintage',
     type: 'cereal',
-    pricePerKg: 145,
     units: [
       {
         type: 'korokoro',
@@ -96,18 +95,17 @@ export const CEREAL_PRODUCTS: CerealProduct[] = [
       },
     ],
   },
-]
+];
 
 export const POSHOMILL_SERVICES: PoshomillService[] = [
   {
     id: 'p1',
     name: 'Grade 1 Milling',
     icon: 'settings_suggest',
-    pricePerKg: 20,
     units: [
       {
-        type: 'kg',
-        label: 'KG',
+        type: 'korokoro',
+        label: 'Korokoro',
         fractionPrices: createFractionPrices({ '1/8': 3, '1/4': 5, '1/2': 10, '1': 20 }),
       },
     ],
@@ -116,16 +114,15 @@ export const POSHOMILL_SERVICES: PoshomillService[] = [
     id: 'p2',
     name: 'Regular Milling',
     icon: 'shutter_speed',
-    pricePerKg: 15,
     units: [
       {
-        type: 'kg',
-        label: 'KG',
+        type: 'korokoro',
+        label: 'Korokoro',
         fractionPrices: createFractionPrices({ '1/8': 2, '1/4': 4, '1/2': 7, '1': 15 }),
       },
     ],
   },
-]
+];
 
 export const BAG_PRODUCTS: BagProduct[] = [
   {
@@ -150,9 +147,9 @@ export const BAG_PRODUCTS: BagProduct[] = [
       { size: 'big', label: 'Big', price: 40 },
     ],
   },
-]
+];
 
 export const PACKAGING_SECTION = {
   title: 'Packaging',
   products: BAG_PRODUCTS,
-}
+};

@@ -170,53 +170,68 @@ export default function SalesScreen() {
           <Text className="text-base font-semibold" style={{ color: Colors.outline }}>+ Add Custom Item</Text>
         </Pressable>
 
-        <View className="px-[16px] mt-[8px]">
-          <Text className="text-[20px] font-semibold text-primary mb-[8px]">Poshomill Services</Text>
-          <View className="flex-col gap-[8px]">
-            {POSHOMILL_SERVICES.map((service) => {
-              const isFlashing = flashingId === service.id;
-              const currentQty = getQty(service.id);
-              return (
-                <Pressable
-                  key={service.id}
-                  onPress={() => setSelectedProduct(service)}
-                  className={`flex-row items-center justify-between bg-surface-container-lowest rounded-xl p-[16px] border-l-[4px] active:scale-95 ${isFlashing ? 'border-secondary' : 'border-[#7d5800]'}`}
-                  style={{
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: 0.08,
-                    shadowRadius: 12,
-                    elevation: 3,
-                  }}
-                >
-                  <View className="flex-row items-center gap-[16px]">
-                    <MaterialIcons name={service.icon.replace('_', '-') as any} size={28} color="#7d5800" />
-                    <View>
-                      <Text className="font-bold text-[16px] text-on-surface">{service.name}</Text>
-                      <Text className="font-bold text-[14px] text-on-surface-variant">Per KG</Text>
-                    </View>
-                  </View>
-                  <View className="flex-row items-center gap-[12px]">
-                    <Pressable
-                      onPress={() => handleQtyChange(service.id, -1, 1, 1)}
-                      disabled={currentQty <= 1}
-                      className={`h-12 w-12 items-center justify-center rounded-full border ${currentQty <= 1 ? 'border-outline-variant bg-surface-container-high' : 'border-outline-variant bg-surface-container-lowest active:scale-95'}`}
-                    >
-                      <Text className={`text-lg font-bold ${currentQty <= 1 ? 'text-on-surface-variant opacity-50' : 'text-on-surface-variant'}`}>−</Text>
-                    </Pressable>
-                    <Text className="text-[20px] font-bold text-primary w-10 text-center">{formatQty(currentQty)}</Text>
-                    <Pressable
-                      onPress={() => handleQtyChange(service.id, 1, 1, 1)}
-                      className="h-12 w-12 items-center justify-center rounded-full border border-outline-variant bg-surface-container-lowest active:scale-95"
-                    >
-                      <Text className="text-lg font-bold text-on-surface-variant">+</Text>
-                    </Pressable>
-                  </View>
-                </Pressable>
-              );
-            })}
-          </View>
-        </View>
+         <View className="px-[16px] mt-[8px]">
+           <Text className="text-[20px] font-semibold text-primary mb-[8px]">Poshomill Services</Text>
+           <View className="flex-col gap-[8px]">
+             {POSHOMILL_SERVICES.map((service) => {
+               const isFlashing = flashingId === service.id;
+               const currentQty = getQty(service.id);
+               const fractionPrices = service.units[0]?.fractionPrices ?? [];
+               const minFractionPrice = fractionPrices[0]?.price ?? 0;
+               const maxFractionPrice = fractionPrices[fractionPrices.length - 1]?.price ?? 0;
+               const unitLabel = service.units[0]?.label ?? 'korokoro';
+               return (
+                 <Pressable
+                   key={service.id}
+                   onPress={() => setSelectedProduct(service)}
+                   className={`flex-row items-center justify-between bg-surface-container-lowest rounded-xl p-[16px] border-l-[4px] active:scale-95 ${isFlashing ? 'border-secondary' : 'border-[#7d5800]'}`}
+                   style={{
+                     shadowColor: '#000',
+                     shadowOffset: { width: 0, height: 4 },
+                     shadowOpacity: 0.08,
+                     shadowRadius: 12,
+                     elevation: 3,
+                   }}
+                 >
+                   <View className="flex-row items-center gap-[16px]">
+                     <MaterialIcons name={service.icon.replace('_', '-') as any} size={28} color="#7d5800" />
+                     <View>
+                       <Text className="font-bold text-[16px] text-on-surface">{service.name}</Text>
+                       <Text className="font-bold text-[14px] text-on-surface-variant">Per Korokoro</Text>
+                     </View>
+                   </View>
+                   <View className="flex-row items-center gap-[12px]">
+                     <Pressable
+                       onPress={() => {
+                         const smallestFraction = fractionPrices[0]?.fraction ?? 0.125;
+                         handleQtyChange(service.id, -smallestFraction, smallestFraction, smallestFraction);
+                       }}
+                       disabled={currentQty <= (fractionPrices[0]?.fraction ?? 0.125)}
+                       className={`h-12 w-12 items-center justify-center rounded-full border ${currentQty <= (fractionPrices[0]?.fraction ?? 0.125) ? 'border-outline-variant bg-surface-container-high' : 'border-outline-variant bg-surface-container-lowest active:scale-95'}`}
+                     >
+                       <Text className={`text-lg font-bold ${currentQty <= (fractionPrices[0]?.fraction ?? 0.125) ? 'text-on-surface-variant opacity-50' : 'text-on-surface-variant'}`}>−</Text>
+                     </Pressable>
+                     <Text className="text-[20px] font-bold text-primary w-10 text-center">{formatQty(currentQty)}</Text>
+                     <Pressable
+                       onPress={() => {
+                         const smallestFraction = fractionPrices[0]?.fraction ?? 0.125;
+                         handleQtyChange(service.id, smallestFraction, smallestFraction, smallestFraction);
+                       }}
+                       className="h-12 w-12 items-center justify-center rounded-full border border-outline-variant bg-surface-container-lowest active:scale-95"
+                     >
+                       <Text className="text-lg font-bold text-on-surface-variant">+</Text>
+                     </Pressable>
+                   </View>
+                   <View className="mt-2">
+                     <Text className="text-sm text-on-surface-variant">
+                       {formatQty(currentQty)} {unitLabel} × {maxFractionPrice} KES = <Text className="text-base font-bold text-primary">{formatLineTotal(currentQty, maxFractionPrice)}</Text>
+                     </Text>
+                   </View>
+                 </Pressable>
+               );
+             })}
+           </View>
+         </View>
 
         {/* Packaging Section */}
         <View className="px-[16px] mt-[8px]">
