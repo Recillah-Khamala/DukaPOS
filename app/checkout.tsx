@@ -58,7 +58,7 @@ export default function CheckoutScreen() {
   const { addSale } = useSalesHistory();
 
   const selectedEditProduct = selectedEditItem
-    ? [...CEREAL_PRODUCTS, ...POSHOMILL_SERVICES, ...BAG_PRODUCTS].find(
+    ? [...CEREAL_PRODUCTS, ...POSHOMILL_SERVICES].find(
         (p) => p.id === selectedEditItem.productId
       ) || null
     : null;
