@@ -89,6 +89,13 @@ export default function CheckoutScreen() {
     router.replace('/(tabs)/sales?saleSuccess=true&total=' + encodeURIComponent(String(total)));
   };
 
+  const handlePaymentMethodChange = (method: PaymentMethod) => {
+    setPaymentMethod(method);
+    if (method === 'mpesa') {
+      setCashReceived(0);
+    }
+  };
+
   const handleClearAll = () => {
     clearBasket();
     router.replace('/(tabs)/sales');
@@ -179,12 +186,20 @@ export default function CheckoutScreen() {
         ListFooterComponent={
           items.length > 0 ? (
             <View className="mt-4 gap-4">
-              <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} />
-              <ChangeCalculator
-                totalBill={total}
-                cashReceived={cashReceived}
-                onCashReceivedChange={setCashReceived}
-              />
+              <PaymentMethodSelector value={paymentMethod} onChange={handlePaymentMethodChange} />
+              {paymentMethod === 'mpesa' ? (
+                <View className="bg-white rounded-xl p-4 border border-gray-200">
+                  <Text className="text-center font-bold text-primary text-lg">
+                    M-Pesa Total: KES {total.toLocaleString()}
+                  </Text>
+                </View>
+              ) : (
+                <ChangeCalculator
+                  totalBill={total}
+                  cashReceived={cashReceived}
+                  onCashReceivedChange={setCashReceived}
+                />
+              )}
               <Pressable
                 onPress={handleConfirm}
                 disabled={items.length === 0}
