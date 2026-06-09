@@ -25,7 +25,6 @@ export function BasketProvider({ children }: { children: ReactNode }) {
     <BasketContext.Provider
       value={{
         ...basket,
-        updateItem,
       }}
     >
       {children}

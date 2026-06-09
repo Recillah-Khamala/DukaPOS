@@ -85,5 +85,5 @@ export function useBasket(initialItems: BasketItem[] = []) {
     return Math.round(sum / 5) * 5;
   }, [items]);
 
-  return { items, addItem, removeItem, updateQuantity, updateItemQty, clearBasket, total, clear: clearBasket };
+  return { items, addItem, removeItem, updateQuantity, updateItemQty, updateItem, clearBasket, total, clear: clearBasket };
 }
