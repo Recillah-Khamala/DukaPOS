@@ -166,11 +166,22 @@ export default function CheckoutScreen() {
               />
               <Pressable
                 onPress={handleConfirm}
-                className="w-full py-3.5 rounded-lg items-center"
-                style={{ backgroundColor: '#012d1d' }}
+                disabled={items.length === 0}
+                className="w-full flex-row items-center justify-center rounded-lg py-3.5 active:scale-95"
+                style={{
+                  backgroundColor: items.length === 0 ? '#d1d5db' : '#012d1d',
+                }}
               >
-                <Text className="text-base font-semibold text-white">
-                  Confirm — KES {total.toLocaleString()}
+                <MaterialIcons
+                  name="check-circle"
+                  size={20}
+                  color={items.length === 0 ? '#9ca3af' : 'white'}
+                />
+                <Text
+                  className="ml-2 text-base font-semibold"
+                  style={{ color: items.length === 0 ? '#6b7280' : 'white' }}
+                >
+                  COMPLETE SALE & PRINT
                 </Text>
               </Pressable>
             </View>
