@@ -68,9 +68,28 @@ export default function CheckoutScreen() {
     router.replace('/(tabs)/sales?saleSuccess=true&total=' + encodeURIComponent(String(total)));
   };
 
+  const handleClearAll = () => {
+    clearBasket();
+    router.replace('/(tabs)/sales');
+  };
+
   return (
     <View className="flex-1 bg-gray-50">
       <TopAppBar title="Checkout" onBack={() => router.back()} />
+      {items.length > 0 && (
+        <View className="px-4 py-3 flex-row items-center justify-between bg-white border-b border-gray-200">
+          <Text className="font-label-bold text-on-surface-variant uppercase tracking-wider">
+            Basket ({items.length} {items.length === 1 ? 'Item' : 'Items'})
+          </Text>
+          <Pressable
+            onPress={handleClearAll}
+            className="flex-row items-center gap-1"
+          >
+            <MaterialIcons name="delete-sweep" size={18} color="#dc2626" />
+            <Text className="text-sm font-medium text-error">Clear All</Text>
+          </Pressable>
+        </View>
+      )}
       <FlatList
         className="flex-1"
         data={items}
