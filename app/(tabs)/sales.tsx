@@ -1,5 +1,5 @@
-﻿import React, { useState, useCallback, useEffect } from 'react';
-import { Text, View, ScrollView, Pressable } from 'react-native';
+﻿import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { Text, View, ScrollView, Pressable, Animated } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
@@ -21,19 +21,33 @@ export default function SalesScreen() {
   const [selectedBagProduct, setSelectedBagProduct] = useState<BagProduct | null>(null);
   const [showBanner, setShowBanner] = useState(false);
   const [bannerTotal, setBannerTotal] = useState('');
+  const bannerAnim = useRef(new Animated.Value(-48)).current;
   const { items, total, addItem } = useSharedBasket();
 
   useEffect(() => {
     if (params.saleSuccess === 'true') {
       setShowBanner(true);
       setBannerTotal(params.total ? Number(params.total).toLocaleString() : total.toLocaleString());
+      bannerAnim.setValue(-48);
+      Animated.timing(bannerAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+
       const timeout = setTimeout(() => {
-        setShowBanner(false);
-        router.replace('/(tabs)/sales');
+        Animated.timing(bannerAnim, {
+          toValue: -48,
+          duration: 150,
+          useNativeDriver: true,
+        }).start(() => {
+          setShowBanner(false);
+          router.replace('/(tabs)/sales');
+        });
       }, 2000);
       return () => clearTimeout(timeout);
     }
-  }, [params.saleSuccess, params.total, total, router]);
+  }, [params.saleSuccess, params.total, total, router, bannerAnim]);
 
   const handleQtyChange = useCallback(
     (id: string, delta: number, min: number, step: number) => {
@@ -62,11 +76,17 @@ export default function SalesScreen() {
       </View>
 
       {showBanner && (
-        <View className="bg-primary px-4 py-3">
-          <Text className="text-sm font-semibold text-on-primary">
-            ✓ Sale of KES {bannerTotal} recorded
-          </Text>
-        </View>
+        <Animated.View
+          style={{
+            transform: [{ translateY: bannerAnim }],
+          }}
+        >
+          <View className="bg-primary px-4 py-3">
+            <Text className="text-sm font-semibold text-on-primary">
+              ✓ Sale of KES {bannerTotal} recorded
+            </Text>
+          </View>
+        </Animated.View>
       )}
 
       <View style={{ flex: 1 }}>
