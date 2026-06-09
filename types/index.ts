@@ -46,7 +46,7 @@ export interface BasketItem {
   variantLabel?: string;
 }
 
-export type PaymentMethod = 'cash' | 'mpesa';
+export type PaymentMethod = 'cash' | 'mpesa' | 'credit';
 
 export interface CompletedSale {
   id: string;

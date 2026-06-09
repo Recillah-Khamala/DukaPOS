@@ -91,7 +91,7 @@ export default function CheckoutScreen() {
 
   const handlePaymentMethodChange = (method: PaymentMethod) => {
     setPaymentMethod(method);
-    if (method === 'mpesa') {
+    if (method === 'mpesa' || method === 'credit') {
       setCashReceived(0);
     }
   };
@@ -193,6 +193,12 @@ export default function CheckoutScreen() {
                     M-Pesa Total: KES {total.toLocaleString()}
                   </Text>
                 </View>
+              ) : paymentMethod === 'credit' ? (
+                <View className="bg-white rounded-xl p-4 border border-gray-200">
+                  <Text className="text-center text-sm text-on-surface-variant italic">
+                    Credit sale — customer ledger coming soon
+                  </Text>
+                </View>
               ) : (
                 <ChangeCalculator
                   totalBill={total}
@@ -209,7 +215,7 @@ export default function CheckoutScreen() {
                 }}
               >
                 <MaterialIcons
-                  name="check-circle"
+                  name={paymentMethod === 'credit' ? 'receipt-long' : 'check-circle'}
                   size={20}
                   color={items.length === 0 ? '#9ca3af' : 'white'}
                 />
@@ -217,7 +223,7 @@ export default function CheckoutScreen() {
                   className="ml-2 text-base font-semibold"
                   style={{ color: items.length === 0 ? '#6b7280' : 'white' }}
                 >
-                  COMPLETE SALE & PRINT
+                  {paymentMethod === 'credit' ? 'RECORD CREDIT SALE' : 'COMPLETE SALE & PRINT'}
                 </Text>
               </Pressable>
             </View>

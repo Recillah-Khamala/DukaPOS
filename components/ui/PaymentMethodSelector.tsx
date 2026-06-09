@@ -42,6 +42,22 @@ export default function PaymentMethodSelector({ value, onChange, className }: Pa
           M-Pesa
         </Text>
       </TouchableOpacity>
+
+      {/* Credit Button */}
+      <TouchableOpacity
+        activeOpacity={0.7}
+        onPress={() => onChange('credit')}
+        className={`flex-1 items-center justify-center py-3 rounded-lg border-2 ${
+          value === 'credit'
+            ? 'bg-green-50 dark:bg-green-900/30 border-green-800 dark:border-green-200'
+            : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+        }`}
+      >
+        <MaterialIcons name="menu-book" size={24} color="#012d1d" />
+        <Text className="mt-1 text-sm font-medium">
+          Credit
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
