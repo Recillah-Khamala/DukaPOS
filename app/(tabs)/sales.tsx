@@ -19,16 +19,16 @@ export default function SalesScreen() {
   const [qtys, setQtys] = useState<Record<string, number>>({});
   const [selectedProduct, setSelectedProduct] = useState<typeof CEREAL_PRODUCTS[number] | typeof POSHOMILL_SERVICES[number] | null>(null);
   const [selectedBagProduct, setSelectedBagProduct] = useState<BagProduct | null>(null);
-  const [showBanner, setShowBanner] = useState(false);
   const [bannerTotal, setBannerTotal] = useState('');
   const bannerAnim = useRef(new Animated.Value(-48)).current;
+  const showBannerRef = useRef(false);
   const { items, total, addItem } = useSharedBasket();
 
   useEffect(() => {
     if (params.saleSuccess === 'true') {
-      setShowBanner(true);
+      showBannerRef.current = true;
       setBannerTotal(params.total ? Number(params.total).toLocaleString() : total.toLocaleString());
-      bannerAnim.setValue(-48);
+
       Animated.timing(bannerAnim, {
         toValue: 0,
         duration: 200,
@@ -41,7 +41,7 @@ export default function SalesScreen() {
           duration: 150,
           useNativeDriver: true,
         }).start(() => {
-          setShowBanner(false);
+          showBannerRef.current = false;
           router.replace('/(tabs)/sales');
         });
       }, 2000);
@@ -75,7 +75,7 @@ export default function SalesScreen() {
         </View>
       </View>
 
-      {showBanner && (
+      {showBannerRef.current && (
         <Animated.View
           style={{
             transform: [{ translateY: bannerAnim }],

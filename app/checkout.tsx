@@ -10,7 +10,7 @@ import ChangeCalculator from '../components/ui/ChangeCalculator';
 import AdjustItemModal from '../components/sales/AdjustItemModal';
 import { useSharedBasket } from '../context/BasketContext';
 import { useSalesHistory } from '../hooks/useSalesHistory';
-import { CEREAL_PRODUCTS, POSHOMILL_SERVICES, BAG_PRODUCTS } from '../../constants/salesData';
+import { CEREAL_PRODUCTS, POSHOMILL_SERVICES, BAG_PRODUCTS } from '../constants/salesData';
 import type { PaymentMethod, UnitType, CompletedSale, BasketItem } from '../types';
 
 const FRACTION_CYCLE: UnitType[] = ['korokoro', 'kg'];
@@ -131,7 +131,7 @@ export default function CheckoutScreen() {
           const smallestFraction = getSmallestFractionFromLabel(item.fractionLabel);
           return (
             <View className="mb-3">
-              <BasketItemCard item={item} onDelete={(id) => removeItem(id)} />
+              <BasketItemCard item={item} onDelete={(id) => removeItem(id)} onEdit={() => handleEdit(item)} />
               <View className="flex-row items-center justify-between mt-2 pl-14">
                 <View className="flex-row items-center gap-3">
                   <Pressable
