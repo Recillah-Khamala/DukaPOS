@@ -43,31 +43,13 @@ export default function AdjustItemModal({ product, editItem, onClose }: AdjustIt
 
   useEffect(() => {
     if (!product) return;
-    setQty(1);
-    setSelectedFractions([]);
-    setMode('add');
-    slideAnim.setValue(0);
-    Animated.timing(slideAnim, {
-      toValue: 1,
-      duration: 260,
-      useNativeDriver: true,
-    }).start();
-  }, [product, editItem]);
-
-  useEffect(() => {
-    if (!product || !editItem) return;
-    setQty(editItem.qty || 1);
-    if (editItem.fractionLabel) {
-      const labels = editItem.fractionLabel.split('+').map((l) => l.trim());
-      const matched = labels
-        .map((label) => fractionPrices.find((fp) => fp.label === label))
-        .filter((fp): fp is FractionPrice => !!fp);
-      setSelectedFractions(matched);
-    } else {
-      setSelectedFractions([]);
-    }
-    setMode('add');
-  }, [product, editItem, fractionPrices]);
+    const onBackPress = () => {
+      handleClose();
+      return true;
+    };
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => sub.remove();
+  }, [product]);
 
   const handleClose = () => {
     Animated.timing(slideAnim, {
@@ -95,8 +77,7 @@ export default function AdjustItemModal({ product, editItem, onClose }: AdjustIt
   const unitLabel = firstUnit?.label ?? 'Korokoro';
   const unitType = firstUnit?.type ?? 'korokoro';
   const isPiece = unitType === 'piece';
-  const isKorokoro = unitType === 'korokoro'; // ← key fix: covers both cereals AND poshomill
-
+  const isKorokoro = unitType === 'korokoro';
   const fractionPrices = firstUnit?.fractionPrices ?? [];
   const minPrice = fractionPrices[0]?.price ?? 0;
   const maxPrice = fractionPrices[fractionPrices.length - 1]?.price ?? 0;
@@ -160,20 +141,13 @@ export default function AdjustItemModal({ product, editItem, onClose }: AdjustIt
     handleClose();
   };
 
-  const handleUpdateBasket = () => {
-    if (!canAdd) return;
-    updateItemQty(product.id, qty);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    handleClose();
-  };
-
   const existingItem = items.find(
     (i) => i.productId === product.id && i.type === (isCereal ? 'cereal' : 'service')
   );
   const isUpdate = !!existingItem || !!editItem;
 
   const handleChipPress = (chip: { label: string; value: number }) => {
-    const target = fractionPrices.find(fp => fp.fraction === chip.value);
+    const target = fractionPrices.find((fp) => fp.fraction === chip.value);
     if (!target) return;
     if (mode === 'add') {
       setSelectedFractions((prev) => [...prev, target]);
@@ -199,15 +173,12 @@ export default function AdjustItemModal({ product, editItem, onClose }: AdjustIt
   return (
     <Modal visible={!!product} transparent animationType="none" onRequestClose={handleClose}>
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-
-        {/* Backdrop */}
         <Pressable onPress={handleBackdropPress} style={StyleSheet.absoluteFill}>
           <Animated.View
             style={[StyleSheet.absoluteFill, { opacity: slideAnim, backgroundColor: 'rgba(0,0,0,0.45)' }]}
           />
         </Pressable>
 
-        {/* Sheet */}
         <View
           className="rounded-t-3xl bg-white overflow-hidden"
           style={{
@@ -224,12 +195,10 @@ export default function AdjustItemModal({ product, editItem, onClose }: AdjustIt
               paddingBottom: insets.bottom + 8,
             }}
           >
-            {/* Drag handle */}
             <View className="items-center pt-3 pb-1">
               <View className="w-10 h-1.5 rounded-full bg-gray-300" />
             </View>
 
-            {/* Header */}
             <View
               className="flex-row items-center justify-between px-4 py-4"
               style={{ backgroundColor: Colors.primaryContainer }}
@@ -249,7 +218,6 @@ export default function AdjustItemModal({ product, editItem, onClose }: AdjustIt
                   <Text className="text-xl font-semibold" style={{ color: Colors.onPrimaryContainer }}>
                     {product.name}
                   </Text>
-                  {/* Price range in header — works for both cereals and poshomill */}
                   <Text className="text-sm mt-0.5" style={{ color: Colors.onPrimaryContainer }}>
                     {isPiece ? `${piecePrice} KES / ${unitLabel}` : priceRangeLabel}
                   </Text>
@@ -264,8 +232,6 @@ export default function AdjustItemModal({ product, editItem, onClose }: AdjustIt
             </View>
 
             <View className="px-4 pt-4 pb-2">
-
-              {/* Fraction chips — korokoro unit type only (cereals + poshomill) */}
               {isKorokoro && !isPiece && (
                 <View className="flex-row gap-2 mb-2">
                   {FRACTIONS.map((chip) => (
@@ -289,7 +255,6 @@ export default function AdjustItemModal({ product, editItem, onClose }: AdjustIt
                 </View>
               )}
 
-              {/* Piece stepper — only for piece unit type */}
               {isPiece && (
                 <View className="flex-row items-center gap-4 mt-4">
                   <Pressable
@@ -323,7 +288,6 @@ export default function AdjustItemModal({ product, editItem, onClose }: AdjustIt
                 </View>
               )}
 
-              {/* Add/Remove mode buttons — korokoro only */}
               {isKorokoro && !isPiece && (
                 <View className="flex-row items-center gap-4 mt-4">
                   <Pressable
@@ -359,7 +323,6 @@ export default function AdjustItemModal({ product, editItem, onClose }: AdjustIt
                 </View>
               )}
 
-              {/* Live price preview */}
               <View className="mt-3 mb-2">
                 {isKorokoro && !isPiece ? (
                   <Text className="text-sm" style={{ color: Colors.onSurfaceVariant }}>
@@ -384,11 +347,10 @@ export default function AdjustItemModal({ product, editItem, onClose }: AdjustIt
                 )}
               </View>
 
-              {/* CTA */}
               {isUpdate ? (
                 <>
                   <Pressable
-                    onPress={handleUpdateBasket}
+                    onPress={handleAddToBasket}
                     disabled={!canAdd}
                     className="mt-2 mb-1 w-full flex-row items-center justify-center rounded-xl py-3.5 active:scale-95"
                     style={{ backgroundColor: canAdd ? Colors.primary : '#d1d5db' }}
