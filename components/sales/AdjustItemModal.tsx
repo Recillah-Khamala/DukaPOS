@@ -51,6 +51,17 @@ export default function AdjustItemModal({ product, editItem, onClose }: AdjustIt
     return () => sub.remove();
   }, [product]);
 
+  // Animate sheet up on open
+  useEffect(() => {
+    if (!product) return;
+    slideAnim.setValue(0);
+    Animated.timing(slideAnim, {
+      toValue: 1,
+      duration: 260,
+      useNativeDriver: true,
+    }).start();
+  }, [product]);
+
   const handleClose = () => {
     Animated.timing(slideAnim, {
       toValue: 0,
