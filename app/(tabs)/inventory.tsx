@@ -4,6 +4,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import Colors from '../../constants/colors';
 import { INVENTORY_ITEMS } from '../../constants/inventoryData';
+import StockItemCard from '../../components/inventory/StockItemCard';
 
 export default function InventoryScreen() {
   const [bottomNavHeight, setBottomNavHeight] = useState(0);
@@ -122,14 +123,11 @@ export default function InventoryScreen() {
               </Text>
             </View>
           ) : (
-            <View>
+            <>
               {INVENTORY_ITEMS.map(item => (
-                <View key={item.id} style={{ paddingVertical: 8, borderBottomWidth: 1, borderColor: '#e5e7eb' }}>
-                  <Text style={{ fontSize: 16, fontWeight: '500' }}>{item.name}</Text>
-                  <Text style={{ fontSize: 14, color: '#6b7280' }}>{item.currentStock} {item.unit}</Text>
-                </View>
+                <StockItemCard key={item.id} item={item} />
               ))}
-            </View>
+            </>
           )}
         </View>
         {/* Content will be added later */}
