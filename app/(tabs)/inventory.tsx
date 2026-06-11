@@ -85,6 +85,56 @@ export default function InventoryScreen() {
             </ScrollView>
           </>
         )}
+        {/* Cereal Inventory section */}
+        <View style={{ paddingHorizontal: 16 }}>
+          {/* Section heading */}
+          <View style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginTop: 20,
+            marginBottom: 12,
+          }}>
+            <Text style={{ fontSize: 18, fontWeight: '600', color: Colors.primary }}>
+              Cereal Inventory
+            </Text>
+            <View style={{
+              backgroundColor: Colors.primary,
+              borderRadius: 20,
+              paddingHorizontal: 14,
+              paddingVertical: 6,
+            }}>
+              <Text
+                style={{ fontSize: 13, fontWeight: '600', color: Colors.onPrimary }}
+                onPress={() => console.log('Add Stock pressed')}
+              >
+                + Add Stock
+              </Text>
+            </View>
+          </View>
+
+          {/* Inventory list or empty state */}
+          {INVENTORY_ITEMS.length === 0 ? (
+            {/* Empty state */}
+            <View style={{ alignItems: 'center', paddingTop: 48 }}>
+              <MaterialIcons name="inventory" size={48} color="#d1d5db" />
+              <Text style={{ fontSize: 15, color: "#9ca3af", marginTop: 8 }}>
+                No inventory items yet
+              </Text>
+            </View>
+          ) : (
+            {/* We'll render the inventory list here later */}
+            <View>
+              {/* Placeholder for inventory list items */}
+              {INVENTORY_ITEMS.map(item => (
+                <View key={item.id} style={{ paddingVertical: 8, borderBottomWidth: 1, borderColor: '#e5e7eb' }}>
+                  <Text style={{ fontSize: 16, fontWeight: '500' }}>{item.name}</Text>
+                  <Text style={{ fontSize: 14, color: '#6b7280' }}>{item.currentStock} {item.unit}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+        </View>
         {/* Content will be added later */}
       </ScrollView>
 
