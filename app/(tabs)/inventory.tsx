@@ -115,7 +115,6 @@ export default function InventoryScreen() {
 
           {/* Inventory list or empty state */}
           {INVENTORY_ITEMS.length === 0 ? (
-            {/* Empty state */}
             <View style={{ alignItems: 'center', paddingTop: 48 }}>
               <MaterialIcons name="inventory" size={48} color="#d1d5db" />
               <Text style={{ fontSize: 15, color: "#9ca3af", marginTop: 8 }}>
@@ -123,7 +122,6 @@ export default function InventoryScreen() {
               </Text>
             </View>
           ) : (
-            {/* Inventory list */}
             <View>
               {INVENTORY_ITEMS.map(item => (
                 <View key={item.id} style={{ paddingVertical: 8, borderBottomWidth: 1, borderColor: '#e5e7eb' }}>
