@@ -123,9 +123,8 @@ export default function InventoryScreen() {
               </Text>
             </View>
           ) : (
-            {/* We'll render the inventory list here later */}
+            {/* Inventory list */}
             <View>
-              {/* Placeholder for inventory list items */}
               {INVENTORY_ITEMS.map(item => (
                 <View key={item.id} style={{ paddingVertical: 8, borderBottomWidth: 1, borderColor: '#e5e7eb' }}>
                   <Text style={{ fontSize: 16, fontWeight: '500' }}>{item.name}</Text>
