@@ -20,7 +20,7 @@ export default function InventoryScreen() {
         backgroundColor: Colors.primary,
       }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}>
-          <MaterialIcons name="inventory_2" size={24} color="white" />
+          <MaterialIcons name="inventory" size={24} color="white" />
           <Text style={{ fontSize: 18, fontWeight: '600', color: 'white' }}>Inventory Management</Text>
         </View>
         <MaterialIcons name="search" size={24} color="white" />
