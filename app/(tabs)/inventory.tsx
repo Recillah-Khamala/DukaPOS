@@ -3,9 +3,11 @@ import { Text, View, ScrollView } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import Colors from '../../constants/colors';
+import { INVENTORY_ITEMS } from '../../constants/inventoryData';
 
 export default function InventoryScreen() {
   const [bottomNavHeight, setBottomNavHeight] = useState(0);
+  const lowStockItems = INVENTORY_ITEMS.filter(item => item.isLowStock);
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
@@ -34,6 +36,55 @@ export default function InventoryScreen() {
         }}
         keyboardShouldPersistTaps="handled"
       >
+        {/* Low Stock Alerts section */}
+        {lowStockItems.length > 0 && (
+          <>
+            <Text 
+              style={{ 
+                textTransform: 'uppercase', 
+                fontSize: 11, 
+                fontWeight: '500', 
+                color: Colors.onSurfaceVariant, 
+                paddingHorizontal: 16, 
+                marginBottom: 8 
+              }}>
+              Low Stock Alerts
+            </Text>
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false} 
+              style={{ paddingHorizontal: 16, gap: 8 }}
+              contentContainerStyle={{ flexDirection: 'row' }}
+            >
+              {lowStockItems.map(item => (
+                <View 
+                  key={item.id} 
+                  style={{
+                    backgroundColor: '#fef2f2',
+                    borderColor: '#fca5a5',
+                    borderWidth: 1,
+                    borderRadius: 9999, // rounded-full
+                    paddingHorizontal: 12,
+                    paddingVertical: 6,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 4,
+                  }}
+                >
+                  <MaterialIcons name="warning" size={14} color='#dc2626' />
+                  <Text 
+                    style={{ 
+                      fontSize: 13, 
+                      fontWeight: '600', 
+                      color: '#dc2626' 
+                    }}>
+                    {item.name} · {item.currentStock} {item.unit}
+                  </Text>
+                </View>
+              ))}
+            </ScrollView>
+          </>
+        )}
         {/* Content will be added later */}
       </ScrollView>
 
