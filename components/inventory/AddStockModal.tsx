@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Modal, TouchableWithoutFeedback, View, Text, Animated, Easing, TextInput, ScrollView } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Colors from '../../constants/colors';
+import type { InventoryItem } from '../../constants/inventoryData';
 
-const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
+const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose: () => void; onAdd: (item: InventoryItem) => void }) => {
   const [productName, setProductName] = useState('');
   const [quantity, setQuantity] = useState('');
   const [selectedUnit, setSelectedUnit] = useState<'Korokoro' | 'kg' | 'g' | 'piece'>('Korokoro');

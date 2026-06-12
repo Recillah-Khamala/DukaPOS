@@ -3,14 +3,19 @@ import { Text, View, ScrollView } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import Colors from '../../constants/colors';
-import { INVENTORY_ITEMS } from '../../constants/inventoryData';
+import { INVENTORY_ITEMS, type InventoryItem } from '../../constants/inventoryData';
 import StockItemCard from '../../components/inventory/StockItemCard';
 import AddStockModal from '../../components/inventory/AddStockModal';
 
 export default function InventoryScreen() {
   const [bottomNavHeight, setBottomNavHeight] = useState(0);
   const [showAddStock, setShowAddStock] = useState(false);
-  const lowStockItems = INVENTORY_ITEMS.filter(item => item.isLowStock);
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>(INVENTORY_ITEMS);
+  const lowStockItems = inventoryItems.filter(item => item.isLowStock);
+
+  const handleAddItem = (newItem: InventoryItem) => {
+    setInventoryItems(prev => [...prev, newItem]);
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
@@ -116,26 +121,26 @@ export default function InventoryScreen() {
             </View>
           </View>
 
-          {/* Inventory list or empty state */}
-          {INVENTORY_ITEMS.length === 0 ? (
-            <View style={{ alignItems: 'center', paddingTop: 48 }}>
-              <MaterialIcons name="inventory" size={48} color="#d1d5db" />
-              <Text style={{ fontSize: 15, color: "#9ca3af", marginTop: 8 }}>
-                No inventory items yet
-              </Text>
-            </View>
-          ) : (
-            <>
-              {INVENTORY_ITEMS.map(item => (
-                <StockItemCard key={item.id} item={item} />
-              ))}
-            </>
-          )}
+           {/* Inventory list or empty state */}
+           {inventoryItems.length === 0 ? (
+             <View style={{ alignItems: 'center', paddingTop: 48 }}>
+               <MaterialIcons name="inventory" size={48} color="#d1d5db" />
+               <Text style={{ fontSize: 15, color: "#9ca3af", marginTop: 8 }}>
+                 No inventory items yet
+               </Text>
+             </View>
+           ) : (
+             <>
+               {inventoryItems.map(item => (
+                 <StockItemCard key={item.id} item={item} />
+               ))}
+             </>
+           )}
         </View>
         {/* Content will be added later */}
        </ScrollView>
 
-       <AddStockModal visible={showAddStock} onClose={() => setShowAddStock(false)} />
+        <AddStockModal visible={showAddStock} onClose={() => setShowAddStock(false)} onAdd={handleAddItem} />
 
        <BottomNavBar activeTab="inventory" onHeightMeasured={setBottomNavHeight} />
     </View>
