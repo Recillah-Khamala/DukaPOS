@@ -6,6 +6,7 @@ import Colors from '../../constants/colors';
 const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
   const [productName, setProductName] = useState('');
   const [quantity, setQuantity] = useState('');
+  const [selectedUnit, setSelectedUnit] = useState<'Korokoro' | 'kg' | 'g' | 'piece'>('Korokoro');
   const [productNameFocused, setProductNameFocused] = useState(false);
   const [quantityFocused, setQuantityFocused] = useState(false);
   const animatedValue = new Animated.Value(visible ? 0 : 300); // Start off-screen if not visible
@@ -112,6 +113,52 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
                   onFocus={() => setQuantityFocused(true)}
                   onBlur={() => setQuantityFocused(false)}
                 />
+              </View>
+
+              {/* Unit Selector */}
+              <View style={{ marginTop: 16 }}>
+                <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
+                  Unit
+                </Text>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                  {['Korokoro', 'kg', 'g', 'piece'].map((unit) => (
+                    <TouchableWithoutFeedback
+                      key={unit}
+                      onPress={() => setSelectedUnit(unit as 'Korokoro' | 'kg' | 'g' | 'piece')}
+                    >
+                      <View
+                        style={[
+                          {
+                            borderRadius: 20,
+                            paddingHorizontal: 16,
+                            paddingVertical: 8,
+                            borderWidth: 1.5,
+                            backgroundColor:
+                              selectedUnit === unit
+                                ? Colors.primaryFixed
+                                : '#f3f4f6',
+                            borderColor:
+                              selectedUnit === unit
+                                ? Colors.primary
+                                : '#e5e7eb',
+                          },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            { fontSize: 14 },
+                            {
+                              color: selectedUnit === unit ? Colors.primary : Colors.onSurfaceVariant,
+                              fontWeight: selectedUnit === unit ? '700' : '400',
+                            },
+                          ]}
+                        >
+                          {unit}
+                        </Text>
+                      </View>
+                    </TouchableWithoutFeedback>
+                  ))}
+                </View>
               </View>
             </ScrollView>
           </Animated.View>
