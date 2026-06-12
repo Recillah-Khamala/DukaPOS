@@ -7,8 +7,12 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
   const [productName, setProductName] = useState('');
   const [quantity, setQuantity] = useState('');
   const [selectedUnit, setSelectedUnit] = useState<'Korokoro' | 'kg' | 'g' | 'piece'>('Korokoro');
+  const [price, setPrice] = useState('');
+  const [lowStockThreshold, setLowStockThreshold] = useState('');
   const [productNameFocused, setProductNameFocused] = useState(false);
   const [quantityFocused, setQuantityFocused] = useState(false);
+  const [priceFocused, setPriceFocused] = useState(false);
+  const [lowStockThresholdFocused, setLowStockThresholdFocused] = useState(false);
   const animatedValue = new Animated.Value(visible ? 0 : 300); // Start off-screen if not visible
 
   useEffect(() => {
@@ -160,7 +164,66 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
                   ))}
                 </View>
               </View>
-            </ScrollView>
+               {/* Price per Unit */}
+               <View style={{ marginTop: 16 }}>
+                 <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
+                   Price per Unit (KES)
+                 </Text>
+                 <TextInput
+                   placeholder="e.g. 130"
+                   placeholderTextColor="#9ca3af"
+                   keyboardType="numeric"
+                   style={[
+                     {
+                       borderWidth: 1.5,
+                       borderColor: priceFocused ? Colors.primary : '#e5e7eb',
+                       borderRadius: 10,
+                       paddingHorizontal: 14,
+                       paddingVertical: 12,
+                       fontSize: 15,
+                       color: Colors.onSurface,
+                     },
+                   ]}
+                   value={price}
+                   onChangeText={setPrice}
+                   onFocus={() => setPriceFocused(true)}
+                   onBlur={() => setPriceFocused(false)}
+                 />
+                 <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant, marginTop: 4 }}>
+                   Price for 1 full unit
+                 </Text>
+               </View>
+
+               {/* Low Stock Threshold */}
+               <View style={{ marginTop: 16 }}>
+                 <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
+                   Low Stock Alert Below
+                 </Text>
+                 <TextInput
+                   placeholder="e.g. 15"
+                   placeholderTextColor="#9ca3af"
+                   keyboardType="numeric"
+                   style={[
+                     {
+                       borderWidth: 1.5,
+                       borderColor: lowStockThresholdFocused ? Colors.primary : '#e5e7eb',
+                       borderRadius: 10,
+                       paddingHorizontal: 14,
+                       paddingVertical: 12,
+                       fontSize: 15,
+                       color: Colors.onSurface,
+                     },
+                   ]}
+                   value={lowStockThreshold}
+                   onChangeText={setLowStockThreshold}
+                   onFocus={() => setLowStockThresholdFocused(true)}
+                   onBlur={() => setLowStockThresholdFocused(false)}
+                 />
+                 <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant, marginTop: 4 }}>
+                   You'll be alerted when stock drops to this level
+                 </Text>
+               </View>
+             </ScrollView>
           </Animated.View>
         </View>
       </TouchableWithoutFeedback>
