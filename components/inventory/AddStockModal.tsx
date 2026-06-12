@@ -65,15 +65,24 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
 
   const handleConfirm = () => {
     if (validate()) {
-      console.log('Form values:', {
-        productName,
-        quantity: Number(quantity),
-        selectedUnit,
-        price: Number(price),
-        lowStockThreshold: Number(lowStockThreshold),
-      });
-      // TODO: Actually add to inventory
-      onClose(); // Close modal on success
+      const newItem: InventoryItem = {
+        id: Date.now().toString(),
+        name: productName.trim(),
+        currentStock: parseFloat(quantity),
+        unit: selectedUnit,
+        lowStockThreshold: parseFloat(lowStockThreshold),
+        isLowStock: parseFloat(quantity) <= parseFloat(lowStockThreshold),
+      };
+      onAdd(newItem);
+      // Reset form
+      setProductName('');
+      setQuantity('');
+      setSelectedUnit('Korokoro');
+      setPrice('');
+      setLowStockThreshold('');
+      setErrors({});
+      // Close modal
+      onClose();
     }
   };
 
