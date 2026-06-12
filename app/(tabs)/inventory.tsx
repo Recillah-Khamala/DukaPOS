@@ -5,9 +5,11 @@ import BottomNavBar from '../../components/layout/BottomNavBar';
 import Colors from '../../constants/colors';
 import { INVENTORY_ITEMS } from '../../constants/inventoryData';
 import StockItemCard from '../../components/inventory/StockItemCard';
+import AddStockModal from '../../components/inventory/AddStockModal';
 
 export default function InventoryScreen() {
   const [bottomNavHeight, setBottomNavHeight] = useState(0);
+  const [showAddStock, setShowAddStock] = useState(false);
   const lowStockItems = INVENTORY_ITEMS.filter(item => item.isLowStock);
 
   return (
@@ -105,10 +107,10 @@ export default function InventoryScreen() {
               paddingHorizontal: 14,
               paddingVertical: 6,
             }}>
-              <Text
-                style={{ fontSize: 13, fontWeight: '600', color: Colors.onPrimary }}
-                onPress={() => console.log('Add Stock pressed')}
-              >
+               <Text
+                 style={{ fontSize: 13, fontWeight: '600', color: Colors.onPrimary }}
+                 onPress={() => setShowAddStock(true)}
+               >
                 + Add Stock
               </Text>
             </View>
@@ -131,9 +133,11 @@ export default function InventoryScreen() {
           )}
         </View>
         {/* Content will be added later */}
-      </ScrollView>
+       </ScrollView>
 
-      <BottomNavBar activeTab="inventory" onHeightMeasured={setBottomNavHeight} />
+       <AddStockModal visible={showAddStock} onClose={() => setShowAddStock(false)} />
+
+       <BottomNavBar activeTab="inventory" onHeightMeasured={setBottomNavHeight} />
     </View>
   );
 }
