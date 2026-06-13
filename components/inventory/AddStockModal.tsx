@@ -158,7 +158,11 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
               />
             </View>
 
-            <ScrollView keyboardShouldPersistTaps="handled" style={{ marginTop: 20 }}>
+            <ScrollView
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingTop: 16, paddingBottom: 24 }}
+            >
                {/* Product Name */}
                <View>
                  <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
