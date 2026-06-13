@@ -35,8 +35,12 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
 
   const isProductNameEmpty = !productName.trim();
   const isQuantityEmpty = !quantity.trim();
+  const isPrice18Empty = !price18.trim();
+  const isPrice14Empty = !price14.trim();
+  const isPrice12Empty = !price12.trim();
+  const isPrice1Empty = !price1.trim();
   const isLowStockThresholdEmpty = !lowStockThreshold.trim();
-  const isAnyRequiredEmpty = isProductNameEmpty || isQuantityEmpty || isLowStockThresholdEmpty;
+  const isAnyRequiredEmpty = isProductNameEmpty || isQuantityEmpty || isPrice18Empty || isPrice14Empty || isPrice12Empty || isPrice1Empty || isLowStockThresholdEmpty;
   const isDisabled = isAnyRequiredEmpty || Object.keys(errors).length > 0;
 
   const validate = () => {
@@ -53,22 +57,18 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
       newErrors.quantity = 'Must be a positive number';
     }
 
-    // Fraction prices validation (at least one required)
+    // Fraction prices validation (all 4 required)
     const fractionPrices = { '1/8': price18, '1/4': price14, '1/2': price12, '1': price1 };
-    const hasAnyFractionPrice = Object.values(fractionPrices).some(v => v.trim() !== '');
-    if (!hasAnyFractionPrice) {
-      newErrors.fractionPrices = 'At least one fraction price is required';
-    } else {
-      // Validate each entered fraction price
-      Object.entries(fractionPrices).forEach(([key, value]) => {
-        if (value.trim() !== '') {
-          const priceNum = Number(value);
-          if (isNaN(priceNum) || priceNum <= 0) {
-            newErrors[`fractionPrice_${key}`] = 'Must be a positive number';
-          }
+    Object.entries(fractionPrices).forEach(([key, value]) => {
+      if (!value || value.trim() === '') {
+        newErrors[`fractionPrice_${key}`] = 'Required';
+      } else {
+        const priceNum = Number(value);
+        if (isNaN(priceNum) || priceNum <= 0) {
+          newErrors[`fractionPrice_${key}`] = 'Must be a positive number';
         }
-      });
-    }
+      }
+    });
 
     // Low stock threshold validation
     const thresholdNum = Number(lowStockThreshold);
