@@ -89,6 +89,13 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
         unit: selectedUnit,
         lowStockThreshold: parseFloat(lowStockThreshold),
         isLowStock: parseFloat(quantity) <= parseFloat(lowStockThreshold),
+        category: selectedCategory.toLowerCase() as 'cereal' | 'poshomill',
+        fractionPrices: [
+          { label: '1/8', fraction: 0.125, price: parseFloat(price18) || 0 },
+          { label: '1/4', fraction: 0.25, price: parseFloat(price14) || 0 },
+          { label: '1/2', fraction: 0.5, price: parseFloat(price12) || 0 },
+          { label: '1', fraction: 1, price: parseFloat(price1) || 0 },
+        ],
       };
       onAdd(newItem);
       // Reset form
