@@ -3,8 +3,10 @@ import { Modal, TouchableWithoutFeedback, View, Text, Animated, Easing, TextInpu
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Colors from '../../constants/colors';
 import type { InventoryItem } from '../../constants/inventoryData';
+import { useDynamicProducts } from '../../context/DynamicProductsContext';
 
 const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose: () => void; onAdd: (item: InventoryItem) => void }) => {
+  const { addDynamicProduct } = useDynamicProducts();
   const [productName, setProductName] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'Cereal' | 'Poshomill Service'>('Cereal');
   const [quantity, setQuantity] = useState('');
@@ -98,6 +100,7 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
         ],
       };
       onAdd(newItem);
+      addDynamicProduct(newItem);
       // Reset form
       setProductName('');
       setSelectedCategory('Cereal');
