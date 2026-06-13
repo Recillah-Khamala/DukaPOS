@@ -6,14 +6,21 @@ import type { InventoryItem } from '../../constants/inventoryData';
 
 const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose: () => void; onAdd: (item: InventoryItem) => void }) => {
   const [productName, setProductName] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<'Cereal' | 'Poshomill Service'>('Cereal');
   const [quantity, setQuantity] = useState('');
   const [selectedUnit, setSelectedUnit] = useState<'Korokoro' | 'kg' | 'g' | 'piece'>('Korokoro');
-  const [price, setPrice] = useState('');
+  const [price18, setPrice18] = useState('');
+  const [price14, setPrice14] = useState('');
+  const [price12, setPrice12] = useState('');
+  const [price1, setPrice1] = useState('');
   const [lowStockThreshold, setLowStockThreshold] = useState('');
   const [productNameFocused, setProductNameFocused] = useState(false);
   const [quantityFocused, setQuantityFocused] = useState(false);
-  const [priceFocused, setPriceFocused] = useState(false);
   const [lowStockThresholdFocused, setLowStockThresholdFocused] = useState(false);
+  const [price18Focused, setPrice18Focused] = useState(false);
+  const [price14Focused, setPrice14Focused] = useState(false);
+  const [price12Focused, setPrice12Focused] = useState(false);
+  const [price1Focused, setPrice1Focused] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const animatedValue = new Animated.Value(visible ? 0 : 300); // Start off-screen if not visible
 
@@ -28,9 +35,8 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
 
   const isProductNameEmpty = !productName.trim();
   const isQuantityEmpty = !quantity.trim();
-  const isPriceEmpty = !price.trim();
   const isLowStockThresholdEmpty = !lowStockThreshold.trim();
-  const isAnyRequiredEmpty = isProductNameEmpty || isQuantityEmpty || isPriceEmpty || isLowStockThresholdEmpty;
+  const isAnyRequiredEmpty = isProductNameEmpty || isQuantityEmpty || isLowStockThresholdEmpty;
   const isDisabled = isAnyRequiredEmpty || Object.keys(errors).length > 0;
 
   const validate = () => {
@@ -47,10 +53,21 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
       newErrors.quantity = 'Must be a positive number';
     }
 
-    // Price validation
-    const priceNum = Number(price);
-    if (!price || isNaN(priceNum) || priceNum <= 0) {
-      newErrors.price = 'Must be a positive number';
+    // Fraction prices validation (at least one required)
+    const fractionPrices = { '1/8': price18, '1/4': price14, '1/2': price12, '1': price1 };
+    const hasAnyFractionPrice = Object.values(fractionPrices).some(v => v.trim() !== '');
+    if (!hasAnyFractionPrice) {
+      newErrors.fractionPrices = 'At least one fraction price is required';
+    } else {
+      // Validate each entered fraction price
+      Object.entries(fractionPrices).forEach(([key, value]) => {
+        if (value.trim() !== '') {
+          const priceNum = Number(value);
+          if (isNaN(priceNum) || priceNum <= 0) {
+            newErrors[`fractionPrice_${key}`] = 'Must be a positive number';
+          }
+        }
+      });
     }
 
     // Low stock threshold validation
@@ -76,9 +93,13 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
       onAdd(newItem);
       // Reset form
       setProductName('');
+      setSelectedCategory('Cereal');
       setQuantity('');
       setSelectedUnit('Korokoro');
-      setPrice('');
+      setPrice18('');
+      setPrice14('');
+      setPrice12('');
+      setPrice1('');
       setLowStockThreshold('');
       setErrors({});
       // Close modal
@@ -163,14 +184,60 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
                    onFocus={() => setProductNameFocused(true)}
                    onBlur={() => setProductNameFocused(false)}
                  />
-                 {errors.productName && (
-                   <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>
-                     {errors.productName}
-                   </Text>
-                 )}
-               </View>
+{errors.productName && (
+                    <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>
+                      {errors.productName}
+                    </Text>
+                  )}
+                </View>
 
-               {/* Quantity */}
+                {/* Category Selector */}
+                <View style={{ marginTop: 16 }}>
+                  <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
+                    Category
+                  </Text>
+                  <View style={{ flexDirection: 'row', gap: 8 }}>
+                    {['Cereal', 'Poshomill Service'].map((category) => (
+                      <TouchableWithoutFeedback
+                        key={category}
+                        onPress={() => setSelectedCategory(category as 'Cereal' | 'Poshomill Service')}
+                      >
+                        <View
+                          style={[
+                            {
+                              borderRadius: 20,
+                              paddingHorizontal: 16,
+                              paddingVertical: 8,
+                              borderWidth: 1.5,
+                              backgroundColor:
+                                selectedCategory === category
+                                  ? Colors.primaryFixed
+                                  : '#f3f4f6',
+                              borderColor:
+                                selectedCategory === category
+                                  ? Colors.primary
+                                  : '#e5e7eb',
+                            },
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              { fontSize: 14 },
+                              {
+                                color: selectedCategory === category ? Colors.primary : Colors.onSurfaceVariant,
+                                fontWeight: selectedCategory === category ? '700' : '400',
+                              },
+                            ]}
+                          >
+                            {category}
+                          </Text>
+                        </View>
+                      </TouchableWithoutFeedback>
+                    ))}
+                  </View>
+                </View>
+
+                {/* Quantity */}
                <View style={{ marginTop: 16 }}>
                  <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
                    Current Stock
@@ -257,54 +324,194 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
                     </TouchableWithoutFeedback>
                   ))}
                 </View>
-              </View>
-               {/* Price per Unit */}
-               <View style={{ marginTop: 16 }}>
-                 <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
-                   Price per Unit (KES)
-                 </Text>
-                 <TextInput
-                   placeholder="e.g. 130"
-                   placeholderTextColor="#9ca3af"
-                   keyboardType="numeric"
-                   style={[
-                     {
-                       borderWidth: 1.5,
-                       borderColor: errors.price
-                         ? '#dc2626'
-                         : priceFocused
-                         ? Colors.primary
-                         : '#e5e7eb',
-                       borderRadius: 10,
-                       paddingHorizontal: 14,
-                       paddingVertical: 12,
-                       fontSize: 15,
-                       color: Colors.onSurface,
-                     },
-                   ]}
-                   value={price}
-                   onChangeText={text => {
-                     setPrice(text);
-                     setErrors(prev => {
-                       const newErrors = { ...prev };
-                       delete newErrors.price;
-                       return newErrors;
-                     });
-                   }}
-                   onFocus={() => setPriceFocused(true)}
-                   onBlur={() => setPriceFocused(false)}
-                 />
-                 {errors.price && (
-                   <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>
-                     {errors.price}
-                   </Text>
-                 )}
-                 <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant, marginTop: 4 }}>
-                   Price for 1 full unit
-                 </Text>
-               </View>
+</View>
 
-               {/* Low Stock Threshold */}
+                {/* Fraction Prices Section */}
+                <View style={{ marginTop: 16 }}>
+                  <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 8 }}>
+                    Prices by Quantity
+                  </Text>
+                  <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant, marginBottom: 12 }}>
+                    Prices don't have to be proportional
+                  </Text>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+                    {/* 1/8 */}
+                    <View style={{ flex: 1, minWidth: '45%' }}>
+                      <Text style={{ fontSize: 12, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 4 }}>
+                        1/8 {selectedUnit}
+                      </Text>
+                      <TextInput
+                        placeholder="0"
+                        placeholderTextColor="#9ca3af"
+                        keyboardType="numeric"
+                        style={[
+                          {
+                            borderWidth: 1.5,
+                            borderColor: errors.fractionPrice_18
+                              ? '#dc2626'
+                              : price18Focused
+                              ? Colors.primary
+                              : '#e5e7eb',
+                            borderRadius: 10,
+                            paddingHorizontal: 12,
+                            paddingVertical: 10,
+                            fontSize: 14,
+                            color: Colors.onSurface,
+                          },
+                        ]}
+                        value={price18}
+                        onChangeText={(text) => {
+                          setPrice18(text);
+                          setErrors((prev) => {
+                            const newErrors = { ...prev };
+                            delete newErrors.fractionPrice_18;
+                            return newErrors;
+                          });
+                        }}
+                        onFocus={() => setPrice18Focused(true)}
+                        onBlur={() => setPrice18Focused(false)}
+                      />
+                      {errors.fractionPrice_18 && (
+                        <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>
+                          {errors.fractionPrice_18}
+                        </Text>
+                      )}
+                    </View>
+                    {/* 1/4 */}
+                    <View style={{ flex: 1, minWidth: '45%' }}>
+                      <Text style={{ fontSize: 12, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 4 }}>
+                        1/4 {selectedUnit}
+                      </Text>
+                      <TextInput
+                        placeholder="0"
+                        placeholderTextColor="#9ca3af"
+                        keyboardType="numeric"
+                        style={[
+                          {
+                            borderWidth: 1.5,
+                            borderColor: errors.fractionPrice_14
+                              ? '#dc2626'
+                              : price14Focused
+                              ? Colors.primary
+                              : '#e5e7eb',
+                            borderRadius: 10,
+                            paddingHorizontal: 12,
+                            paddingVertical: 10,
+                            fontSize: 14,
+                            color: Colors.onSurface,
+                          },
+                        ]}
+                        value={price14}
+                        onChangeText={(text) => {
+                          setPrice14(text);
+                          setErrors((prev) => {
+                            const newErrors = { ...prev };
+                            delete newErrors.fractionPrice_14;
+                            return newErrors;
+                          });
+                        }}
+                        onFocus={() => setPrice14Focused(true)}
+                        onBlur={() => setPrice14Focused(false)}
+                      />
+                      {errors.fractionPrice_14 && (
+                        <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>
+                          {errors.fractionPrice_14}
+                        </Text>
+                      )}
+                    </View>
+                    {/* 1/2 */}
+                    <View style={{ flex: 1, minWidth: '45%' }}>
+                      <Text style={{ fontSize: 12, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 4 }}>
+                        1/2 {selectedUnit}
+                      </Text>
+                      <TextInput
+                        placeholder="0"
+                        placeholderTextColor="#9ca3af"
+                        keyboardType="numeric"
+                        style={[
+                          {
+                            borderWidth: 1.5,
+                            borderColor: errors.fractionPrice_12
+                              ? '#dc2626'
+                              : price12Focused
+                              ? Colors.primary
+                              : '#e5e7eb',
+                            borderRadius: 10,
+                            paddingHorizontal: 12,
+                            paddingVertical: 10,
+                            fontSize: 14,
+                            color: Colors.onSurface,
+                          },
+                        ]}
+                        value={price12}
+                        onChangeText={(text) => {
+                          setPrice12(text);
+                          setErrors((prev) => {
+                            const newErrors = { ...prev };
+                            delete newErrors.fractionPrice_12;
+                            return newErrors;
+                          });
+                        }}
+                        onFocus={() => setPrice12Focused(true)}
+                        onBlur={() => setPrice12Focused(false)}
+                      />
+                      {errors.fractionPrice_12 && (
+                        <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>
+                          {errors.fractionPrice_12}
+                        </Text>
+                      )}
+                    </View>
+                    {/* 1 */}
+                    <View style={{ flex: 1, minWidth: '45%' }}>
+                      <Text style={{ fontSize: 12, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 4 }}>
+                        1 {selectedUnit}
+                      </Text>
+                      <TextInput
+                        placeholder="0"
+                        placeholderTextColor="#9ca3af"
+                        keyboardType="numeric"
+                        style={[
+                          {
+                            borderWidth: 1.5,
+                            borderColor: errors.fractionPrice_1
+                              ? '#dc2626'
+                              : price1Focused
+                              ? Colors.primary
+                              : '#e5e7eb',
+                            borderRadius: 10,
+                            paddingHorizontal: 12,
+                            paddingVertical: 10,
+                            fontSize: 14,
+                            color: Colors.onSurface,
+                          },
+                        ]}
+                        value={price1}
+                        onChangeText={(text) => {
+                          setPrice1(text);
+                          setErrors((prev) => {
+                            const newErrors = { ...prev };
+                            delete newErrors.fractionPrice_1;
+                            return newErrors;
+                          });
+                        }}
+                        onFocus={() => setPrice1Focused(true)}
+                        onBlur={() => setPrice1Focused(false)}
+                      />
+                      {errors.fractionPrice_1 && (
+                        <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>
+                          {errors.fractionPrice_1}
+                        </Text>
+                      )}
+                    </View>
+                  </View>
+                  {errors.fractionPrices && (
+                    <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 8 }}>
+                      {errors.fractionPrices}
+                    </Text>
+                  )}
+                </View>
+
+                {/* Low Stock Threshold */}
                <View style={{ marginTop: 16 }}>
                  <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
                    Low Stock Alert Below
