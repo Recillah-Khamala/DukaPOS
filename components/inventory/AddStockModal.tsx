@@ -24,7 +24,7 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
   const [price12Focused, setPrice12Focused] = useState(false);
   const [price1Focused, setPrice1Focused] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const animatedValue = new Animated.Value(visible ? 0 : 300); // Start off-screen if not visible
+  const animatedValue = new Animated.Value(visible ? 0 : 300);
 
   useEffect(() => {
     Animated.timing(animatedValue, {
@@ -48,18 +48,15 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
   const validate = () => {
     const newErrors: Record<string, string> = {};
 
-    // Product name validation
     if (!productName.trim()) {
       newErrors.productName = 'Required';
     }
 
-    // Quantity validation
     const qtyNum = Number(quantity);
     if (!quantity || isNaN(qtyNum) || qtyNum <= 0) {
       newErrors.quantity = 'Must be a positive number';
     }
 
-    // Fraction prices validation (all 4 required)
     const fractionPrices = { '1/8': price18, '1/4': price14, '1/2': price12, '1': price1 };
     Object.entries(fractionPrices).forEach(([key, value]) => {
       if (!value || value.trim() === '') {
@@ -72,7 +69,6 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
       }
     });
 
-    // Low stock threshold validation
     const thresholdNum = Number(lowStockThreshold);
     if (!lowStockThreshold || isNaN(thresholdNum) || thresholdNum <= 0) {
       newErrors.lowStockThreshold = 'Must be a positive number';
@@ -88,7 +84,9 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
         id: Date.now().toString(),
         name: productName.trim(),
         currentStock: parseFloat(quantity),
-        unit: selectedUnit,
+        buyingUnit: selectedUnit,
+        sellingUnit: selectedUnit,
+        conversionRate: 1,
         lowStockThreshold: parseFloat(lowStockThreshold),
         isLowStock: parseFloat(quantity) <= parseFloat(lowStockThreshold),
         category: selectedCategory.toLowerCase() as 'cereal' | 'poshomill',
@@ -101,7 +99,6 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
       };
       onAdd(newItem);
       addDynamicProduct(newItem);
-      // Reset form
       setProductName('');
       setSelectedCategory('Cereal');
       setQuantity('');
@@ -112,7 +109,6 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
       setPrice1('');
       setLowStockThreshold('');
       setErrors({});
-      // Close modal
       onClose();
     }
   };
@@ -163,136 +159,99 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{ paddingTop: 16, paddingBottom: 24 }}
             >
-               {/* Product Name */}
-               <View>
-                 <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
-                   Product Name
-                 </Text>
-                 <TextInput
-                   placeholder="e.g. Maize"
-                   placeholderTextColor="#9ca3af"
-                   style={[
-                     {
-                       borderWidth: 1.5,
-                       borderColor: errors.productName
-                         ? '#dc2626'
-                         : productNameFocused
-                         ? Colors.primary
-                         : '#e5e7eb',
-                       borderRadius: 10,
-                       paddingHorizontal: 14,
-                       paddingVertical: 12,
-                       fontSize: 15,
-                       color: Colors.onSurface,
-                     },
-                   ]}
-                   value={productName}
-                   onChangeText={text => {
-                     setProductName(text);
-                     setErrors(prev => {
-                       const newErrors = { ...prev };
-                       delete newErrors.productName;
-                       return newErrors;
-                     });
-                   }}
-                   onFocus={() => setProductNameFocused(true)}
-                   onBlur={() => setProductNameFocused(false)}
-                 />
-{errors.productName && (
-                    <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>
-                      {errors.productName}
-                    </Text>
-                  )}
-                </View>
+              {/* Product Name */}
+              <View>
+                <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
+                  Product Name
+                </Text>
+                <TextInput
+                  placeholder="e.g. Maize"
+                  placeholderTextColor="#9ca3af"
+                  style={{
+                    borderWidth: 1.5,
+                    borderColor: errors.productName ? '#dc2626' : productNameFocused ? Colors.primary : '#e5e7eb',
+                    borderRadius: 10,
+                    paddingHorizontal: 14,
+                    paddingVertical: 12,
+                    fontSize: 15,
+                    color: Colors.onSurface,
+                  }}
+                  value={productName}
+                  onChangeText={text => {
+                    setProductName(text);
+                    setErrors(prev => { const e = { ...prev }; delete e.productName; return e; });
+                  }}
+                  onFocus={() => setProductNameFocused(true)}
+                  onBlur={() => setProductNameFocused(false)}
+                />
+                {errors.productName && (
+                  <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>{errors.productName}</Text>
+                )}
+              </View>
 
-                {/* Category Selector */}
-                <View style={{ marginTop: 16 }}>
-                  <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
-                    Category
-                  </Text>
-                  <View style={{ flexDirection: 'row', gap: 8 }}>
-                    {['Cereal', 'Poshomill Service'].map((category) => (
-                      <TouchableWithoutFeedback
-                        key={category}
-                        onPress={() => setSelectedCategory(category as 'Cereal' | 'Poshomill Service')}
+              {/* Category Selector */}
+              <View style={{ marginTop: 16 }}>
+                <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
+                  Category
+                </Text>
+                <View style={{ flexDirection: 'row', gap: 8 }}>
+                  {(['Cereal', 'Poshomill Service'] as const).map((category) => (
+                    <TouchableWithoutFeedback key={category} onPress={() => setSelectedCategory(category)}>
+                      <View
+                        style={{
+                          borderRadius: 20,
+                          paddingHorizontal: 16,
+                          paddingVertical: 8,
+                          borderWidth: 1.5,
+                          backgroundColor: selectedCategory === category ? Colors.primaryFixed : '#f3f4f6',
+                          borderColor: selectedCategory === category ? Colors.primary : '#e5e7eb',
+                        }}
                       >
-                        <View
-                          style={[
-                            {
-                              borderRadius: 20,
-                              paddingHorizontal: 16,
-                              paddingVertical: 8,
-                              borderWidth: 1.5,
-                              backgroundColor:
-                                selectedCategory === category
-                                  ? Colors.primaryFixed
-                                  : '#f3f4f6',
-                              borderColor:
-                                selectedCategory === category
-                                  ? Colors.primary
-                                  : '#e5e7eb',
-                            },
-                          ]}
+                        <Text
+                          style={{
+                            fontSize: 14,
+                            color: selectedCategory === category ? Colors.primary : Colors.onSurfaceVariant,
+                            fontWeight: selectedCategory === category ? '700' : '400',
+                          }}
                         >
-                          <Text
-                            style={[
-                              { fontSize: 14 },
-                              {
-                                color: selectedCategory === category ? Colors.primary : Colors.onSurfaceVariant,
-                                fontWeight: selectedCategory === category ? '700' : '400',
-                              },
-                            ]}
-                          >
-                            {category}
-                          </Text>
-                        </View>
-                      </TouchableWithoutFeedback>
-                    ))}
-                  </View>
+                          {category}
+                        </Text>
+                      </View>
+                    </TouchableWithoutFeedback>
+                  ))}
                 </View>
+              </View>
 
-                {/* Quantity */}
-               <View style={{ marginTop: 16 }}>
-                 <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
-                   Current Stock
-                 </Text>
-                 <TextInput
-                   placeholder="e.g. 50"
-                   placeholderTextColor="#9ca3af"
-                   keyboardType="numeric"
-                   style={[
-                     {
-                       borderWidth: 1.5,
-                       borderColor: errors.quantity
-                         ? '#dc2626'
-                         : quantityFocused
-                         ? Colors.primary
-                         : '#e5e7eb',
-                       borderRadius: 10,
-                       paddingHorizontal: 14,
-                       paddingVertical: 12,
-                       fontSize: 15,
-                       color: Colors.onSurface,
-                     },
-                   ]}
-                   value={quantity}
-                   onChangeText={text => {
-                     setQuantity(text);
-                     setErrors(prev => {
-                       const newErrors = { ...prev };
-                       delete newErrors.quantity;
-                       return newErrors;
-                     });
-                   }}
-                   onFocus={() => setQuantityFocused(true)}
-                   onBlur={() => setQuantityFocused(false)}
-                 />
-                 {errors.quantity && (
-                   <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>
-                     {errors.quantity}
-                   </Text>
-                 )}
-               </View>
+              {/* Current Stock */}
+              <View style={{ marginTop: 16 }}>
+                <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
+                  Current Stock
+                </Text>
+                <TextInput
+                  placeholder="e.g. 50"
+                  placeholderTextColor="#9ca3af"
+                  keyboardType="numeric"
+                  style={{
+                    borderWidth: 1.5,
+                    borderColor: errors.quantity ? '#dc2626' : quantityFocused ? Colors.primary : '#e5e7eb',
+                    borderRadius: 10,
+                    paddingHorizontal: 14,
+                    paddingVertical: 12,
+                    fontSize: 15,
+                    color: Colors.onSurface,
+                  }}
+                  value={quantity}
+                  onChangeText={text => {
+                    setQuantity(text);
+                    setErrors(prev => { const e = { ...prev }; delete e.quantity; return e; });
+                  }}
+                  onFocus={() => setQuantityFocused(true)}
+                  onBlur={() => setQuantityFocused(false)}
+                />
+                {errors.quantity && (
+                  <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>{errors.quantity}</Text>
+                )}
+              </View>
 
               {/* Unit Selector */}
               <View style={{ marginTop: 16 }}>
@@ -300,37 +259,24 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
                   Unit
                 </Text>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                  {['Korokoro', 'kg', 'g', 'piece'].map((unit) => (
-                    <TouchableWithoutFeedback
-                      key={unit}
-                      onPress={() => setSelectedUnit(unit as 'Korokoro' | 'kg' | 'g' | 'piece')}
-                    >
+                  {(['Korokoro', 'kg', 'g', 'piece'] as const).map((unit) => (
+                    <TouchableWithoutFeedback key={unit} onPress={() => setSelectedUnit(unit)}>
                       <View
-                        style={[
-                          {
-                            borderRadius: 20,
-                            paddingHorizontal: 16,
-                            paddingVertical: 8,
-                            borderWidth: 1.5,
-                            backgroundColor:
-                              selectedUnit === unit
-                                ? Colors.primaryFixed
-                                : '#f3f4f6',
-                            borderColor:
-                              selectedUnit === unit
-                                ? Colors.primary
-                                : '#e5e7eb',
-                          },
-                        ]}
+                        style={{
+                          borderRadius: 20,
+                          paddingHorizontal: 16,
+                          paddingVertical: 8,
+                          borderWidth: 1.5,
+                          backgroundColor: selectedUnit === unit ? Colors.primaryFixed : '#f3f4f6',
+                          borderColor: selectedUnit === unit ? Colors.primary : '#e5e7eb',
+                        }}
                       >
                         <Text
-                          style={[
-                            { fontSize: 14 },
-                            {
-                              color: selectedUnit === unit ? Colors.primary : Colors.onSurfaceVariant,
-                              fontWeight: selectedUnit === unit ? '700' : '400',
-                            },
-                          ]}
+                          style={{
+                            fontSize: 14,
+                            color: selectedUnit === unit ? Colors.primary : Colors.onSurfaceVariant,
+                            fontWeight: selectedUnit === unit ? '700' : '400',
+                          }}
                         >
                           {unit}
                         </Text>
@@ -338,249 +284,114 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
                     </TouchableWithoutFeedback>
                   ))}
                 </View>
-</View>
+              </View>
 
-                {/* Fraction Prices Section */}
-                <View style={{ marginTop: 16 }}>
-                  <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 8 }}>
-                    Prices by Quantity
-                  </Text>
-                  <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant, marginBottom: 12 }}>
-                    Prices don't have to be proportional
-                  </Text>
-                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
-                    {/* 1/8 */}
-                    <View style={{ flex: 1, minWidth: '45%' }}>
+              {/* Fraction Prices */}
+              <View style={{ marginTop: 16 }}>
+                <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 8 }}>
+                  Prices by Quantity
+                </Text>
+                <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant, marginBottom: 12 }}>
+                  Prices don't have to be proportional
+                </Text>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+                  {[
+                    { label: `1/8 ${selectedUnit}`, value: price18, setValue: setPrice18, focused: price18Focused, setFocused: setPrice18Focused, errorKey: 'fractionPrice_1/8' },
+                    { label: `1/4 ${selectedUnit}`, value: price14, setValue: setPrice14, focused: price14Focused, setFocused: setPrice14Focused, errorKey: 'fractionPrice_1/4' },
+                    { label: `1/2 ${selectedUnit}`, value: price12, setValue: setPrice12, focused: price12Focused, setFocused: setPrice12Focused, errorKey: 'fractionPrice_1/2' },
+                    { label: `1 ${selectedUnit}`,   value: price1,  setValue: setPrice1,  focused: price1Focused,  setFocused: setPrice1Focused,  errorKey: 'fractionPrice_1' },
+                  ].map(({ label, value, setValue, focused, setFocused, errorKey }) => (
+                    <View key={label} style={{ flex: 1, minWidth: '45%' }}>
                       <Text style={{ fontSize: 12, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 4 }}>
-                        1/8 {selectedUnit}
+                        {label}
                       </Text>
                       <TextInput
                         placeholder="0"
                         placeholderTextColor="#9ca3af"
                         keyboardType="numeric"
-                        style={[
-                          {
-                            borderWidth: 1.5,
-                            borderColor: errors.fractionPrice_18
-                              ? '#dc2626'
-                              : price18Focused
-                              ? Colors.primary
-                              : '#e5e7eb',
-                            borderRadius: 10,
-                            paddingHorizontal: 12,
-                            paddingVertical: 10,
-                            fontSize: 14,
-                            color: Colors.onSurface,
-                          },
-                        ]}
-                        value={price18}
-                        onChangeText={(text) => {
-                          setPrice18(text);
-                          setErrors((prev) => {
-                            const newErrors = { ...prev };
-                            delete newErrors.fractionPrice_18;
-                            return newErrors;
-                          });
+                        style={{
+                          borderWidth: 1.5,
+                          borderColor: errors[errorKey] ? '#dc2626' : focused ? Colors.primary : '#e5e7eb',
+                          borderRadius: 10,
+                          paddingHorizontal: 12,
+                          paddingVertical: 10,
+                          fontSize: 14,
+                          color: Colors.onSurface,
                         }}
-                        onFocus={() => setPrice18Focused(true)}
-                        onBlur={() => setPrice18Focused(false)}
+                        value={value}
+                        onChangeText={text => {
+                          setValue(text);
+                          setErrors(prev => { const e = { ...prev }; delete e[errorKey]; return e; });
+                        }}
+                        onFocus={() => setFocused(true)}
+                        onBlur={() => setFocused(false)}
                       />
-                      {errors.fractionPrice_18 && (
-                        <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>
-                          {errors.fractionPrice_18}
-                        </Text>
+                      {errors[errorKey] && (
+                        <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>{errors[errorKey]}</Text>
                       )}
                     </View>
-                    {/* 1/4 */}
-                    <View style={{ flex: 1, minWidth: '45%' }}>
-                      <Text style={{ fontSize: 12, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 4 }}>
-                        1/4 {selectedUnit}
-                      </Text>
-                      <TextInput
-                        placeholder="0"
-                        placeholderTextColor="#9ca3af"
-                        keyboardType="numeric"
-                        style={[
-                          {
-                            borderWidth: 1.5,
-                            borderColor: errors.fractionPrice_14
-                              ? '#dc2626'
-                              : price14Focused
-                              ? Colors.primary
-                              : '#e5e7eb',
-                            borderRadius: 10,
-                            paddingHorizontal: 12,
-                            paddingVertical: 10,
-                            fontSize: 14,
-                            color: Colors.onSurface,
-                          },
-                        ]}
-                        value={price14}
-                        onChangeText={(text) => {
-                          setPrice14(text);
-                          setErrors((prev) => {
-                            const newErrors = { ...prev };
-                            delete newErrors.fractionPrice_14;
-                            return newErrors;
-                          });
-                        }}
-                        onFocus={() => setPrice14Focused(true)}
-                        onBlur={() => setPrice14Focused(false)}
-                      />
-                      {errors.fractionPrice_14 && (
-                        <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>
-                          {errors.fractionPrice_14}
-                        </Text>
-                      )}
-                    </View>
-                    {/* 1/2 */}
-                    <View style={{ flex: 1, minWidth: '45%' }}>
-                      <Text style={{ fontSize: 12, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 4 }}>
-                        1/2 {selectedUnit}
-                      </Text>
-                      <TextInput
-                        placeholder="0"
-                        placeholderTextColor="#9ca3af"
-                        keyboardType="numeric"
-                        style={[
-                          {
-                            borderWidth: 1.5,
-                            borderColor: errors.fractionPrice_12
-                              ? '#dc2626'
-                              : price12Focused
-                              ? Colors.primary
-                              : '#e5e7eb',
-                            borderRadius: 10,
-                            paddingHorizontal: 12,
-                            paddingVertical: 10,
-                            fontSize: 14,
-                            color: Colors.onSurface,
-                          },
-                        ]}
-                        value={price12}
-                        onChangeText={(text) => {
-                          setPrice12(text);
-                          setErrors((prev) => {
-                            const newErrors = { ...prev };
-                            delete newErrors.fractionPrice_12;
-                            return newErrors;
-                          });
-                        }}
-                        onFocus={() => setPrice12Focused(true)}
-                        onBlur={() => setPrice12Focused(false)}
-                      />
-                      {errors.fractionPrice_12 && (
-                        <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>
-                          {errors.fractionPrice_12}
-                        </Text>
-                      )}
-                    </View>
-                    {/* 1 */}
-                    <View style={{ flex: 1, minWidth: '45%' }}>
-                      <Text style={{ fontSize: 12, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 4 }}>
-                        1 {selectedUnit}
-                      </Text>
-                      <TextInput
-                        placeholder="0"
-                        placeholderTextColor="#9ca3af"
-                        keyboardType="numeric"
-                        style={[
-                          {
-                            borderWidth: 1.5,
-                            borderColor: errors.fractionPrice_1
-                              ? '#dc2626'
-                              : price1Focused
-                              ? Colors.primary
-                              : '#e5e7eb',
-                            borderRadius: 10,
-                            paddingHorizontal: 12,
-                            paddingVertical: 10,
-                            fontSize: 14,
-                            color: Colors.onSurface,
-                          },
-                        ]}
-                        value={price1}
-                        onChangeText={(text) => {
-                          setPrice1(text);
-                          setErrors((prev) => {
-                            const newErrors = { ...prev };
-                            delete newErrors.fractionPrice_1;
-                            return newErrors;
-                          });
-                        }}
-                        onFocus={() => setPrice1Focused(true)}
-                        onBlur={() => setPrice1Focused(false)}
-                      />
-                      {errors.fractionPrice_1 && (
-                        <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>
-                          {errors.fractionPrice_1}
-                        </Text>
-                      )}
-                    </View>
-                  </View>
-                  {errors.fractionPrices && (
-                    <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 8 }}>
-                      {errors.fractionPrices}
-                    </Text>
-                  )}
+                  ))}
                 </View>
+              </View>
 
-                {/* Low Stock Threshold */}
-               <View style={{ marginTop: 16 }}>
-                 <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
-                   Low Stock Alert Below
-                 </Text>
-                 <TextInput
-                   placeholder="e.g. 15"
-                   placeholderTextColor="#9ca3af"
-                   keyboardType="numeric"
-                   style={[
-                     {
-                       borderWidth: 1.5,
-                       borderColor: errors.lowStockThreshold
-                         ? '#dc2626'
-                         : lowStockThresholdFocused
-                         ? Colors.primary
-                         : '#e5e7eb',
-                       borderRadius: 10,
-                       paddingHorizontal: 14,
-                       paddingVertical: 12,
-                       fontSize: 15,
-                       color: Colors.onSurface,
-                     },
-                   ]}
-                   value={lowStockThreshold}
-                   onChangeText={text => {
-                     setLowStockThreshold(text);
-                     setErrors(prev => {
-                       const newErrors = { ...prev };
-                       delete newErrors.lowStockThreshold;
-                       return newErrors;
-                     });
-                   }}
-                   onFocus={() => setLowStockThresholdFocused(true)}
-                   onBlur={() => setLowStockThresholdFocused(false)}
-                 />
-                 {errors.lowStockThreshold && (
-                   <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>
-                     {errors.lowStockThreshold}
-                   </Text>
-                 )}
-                 <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant, marginTop: 4 }}>
-                   You'll be alerted when stock drops to this level
-                 </Text>
-               </View>
-             </ScrollView>
-             <View style={{ marginTop: 24, paddingHorizontal: 20 }}>
-               <TouchableWithoutFeedback onPress={handleConfirm}>
-                 <View style={{ backgroundColor: isDisabled ? '#d1d5db' : Colors.primary, borderRadius: 12, paddingVertical: 14 }}>
-                   <Text style={{ fontSize: 16, fontWeight: '600', color: isDisabled ? '#9ca3af' : Colors.onPrimary, textAlign: 'center' }}>
-                     Add to Inventory
-                   </Text>
-                 </View>
-               </TouchableWithoutFeedback>
-             </View>
-           </Animated.View>
+              {/* Low Stock Threshold */}
+              <View style={{ marginTop: 16 }}>
+                <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
+                  Low Stock Alert Below
+                </Text>
+                <TextInput
+                  placeholder="e.g. 15"
+                  placeholderTextColor="#9ca3af"
+                  keyboardType="numeric"
+                  style={{
+                    borderWidth: 1.5,
+                    borderColor: errors.lowStockThreshold ? '#dc2626' : lowStockThresholdFocused ? Colors.primary : '#e5e7eb',
+                    borderRadius: 10,
+                    paddingHorizontal: 14,
+                    paddingVertical: 12,
+                    fontSize: 15,
+                    color: Colors.onSurface,
+                  }}
+                  value={lowStockThreshold}
+                  onChangeText={text => {
+                    setLowStockThreshold(text);
+                    setErrors(prev => { const e = { ...prev }; delete e.lowStockThreshold; return e; });
+                  }}
+                  onFocus={() => setLowStockThresholdFocused(true)}
+                  onBlur={() => setLowStockThresholdFocused(false)}
+                />
+                {errors.lowStockThreshold && (
+                  <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>{errors.lowStockThreshold}</Text>
+                )}
+                <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant, marginTop: 4 }}>
+                  You'll be alerted when stock drops to this level
+                </Text>
+              </View>
+            </ScrollView>
+
+            <View style={{ marginTop: 24, paddingHorizontal: 20 }}>
+              <TouchableWithoutFeedback onPress={handleConfirm}>
+                <View
+                  style={{
+                    backgroundColor: isDisabled ? '#d1d5db' : Colors.primary,
+                    borderRadius: 12,
+                    paddingVertical: 14,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: '600',
+                      color: isDisabled ? '#9ca3af' : Colors.onPrimary,
+                      textAlign: 'center',
+                    }}
+                  >
+                    Add to Inventory
+                  </Text>
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+          </Animated.View>
         </View>
       </TouchableWithoutFeedback>
     </Modal>
