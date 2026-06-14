@@ -4,7 +4,9 @@ export type InventoryItem = {
   id: string;
   name: string;
   currentStock: number;
-  unit: string;
+  buyingUnit: string;
+  sellingUnit: string;
+  conversionRate: number;
   lowStockThreshold: number;
   isLowStock: boolean;
   category: 'cereal' | 'poshomill';
