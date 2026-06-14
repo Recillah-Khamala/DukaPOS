@@ -99,16 +99,16 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
       };
       onAdd(newItem);
       addDynamicProduct(newItem);
-      setProductName('');
-      setSelectedCategory('Cereal');
-      setQuantity('');
-      setbuyingUnit('Korokoro');
-      setPrice18('');
-      setPrice14('');
-      setPrice12('');
-      setPrice1('');
-      setLowStockThreshold('');
-      setErrors({});
+       setProductName('');
+       setSelectedCategory('Cereal');
+       setQuantity('');
+       setBuyingUnit('kg');
+       setPrice18('');
+       setPrice14('');
+       setPrice12('');
+       setPrice1('');
+       setLowStockThreshold('');
+       setErrors({});
       onClose();
     }
   };
@@ -258,32 +258,32 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
 <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
   Buying Unit (how you restock)
                 </Text>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                  {(['Korokoro', 'kg', 'g', 'piece'] as const).map((unit) => (
-                    <TouchableWithoutFeedback key={unit} onPress={() => setbuyingUnit(unit)}>
-                      <View
-                        style={{
-                          borderRadius: 20,
-                          paddingHorizontal: 16,
-                          paddingVertical: 8,
-                          borderWidth: 1.5,
-                          backgroundColor: buyingUnit === unit ? Colors.primaryFixed : '#f3f4f6',
-                          borderColor: buyingUnit === unit ? Colors.primary : '#e5e7eb',
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 14,
-                            color: buyingUnit === unit ? Colors.primary : Colors.onSurfaceVariant,
-                            fontWeight: buyingUnit === unit ? '700' : '400',
-                          }}
-                        >
-                          {unit}
-                        </Text>
-                      </View>
-                    </TouchableWithoutFeedback>
-                  ))}
-                </View>
+                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                   {(['kg', 'g', 'sack', 'piece'] as const).map((unit) => (
+                     <TouchableWithoutFeedback key={unit} onPress={() => setBuyingUnit(unit)}>
+                       <View
+                         style={{
+                           borderRadius: 20,
+                           paddingHorizontal: 16,
+                           paddingVertical: 8,
+                           borderWidth: 1.5,
+                           backgroundColor: buyingUnit === unit ? Colors.primaryFixed : '#f3f4f6',
+                           borderColor: buyingUnit === unit ? Colors.primary : '#e5e7eb',
+                         }}
+                       >
+                         <Text
+                           style={{
+                             fontSize: 14,
+                             color: buyingUnit === unit ? Colors.primary : Colors.onSurfaceVariant,
+                             fontWeight: buyingUnit === unit ? '700' : '400',
+                           }}
+                         >
+                           {unit}
+                         </Text>
+                       </View>
+                     </TouchableWithoutFeedback>
+                   ))}
+                 </View>
               </View>
 
               {/* Fraction Prices */}
