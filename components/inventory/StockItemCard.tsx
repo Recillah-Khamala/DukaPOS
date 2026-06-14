@@ -25,7 +25,8 @@ export default function StockItemCard({ item }: StockItemCardProps) {
       </View>
 
       {/* Row 2: Current stock and unit */}
-      <Text style={styles.stockInfo}>{item.currentStock} {item.unit}</Text>
+      <Text style={styles.stockInfo}>{item.currentStock} {item.buyingUnit} in stock</Text>
+<Text style={{ fontSize: 13, color: Colors.onSurfaceVariant, opacity: 0.8 }}>{Math.floor(item.currentStock / item.conversionRate)} {item.sellingUnit} available</Text>
 
       {/* Row 3: Progress bar */}
       <View style={styles.progressContainer}>
