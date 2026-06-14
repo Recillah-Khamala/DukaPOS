@@ -10,7 +10,7 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
   const [productName, setProductName] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'Cereal' | 'Poshomill Service'>('Cereal');
   const [quantity, setQuantity] = useState('');
-  const [selectedUnit, setSelectedUnit] = useState<'Korokoro' | 'kg' | 'g' | 'piece'>('Korokoro');
+  const [buyingUnit, setBuyingUnit] = useState<'kg' | 'g' | 'sack' | 'piece'>('kg');
   const [price18, setPrice18] = useState('');
   const [price14, setPrice14] = useState('');
   const [price12, setPrice12] = useState('');
@@ -84,8 +84,8 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
         id: Date.now().toString(),
         name: productName.trim(),
         currentStock: parseFloat(quantity),
-        buyingUnit: selectedUnit,
-        sellingUnit: selectedUnit,
+        buyingUnit: buyingUnit,
+        sellingUnit: buyingUnit,
         conversionRate: 1,
         lowStockThreshold: parseFloat(lowStockThreshold),
         isLowStock: parseFloat(quantity) <= parseFloat(lowStockThreshold),
@@ -102,7 +102,7 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
       setProductName('');
       setSelectedCategory('Cereal');
       setQuantity('');
-      setSelectedUnit('Korokoro');
+      setbuyingUnit('Korokoro');
       setPrice18('');
       setPrice14('');
       setPrice12('');
@@ -255,27 +255,27 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
 
               {/* Unit Selector */}
               <View style={{ marginTop: 16 }}>
-                <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
-                  Unit
+<Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
+  Buying Unit (how you restock)
                 </Text>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
                   {(['Korokoro', 'kg', 'g', 'piece'] as const).map((unit) => (
-                    <TouchableWithoutFeedback key={unit} onPress={() => setSelectedUnit(unit)}>
+                    <TouchableWithoutFeedback key={unit} onPress={() => setbuyingUnit(unit)}>
                       <View
                         style={{
                           borderRadius: 20,
                           paddingHorizontal: 16,
                           paddingVertical: 8,
                           borderWidth: 1.5,
-                          backgroundColor: selectedUnit === unit ? Colors.primaryFixed : '#f3f4f6',
-                          borderColor: selectedUnit === unit ? Colors.primary : '#e5e7eb',
+                          backgroundColor: buyingUnit === unit ? Colors.primaryFixed : '#f3f4f6',
+                          borderColor: buyingUnit === unit ? Colors.primary : '#e5e7eb',
                         }}
                       >
                         <Text
                           style={{
                             fontSize: 14,
-                            color: selectedUnit === unit ? Colors.primary : Colors.onSurfaceVariant,
-                            fontWeight: selectedUnit === unit ? '700' : '400',
+                            color: buyingUnit === unit ? Colors.primary : Colors.onSurfaceVariant,
+                            fontWeight: buyingUnit === unit ? '700' : '400',
                           }}
                         >
                           {unit}
@@ -296,10 +296,10 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
                 </Text>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
                   {[
-                    { label: `1/8 ${selectedUnit}`, value: price18, setValue: setPrice18, focused: price18Focused, setFocused: setPrice18Focused, errorKey: 'fractionPrice_1/8' },
-                    { label: `1/4 ${selectedUnit}`, value: price14, setValue: setPrice14, focused: price14Focused, setFocused: setPrice14Focused, errorKey: 'fractionPrice_1/4' },
-                    { label: `1/2 ${selectedUnit}`, value: price12, setValue: setPrice12, focused: price12Focused, setFocused: setPrice12Focused, errorKey: 'fractionPrice_1/2' },
-                    { label: `1 ${selectedUnit}`,   value: price1,  setValue: setPrice1,  focused: price1Focused,  setFocused: setPrice1Focused,  errorKey: 'fractionPrice_1' },
+                    { label: `1/8 ${buyingUnit}`, value: price18, setValue: setPrice18, focused: price18Focused, setFocused: setPrice18Focused, errorKey: 'fractionPrice_1/8' },
+                    { label: `1/4 ${buyingUnit}`, value: price14, setValue: setPrice14, focused: price14Focused, setFocused: setPrice14Focused, errorKey: 'fractionPrice_1/4' },
+                    { label: `1/2 ${buyingUnit}`, value: price12, setValue: setPrice12, focused: price12Focused, setFocused: setPrice12Focused, errorKey: 'fractionPrice_1/2' },
+                    { label: `1 ${buyingUnit}`,   value: price1,  setValue: setPrice1,  focused: price1Focused,  setFocused: setPrice1Focused,  errorKey: 'fractionPrice_1' },
                   ].map(({ label, value, setValue, focused, setFocused, errorKey }) => (
                     <View key={label} style={{ flex: 1, minWidth: '45%' }}>
                       <Text style={{ fontSize: 12, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 4 }}>
