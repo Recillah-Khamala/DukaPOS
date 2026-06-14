@@ -44,17 +44,80 @@ export default function UnitManagementScreen() {
            {item.name}
          </Text>
        </View>
-       <ScrollView
-         contentContainerStyle={{
-           paddingHorizontal: 16,
-           paddingTop: 24,
-         }}
-       >
-         {/* Placeholder for future content */}
-         <View style={{ height: 200, backgroundColor: '#f3f4f6', borderRadius: 8 }} />
-       </ScrollView>
+        <ScrollView
+          contentContainerStyle={{
+            paddingHorizontal: 16,
+            paddingTop: 24,
+          }}
+        >
+          {/* Current Configuration Card */}
+          <View style={styles.configCard}>
+            <Text style={styles.sectionTitle}>Current Configuration</Text>
+            <View style={styles.row}>
+              <Text style={styles.label}>Buying Unit</Text>
+              <Text style={styles.value}>{item.buyingUnit}</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.label}>Selling Unit</Text>
+              <Text style={styles.value}>{item.sellingUnit}</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.label}>Conversion Rate</Text>
+              <Text style={styles.value}>
+                1 {item.sellingUnit} = {item.conversionRate} {item.buyingUnit}
+              </Text>
+            </View>
+          </View>
+          
+          {/* Derived Stock Display */}
+          <View style={styles.derivedStock}>
+            <Text>
+              {item.currentStock} {item.buyingUnit} &rarr; {Math.floor(
+                item.currentStock / item.conversionRate
+              )} {item.sellingUnit} available
+            </Text>
+          </View>
+        </ScrollView>
      </SafeAreaView>
    );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  configCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: '600' as const,
+    color: Colors.onSurfaceVariant,
+    marginBottom: 12,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
+  },
+  label: {
+    fontSize: 14,
+    color: Colors.onSurfaceVariant,
+  },
+  value: {
+    fontSize: 14,
+    fontWeight: '600' as const,
+    color: Colors.onSurface,
+  },
+  derivedStock: {
+    marginTop: 12,
+    textAlign: 'center' as const,
+  },
+});
