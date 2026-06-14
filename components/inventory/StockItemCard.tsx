@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { InventoryItem } from '../../constants/inventoryData';
 import Colors from '../../constants/colors';
+import { useRouter } from 'expo-router';
 
 type StockItemCardProps = {
   item: InventoryItem;
@@ -11,33 +12,45 @@ export default function StockItemCard({ item }: StockItemCardProps) {
   // Calculate progress bar width
   const maxStock = item.lowStockThreshold * 4;
   const progressWidth = Math.min((item.currentStock / maxStock) * 100, 100);
+  const router = useRouter();
+
+  const handlePress = () => {
+    router.push({
+      pathname: '/inventory/unit-management',
+      params: { id: item.id },
+    });
+  };
 
   return (
-    <View style={styles.card}>
-      {/* Row 1: Product name and low stock badge */}
-      <View style={styles.row}>
-        <Text style={styles.productName}>{item.name}</Text>
-        {item.isLowStock && (
-          <View style={styles.lowStockBadge}>
-            <Text style={styles.badgeText}>Low Stock</Text>
-          </View>
-        )}
-      </View>
+    <TouchableOpacity activeOpacity={0.8} onPress={handlePress}>
+      <View style={styles.card}>
+        {/* Row 1: Product name and low stock badge */}
+        <View style={styles.row}>
+          <Text style={styles.productName}>{item.name}</Text>
+          {item.isLowStock && (
+            <View style={styles.lowStockBadge}>
+              <Text style={styles.badgeText}>Low Stock</Text>
+            </View>
+          )}
+        </View>
 
-      {/* Row 2: Current stock and unit */}
-      <Text style={styles.stockInfo}>{item.currentStock} {item.buyingUnit} in stock</Text>
-<Text style={{ fontSize: 13, color: Colors.onSurfaceVariant, opacity: 0.8 }}>{Math.floor(item.currentStock / item.conversionRate)} {item.sellingUnit} available</Text>
+        {/* Row 2: Current stock and unit */}
+        <Text style={styles.stockInfo}>{item.currentStock} {item.buyingUnit} in stock</Text>
+        <Text style={{ fontSize: 13, color: Colors.onSurfaceVariant, opacity: 0.8 }}>
+          {Math.floor(item.currentStock / item.conversionRate)} {item.sellingUnit} available
+        </Text>
 
-      {/* Row 3: Progress bar */}
-      <View style={styles.progressContainer}>
-        <View 
-          style={[styles.progressBar, { 
-            width: `${progressWidth}%`,
-            backgroundColor: item.isLowStock ? '#ef4444' : Colors.primary 
-          }]}
-        />
+        {/* Row 3: Progress bar */}
+        <View style={styles.progressContainer}>
+          <View 
+            style={[styles.progressBar, { 
+              width: `${progressWidth}%`,
+              backgroundColor: item.isLowStock ? '#ef4444' : Colors.primary 
+            }]}
+          />
+        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
