@@ -10,7 +10,8 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
   const [productName, setProductName] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'Cereal' | 'Poshomill Service'>('Cereal');
   const [quantity, setQuantity] = useState('');
-  const [buyingUnit, setBuyingUnit] = useState<'kg' | 'g' | 'sack' | 'piece'>('kg');
+   const [buyingUnit, setBuyingUnit] = useState<'kg' | 'g' | 'sack' | 'piece'>('kg');
+   const [sellingUnit, setSellingUnit] = useState<'Korokoro' | 'kg' | 'g' | 'piece'>('Korokoro');
   const [price18, setPrice18] = useState('');
   const [price14, setPrice14] = useState('');
   const [price12, setPrice12] = useState('');
@@ -85,7 +86,7 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
         name: productName.trim(),
         currentStock: parseFloat(quantity),
         buyingUnit: buyingUnit,
-        sellingUnit: buyingUnit,
+         sellingUnit: sellingUnit,
         conversionRate: 1,
         lowStockThreshold: parseFloat(lowStockThreshold),
         isLowStock: parseFloat(quantity) <= parseFloat(lowStockThreshold),
@@ -102,7 +103,8 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
        setProductName('');
        setSelectedCategory('Cereal');
        setQuantity('');
-       setBuyingUnit('kg');
+        setBuyingUnit('kg');
+        setSellingUnit('Korokoro');
        setPrice18('');
        setPrice14('');
        setPrice12('');
@@ -284,9 +286,42 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
                      </TouchableWithoutFeedback>
                    ))}
                  </View>
-              </View>
-
-              {/* Fraction Prices */}
+               </View>
+               
+               {/* Selling Unit Selector */}
+               <View style={{ marginTop: 16 }}>
+                 <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
+                   Selling Unit (how you sell to customers)
+                 </Text>
+                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                   {(['Korokoro', 'kg', 'g', 'piece'] as const).map((unit) => (
+                     <TouchableWithoutFeedback key={unit} onPress={() => setSellingUnit(unit)}>
+                       <View
+                         style={{
+                           borderRadius: 20,
+                           paddingHorizontal: 16,
+                           paddingVertical: 8,
+                           borderWidth: 1.5,
+                           backgroundColor: sellingUnit === unit ? Colors.primaryFixed : '#f3f4f6',
+                           borderColor: sellingUnit === unit ? Colors.primary : '#e5e7eb',
+                         }}
+                       >
+                         <Text
+                           style={{
+                             fontSize: 14,
+                             color: sellingUnit === unit ? Colors.primary : Colors.onSurfaceVariant,
+                             fontWeight: sellingUnit === unit ? '700' : '400',
+                           }}
+                         >
+                           {unit}
+                         </Text>
+                       </View>
+                     </TouchableWithoutFeedback>
+                   ))}
+                 </View>
+               </View>
+               
+               {/* Fraction Prices */}
               <View style={{ marginTop: 16 }}>
                 <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 8 }}>
                   Prices by Quantity
