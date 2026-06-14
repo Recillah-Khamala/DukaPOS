@@ -10,9 +10,10 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
   const [productName, setProductName] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'Cereal' | 'Poshomill Service'>('Cereal');
   const [quantity, setQuantity] = useState('');
-   const [buyingUnit, setBuyingUnit] = useState<'kg' | 'g' | 'sack' | 'piece'>('kg');
-   const [sellingUnit, setSellingUnit] = useState<'Korokoro' | 'kg' | 'g' | 'piece'>('Korokoro');
-  const [price18, setPrice18] = useState('');
+    const [buyingUnit, setBuyingUnit] = useState<'kg' | 'g' | 'sack' | 'piece'>('kg');
+    const [sellingUnit, setSellingUnit] = useState<'Korokoro' | 'kg' | 'g' | 'piece'>('Korokoro');
+    const [conversionRate, setConversionRate] = useState('');
+    const [price18, setPrice18] = useState('');
   const [price14, setPrice14] = useState('');
   const [price12, setPrice12] = useState('');
   const [price1, setPrice1] = useState('');
@@ -23,8 +24,9 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
   const [price18Focused, setPrice18Focused] = useState(false);
   const [price14Focused, setPrice14Focused] = useState(false);
   const [price12Focused, setPrice12Focused] = useState(false);
-  const [price1Focused, setPrice1Focused] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+   const [price1Focused, setPrice1Focused] = useState(false);
+   const [conversionRateFocused, setConversionRateFocused] = useState(false);
+   const [errors, setErrors] = useState<Record<string, string>>({});
   const animatedValue = new Animated.Value(visible ? 0 : 300);
 
   useEffect(() => {
@@ -36,14 +38,15 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
     }).start();
   }, [visible, animatedValue]);
 
-  const isProductNameEmpty = !productName.trim();
-  const isQuantityEmpty = !quantity.trim();
-  const isPrice18Empty = !price18.trim();
-  const isPrice14Empty = !price14.trim();
-  const isPrice12Empty = !price12.trim();
-  const isPrice1Empty = !price1.trim();
-  const isLowStockThresholdEmpty = !lowStockThreshold.trim();
-  const isAnyRequiredEmpty = isProductNameEmpty || isQuantityEmpty || isPrice18Empty || isPrice14Empty || isPrice12Empty || isPrice1Empty || isLowStockThresholdEmpty;
+   const isProductNameEmpty = !productName.trim();
+   const isQuantityEmpty = !quantity.trim();
+   const isPrice18Empty = !price18.trim();
+   const isPrice14Empty = !price14.trim();
+   const isPrice12Empty = !price12.trim();
+   const isPrice1Empty = !price1.trim();
+   const isLowStockThresholdEmpty = !lowStockThreshold.trim();
+   const isConversionRateEmpty = !conversionRate.trim();
+   const isAnyRequiredEmpty = isProductNameEmpty || isQuantityEmpty || isPrice18Empty || isPrice14Empty || isPrice12Empty || isPrice1Empty || isLowStockThresholdEmpty || isConversionRateEmpty;
   const isDisabled = isAnyRequiredEmpty || Object.keys(errors).length > 0;
 
   const validate = () => {
@@ -70,10 +73,15 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
       }
     });
 
-    const thresholdNum = Number(lowStockThreshold);
-    if (!lowStockThreshold || isNaN(thresholdNum) || thresholdNum <= 0) {
-      newErrors.lowStockThreshold = 'Must be a positive number';
-    }
+     const thresholdNum = Number(lowStockThreshold);
+     if (!lowStockThreshold || isNaN(thresholdNum) || thresholdNum <= 0) {
+       newErrors.lowStockThreshold = 'Must be a positive number';
+     }
+     
+     const conversionRateNum = Number(conversionRate);
+     if (!conversionRate || isNaN(conversionRateNum) || conversionRateNum <= 0) {
+       newErrors.conversionRate = 'Must be a positive number';
+     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -81,23 +89,23 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
 
   const handleConfirm = () => {
     if (validate()) {
-      const newItem: InventoryItem = {
-        id: Date.now().toString(),
-        name: productName.trim(),
-        currentStock: parseFloat(quantity),
-        buyingUnit: buyingUnit,
-         sellingUnit: sellingUnit,
-        conversionRate: 1,
-        lowStockThreshold: parseFloat(lowStockThreshold),
-        isLowStock: parseFloat(quantity) <= parseFloat(lowStockThreshold),
-        category: selectedCategory.toLowerCase() as 'cereal' | 'poshomill',
-        fractionPrices: [
-          { label: '1/8', fraction: 0.125, price: parseFloat(price18) || 0 },
-          { label: '1/4', fraction: 0.25, price: parseFloat(price14) || 0 },
-          { label: '1/2', fraction: 0.5, price: parseFloat(price12) || 0 },
-          { label: '1', fraction: 1, price: parseFloat(price1) || 0 },
-        ],
-      };
+       const newItem: InventoryItem = {
+         id: Date.now().toString(),
+         name: productName.trim(),
+         currentStock: parseFloat(quantity),
+         buyingUnit: buyingUnit,
+          sellingUnit: sellingUnit,
+         conversionRate: parseFloat(conversionRate),
+         lowStockThreshold: parseFloat(lowStockThreshold),
+         isLowStock: parseFloat(quantity) <= parseFloat(lowStockThreshold),
+         category: selectedCategory.toLowerCase() as 'cereal' | 'poshomill',
+         fractionPrices: [
+           { label: '1/8', fraction: 0.125, price: parseFloat(price18) || 0 },
+           { label: '1/4', fraction: 0.25, price: parseFloat(price14) || 0 },
+           { label: '1/2', fraction: 0.5, price: parseFloat(price12) || 0 },
+           { label: '1', fraction: 1, price: parseFloat(price1) || 0 },
+         ],
+       };
       onAdd(newItem);
       addDynamicProduct(newItem);
        setProductName('');
@@ -105,7 +113,9 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
        setQuantity('');
         setBuyingUnit('kg');
         setSellingUnit('Korokoro');
-       setPrice18('');
+        setConversionRate('');
+        setConversionRateFocused(false);
+        setPrice18('');
        setPrice14('');
        setPrice12('');
        setPrice1('');
@@ -319,9 +329,43 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
                      </TouchableWithoutFeedback>
                    ))}
                  </View>
-               </View>
-               
-               {/* Fraction Prices */}
+                </View>
+                
+                {/* Conversion Rate */}
+                <View style={{ marginTop: 16 }}>
+                  <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
+                    Conversion Rate
+                  </Text>
+                  <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant, marginBottom: 8 }}>
+                    1 {sellingUnit} = how many {buyingUnit}?
+                  </Text>
+                  <TextInput
+                    placeholder="e.g. 2"
+                    placeholderTextColor="#9ca3af"
+                    keyboardType="numeric"
+                    style={{
+                      borderWidth: 1.5,
+                      borderColor: errors.conversionRate ? '#dc2626' : conversionRateFocused ? Colors.primary : '#e5e7eb',
+                      borderRadius: 10,
+                      paddingHorizontal: 14,
+                      paddingVertical: 12,
+                      fontSize: 15,
+                      color: Colors.onSurface,
+                    }}
+                    value={conversionRate}
+                    onChangeText={text => {
+                      setConversionRate(text);
+                      setErrors(prev => { const e = { ...prev }; delete e.conversionRate; return e; });
+                    }}
+                    onFocus={() => setConversionRateFocused(true)}
+                    onBlur={() => setConversionRateFocused(false)}
+                  />
+                  {errors.conversionRate && (
+                    <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>{errors.conversionRate}</Text>
+                  )}
+                </View>
+                
+                {/* Fraction Prices */}
               <View style={{ marginTop: 16 }}>
                 <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 8 }}>
                   Prices by Quantity
