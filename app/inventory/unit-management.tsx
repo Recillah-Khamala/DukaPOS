@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Colors from '../../constants/colors';
-import { TopAppBar } from '../../components/layout/TopAppBar';
+import TopAppBar from '../../components/layout/TopAppBar';
 import { useRouter } from 'expo-router';
 import { useRoute } from '@react-navigation/native';
 import { INVENTORY_ITEMS } from '../../constants/inventoryData';
@@ -305,29 +305,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#f3f4f6',
     borderColor: '#e5e7eb',
   },
-  chipText: {
-    fontSize: 14,
-    color: editBuyingUnit === unit ? Colors.primary : Colors.onSurfaceVariant,
-    fontWeight: editBuyingUnit === unit ? '700' : '400',
-  },
-  // We cannot use unit in the style definition, so we'll adjust the chipText style below
-  // Instead, we'll define chipText as a base and then conditionally apply color and weight in the chip style
-  // Let's redefine chipText to be base and then use conditional styles in the chip
-  // We'll remove the chipText style above and instead do:
-  //   color: editBuyingUnit === unit ? Colors.primary : Colors.onSurfaceVariant,
-  //   fontWeight: editBuyingUnit === unit ? '600' : '400',
-  // But we cannot use editBuyingUnit in the style object because it's not defined there.
-  // So we'll handle it in the chip style by having two styles: chipTextBase and then chipTextSelected/Unselected? 
-  // Alternatively, we can define the text style inline.
-  // We'll change the chip text to use inline style for color and weight.
-  // So we remove chipText and instead in the TouchableOpacity for the chip, we do:
-  //   <Text style={[styles.chipTextBase, { color: ..., fontWeight: ... }]}>
-  // Let's adjust.
-
-  // We'll define chipTextBase and then override in the chip.
-  chipTextBase: {
-    fontSize: 14,
-  },
+   // We'll define chipTextBase and then override in the chip.
+   chipTextBase: {
+     fontSize: 14,
+   },
   input: {
     borderWidth: 1.5,
     borderRadius: 10,
