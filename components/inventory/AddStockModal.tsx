@@ -129,21 +129,22 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
     <Modal animationType="none" transparent visible={visible}>
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' }}>
-          <Animated.View
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              backgroundColor: 'white',
-              borderTopLeftRadius: 24,
-              borderTopRightRadius: 24,
-              paddingHorizontal: 20,
-              paddingTop: 16,
-              paddingBottom: 32,
-              transform: [{ translateY: animatedValue }],
-            }}
-          >
+           <Animated.View
+             style={{
+               position: 'absolute',
+               bottom: 0,
+               left: 0,
+               right: 0,
+               backgroundColor: 'white',
+               borderTopLeftRadius: 24,
+               borderTopRightRadius: 24,
+               paddingHorizontal: 20,
+               paddingTop: 16,
+               paddingBottom: 32,
+               maxHeight: '90%',
+               transform: [{ translateY: animatedValue }],
+             }}
+           >
             <View
               style={{
                 width: 40,
@@ -166,11 +167,12 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
               />
             </View>
 
-            <ScrollView
-              keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingTop: 16, paddingBottom: 24 }}
-            >
+             <ScrollView
+               keyboardShouldPersistTaps="handled"
+               showsVerticalScrollIndicator={false}
+               contentContainerStyle={{ paddingTop: 16, paddingBottom: 24 }}
+               style={{ flex: 1 }}
+             >
               {/* Product Name */}
               <View>
                 <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
