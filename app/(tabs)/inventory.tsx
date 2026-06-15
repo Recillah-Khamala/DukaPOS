@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Text, View, ScrollView } from 'react-native';
+import { Text, View, ScrollView, Pressable } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useRouter } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import Colors from '../../constants/colors';
 import { useInventory } from '../../context/InventoryContext';
@@ -12,6 +13,7 @@ export default function InventoryScreen() {
   const [showAddStock, setShowAddStock] = useState(false);
   const { allItems } = useInventory();
   const lowStockItems = allItems.filter(item => item.isLowStock);
+  const router = useRouter();
 
   // No need for handleAddItem as AddStockModal now updates context via DynamicProductsContext
 
@@ -120,20 +122,22 @@ export default function InventoryScreen() {
           </View>
 
            {/* Inventory list or empty state */}
-        {allItems.length === 0 ? (
-          <View style={{ alignItems: 'center', paddingTop: 48 }}>
-            <MaterialIcons name="inventory" size={48} color="#d1d5db" />
-            <Text style={{ fontSize: 15, color: "#9ca3af", marginTop: 8 }}>
-              No inventory items yet
-            </Text>
-          </View>
-        ) : (
-          <>
-            {allItems.map(item => (
-              <StockItemCard key={item.id} item={item} />
-            ))}
-          </>
-        )}
+            {allItems.length === 0 ? (
+              <View style={{ alignItems: 'center', paddingTop: 48 }}>
+                <MaterialIcons name="inventory" size={48} color="#d1d5db" />
+                <Text style={{ fontSize: 15, color: "#9ca3af", marginTop: 8 }}>
+                  No inventory items yet
+                </Text>
+              </View>
+            ) : (
+              <>
+                {allItems.map(item => (
+                  <Pressable key={item.id} onPress={() => router.push({ pathname: '/inventory/unit-management', params: { id: item.id } })}>
+                    <StockItemCard item={item} />
+                  </Pressable>
+                ))}
+              </>
+            )}
         </View>
         {/* Content will be added later */}
        </ScrollView>
