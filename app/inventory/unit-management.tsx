@@ -52,10 +52,31 @@ export default function UnitManagementScreen() {
         <Text style={styles.title}>Unit Management</Text>
       </View>
       <Text style={styles.subtitle}>{item.name}</Text>
-      <ScrollView style={styles.scrollView}>
-        {/* We'll show the item in a card for now; further unit management UI can be added later */}
-        <StockItemCard item={item} />
-      </ScrollView>
+       <ScrollView style={styles.scrollView}>
+         <View style={styles.configCard}>
+           <Text style={styles.configTitle}>Current Configuration</Text>
+           <View style={styles.configRow}>
+             <Text style={styles.configLabel}>Buying Unit</Text>
+             <Text style={styles.configValue}>{item.buyingUnit}</Text>
+           </View>
+           <View style={styles.configDivider} />
+           <View style={styles.configRow}>
+             <Text style={styles.configLabel}>Selling Unit</Text>
+             <Text style={styles.configValue}>{item.sellingUnit}</Text>
+           </View>
+           <View style={styles.configDivider} />
+           <View style={styles.configRow}>
+             <Text style={styles.configLabel}>Conversion Rate</Text>
+             <Text style={styles.configValue}>
+               1 {item.sellingUnit} = {item.conversionRate} {item.buyingUnit}
+             </Text>
+           </View>
+         </View>
+         <View style={styles.derivedStock}>
+           {item.currentStock} {item.buyingUnit} in stock →{' '}
+           {Math.floor(item.currentStock / item.conversionRate)} {item.sellingUnit} available
+         </View>
+       </ScrollView>
     </View>
   );
 }
@@ -76,4 +97,46 @@ const styles = StyleSheet.create({
   scrollView: { flex: 1, paddingHorizontal: 16, paddingTop: 8 },
   centeredMessage: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   backButton: { marginTop: 24 },
+  configCard: {
+    backgroundColor: 'white',
+    padding: 16,
+    marginTop: 8,
+    borderRadius: 8, // rounded-xl approx
+    // shadow matching StockItemCard (we'll approximate)
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
+  },
+  configTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: Colors.onSurfaceVariant,
+    marginBottom: 12,
+  },
+  configRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+  },
+  configDivider: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
+  },
+  configLabel: {
+    fontSize: 14,
+    color: Colors.onSurfaceVariant,
+  },
+  configValue: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.onSurface,
+  },
+  derivedStock: {
+    marginTop: 12,
+    textAlign: 'center',
+    fontSize: 13,
+    color: Colors.onSurfaceVariant,
+  },
 });
