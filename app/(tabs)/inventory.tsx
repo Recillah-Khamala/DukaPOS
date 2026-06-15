@@ -3,19 +3,17 @@ import { Text, View, ScrollView } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import Colors from '../../constants/colors';
-import { INVENTORY_ITEMS, type InventoryItem } from '../../constants/inventoryData';
+import { useInventory } from '../../context/InventoryContext';
 import StockItemCard from '../../components/inventory/StockItemCard';
 import AddStockModal from '../../components/inventory/AddStockModal';
 
 export default function InventoryScreen() {
   const [bottomNavHeight, setBottomNavHeight] = useState(0);
   const [showAddStock, setShowAddStock] = useState(false);
-  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>(INVENTORY_ITEMS);
-  const lowStockItems = inventoryItems.filter(item => item.isLowStock);
+  const { allItems } = useInventory();
+  const lowStockItems = allItems.filter(item => item.isLowStock);
 
-  const handleAddItem = (newItem: InventoryItem) => {
-    setInventoryItems(prev => [...prev, newItem]);
-  };
+  // No need for handleAddItem as AddStockModal now updates context via DynamicProductsContext
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
@@ -80,14 +78,14 @@ export default function InventoryScreen() {
                   }}
                 >
                   <MaterialIcons name="warning" size={14} color='#dc2626' />
-                  <Text 
-                    style={{ 
-                      fontSize: 13, 
-                      fontWeight: '600', 
-                      color: '#dc2626' 
-                    }}>
-                    {item.name} · {item.currentStock} {item.unit}
-                  </Text>
+                    <Text 
+                     style={{ 
+                       fontSize: 13, 
+                       fontWeight: '600', 
+                       color: '#dc2626' 
+                     }}>
+                     {item.name} · {item.currentStock} {item.sellingUnit}
+                   </Text>
                 </View>
               ))}
             </ScrollView>
@@ -122,25 +120,25 @@ export default function InventoryScreen() {
           </View>
 
            {/* Inventory list or empty state */}
-           {inventoryItems.length === 0 ? (
-             <View style={{ alignItems: 'center', paddingTop: 48 }}>
-               <MaterialIcons name="inventory" size={48} color="#d1d5db" />
-               <Text style={{ fontSize: 15, color: "#9ca3af", marginTop: 8 }}>
-                 No inventory items yet
-               </Text>
-             </View>
-           ) : (
-             <>
-               {inventoryItems.map(item => (
-                 <StockItemCard key={item.id} item={item} />
-               ))}
-             </>
-           )}
+        {allItems.length === 0 ? (
+          <View style={{ alignItems: 'center', paddingTop: 48 }}>
+            <MaterialIcons name="inventory" size={48} color="#d1d5db" />
+            <Text style={{ fontSize: 15, color: "#9ca3af", marginTop: 8 }}>
+              No inventory items yet
+            </Text>
+          </View>
+        ) : (
+          <>
+            {allItems.map(item => (
+              <StockItemCard key={item.id} item={item} />
+            ))}
+          </>
+        )}
         </View>
         {/* Content will be added later */}
        </ScrollView>
 
-        <AddStockModal visible={showAddStock} onClose={() => setShowAddStock(false)} onAdd={handleAddItem} />
+        <AddStockModal visible={showAddStock} onClose={() => setShowAddStock(false)} onAdd={() => {}} />
 
        <BottomNavBar activeTab="inventory" onHeightMeasured={setBottomNavHeight} />
     </View>
