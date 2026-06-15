@@ -9,7 +9,7 @@ import StockItemCard from '../../components/inventory/StockItemCard';
 export default function UnitManagementScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { getItemById } = useInventory();
+  const { getItemById, updateItem } = useInventory();
 
   const itemId = id ?? '';
   const item = getItemById(itemId);
@@ -44,6 +44,7 @@ export default function UnitManagementScreen() {
   const [editBuyingUnit, setEditBuyingUnit] = React.useState<'kg' | 'g' | 'sack' | 'piece'>(item.buyingUnit as 'kg' | 'g' | 'sack' | 'piece');
   const [editSellingUnit, setEditSellingUnit] = React.useState<'Korokoro' | 'kg' | 'g' | 'piece'>(item.sellingUnit as 'Korokoro' | 'kg' | 'g' | 'piece');
   const [editConversionRate, setEditConversionRate] = React.useState<string>(item.conversionRate.toString());
+  const [editConversionRateError, setEditConversionRateError] = React.useState<string | null>(null);
 
   return (
     <View style={styles.container}>
@@ -135,6 +136,11 @@ export default function UnitManagementScreen() {
                 placeholder="1.0"
                 placeholderTextColor="#9ca3af"
               />
+              {editConversionRateError && (
+                <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>
+                  {editConversionRateError}
+                </Text>
+              )}
               <Text style={styles.editHint}>
                 1 {editSellingUnit} = how many {editBuyingUnit}?
               </Text>
@@ -144,12 +150,21 @@ export default function UnitManagementScreen() {
                 <Text style={styles.editCancelButtonText}>Cancel</Text>
               </Pressable>
               <Pressable onPress={() => {
-                // For now, just log; later we would update context
-                console.log('Save changes:', {
+                // Validate conversion rate
+                const conversionRateNum = parseFloat(editConversionRate);
+                if (!editConversionRate || isNaN(conversionRateNum) || conversionRateNum <= 0) {
+                  setEditConversionRateError('Must be a positive number');
+                  return;
+                }
+                // Clear any previous error
+                setEditConversionRateError(null);
+                // Update the item via InventoryContext
+                updateItem(item.id, {
                   buyingUnit: editBuyingUnit,
                   sellingUnit: editSellingUnit,
-                  conversionRate: parseFloat(editConversionRate),
+                  conversionRate: conversionRateNum,
                 });
+                // Hide the edit form
                 setShowEdit(false);
               }} style={styles.editSaveButton}>
                 <Text style={styles.editSaveButtonText}>Save Changes</Text>
