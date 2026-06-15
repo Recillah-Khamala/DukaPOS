@@ -6,13 +6,14 @@ interface InventoryContextValue {
   allItems: InventoryItem[];
   getItemById: (id: string) => InventoryItem | undefined;
   updateItem: (id: string, updates: Partial<InventoryItem>) => void;
+  addItem: (item: InventoryItem) => void;
 }
 
 const InventoryContext = createContext<InventoryContextValue | undefined>(undefined);
 
 export function InventoryProvider({ children }: { children: ReactNode }) {
   const [seedOverrides, setSeedOverrides] = useState<Record<string, Partial<InventoryItem>>>({});
-  const { dynamicProducts, updateDynamicProduct } = useDynamicProducts();
+  const { dynamicProducts, updateDynamicProduct, addDynamicProduct } = useDynamicProducts();
 
   // Combine seed items with overrides
   const seedItemsWithOverrides = INVENTORY_ITEMS.map(item => ({
@@ -53,12 +54,17 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
       }
     };
 
+    const addItem = (item: InventoryItem) => {
+      addDynamicProduct(item);
+    };
+
   return (
     <InventoryContext.Provider
       value={{
         allItems,
         getItemById,
         updateItem,
+        addItem,
       }}
     >
       {children}

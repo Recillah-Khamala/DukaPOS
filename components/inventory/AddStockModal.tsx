@@ -3,10 +3,10 @@ import { Modal, TouchableWithoutFeedback, View, Text, Animated, Easing, TextInpu
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Colors from '../../constants/colors';
 import type { InventoryItem } from '../../constants/inventoryData';
-import { useDynamicProducts } from '../../context/DynamicProductsContext';
+import { useInventory } from '../../context/InventoryContext';
 
-const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose: () => void; onAdd: (item: InventoryItem) => void }) => {
-  const { addDynamicProduct } = useDynamicProducts();
+const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
+  const { addItem } = useInventory();
   const [productName, setProductName] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'Cereal' | 'Poshomill Service'>('Cereal');
   const [quantity, setQuantity] = useState('');
@@ -87,43 +87,42 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleConfirm = () => {
-    if (validate()) {
-       const newItem: InventoryItem = {
-         id: Date.now().toString(),
-         name: productName.trim(),
-         currentStock: parseFloat(quantity),
-         buyingUnit: buyingUnit,
-          sellingUnit: sellingUnit,
-         conversionRate: parseFloat(conversionRate),
-         lowStockThreshold: parseFloat(lowStockThreshold),
-         isLowStock: parseFloat(quantity) <= parseFloat(lowStockThreshold),
-         category: selectedCategory.toLowerCase() as 'cereal' | 'poshomill',
-         fractionPrices: [
-           { label: '1/8', fraction: 0.125, price: parseFloat(price18) || 0 },
-           { label: '1/4', fraction: 0.25, price: parseFloat(price14) || 0 },
-           { label: '1/2', fraction: 0.5, price: parseFloat(price12) || 0 },
-           { label: '1', fraction: 1, price: parseFloat(price1) || 0 },
-         ],
-       };
-      onAdd(newItem);
-      addDynamicProduct(newItem);
-       setProductName('');
-       setSelectedCategory('Cereal');
-       setQuantity('');
-        setBuyingUnit('kg');
-        setSellingUnit('Korokoro');
-        setConversionRate('');
-        setConversionRateFocused(false);
-        setPrice18('');
-       setPrice14('');
-       setPrice12('');
-       setPrice1('');
-       setLowStockThreshold('');
-       setErrors({});
-      onClose();
-    }
-  };
+   const handleConfirm = () => {
+     if (validate()) {
+        const newItem: InventoryItem = {
+          id: Date.now().toString(),
+          name: productName.trim(),
+          currentStock: parseFloat(quantity),
+          buyingUnit: buyingUnit,
+           sellingUnit: sellingUnit,
+          conversionRate: parseFloat(conversionRate),
+          lowStockThreshold: parseFloat(lowStockThreshold),
+          isLowStock: parseFloat(quantity) <= parseFloat(lowStockThreshold),
+          category: selectedCategory.toLowerCase() as 'cereal' | 'poshomill',
+          fractionPrices: [
+            { label: '1/8', fraction: 0.125, price: parseFloat(price18) || 0 },
+            { label: '1/4', fraction: 0.25, price: parseFloat(price14) || 0 },
+            { label: '1/2', fraction: 0.5, price: parseFloat(price12) || 0 },
+            { label: '1', fraction: 1, price: parseFloat(price1) || 0 },
+          ],
+        };
+       addItem(newItem);
+        setProductName('');
+        setSelectedCategory('Cereal');
+        setQuantity('');
+         setBuyingUnit('kg');
+         setSellingUnit('Korokoro');
+         setConversionRate('');
+         setConversionRateFocused(false);
+         setPrice18('');
+        setPrice14('');
+        setPrice12('');
+        setPrice1('');
+        setLowStockThreshold('');
+        setErrors({});
+       onClose();
+     }
+   };
 
   return (
     <Modal animationType="none" transparent visible={visible}>

@@ -138,7 +138,7 @@ export default function InventoryScreen() {
         {/* Content will be added later */}
        </ScrollView>
 
-        <AddStockModal visible={showAddStock} onClose={() => setShowAddStock(false)} onAdd={() => {}} />
+        <AddStockModal visible={showAddStock} onClose={() => setShowAddStock(false)} />
 
        <BottomNavBar activeTab="inventory" onHeightMeasured={setBottomNavHeight} />
     </View>
