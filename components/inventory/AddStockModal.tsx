@@ -267,8 +267,8 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
                 )}
               </View>
 
-              {/* Unit Selector */}
-              <View style={{ marginTop: 16 }}>
+               {/* Buying Unit Selector */}
+               <View style={{ marginTop: 16 }}>
 <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
   Buying Unit (how you restock)
                 </Text>
@@ -375,13 +375,13 @@ const AddStockModal = ({ visible, onClose, onAdd }: { visible: boolean; onClose:
                 <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant, marginBottom: 12 }}>
                   Prices don't have to be proportional
                 </Text>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
-                  {[
-                    { label: `1/8 ${buyingUnit}`, value: price18, setValue: setPrice18, focused: price18Focused, setFocused: setPrice18Focused, errorKey: 'fractionPrice_1/8' },
-                    { label: `1/4 ${buyingUnit}`, value: price14, setValue: setPrice14, focused: price14Focused, setFocused: setPrice14Focused, errorKey: 'fractionPrice_1/4' },
-                    { label: `1/2 ${buyingUnit}`, value: price12, setValue: setPrice12, focused: price12Focused, setFocused: setPrice12Focused, errorKey: 'fractionPrice_1/2' },
-                    { label: `1 ${buyingUnit}`,   value: price1,  setValue: setPrice1,  focused: price1Focused,  setFocused: setPrice1Focused,  errorKey: 'fractionPrice_1' },
-                  ].map(({ label, value, setValue, focused, setFocused, errorKey }) => (
+                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+                   {[
+                     { label: `1/8 ${sellingUnit}`, value: price18, setValue: setPrice18, focused: price18Focused, setFocused: setPrice18Focused, errorKey: 'fractionPrice_1/8' },
+                     { label: `1/4 ${sellingUnit}`, value: price14, setValue: setPrice14, focused: price14Focused, setFocused: setPrice14Focused, errorKey: 'fractionPrice_1/4' },
+                     { label: `1/2 ${sellingUnit}`, value: price12, setValue: setPrice12, focused: price12Focused, setFocused: setPrice12Focused, errorKey: 'fractionPrice_1/2' },
+                     { label: `1 ${sellingUnit}`,   value: price1,  setValue: setPrice1,  focused: price1Focused,  setFocused: setPrice1Focused,  errorKey: 'fractionPrice_1' },
+                   ].map(({ label, value, setValue, focused, setFocused, errorKey }) => (
                     <View key={label} style={{ flex: 1, minWidth: '45%' }}>
                       <Text style={{ fontSize: 12, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 4 }}>
                         {label}
