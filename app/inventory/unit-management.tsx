@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Pressable, TextInput } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useInventory } from '../../context/InventoryContext';
@@ -40,6 +40,11 @@ export default function UnitManagementScreen() {
     );
   }
 
+  const [showEdit, setShowEdit] = React.useState(false);
+  const [editBuyingUnit, setEditBuyingUnit] = React.useState<'kg' | 'g' | 'sack' | 'piece'>(item.buyingUnit as 'kg' | 'g' | 'sack' | 'piece');
+  const [editSellingUnit, setEditSellingUnit] = React.useState<'Korokoro' | 'kg' | 'g' | 'piece'>(item.sellingUnit as 'Korokoro' | 'kg' | 'g' | 'piece');
+  const [editConversionRate, setEditConversionRate] = React.useState<string>(item.conversionRate.toString());
+
   return (
     <View style={styles.container}>
       <View style={styles.topAppBar}>
@@ -52,31 +57,107 @@ export default function UnitManagementScreen() {
         <Text style={styles.title}>Unit Management</Text>
       </View>
       <Text style={styles.subtitle}>{item.name}</Text>
-       <ScrollView style={styles.scrollView}>
-         <View style={styles.configCard}>
-           <Text style={styles.configTitle}>Current Configuration</Text>
-           <View style={styles.configRow}>
-             <Text style={styles.configLabel}>Buying Unit</Text>
-             <Text style={styles.configValue}>{item.buyingUnit}</Text>
-           </View>
-           <View style={styles.configDivider} />
-           <View style={styles.configRow}>
-             <Text style={styles.configLabel}>Selling Unit</Text>
-             <Text style={styles.configValue}>{item.sellingUnit}</Text>
-           </View>
-           <View style={styles.configDivider} />
-           <View style={styles.configRow}>
-             <Text style={styles.configLabel}>Conversion Rate</Text>
-             <Text style={styles.configValue}>
-               1 {item.sellingUnit} = {item.conversionRate} {item.buyingUnit}
-             </Text>
-           </View>
-         </View>
-         <View style={styles.derivedStock}>
-           {item.currentStock} {item.buyingUnit} in stock →{' '}
-           {Math.floor(item.currentStock / item.conversionRate)} {item.sellingUnit} available
-         </View>
-       </ScrollView>
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.configCard}>
+          <Text style={styles.configTitle}>Current Configuration</Text>
+          <View style={styles.configRow}>
+            <Text style={styles.configLabel}>Buying Unit</Text>
+            <Text style={styles.configValue}>{item.buyingUnit}</Text>
+          </View>
+          <View style={styles.configDivider} />
+          <View style={styles.configRow}>
+            <Text style={styles.configLabel}>Selling Unit</Text>
+            <Text style={styles.configValue}>{item.sellingUnit}</Text>
+          </View>
+          <View style={styles.configDivider} />
+          <View style={styles.configRow}>
+            <Text style={styles.configLabel}>Conversion Rate</Text>
+            <Text style={styles.configValue}>
+              1 {item.sellingUnit} = {item.conversionRate} {item.buyingUnit}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.derivedStock}>
+          {item.currentStock} {item.buyingUnit} in stock →{' '}
+          {Math.floor(item.currentStock / item.conversionRate)} {item.sellingUnit} available
+        </View>
+
+        {!showEdit ? (
+          <Pressable onPress={() => setShowEdit(true)} style={styles.editButton}>
+            <Text style={styles.editButtonText}>Edit Units</Text>
+          </Pressable>
+        ) : (
+          <View style={styles.editCard}>
+            <Text style={styles.editTitle}>Edit Unit Configuration</Text>
+            <Text style={styles.editSubtitle}>Buying Unit</Text>
+            <View style={styles.editChipRow}>
+              {['kg', 'g', 'sack', 'piece'].map((unit) => (
+                <Pressable
+                  key={unit}
+                  onPress={() => setEditBuyingUnit(unit as 'kg' | 'g' | 'sack' | 'piece')}
+                  style={[
+                    styles.editChip,
+                    editBuyingUnit === unit ? styles.editChipSelected : styles.editChipUnselected,
+                  ]}
+                >
+                  <Text style={editBuyingUnit === unit ? styles.editChipTextSelected : styles.editChipTextUnselected}>
+                    {unit}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+            <Text style={[styles.editSubtitle, { marginTop: 12 }]}>
+              Selling Unit
+            </Text>
+            <View style={styles.editChipRow}>
+              {['Korokoro', 'kg', 'g', 'piece'].map((unit) => (
+                <Pressable
+                  key={unit}
+                  onPress={() => setEditSellingUnit(unit as 'Korokoro' | 'kg' | 'g' | 'piece')}
+                  style={[
+                    styles.editChip,
+                    editSellingUnit === unit ? styles.editChipSelected : styles.editChipUnselected,
+                  ]}
+                >
+                  <Text style={editSellingUnit === unit ? styles.editChipTextSelected : styles.editChipTextUnselected}>
+                    {unit}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+            <View style={{ marginTop: 12 }}>
+              <Text style={styles.editSubtitle}>Conversion Rate</Text>
+              <TextInput
+                style={styles.editInput}
+                value={editConversionRate}
+                onChangeText={setEditConversionRate}
+                keyboardType="numeric"
+                placeholder="1.0"
+                placeholderTextColor="#9ca3af"
+              />
+              <Text style={styles.editHint}>
+                1 {editSellingUnit} = how many {editBuyingUnit}?
+              </Text>
+            </View>
+            <View style={styles.editButtonRow}>
+              <Pressable onPress={() => setShowEdit(false)} style={styles.editCancelButton}>
+                <Text style={styles.editCancelButtonText}>Cancel</Text>
+              </Pressable>
+              <Pressable onPress={() => {
+                // For now, just log; later we would update context
+                console.log('Save changes:', {
+                  buyingUnit: editBuyingUnit,
+                  sellingUnit: editSellingUnit,
+                  conversionRate: parseFloat(editConversionRate),
+                });
+                setShowEdit(false);
+              }} style={styles.editSaveButton}>
+                <Text style={styles.editSaveButtonText}>Save Changes</Text>
+              </Pressable>
+            </View>
+          </View>
+        )}
+      </ScrollView>
     </View>
   );
 }
@@ -138,5 +219,118 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 13,
     color: Colors.onSurfaceVariant,
+  },
+  // Edit button
+  editButton: {
+    backgroundColor: Colors.primary,
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    marginTop: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  editButtonText: {
+    color: Colors.onPrimary,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  // Edit card
+  editCard: {
+    backgroundColor: 'white',
+    padding: 16,
+    marginTop: 12,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
+  },
+  editTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: Colors.onSurface,
+    marginBottom: 16,
+  },
+  editSubtitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: Colors.onSurfaceVariant,
+    marginBottom: 8,
+  },
+  editChipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  editChip: {
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderWidth: 1.5,
+  },
+  editChipSelected: {
+    backgroundColor: Colors.primaryFixed,
+    borderColor: Colors.primary,
+  },
+  editChipUnselected: {
+    backgroundColor: '#f3f4f6',
+    borderColor: '#e5e7eb',
+  },
+  editChipTextSelected: {
+    fontSize: 14,
+    color: Colors.primary,
+    fontWeight: '700',
+  },
+  editChipTextUnselected: {
+    fontSize: 14,
+    color: Colors.onSurfaceVariant,
+    fontWeight: '400',
+  },
+  editInput: {
+    borderWidth: 1.5,
+    borderColor: '#e5e7eb',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 15,
+    color: Colors.onSurface,
+  },
+  editHint: {
+    fontSize: 11,
+    color: Colors.onSurfaceVariant,
+    marginTop: 4,
+  },
+  editButtonRow: {
+    flexDirection: 'row',
+    marginTop: 16,
+    justifyContent: 'space-between',
+  },
+  editCancelButton: {
+    flex: 1,
+    backgroundColor: '#d1d5db',
+    borderRadius: 12,
+    paddingVertical: 14,
+    marginRight: 8,
+  },
+  editSaveButton: {
+    flex: 1,
+    backgroundColor: Colors.primary,
+    borderRadius: 12,
+    paddingVertical: 14,
+    marginLeft: 8,
+  },
+  editCancelButtonText: {
+    color: '#9ca3af',
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  editSaveButtonText: {
+    color: Colors.onPrimary,
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });
