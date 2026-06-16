@@ -6,27 +6,30 @@ import type { InventoryItem } from '../../constants/inventoryData';
 import { useInventory } from '../../context/InventoryContext';
 
 const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
-  const { addItem } = useInventory();
-  const [productName, setProductName] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<'Cereal' | 'Poshomill Service'>('Cereal');
-  const [quantity, setQuantity] = useState('');
-    const [buyingUnit, setBuyingUnit] = useState<'kg' | 'g' | 'sack' | 'piece'>('kg');
-    const [sellingUnit, setSellingUnit] = useState<'Korokoro' | 'kg' | 'g' | 'piece'>('Korokoro');
-    const [conversionRate, setConversionRate] = useState('');
-    const [price18, setPrice18] = useState('');
-  const [price14, setPrice14] = useState('');
-  const [price12, setPrice12] = useState('');
-  const [price1, setPrice1] = useState('');
-  const [lowStockThreshold, setLowStockThreshold] = useState('');
-  const [productNameFocused, setProductNameFocused] = useState(false);
-  const [quantityFocused, setQuantityFocused] = useState(false);
-  const [lowStockThresholdFocused, setLowStockThresholdFocused] = useState(false);
-  const [price18Focused, setPrice18Focused] = useState(false);
-  const [price14Focused, setPrice14Focused] = useState(false);
-  const [price12Focused, setPrice12Focused] = useState(false);
-   const [price1Focused, setPrice1Focused] = useState(false);
-   const [conversionRateFocused, setConversionRateFocused] = useState(false);
-   const [errors, setErrors] = useState<Record<string, string>>({});
+   const { addItem } = useInventory();
+   const [productName, setProductName] = useState('');
+   const [selectedCategory, setSelectedCategory] = useState<'Cereal' | 'Poshomill Service'>('Cereal');
+   const [quantity, setQuantity] = useState('');
+     const [buyingUnit, setBuyingUnit] = useState<'kg' | 'g' | 'sack' | 'piece'>('kg');
+     const [sellingUnit, setSellingUnit] = useState<'Korokoro' | 'kg' | 'g' | 'piece'>('Korokoro');
+     const [conversionRate, setConversionRate] = useState('');
+     const [price18, setPrice18] = useState('');
+   const [price14, setPrice14] = useState('');
+   const [price12, setPrice12] = useState('');
+   const [price1, setPrice1] = useState('');
+   const [lowStockThreshold, setLowStockThreshold] = useState('');
+   const [description, setDescription] = useState('');
+   const [selectedIcon, setSelectedIcon] = useState<'grass' | 'grain' | 'eco' | 'potted_plant' | 'rice_bowl' | 'category' | 'inventory_2'>('grain');
+   const [productNameFocused, setProductNameFocused] = useState(false);
+   const [quantityFocused, setQuantityFocused] = useState(false);
+   const [lowStockThresholdFocused, setLowStockThresholdFocused] = useState(false);
+   const [price18Focused, setPrice18Focused] = useState(false);
+   const [price14Focused, setPrice14Focused] = useState(false);
+   const [price12Focused, setPrice12Focused] = useState(false);
+    const [price1Focused, setPrice1Focused] = useState(false);
+    const [conversionRateFocused, setConversionRateFocused] = useState(false);
+    const [descriptionFocused, setDescriptionFocused] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
   const animatedValue = new Animated.Value(visible ? 0 : 300);
 
   useEffect(() => {
@@ -83,23 +86,25 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
 
    const handleConfirm = () => {
      if (validate()) {
-        const newItem: InventoryItem = {
-          id: Date.now().toString(),
-          name: productName.trim(),
-          currentStock: parseFloat(quantity),
-          buyingUnit: buyingUnit,
-           sellingUnit: sellingUnit,
+         const newItem: InventoryItem = {
+           id: Date.now().toString(),
+           name: productName.trim(),
+           currentStock: parseFloat(quantity),
+           buyingUnit: buyingUnit,
+            sellingUnit: sellingUnit,
            conversionRate: parseFloat(conversionRate) || 1,
-          lowStockThreshold: parseFloat(lowStockThreshold),
-          isLowStock: parseFloat(quantity) <= parseFloat(lowStockThreshold),
-          category: selectedCategory.toLowerCase() as 'cereal' | 'poshomill',
-          fractionPrices: [
-            { label: '1/8', fraction: 0.125, price: parseFloat(price18) || 0 },
-            { label: '1/4', fraction: 0.25, price: parseFloat(price14) || 0 },
-            { label: '1/2', fraction: 0.5, price: parseFloat(price12) || 0 },
-            { label: '1', fraction: 1, price: parseFloat(price1) || 0 },
-          ],
-        };
+           lowStockThreshold: parseFloat(lowStockThreshold),
+           isLowStock: parseFloat(quantity) <= parseFloat(lowStockThreshold),
+           category: selectedCategory.toLowerCase() as 'cereal' | 'poshomill',
+           description: description.trim() || undefined,
+           icon: selectedIcon,
+           fractionPrices: [
+             { label: '1/8', fraction: 0.125, price: parseFloat(price18) || 0 },
+             { label: '1/4', fraction: 0.25, price: parseFloat(price14) || 0 },
+             { label: '1/2', fraction: 0.5, price: parseFloat(price12) || 0 },
+             { label: '1', fraction: 1, price: parseFloat(price1) || 0 },
+           ],
+         };
        addItem(newItem);
         setProductName('');
         setSelectedCategory('Cereal');
@@ -112,8 +117,10 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
         setPrice14('');
         setPrice12('');
         setPrice1('');
-        setLowStockThreshold('');
-        setErrors({});
+         setLowStockThreshold('');
+         setDescription('');
+         setSelectedIcon('grain');
+         setErrors({});
        onClose();
      }
    };
@@ -193,10 +200,69 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
                 {errors.productName && (
                   <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>{errors.productName}</Text>
                 )}
-              </View>
+               </View>
 
-              {/* Category Selector */}
-              <View style={{ marginTop: 16 }}>
+               {/* Description */}
+               <View style={{ marginTop: 16 }}>
+                 <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
+                   Description
+                 </Text>
+                 <TextInput
+                   placeholder="e.g. Yellow - Dry Shell"
+                   placeholderTextColor="#9ca3af"
+                   style={{
+                     borderWidth: 1.5,
+                     borderColor: descriptionFocused ? Colors.primary : '#e5e7eb',
+                     borderRadius: 10,
+                     paddingHorizontal: 14,
+                     paddingVertical: 12,
+                     fontSize: 15,
+                     color: Colors.onSurface,
+                   }}
+                   value={description}
+                   onChangeText={setDescription}
+                   onFocus={() => setDescriptionFocused(true)}
+                   onBlur={() => setDescriptionFocused(false)}
+                 />
+               </View>
+
+               {/* Icon selector */}
+               <View style={{ marginTop: 16 }}>
+                 <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
+                   Product Icon
+                 </Text>
+                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                   {[
+                     'grass',
+                     'grain',
+                     'eco',
+                     'potted_plant',
+                     'rice_bowl',
+                     'category',
+                     'inventory_2'
+                   ].map(iconName => (
+                     <TouchableWithoutFeedback key={iconName} onPress={() => setSelectedIcon(iconName)}>
+                       <View
+                         style={{
+                           width: 44,
+                           height: 44,
+                           borderRadius: 12,
+                           borderWidth: 1.5,
+                           borderColor: selectedIcon === iconName ? Colors.primary : '#e5e7eb',
+                           backgroundColor: selectedIcon === iconName ? Colors.primaryFixed : '#f3f4f6',
+                           justifyContent: 'center',
+                           alignItems: 'center',
+                         }}
+                       >
+                         <MaterialIcons name={iconName} size={24} color={selectedIcon === iconName ? Colors.onPrimaryFixed : Colors.onSurfaceVariant} />
+                       </View>
+                     </TouchableWithoutFeedback>
+                   ))}
+                 </View>
+               </View>
+
+               {/* Category Selector */}
+               <View style={{ marginTop: 16 }}>
                 <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
                   Category
                 </Text>
