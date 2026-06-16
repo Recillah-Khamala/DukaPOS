@@ -128,21 +128,20 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
     <Modal animationType="none" transparent visible={visible}>
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' }}>
-           <Animated.View
-             style={{
-               position: 'absolute',
-               bottom: 0,
-               left: 0,
-               right: 0,
-               backgroundColor: 'white',
-               borderTopLeftRadius: 24,
-               borderTopRightRadius: 24,
-               paddingHorizontal: 20,
-               paddingTop: 16,
-               paddingBottom: 32,
-               maxHeight: '90%',
-               transform: [{ translateY: animatedValue }],
-             }}
+            <Animated.View
+              style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                backgroundColor: 'white',
+                borderTopLeftRadius: 24,
+                borderTopRightRadius: 24,
+                paddingHorizontal: 20,
+                maxHeight: '92%',
+                flex: 1,
+                transform: [{ translateY: animatedValue }],
+              }}
            >
             <View
               style={{
