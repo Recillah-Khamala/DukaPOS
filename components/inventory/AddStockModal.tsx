@@ -240,7 +240,7 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
                      'rice_bowl',
                      'category',
                      'inventory_2'
-                   ].map(iconName => (
+                   ] as const}.map((iconName) => (
                      <TouchableWithoutFeedback key={iconName} onPress={() => setSelectedIcon(iconName)}>
                        <View
                          style={{
@@ -254,7 +254,7 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
                            alignItems: 'center',
                          }}
                        >
-                         <MaterialIcons name={iconName} size={24} color={selectedIcon === iconName ? Colors.onPrimaryFixed : Colors.onSurfaceVariant} />
+                         <MaterialIcons name={iconName} size={24} color={selectedIcon === iconName ? Colors.primaryFixed : Colors.onSurfaceVariant} />
                        </View>
                      </TouchableWithoutFeedback>
                    ))}
