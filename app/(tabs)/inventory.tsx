@@ -56,52 +56,24 @@ export default function InventoryScreen() {
       >
         {/* Low Stock Alerts section */}
         {lowStockItems.length > 0 && (
-          <>
-            <Text 
-              style={{ 
-                textTransform: 'uppercase', 
-                fontSize: 11, 
-                fontWeight: '500', 
-                color: Colors.onSurfaceVariant, 
-                paddingHorizontal: 16, 
-                marginBottom: 8 
-              }}>
-              Low Stock Alerts
-            </Text>
-            <ScrollView 
-              horizontal 
-              showsHorizontalScrollIndicator={false} 
-              style={{ paddingHorizontal: 16, gap: 8 }}
-              contentContainerStyle={{ flexDirection: 'row' }}
-            >
-              {lowStockItems.map(item => (
-                <View 
-                  key={item.id} 
-                  style={{
-                    backgroundColor: '#fef2f2',
-                    borderColor: '#fca5a5',
-                    borderWidth: 1,
-                    borderRadius: 9999, // rounded-full
-                    paddingHorizontal: 12,
-                    paddingVertical: 6,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 4,
-                  }}
-                >
-                  <MaterialIcons name="warning" size={14} color='#dc2626' />
-                    <Text 
-                     style={{ 
-                       fontSize: 13, 
-                       fontWeight: '600', 
-                       color: '#dc2626' 
-                     }}>
-                     {item.name} · {item.currentStock} {item.sellingUnit}
-                   </Text>
+          <View style={{ backgroundColor: '#fefce8', borderWidth: 1.5, borderColor: '#fbbf24', borderRadius: 16, padding: 12, marginHorizontal: 16, marginBottom: 8 }}>
+            {lowStockItems.map((item, index) => (
+              <View key={item.id} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: index === lowStockItems.length - 1 ? 0 : 1, borderBottomColor: '#fde68a' }}>
+                <MaterialIcons name={item.icon || 'grain'} size={20} color='#d97706' style={{ marginRight: 12 }} />
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 15, fontWeight: '600', color: Colors.onSurface }}>{item.name}</Text>
+                  {item.description && <Text style={{ fontSize: 12, color: Colors.onSurfaceVariant }}>{item.description}</Text>}
                 </View>
-              ))}
-            </ScrollView>
-          </>
+                <View style={{ alignItems: 'flex-end' }}>
+                  <Text style={{ fontSize: 16, fontWeight: '800', color: '#dc2626' }}>{item.currentStock}</Text>
+                  <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant }}>{item.sellingUnit}</Text>
+                  <View style={{ backgroundColor: '#dc2626', borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2, marginTop: 2 }}>
+                    <Text style={{ fontSize: 10, fontWeight: '700', color: 'white' }}>Critically Low</Text>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </View>
         )}
          {/* Cereal Inventory section */}
          <View style={{ paddingHorizontal: 16 }}>
