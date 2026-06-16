@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { InventoryItem } from '../../constants/inventoryData';
 import Colors from '../../constants/colors';
 import { useRouter } from 'expo-router';
@@ -9,9 +10,6 @@ type StockItemCardProps = {
 };
 
 export default function StockItemCard({ item }: StockItemCardProps) {
-  // Calculate progress bar width
-  const maxStock = item.lowStockThreshold * 4;
-  const progressWidth = Math.min((item.currentStock / maxStock) * 100, 100);
   const router = useRouter();
 
   const handlePress = () => {
@@ -21,33 +19,70 @@ export default function StockItemCard({ item }: StockItemCardProps) {
     });
   };
 
+  // Determine badge text and colors
+  let badgeText = 'Moderate';
+  let bgColor = Colors.secondaryFixed;
+  let textColor = Colors.onSecondaryFixed;
+
+  if (item.isLowStock) {
+    badgeText = 'Low Stock';
+    bgColor = '#fef2f2';
+    textColor = '#dc2626';
+  } else if (item.currentStock > item.lowStockThreshold * 4) {
+    badgeText = 'Full Stock';
+    bgColor = Colors.tertiaryFixed;
+    textColor = Colors.onTertiaryFixedVariant;
+  } else if (item.currentStock > item.lowStockThreshold * 2) {
+    badgeText = 'In Stock';
+    bgColor = Colors.tertiaryFixed;
+    textColor = Colors.onTertiaryFixedVariant;
+  }
+
+  const iconName = item.icon || 'grain';
+
   return (
     <TouchableOpacity activeOpacity={0.8} onPress={handlePress}>
       <View style={styles.card}>
-        {/* Row 1: Product name and low stock badge */}
-        <View style={styles.row}>
-          <Text style={styles.productName}>{item.name}</Text>
-          {item.isLowStock && (
-            <View style={styles.lowStockBadge}>
-              <Text style={styles.badgeText}>Low Stock</Text>
+        {/* Row 1: top row */}
+        <View style={styles.topRow}>
+          {/* Left side */}
+          <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+            <View style={styles.iconBox}>
+              <MaterialIcons name={iconName} size={24} color={Colors.onPrimaryFixed} />
             </View>
-          )}
+            <View style={{ flex: 1, marginLeft: 12 }}>
+              <Text style={styles.productName}>{item.name}</Text>
+              {item.description && (
+                <Text style={styles.description}>{item.description}</Text>
+              )}
+            </View>
+          </View>
+
+          {/* Right side - badge */}
+          <View style={[styles.badge, { backgroundColor: bgColor }]}>
+            <Text style={[styles.badgeText, { color: textColor }]}>
+              {badgeText}
+            </Text>
+          </View>
         </View>
 
-        {/* Row 2: Current stock and unit */}
-        <Text style={styles.stockInfo}>{item.currentStock} {item.buyingUnit} in stock</Text>
-        <Text style={{ fontSize: 13, color: Colors.onSurfaceVariant, opacity: 0.8 }}>
-          ≈ {Math.floor(item.currentStock / item.conversionRate)} {item.sellingUnit} available
-        </Text>
+        {/* Row 2: stock and price row */}
+        <View style={styles.stockPriceRow}>
+          {/* Left */}
+          <View>
+            <Text style={styles.label}>Current Stock</Text>
+            <Text style={styles.stockValue}>
+              {item.currentStock} {item.buyingUnit}
+            </Text>
+          </View>
 
-        {/* Row 3: Progress bar */}
-        <View style={styles.progressContainer}>
-          <View 
-            style={[styles.progressBar, { 
-              width: `${progressWidth}%`,
-              backgroundColor: item.isLowStock ? '#ef4444' : Colors.primary 
-            }]}
-          />
+          {/* Right */}
+          <View>
+            <Text style={styles.label}>Price/unit</Text>
+            <Text style={styles.priceValue}>
+              KES {item.fractionPrices[3]?.price ?? '—'}
+            </Text>
+          </View>
         </View>
       </View>
     </TouchableOpacity>
@@ -57,7 +92,7 @@ export default function StockItemCard({ item }: StockItemCardProps) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#ffffff',
-    borderRadius: 8, // rounded-xl in tailwind is 8px
+    borderRadius: 12, // rounded-xl
     marginHorizontal: 16,
     marginBottom: 10,
     padding: 16,
@@ -67,40 +102,60 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2,
   },
-  row: {
+  topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  iconBox: {
+    width: 48,
+    height: 48,
+    backgroundColor: Colors.primaryFixed,
+    borderRadius: 12, // rounded-xl
+    justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 12,
   },
   productName: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
     color: Colors.onSurface,
-    flex: 1,
   },
-  lowStockBadge: {
-    backgroundColor: '#fef2f2',
-    borderRadius: 9999, // rounded-full
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+  description: {
+    fontSize: 13,
+    color: Colors.onSurfaceVariant,
+    marginTop: 2,
+  },
+  badge: {
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   badgeText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#dc2626',
   },
-  stockInfo: {
-    fontSize: 14,
+  stockPriceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12,
+  },
+  label: {
+    fontSize: 12,
     color: Colors.onSurfaceVariant,
-    marginTop: 6,
   },
-  progressContainer: {
-    marginTop: 8,
+  stockValue: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: Colors.primary,
+    marginTop: 2,
   },
-  progressBar: {
-    backgroundColor: '#e5e7eb',
-    borderRadius: 4,
-    height: 4,
-    overflow: 'hidden',
+  priceValue: {
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'right',
+    marginTop: 2,
   },
 });
