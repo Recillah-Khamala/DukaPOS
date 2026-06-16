@@ -231,7 +231,7 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
                   <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
                     Product Icon
                   </Text>
-                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
                     {[
                       'grass',
                       'grain',
@@ -241,24 +241,24 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
                       'category',
                       'inventory_2'
                     ] as const}.map((iconName) => (
-                      <TouchableWithoutFeedback key={iconName} onPress={() => setSelectedIcon(iconName)}>
-                        <View
-                          style={{
-                            width: 44,
-                            height: 44,
-                            borderRadius: 12,
-                            borderWidth: 1.5,
-                            borderColor: selectedIcon === iconName ? Colors.primary : '#e5e7eb',
-                            backgroundColor: selectedIcon === iconName ? Colors.primaryFixed : '#f3f4f6',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                          }}
-                        >
-                          <MaterialIcons name={iconName} size={24} color={selectedIcon === iconName ? Colors.primaryFixed : Colors.onSurfaceVariant} />
-                        </View>
-                      </TouchableWithoutFeedback>
+                        <TouchableWithoutFeedback key={iconName} onPress={() => setSelectedIcon(iconName)}>
+                            <View
+                                style={{
+                                    width: 44,
+                                    height: 44,
+                                    borderRadius: 12,
+                                    borderWidth: 1.5,
+                                    borderColor: selectedIcon === iconName ? Colors.primary : '#e5e7eb',
+                                    backgroundColor: selectedIcon === iconName ? Colors.primaryFixed : '#f3f4f6',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <MaterialIcons name={iconName} size={24} color={selectedIcon === iconName ? Colors.primaryFixed : Colors.onSurfaceVariant} />
+                            </View>
+                        </TouchableWithoutFeedback>
                     ))}
-                  </View>
+                </View>
                 </View>
 
                {/* Category Selector */}
