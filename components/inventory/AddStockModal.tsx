@@ -226,11 +226,11 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
                  />
                </View>
 
-               {/* Icon selector */}
-               <View style={{ marginTop: 16 }}>
-                 <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
-                   Product Icon
-                 </Text>
+                {/* Icon selector */}
+                <View style={{ marginTop: 16 }}>
+                  <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
+                    Product Icon
+                  </Text>
                   <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
                     {[
                       'grass',
@@ -259,7 +259,7 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
                       </TouchableWithoutFeedback>
                     ))}
                   </View>
-               </View>
+                </View>
 
                {/* Category Selector */}
                <View style={{ marginTop: 16 }}>
