@@ -38,15 +38,14 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
     }).start();
   }, [visible, animatedValue]);
 
-   const isProductNameEmpty = !productName.trim();
-   const isQuantityEmpty = !quantity.trim();
-   const isPrice18Empty = !price18.trim();
-   const isPrice14Empty = !price14.trim();
-   const isPrice12Empty = !price12.trim();
-   const isPrice1Empty = !price1.trim();
-   const isLowStockThresholdEmpty = !lowStockThreshold.trim();
-   const isConversionRateEmpty = !conversionRate.trim();
-   const isAnyRequiredEmpty = isProductNameEmpty || isQuantityEmpty || isPrice18Empty || isPrice14Empty || isPrice12Empty || isPrice1Empty || isLowStockThresholdEmpty || isConversionRateEmpty;
+    const isProductNameEmpty = !productName.trim();
+    const isQuantityEmpty = !quantity.trim();
+    const isPrice18Empty = !price18.trim();
+    const isPrice14Empty = !price14.trim();
+    const isPrice12Empty = !price12.trim();
+    const isPrice1Empty = !price1.trim();
+    const isLowStockThresholdEmpty = !lowStockThreshold.trim();
+    const isAnyRequiredEmpty = isProductNameEmpty || isQuantityEmpty || isPrice18Empty || isPrice14Empty || isPrice12Empty || isPrice1Empty || isLowStockThresholdEmpty;
   const isDisabled = isAnyRequiredEmpty || Object.keys(errors).length > 0;
 
   const validate = () => {
@@ -73,15 +72,10 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
       }
     });
 
-     const thresholdNum = Number(lowStockThreshold);
-     if (!lowStockThreshold || isNaN(thresholdNum) || thresholdNum <= 0) {
-       newErrors.lowStockThreshold = 'Must be a positive number';
-     }
-     
-     const conversionRateNum = Number(conversionRate);
-     if (!conversionRate || isNaN(conversionRateNum) || conversionRateNum <= 0) {
-       newErrors.conversionRate = 'Must be a positive number';
-     }
+      const thresholdNum = Number(lowStockThreshold);
+      if (!lowStockThreshold || isNaN(thresholdNum) || thresholdNum <= 0) {
+        newErrors.lowStockThreshold = 'Must be a positive number';
+      }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -95,7 +89,7 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
           currentStock: parseFloat(quantity),
           buyingUnit: buyingUnit,
            sellingUnit: sellingUnit,
-          conversionRate: parseFloat(conversionRate),
+           conversionRate: parseFloat(conversionRate) || 1,
           lowStockThreshold: parseFloat(lowStockThreshold),
           isLowStock: parseFloat(quantity) <= parseFloat(lowStockThreshold),
           category: selectedCategory.toLowerCase() as 'cereal' | 'poshomill',
@@ -336,11 +330,11 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
                   <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>
                     Conversion Rate
                   </Text>
-                  <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant, marginBottom: 8 }}>
-                    1 {sellingUnit} = how many {buyingUnit}?
-                  </Text>
+                   <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant, marginBottom: 8 }}>
+                     How many {sellingUnit} do you get from 1 {buyingUnit}?
+                   </Text>
                   <TextInput
-                    placeholder="e.g. 2"
+                     placeholder="e.g. 36.5"
                     placeholderTextColor="#9ca3af"
                     keyboardType="numeric"
                     style={{
@@ -360,10 +354,13 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
                     onFocus={() => setConversionRateFocused(true)}
                     onBlur={() => setConversionRateFocused(false)}
                   />
-                  {errors.conversionRate && (
-                    <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>{errors.conversionRate}</Text>
-                  )}
-                </View>
+                   {errors.conversionRate && (
+                     <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>{errors.conversionRate}</Text>
+                   )}
+                   <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant, marginTop: 4 }}>
+                     Optional — you can update this later after measuring
+                   </Text>
+                 </View>
                 
                 {/* Fraction Prices */}
               <View style={{ marginTop: 16 }}>
