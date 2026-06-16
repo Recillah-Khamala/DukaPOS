@@ -19,22 +19,32 @@ export default function InventoryScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
-      {/* Top App Bar */}
-      <View style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        paddingTop: 48,
-        paddingBottom: 12,
-        backgroundColor: Colors.primary,
-      }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}>
-          <MaterialIcons name="inventory" size={24} color="white" />
-          <Text style={{ fontSize: 18, fontWeight: '600', color: 'white' }}>Inventory Management</Text>
-        </View>
-        <MaterialIcons name="search" size={24} color="white" />
-      </View>
+       {/* Top App Bar */}
+       <View style={{
+         flexDirection: 'row',
+         alignItems: 'center',
+         justifyContent: 'space-between',
+         paddingHorizontal: 16,
+         paddingTop: 48,
+         paddingBottom: 12,
+         backgroundColor: Colors.primary,
+       }}>
+         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}>
+           <MaterialIcons name="inventory" size={24} color="white" />
+           <Text style={{ fontSize: 18, fontWeight: '600', color: 'white' }}>Inventory Management</Text>
+         </View>
+         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+           <View style={{ backgroundColor: Colors.primaryFixed, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 3 }}>
+             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+               <MaterialIcons name="inventory" size={14} color={Colors.primary} />
+               <Text style={{ fontSize: 11, fontWeight: '600', color: Colors.primary }}>
+                 {allItems.length} Items Total
+               </Text>
+             </View>
+           </View>
+           <MaterialIcons name="search" size={24} color="white" />
+         </View>
+       </View>
 
       <ScrollView
         style={{ flex: 1 }}
