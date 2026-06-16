@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, View, ScrollView, Pressable } from 'react-native';
+import { Text, View, ScrollView, Pressable, TouchableOpacity } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
@@ -103,33 +103,21 @@ export default function InventoryScreen() {
             </ScrollView>
           </>
         )}
-        {/* Cereal Inventory section */}
-        <View style={{ paddingHorizontal: 16 }}>
-          {/* Section heading */}
-          <View style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginTop: 20,
-            marginBottom: 12,
-          }}>
-            <Text style={{ fontSize: 18, fontWeight: '600', color: Colors.primary }}>
-              Cereal Inventory
-            </Text>
-            <View style={{
-              backgroundColor: Colors.primary,
-              borderRadius: 20,
-              paddingHorizontal: 14,
-              paddingVertical: 6,
-            }}>
-               <Text
-                 style={{ fontSize: 13, fontWeight: '600', color: Colors.onPrimary }}
-                 onPress={() => setShowAddStock(true)}
-               >
-                + Add Stock
-              </Text>
-            </View>
-          </View>
+         {/* Cereal Inventory section */}
+         <View style={{ paddingHorizontal: 16 }}>
+           <Text style={{ fontSize: 18, fontWeight: '600', color: Colors.primary }}>
+             Cereal Inventory
+           </Text>
+           <View style={{ flexDirection: 'row', gap: 12, marginTop: 16, marginBottom: 12 }}>
+             <TouchableOpacity style={{ flex: 1, backgroundColor: Colors.primary, borderRadius: 12, height: 56, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 8 }} onPress={() => setShowAddStock(true)}>
+               <MaterialIcons name="add_circle" size={20} color="white" />
+               <Text style={{ color: 'white', fontWeight: '600' }}>Add Stock</Text>
+             </TouchableOpacity>
+             <TouchableOpacity style={{ flex: 1, backgroundColor: Colors.secondaryContainer, borderRadius: 12, height: 56, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 8 }} onPress={() => console.log('Update Prices pressed')}>
+               <MaterialIcons name="edit_square" size={20} color={Colors.onSecondaryContainer} />
+               <Text style={{ color: Colors.onSecondaryContainer, fontWeight: '600' }}>Update Prices</Text>
+             </TouchableOpacity>
+           </View>
 
            {/* Inventory list or empty state */}
             {allItems.length === 0 ? (
