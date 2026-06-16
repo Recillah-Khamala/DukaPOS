@@ -240,7 +240,7 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
                      'rice_bowl',
                      'category',
                      'inventory_2'
-                   ] as const}.map((iconName) => (
+                    ] as const).map((iconName) => (
                      <TouchableWithoutFeedback key={iconName} onPress={() => setSelectedIcon(iconName)}>
                        <View
                          style={{
