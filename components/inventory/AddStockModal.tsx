@@ -181,48 +181,50 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
             {errors.productName && <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>{errors.productName}</Text>}
           </View>
 
-          {/* Description */}
-          <View style={{ marginTop: 16 }}>
-            <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>Description</Text>
-            <TextInput
-              placeholder="e.g. Yellow - Dry Shell"
-              placeholderTextColor="#9ca3af"
-              style={{ borderWidth: 1.5, borderColor: descriptionFocused ? Colors.primary : '#e5e7eb', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: Colors.onSurface }}
-              value={description}
-              onChangeText={setDescription}
-              onFocus={() => setDescriptionFocused(true)}
-              onBlur={() => setDescriptionFocused(false)}
-            />
-          </View>
+           {/* Description */}
+           <View style={{ marginTop: 16 }}>
+             <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>Description</Text>
+             <TextInput
+               placeholder="e.g. Yellow - Dry Shell"
+               placeholderTextColor="#9ca3af"
+               style={{ borderWidth: 1.5, borderColor: descriptionFocused ? Colors.primary : '#e5e7eb', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: Colors.onSurface }}
+               value={description}
+               onChangeText={setDescription}
+               onFocus={() => setDescriptionFocused(true)}
+               onBlur={() => setDescriptionFocused(false)}
+             />
+           </View>
 
-          {/* Icon Selector */}
-          <View style={{ marginTop: 16 }}>
-            <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>Product Icon</Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-              {ICON_OPTIONS.map((iconName) => (
-                <TouchableOpacity key={iconName} onPress={() => setSelectedIcon(iconName)}>
-                  <View
-                    style={{
-                      width: 44,
-                      height: 44,
-                      borderRadius: 12,
-                      borderWidth: 1.5,
-                      borderColor: selectedIcon === iconName ? Colors.primary : '#e5e7eb',
-                      backgroundColor: selectedIcon === iconName ? Colors.primaryFixed : '#f3f4f6',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <MaterialIcons
-                      name={iconName}
-                      size={24}
-                      color={selectedIcon === iconName ? Colors.primary : Colors.onSurfaceVariant}
-                    />
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
+           {/* Icon Selector */}
+           <View style={{ marginTop: 16 }}>
+             <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>Product Icon</Text>
+             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingBottom: 8 }}>
+               <View style={{ flexDirection: 'row', gap: 8 }}>
+                 {ICON_OPTIONS.map((iconName) => (
+                   <TouchableOpacity key={iconName} onPress={() => setSelectedIcon(iconName)}>
+                     <View
+                       style={{
+                         width: 44,
+                         height: 44,
+                         borderRadius: 12,
+                         borderWidth: 1.5,
+                         borderColor: selectedIcon === iconName ? Colors.primary : '#e5e7eb',
+                         backgroundColor: selectedIcon === iconName ? Colors.primaryFixed : '#f3f4f6',
+                         justifyContent: 'center',
+                         alignItems: 'center',
+                       }}
+                     >
+                       <MaterialIcons
+                         name={iconName}
+                         size={24}
+                         color={selectedIcon === iconName ? Colors.primary : Colors.onSurfaceVariant}
+                       />
+                     </View>
+                   </TouchableOpacity>
+                 ))}
+               </View>
+             </ScrollView>
+           </View>
 
           {/* Category */}
           <View style={{ marginTop: 16 }}>
