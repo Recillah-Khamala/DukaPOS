@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import type { ComponentProps } from 'react';
 import { InventoryItem } from '../../constants/inventoryData';
 import Colors from '../../constants/colors';
 import { useRouter } from 'expo-router';
@@ -8,6 +9,8 @@ import { useRouter } from 'expo-router';
 type StockItemCardProps = {
   item: InventoryItem;
 };
+
+type MaterialIconName = ComponentProps<typeof MaterialIcons>['name'];
 
 export default function StockItemCard({ item }: StockItemCardProps) {
   const router = useRouter();
@@ -21,8 +24,8 @@ export default function StockItemCard({ item }: StockItemCardProps) {
 
   // Determine badge text and colors
   let badgeText = 'Moderate';
-  let bgColor = Colors.secondaryFixed;
-  let textColor = Colors.onSecondaryFixed;
+  let bgColor = '#fffbeb';
+  let textColor = '#b45309';
 
   if (item.isLowStock) {
     badgeText = 'Low Stock';
@@ -30,15 +33,15 @@ export default function StockItemCard({ item }: StockItemCardProps) {
     textColor = '#dc2626';
   } else if (item.currentStock > item.lowStockThreshold * 4) {
     badgeText = 'Full Stock';
-    bgColor = Colors.tertiaryFixed;
-    textColor = Colors.onTertiaryFixedVariant;
+    bgColor = '#ecfdf5';
+    textColor = '#047857';
   } else if (item.currentStock > item.lowStockThreshold * 2) {
     badgeText = 'In Stock';
-    bgColor = Colors.tertiaryFixed;
-    textColor = Colors.onTertiaryFixedVariant;
+    bgColor = '#ecfdf5';
+    textColor = '#047857';
   }
 
-  const iconName = item.icon || 'grain';
+  const iconName = (item.icon || 'grain') as MaterialIconName;
 
   return (
     <TouchableOpacity activeOpacity={0.8} onPress={handlePress}>
@@ -46,9 +49,9 @@ export default function StockItemCard({ item }: StockItemCardProps) {
         {/* Row 1: top row */}
         <View style={styles.topRow}>
           {/* Left side */}
-          <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'flex-start', flex: 1 }}>
             <View style={styles.iconBox}>
-              <MaterialIcons name={iconName} size={24} color={Colors.onPrimaryFixed} />
+              <MaterialIcons name={iconName} size={24} color={Colors.primary} />
             </View>
             <View style={{ flex: 1, marginLeft: 12 }}>
               <Text style={styles.productName}>{item.name}</Text>
@@ -79,7 +82,7 @@ export default function StockItemCard({ item }: StockItemCardProps) {
           {/* Right */}
           <View>
             <Text style={styles.label}>Price/unit</Text>
-            <Text style={styles.priceValue}>
+            <Text style={[styles.priceValue, { color: Colors.onSurface }]}>
               KES {item.fractionPrices[3]?.price ?? '—'}
             </Text>
           </View>
@@ -92,7 +95,7 @@ export default function StockItemCard({ item }: StockItemCardProps) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#ffffff',
-    borderRadius: 12, // rounded-xl
+    borderRadius: 12,
     marginHorizontal: 16,
     marginBottom: 10,
     padding: 16,
@@ -111,7 +114,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     backgroundColor: Colors.primaryFixed,
-    borderRadius: 12, // rounded-xl
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
