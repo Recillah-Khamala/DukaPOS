@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, ScrollView, Pressable, Animated } from 'react-native';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import AdjustItemModal from '../../components/sales/AdjustItemModal';
@@ -21,7 +21,6 @@ export default function SalesScreen() {
   const [bannerTotal, setBannerTotal] = useState('');
   const [showBanner, setShowBanner] = useState(false);
   const bannerAnim = useRef(new Animated.Value(-48)).current;
-  const { items, total } = useSharedBasket();
 
   useEffect(() => {
     if (params.saleSuccess === 'true') {
