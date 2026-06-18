@@ -108,7 +108,7 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
          description: description.trim() || undefined,
          icon: selectedIcon,
           buyingPrice: parseFloat(buyingPrice) || undefined,
-         category: selectedCategory.toLowerCase() as 'cereal' | 'poshomill',
+          category: selectedCategory.toLowerCase() as 'cereal' | 'poshomill' | 'bags',
          currentStock: parseFloat(quantity),
          buyingUnit,
          sellingUnit,
