@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { InventoryItem } from '../../constants/inventoryData';
 import Colors from '../../constants/colors';
 import { useRouter } from 'expo-router';

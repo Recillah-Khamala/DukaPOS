@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet, Pressable, TextInput } from 'react-native';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useInventory } from '../../context/InventoryContext';
 import Colors from '../../constants/colors';
@@ -343,9 +343,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   editSaveButtonText: {
-    color: Colors.onPrimary,
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
+    color: Colors.onPrimary,
   },
 });
