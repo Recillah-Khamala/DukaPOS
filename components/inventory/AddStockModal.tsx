@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Modal, TouchableWithoutFeedback, TouchableOpacity, View, Text, Animated, Easing, TextInput, ScrollView, Dimensions } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Colors from '../../constants/colors';
-import type { InventoryItem } from '../../constants/inventoryData';
+import type { InventoryItem } from '../../types/index';
 import { useInventory } from '../../context/InventoryContext';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -25,6 +25,7 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
   const [price12, setPrice12] = useState('');
   const [price1, setPrice1] = useState('');
   const [lowStockThreshold, setLowStockThreshold] = useState('');
+  const [buyingPrice, setBuyingPrice] = useState('');
 
   const [productNameFocused, setProductNameFocused] = useState(false);
   const [descriptionFocused, setDescriptionFocused] = useState(false);
@@ -35,6 +36,7 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
   const [price12Focused, setPrice12Focused] = useState(false);
   const [price1Focused, setPrice1Focused] = useState(false);
   const [lowStockThresholdFocused, setLowStockThresholdFocused] = useState(false);
+  const [buyingPriceFocused, setBuyingPriceFocused] = useState(false);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const animatedValue = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
@@ -92,7 +94,9 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
     setPrice14('');
     setPrice12('');
     setPrice1('');
-    setLowStockThreshold('');
+     setLowStockThreshold('');
+     setBuyingPrice('');
+     setBuyingPriceFocused(false);
     setErrors({});
   };
 
@@ -103,7 +107,8 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
         name: productName.trim(),
         description: description.trim() || undefined,
         icon: selectedIcon,
-        category: selectedCategory.toLowerCase() as 'cereal' | 'poshomill',
+         buyingPrice: parseFloat(buyingPrice) || undefined,
+         category: selectedCategory.toLowerCase() as 'cereal' | 'poshomill',
         currentStock: parseFloat(quantity),
         buyingUnit,
         sellingUnit,
@@ -306,7 +311,32 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
             </Text>
           </View>
 
-          {/* Fraction Prices */}
+           {/* Buying Price (Cost) */}
+           <View style={{ marginTop: 16 }}>
+             <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>Buying Price (Cost)</Text>
+             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+               <Text style={{ fontSize: 14, fontWeight: '600', color: Colors.onSurfaceVariant, marginRight: 8 }}>KES</Text>
+               <TextInput
+                 placeholder="0"
+                 placeholderTextColor="#9ca3af"
+                 keyboardType="numeric"
+                 style={{ borderWidth: 1.5, borderColor: buyingPriceFocused ? Colors.primary : '#e5e7eb', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: Colors.onSurface, flex: 1 }}
+                 value={buyingPrice}
+                 onChangeText={text => { setBuyingPrice(text); setErrors(prev => { const e = { ...prev }; delete e.buyingPrice; return e; }); }}
+                 onFocus={() => setBuyingPriceFocused(true)}
+                 onBlur={() => setBuyingPriceFocused(false)}
+               />
+             </View>
+             {buyingPrice && price1 ? (
+               <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+                 <MaterialIcons name="trending_up" size={14} color={parseFloat(price1) - parseFloat(buyingPrice) >= 0 ? '#16a34a' : '#dc2626'} />
+                 <Text style={{ fontSize: 12, marginLeft: 6, color: parseFloat(price1) - parseFloat(buyingPrice) >= 0 ? '#16a34a' : '#dc2626' }}>
+                   Profit Margin: KES {(parseFloat(price1) - parseFloat(buyingPrice)).toFixed(2)} per unit
+                 </Text>
+               </View>
+             ) : null}
+           </View>
+           {/* Fraction Prices */}
           <View style={{ marginTop: 16 }}>
             <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 8 }}>Prices by Quantity</Text>
             <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant, marginBottom: 12 }}>Prices don't have to be proportional</Text>
