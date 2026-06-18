@@ -15,7 +15,7 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
   const [selectedIcon, setSelectedIcon] = useState<IconOption>('grain');
-  const [selectedCategory, setSelectedCategory] = useState<'Cereal' | 'Poshomill Service'>('Cereal');
+   const [selectedCategory, setSelectedCategory] = useState<'Cereal' | 'Poshomill Service' | 'Bags'>('Cereal');
   const [quantity, setQuantity] = useState('');
   const [buyingUnit, setBuyingUnit] = useState<'kg' | 'g' | 'sack' | 'piece'>('kg');
   const [sellingUnit, setSellingUnit] = useState<'Korokoro' | 'kg' | 'g' | 'piece'>('Korokoro');
@@ -234,15 +234,15 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
           {/* Category */}
           <View style={{ marginTop: 16 }}>
             <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>Category</Text>
-            <View style={{ flexDirection: 'row', gap: 8 }}>
-              {(['Cereal', 'Poshomill Service'] as const).map((category) => (
-                <TouchableOpacity key={category} onPress={() => setSelectedCategory(category)}>
-                  <View style={{ borderRadius: 20, paddingHorizontal: 16, paddingVertical: 8, borderWidth: 1.5, backgroundColor: selectedCategory === category ? Colors.primaryFixed : '#f3f4f6', borderColor: selectedCategory === category ? Colors.primary : '#e5e7eb' }}>
-                    <Text style={{ fontSize: 14, color: selectedCategory === category ? Colors.primary : Colors.onSurfaceVariant, fontWeight: selectedCategory === category ? '700' : '400' }}>{category}</Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </View>
+             <View style={{ flexDirection: 'row', gap: 8 }}>
+               {(['Cereal', 'Poshomill Service', 'Bags'] as const).map((category) => (
+                 <TouchableOpacity key={category} onPress={() => setSelectedCategory(category)}>
+                   <View style={{ borderRadius: 20, paddingHorizontal: 16, paddingVertical: 8, borderWidth: 1.5, backgroundColor: selectedCategory === category ? Colors.primaryFixed : '#f3f4f6', borderColor: selectedCategory === category ? Colors.primary : '#e5e7eb' }}>
+                     <Text style={{ fontSize: 14, color: selectedCategory === category ? Colors.primary : Colors.onSurfaceVariant, fontWeight: selectedCategory === category ? '700' : '400' }}>{category}</Text>
+                   </View>
+                 </TouchableOpacity>
+               ))}
+             </View>
           </View>
 
           {/* Current Stock */}

@@ -107,10 +107,35 @@ export default function InventoryScreen() {
                   </Pressable>
                 ))}
               </>
-            )}
-        </View>
-        {/* Content will be added later */}
-       </ScrollView>
+             )}
+         </View>
+         {/* Bags Inventory section */}
+         <View style={{ paddingHorizontal: 16 }}>
+           <Text style={{ fontSize: 18, fontWeight: '600', color: Colors.primary }}>
+             Bags Inventory
+           </Text>
+           {/* Inventory list or empty state for bags */}
+           {allItems.filter(item => item.category === 'bags').length === 0 ? (
+             <View style={{ alignItems: 'center', paddingTop: 48 }}>
+               <MaterialIcons name="inventory" size={48} color="#d1d5db" />
+               <Text style={{ fontSize: 15, color: "#9ca3af", marginTop: 8 }}>
+                 No bag items yet
+               </Text>
+             </View>
+           ) : (
+             <>
+               {allItems
+                 .filter(item => item.category === 'bags')
+                 .map(item => (
+                   <Pressable key={item.id} onPress={() => router.push({ pathname: '/inventory/unit-management', params: { id: item.id } })}>
+                     <StockItemCard item={item} />
+                   </Pressable>
+                 ))}
+             </>
+           )}
+         </View>
+         {/* Content will be added later */}
+        </ScrollView>
 
         <AddStockModal visible={showAddStock} onClose={() => setShowAddStock(false)} />
 

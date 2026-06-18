@@ -85,7 +85,7 @@ export type InventoryItem = {
     conversionRate: number;
     lowStockThreshold: number;
     isLowStock: boolean;
-    category: 'cereal' | 'poshomill';
+    category: 'cereal' | 'poshomill' | 'bags';
     fractionPrices: { label: string; fraction: number; price: number }[];
     description?: string;
     icon?: string;

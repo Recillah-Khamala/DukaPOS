@@ -1,18 +1,57 @@
 import { type CerealProduct } from './salesData';
 export type InventoryItem = {
-   id: string;
-   name: string;
-   currentStock: number;
-   buyingUnit: string;
-   sellingUnit: string;
-   conversionRate: number;
-   lowStockThreshold: number;
-   isLowStock: boolean;
-   category: 'cereal' | 'poshomill';
-   fractionPrices: { label: string; fraction: number; price: number }[];
-   description?: string;
-   icon?: string;
-};
+    id: string;
+    name: string;
+    currentStock: number;
+    buyingUnit: string;
+    sellingUnit: string;
+    conversionRate: number;
+    lowStockThreshold: number;
+    isLowStock: boolean;
+    category: 'cereal' | 'poshomill' | 'bags';
+    fractionPrices: { label: string; fraction: number; price: number }[];
+    description?: string;
+    icon?: string;
+},
+  {
+    id: 'bag-001',
+    name: 'Plastic Bags',
+    description: 'Size: Medium - Heavy Duty',
+    icon: 'shopping_bag',
+    category: 'bags',
+    currentStock: 1200,
+    buyingUnit: 'piece',
+    sellingUnit: 'piece',
+    conversionRate: 1,
+    lowStockThreshold: 200,
+    isLowStock: false,
+    fractionPrices: [
+      { label: '1/8', fraction: 0.125, price: 2 },
+      { label: '1/4', fraction: 0.25, price: 4 },
+      { label: '1/2', fraction: 0.5, price: 8 },
+      { label: '1', fraction: 1, price: 15 },
+    ],
+  },
+  {
+    id: 'bag-002',
+    name: 'Woven Bags',
+    description: 'Size: Large (90kg Capacity)',
+    icon: 'work',
+    category: 'bags',
+    currentStock: 450,
+    buyingUnit: 'piece',
+    sellingUnit: 'piece',
+    conversionRate: 1,
+    lowStockThreshold: 50,
+    isLowStock: false,
+    fractionPrices: [
+      { label: '1/8', fraction: 0.125, price: 8 },
+      { label: '1/4', fraction: 0.25, price: 16 },
+      { label: '1/2', fraction: 0.5, price: 32 },
+      { label: '1', fraction: 1, price: 65 },
+    ],
+  }
+];
 export const INVENTORY_ITEMS: InventoryItem[] = [
 { 
    id: 'c1',
