@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, View, ScrollView, Pressable, TouchableOpacity } from 'react-native';
+import { Text, View, ScrollView, Pressable, TouchableOpacity, Alert } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
@@ -33,17 +33,18 @@ export default function InventoryScreen() {
            <MaterialIcons name="inventory" size={24} color="white" />
            <Text style={{ fontSize: 18, fontWeight: '600', color: 'white' }}>Inventory Management</Text>
          </View>
-         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-           <View style={{ backgroundColor: Colors.primaryFixed, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 3 }}>
-             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-               <MaterialIcons name="inventory" size={14} color={Colors.primary} />
-               <Text style={{ fontSize: 11, fontWeight: '600', color: Colors.primary }}>
-                 {allItems.length} Items Total
-               </Text>
-             </View>
-           </View>
-           <MaterialIcons name="search" size={24} color="white" />
-         </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+            <View style={{ backgroundColor: Colors.primaryFixed, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 3 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <MaterialIcons name="inventory" size={14} color={Colors.primary} />
+                <Text style={{ fontSize: 11, fontWeight: '600', color: Colors.primary }}>
+                  {allItems.length} Items Total
+                </Text>
+              </View>
+            </View>
+            <MaterialIcons name="search" size={24} color="white" />
+            <MaterialIcons name="more_vert" size={24} color="white" onPress={() => Alert.alert('Menu', 'Coming soon')} />
+          </View>
        </View>
 
       <ScrollView
