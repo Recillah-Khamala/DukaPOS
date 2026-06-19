@@ -14,8 +14,14 @@ export default function InventoryScreen() {
   const { allItems } = useInventory();
   const lowStockItems = allItems.filter(item => item.isLowStock);
   const cerealItems = allItems.filter(item => item.category === 'cereal');
-  const bagItems = allItems.filter(item => item.category === 'bags');
   const router = useRouter();
+
+  const handleOverflowMenu = () => {
+    Alert.alert('Inventory Options', undefined, [
+      { text: 'Bulk Quick Add', onPress: () => router.push('/bulk-quick-add') },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
@@ -43,7 +49,7 @@ export default function InventoryScreen() {
             </View>
           </View>
           <MaterialIcons name="search" size={24} color="white" />
-          <MaterialIcons name="more-vert" size={24} color="white" onPress={() => Alert.alert('Menu', 'Coming soon')} />
+          <MaterialIcons name="more-vert" size={24} color="white" onPress={handleOverflowMenu} />
         </View>
       </View>
 
@@ -55,7 +61,6 @@ export default function InventoryScreen() {
         }}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Top section with padding */}
         <View style={{ paddingHorizontal: 16, paddingTop: 16 }}>
           {/* Low Stock Alerts section (conditional) */}
           {lowStockItems.length > 0 && (
@@ -79,27 +84,23 @@ export default function InventoryScreen() {
             </View>
           )}
 
-           {/* Action buttons: Add Stock + Bulk Quick Add + Update Prices */}
-           <View style={{ marginVertical: 16 }}>
-             <View style={{ flexDirection: 'row', gap: 12 }}>
-               <TouchableOpacity style={{ flex: 1, backgroundColor: Colors.primary, borderRadius: 12, height: 56, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 8 }} onPress={() => setShowAddStock(true)}>
-                 <MaterialIcons name="add-circle" size={20} color="white" />
-                 <Text style={{ color: 'white', fontWeight: '600' }}>Add Stock</Text>
-               </TouchableOpacity>
-               <TouchableOpacity style={{ flex: 1, backgroundColor: Colors.secondaryContainer, borderRadius: 12, height: 56, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 8 }} onPress={() => router.push('/bulk-quick-add')}>
-                 <MaterialIcons name="format-list-bulleted" size={20} color={Colors.onSecondaryContainer} />
-                 <Text style={{ color: Colors.onSecondaryContainer, fontWeight: '600' }}>Bulk Quick Add</Text>
-               </TouchableOpacity>
-               <TouchableOpacity style={{ flex: 1, backgroundColor: Colors.secondaryContainer, borderRadius: 12, height: 56, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 8 }} onPress={() => console.log('Update Prices pressed')}>
-                 <MaterialIcons name="edit-square" size={20} color={Colors.onSecondaryContainer} />
-                 <Text style={{ color: Colors.onSecondaryContainer, fontWeight: '600' }}>Update Prices</Text>
-               </TouchableOpacity>
-             </View>
-           </View>
+          {/* Quick actions: Add Stock + Update Prices — matches Stitch's 2-column grid exactly */}
+          <View style={{ marginVertical: 16 }}>
+            <View style={{ flexDirection: 'row', gap: 12 }}>
+              <TouchableOpacity style={{ flex: 1, backgroundColor: Colors.primary, borderRadius: 12, height: 56, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 8 }} onPress={() => setShowAddStock(true)}>
+                <MaterialIcons name="add-circle" size={20} color="white" />
+                <Text style={{ color: 'white', fontWeight: '600' }}>Add Stock</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{ flex: 1, backgroundColor: Colors.secondaryContainer, borderRadius: 12, height: 56, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 8 }} onPress={() => console.log('Update Prices pressed')}>
+                <MaterialIcons name="edit-square" size={20} color={Colors.onSecondaryContainer} />
+                <Text style={{ color: Colors.onSecondaryContainer, fontWeight: '600' }}>Update Prices</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
 
-        {/* Cereal Inventory section */}
-        <View style={{ paddingHorizontal: 16 }}>
+        {/* Cereal Inventory list — single section, matching Stitch */}
+        <View style={{ paddingHorizontal: 16, marginTop: 24 }}>
           <Text style={{ fontSize: 18, fontWeight: '600', color: Colors.onSurface, marginBottom: 12 }}>
             Cereal Inventory
           </Text>
@@ -111,36 +112,11 @@ export default function InventoryScreen() {
               </Text>
             </View>
           ) : (
-            <>
-              {cerealItems.map(item => (
-                <Pressable key={item.id} onPress={() => router.push({ pathname: '/inventory/unit-management', params: { id: item.id } })}>
-                  <StockItemCard item={item} />
-                </Pressable>
-              ))}
-            </>
-          )}
-        </View>
-
-        {/* Bags Inventory section */}
-        <View style={{ marginTop: 24, paddingHorizontal: 16 }}>
-          <Text style={{ fontSize: 18, fontWeight: '600', color: Colors.onSurface, marginBottom: 12 }}>
-            Bags Inventory
-          </Text>
-          {bagItems.length === 0 ? (
-            <View style={{ alignItems: 'center', paddingTop: 48 }}>
-              <MaterialIcons name="inventory" size={48} color="#d1d5db" />
-              <Text style={{ fontSize: 15, color: '#9ca3af', marginTop: 8 }}>
-                No bag items yet
-              </Text>
-            </View>
-          ) : (
-            <>
-              {bagItems.map(item => (
-                <Pressable key={item.id} onPress={() => router.push({ pathname: '/inventory/unit-management', params: { id: item.id } })}>
-                  <StockItemCard item={item} />
-                </Pressable>
-              ))}
-            </>
+            cerealItems.map(item => (
+              <Pressable key={item.id} onPress={() => router.push({ pathname: '/inventory/unit-management', params: { id: item.id } })}>
+                <StockItemCard item={item} />
+              </Pressable>
+            ))
           )}
         </View>
       </ScrollView>
