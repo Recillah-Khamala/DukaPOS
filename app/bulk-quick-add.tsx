@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import TopAppBar from '../components/layout/TopAppBar';
 import BottomNavBar from '../components/layout/BottomNavBar';
-import Colors from '../../constants/colors';
+import Colors from '../constants/colors';
 
 export default function BulkQuickAddScreen() {
   const router = useRouter();
@@ -18,7 +18,7 @@ export default function BulkQuickAddScreen() {
           Bulk Stock Entry
         </Text>
         <Text style={{ fontSize: 14, fontWeight: '400', color: Colors.onSurfaceVariant }}>
-          Enter multiple stock items quickly by scanning or typing.
+          Update inventory levels for new deliveries quickly. Adjust quantities or type values directly.
         </Text>
         {/* Future content will go here */}
       </View>
