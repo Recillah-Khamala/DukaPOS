@@ -11,9 +11,13 @@ import AddStockModal from '../../components/inventory/AddStockModal';
 export default function InventoryScreen() {
   const [bottomNavHeight, setBottomNavHeight] = useState(0);
   const [showAddStock, setShowAddStock] = useState(false);
+  const [activeTab, setActiveTab] = useState('Cereals');
   const { allItems } = useInventory();
   const lowStockItems = allItems.filter(item => item.isLowStock);
   const cerealItems = allItems.filter(item => item.category === 'cereal');
+  const bagItems = allItems.filter(item => item.category === 'bags');
+  const serviceItems = allItems.filter(item => item.category === 'services');
+  const supplementItems = allItems.filter(item => item.category === 'supplements');
   const router = useRouter();
 
   const handleOverflowMenu = () => {
@@ -99,25 +103,76 @@ export default function InventoryScreen() {
           </View>
         </View>
 
-        {/* Cereal Inventory list — single section, matching Stitch */}
         <View style={{ paddingHorizontal: 16, marginTop: 24 }}>
-          <Text style={{ fontSize: 18, fontWeight: '600', color: Colors.onSurface, marginBottom: 12 }}>
-            Cereal Inventory
-          </Text>
-          {cerealItems.length === 0 ? (
-            <View style={{ alignItems: 'center', paddingTop: 48 }}>
-              <MaterialIcons name="inventory" size={48} color="#d1d5db" />
-              <Text style={{ fontSize: 15, color: '#9ca3af', marginTop: 8 }}>
-                No cereal items yet
-              </Text>
-            </View>
-          ) : (
-            cerealItems.map(item => (
-              <Pressable key={item.id} onPress={() => router.push({ pathname: '/inventory/unit-management', params: { id: item.id } })}>
-                <StockItemCard item={item} />
+          {/* Tab row */}
+          <ScrollView horizontal showsHorizontalScrollbar={false} style={{ marginBottom: 16 }}>
+            {['Cereals', 'Bags', 'Services', 'Supplements'].map((tab, index) => (
+              <Pressable
+                key={index}
+                onPress={() => setActiveTab(tab)}
+                style={{
+                  backgroundColor: activeTab === tab ? Colors.primary : Colors.secondaryContainer,
+                  borderRadius: 20,
+                  paddingHorizontal: 16,
+                  paddingVertical: 8,
+                  marginRight: index === 3 ? 0 : 12,
+                }}
+              >
+                <Text style={{ 
+                  color: activeTab === tab ? 'white' : Colors.onSecondaryContainer,
+                  fontWeight: '600',
+                }}>
+                  {tab}
+                </Text>
               </Pressable>
-            ))
-          )}
+            ))}
+          </ScrollView>
+
+          {/* Section title and items */}
+          {(() => {
+            let title, items;
+            switch (activeTab) {
+              case 'Cereals':
+                title = 'Cereal Inventory';
+                items = cerealItems;
+                break;
+              case 'Bags':
+                title = 'Bags Inventory';
+                items = bagItems;
+                break;
+              case 'Services':
+                title = 'Services Inventory';
+                items = serviceItems;
+                break;
+              case 'Supplements':
+                title = 'Supplements Inventory';
+                items = supplementItems;
+                break;
+            }
+            return (
+              <>
+                <Text style={{ fontSize: 18, fontWeight: '600', color: Colors.onSurface, marginBottom: 12 }}>
+                  {title}
+                </Text>
+                {items.length === 0 ? (
+                  <View style={{ alignItems: 'center', paddingTop: 48 }}>
+                    <MaterialIcons name="inventory" size={48} color="#d1d5db" />
+                    <Text style={{ fontSize: 15, color: '#9ca3af', marginTop: 8 }}>
+                      No {title.toLowerCase()} items yet
+                    </Text>
+                  </View>
+                ) : (
+                  <>
+                    {items.map(item => (
+                      <Pressable key={item.id} onPress={() => router.push({ pathname: '/inventory/unit-management', params: { id: item.id } })}>
+                        <StockItemCard item={item} />
+                      </Pressable>
+                    ))}
+                  </>
+                )}
+              </>
+            );
+          })()}
         </View>
       </ScrollView>
 
