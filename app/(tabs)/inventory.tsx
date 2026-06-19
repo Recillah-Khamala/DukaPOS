@@ -79,19 +79,23 @@ export default function InventoryScreen() {
             </View>
           )}
 
-          {/* Action buttons: Add Stock + Update Prices */}
-          <View style={{ marginVertical: 16 }}>
-            <View style={{ flexDirection: 'row', gap: 12 }}>
-              <TouchableOpacity style={{ flex: 1, backgroundColor: Colors.primary, borderRadius: 12, height: 56, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 8 }} onPress={() => setShowAddStock(true)}>
-                <MaterialIcons name="add-circle" size={20} color="white" />
-                <Text style={{ color: 'white', fontWeight: '600' }}>Add Stock</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={{ flex: 1, backgroundColor: Colors.secondaryContainer, borderRadius: 12, height: 56, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 8 }} onPress={() => console.log('Update Prices pressed')}>
-                <MaterialIcons name="edit-square" size={20} color={Colors.onSecondaryContainer} />
-                <Text style={{ color: Colors.onSecondaryContainer, fontWeight: '600' }}>Update Prices</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+           {/* Action buttons: Add Stock + Bulk Quick Add + Update Prices */}
+           <View style={{ marginVertical: 16 }}>
+             <View style={{ flexDirection: 'row', gap: 12 }}>
+               <TouchableOpacity style={{ flex: 1, backgroundColor: Colors.primary, borderRadius: 12, height: 56, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 8 }} onPress={() => setShowAddStock(true)}>
+                 <MaterialIcons name="add-circle" size={20} color="white" />
+                 <Text style={{ color: 'white', fontWeight: '600' }}>Add Stock</Text>
+               </TouchableOpacity>
+               <TouchableOpacity style={{ flex: 1, backgroundColor: Colors.secondaryContainer, borderRadius: 12, height: 56, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 8 }} onPress={() => router.push('/bulk-quick-add')}>
+                 <MaterialIcons name="format-list-bulleted" size={20} color={Colors.onSecondaryContainer} />
+                 <Text style={{ color: Colors.onSecondaryContainer, fontWeight: '600' }}>Bulk Quick Add</Text>
+               </TouchableOpacity>
+               <TouchableOpacity style={{ flex: 1, backgroundColor: Colors.secondaryContainer, borderRadius: 12, height: 56, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 8 }} onPress={() => console.log('Update Prices pressed')}>
+                 <MaterialIcons name="edit-square" size={20} color={Colors.onSecondaryContainer} />
+                 <Text style={{ color: Colors.onSecondaryContainer, fontWeight: '600' }}>Update Prices</Text>
+               </TouchableOpacity>
+             </View>
+           </View>
         </View>
 
         {/* Cereal Inventory section */}
