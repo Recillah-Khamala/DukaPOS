@@ -11,12 +11,9 @@ import AddStockModal from '../../components/inventory/AddStockModal';
 export default function InventoryScreen() {
   const [bottomNavHeight, setBottomNavHeight] = useState(0);
   const [showAddStock, setShowAddStock] = useState(false);
-  const [activeTab, setActiveTab] = useState('Cereals');
   const { allItems } = useInventory();
   const lowStockItems = allItems.filter(item => item.isLowStock);
   const cerealItems = allItems.filter(item => item.category === 'cereal');
-  const bagItems = allItems.filter(item => item.category === 'bags');
-  const serviceItems = allItems.filter(item => item.category === 'poshomill');
   const router = useRouter();
 
   const handleOverflowMenu = () => {
@@ -28,7 +25,6 @@ export default function InventoryScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
-      {/* Top App Bar */}
       <View style={{
         flexDirection: 'row',
         alignItems: 'center',
@@ -58,14 +54,10 @@ export default function InventoryScreen() {
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{
-          paddingTop: 16,
-          paddingBottom: bottomNavHeight + 24,
-        }}
+        contentContainerStyle={{ paddingTop: 16, paddingBottom: bottomNavHeight + 24 }}
         keyboardShouldPersistTaps="handled"
       >
         <View style={{ paddingHorizontal: 16, paddingTop: 16 }}>
-          {/* Low Stock Alerts section (conditional) */}
           {lowStockItems.length > 0 && (
             <View style={{ backgroundColor: '#fefce8', borderWidth: 1.5, borderColor: '#fbbf24', borderRadius: 16, padding: 12, marginBottom: 8 }}>
               {lowStockItems.map((item, index) => (
@@ -87,7 +79,6 @@ export default function InventoryScreen() {
             </View>
           )}
 
-          {/* Quick actions: Add Stock + Update Prices — matches Stitch's 2-column grid exactly */}
           <View style={{ marginVertical: 16 }}>
             <View style={{ flexDirection: 'row', gap: 12 }}>
               <TouchableOpacity style={{ flex: 1, backgroundColor: Colors.primary, borderRadius: 12, height: 56, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 8 }} onPress={() => setShowAddStock(true)}>
@@ -103,76 +94,27 @@ export default function InventoryScreen() {
         </View>
 
         <View style={{ paddingHorizontal: 16, marginTop: 24 }}>
-          {/* Tab row */}
-          <ScrollView horizontal showsHorizontalScrollbar={false} style={{ marginBottom: 16 }}>
-            {['Cereals', 'Bags', 'Services'].map((tab, index) => (
-              <Pressable
-                key={index}
-                onPress={() => setActiveTab(tab)}
-                style={{
-                  backgroundColor: activeTab === tab ? Colors.primary : Colors.secondaryContainer,
-                  borderRadius: 20,
-                  paddingHorizontal: 16,
-                  paddingVertical: 8,
-                  marginRight: index === 2 ? 0 : 12,
-                }}
-              >
-                <Text style={{ 
-                  color: activeTab === tab ? 'white' : Colors.onSecondaryContainer,
-                  fontWeight: '600',
-                }}>
-                  {tab}
-                </Text>
+          <Text style={{ fontSize: 18, fontWeight: '600', color: Colors.onSurface, marginBottom: 12 }}>
+            Cereal Inventory
+          </Text>
+          {cerealItems.length === 0 ? (
+            <View style={{ alignItems: 'center', paddingTop: 48 }}>
+              <MaterialIcons name="inventory" size={48} color="#d1d5db" />
+              <Text style={{ fontSize: 15, color: '#9ca3af', marginTop: 8 }}>
+                No cereal items yet
+              </Text>
+            </View>
+          ) : (
+            cerealItems.map(item => (
+              <Pressable key={item.id} onPress={() => router.push({ pathname: '/inventory/unit-management', params: { id: item.id } })}>
+                <StockItemCard item={item} />
               </Pressable>
-            ))}
-          </ScrollView>
-
-          {/* Section title and items */}
-          {(() => {
-            let title, items;
-            switch (activeTab) {
-              case 'Cereals':
-                title = 'Cereal Inventory';
-                items = cerealItems;
-                break;
-              case 'Bags':
-                title = 'Bags Inventory';
-                items = bagItems;
-                break;
-              case 'Services':
-                title = 'Services Inventory';
-                items = serviceItems;
-                break;
-            }
-            return (
-              <>
-                <Text style={{ fontSize: 18, fontWeight: '600', color: Colors.onSurface, marginBottom: 12 }}>
-                  {title}
-                </Text>
-                {items.length === 0 ? (
-                  <View style={{ alignItems: 'center', paddingTop: 48 }}>
-                    <MaterialIcons name="inventory" size={48} color="#d1d5db" />
-                    <Text style={{ fontSize: 15, color: '#9ca3af', marginTop: 8 }}>
-                      No {title.toLowerCase()} items yet
-                    </Text>
-                  </View>
-                ) : (
-                  <>
-                    {items.map(item => (
-                      <Pressable key={item.id} onPress={() => router.push({ pathname: '/inventory/unit-management', params: { id: item.id } })}>
-                        <StockItemCard item={item} />
-                      </Pressable>
-                    ))}
-                  </>
-                )}
-              </>
-            );
-          })()}
+            ))
+          )}
         </View>
       </ScrollView>
 
       <AddStockModal visible={showAddStock} onClose={() => setShowAddStock(false)} />
-
       <BottomNavBar activeTab="inventory" onHeightMeasured={setBottomNavHeight} />
     </View>
   );
