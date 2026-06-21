@@ -12,17 +12,20 @@ export interface BulkStockEntryRowProps {
     icon?: string;
     status?: 'High Demand' | 'Low Stock';
   };
+  deliveryAmount: number;
+  onDeliveryAmountChange: (value: number) => void;
 }
 
-export default function BulkStockEntryRow({ product }: BulkStockEntryRowProps) {
-  const [deliveryAmount, setDeliveryAmount] = useState(0);
+export default function BulkStockEntryRow({ product, deliveryAmount, onDeliveryAmountChange }: BulkStockEntryRowProps) {
+  const handleDecrement = () => {
+    const newValue = Math.max(0, deliveryAmount - 1);
+    onDeliveryAmountChange(newValue);
+  };
 
-  useEffect(() => {
-    console.log('Delivery amount:', deliveryAmount);
-  }, [deliveryAmount]);
-
-  const handleIncrement = () => setDeliveryAmount(deliveryAmount + 1);
-  const handleDecrement = () => setDeliveryAmount(Math.max(0, deliveryAmount - 1));
+  const handleIncrement = () => {
+    const newValue = deliveryAmount + 1;
+    onDeliveryAmountChange(newValue);
+  };
 
   return (
     <View className="flex-row items-center py-4 px-6 bg-white rounded-lg shadow-sm mb-3">
@@ -70,7 +73,7 @@ export default function BulkStockEntryRow({ product }: BulkStockEntryRowProps) {
           value={deliveryAmount.toString()}
           onChangeText={(text) => {
             const num = parseInt(text) || 0;
-            setDeliveryAmount(num);
+            onDeliveryAmountChange(num);
           }}
           keyboardType="numeric"
           className="w-16 border border-gray-300 rounded-md px-2 text-center"
