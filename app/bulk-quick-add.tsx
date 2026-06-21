@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import { Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import TopAppBar from '../components/layout/TopAppBar';
 import BottomNavBar from '../components/layout/BottomNavBar';
@@ -50,8 +50,15 @@ export default function BulkQuickAddScreen() {
           });
         }
       });
-      // Optionally reset delivery amounts after save
-      setDeliveryAmounts({});
+      Alert.alert('Success', 'Stock updated', [
+        {
+          text: 'OK',
+          onPress: () => {
+            setDeliveryAmounts({});
+            router.back();
+          },
+        },
+      ]);
     };
 
    return (
@@ -103,14 +110,26 @@ export default function BulkQuickAddScreen() {
           ))}
         </View>
       </View>
-       <View className="flex-row justify-between items-center px-6 py-2 bg-secondaryContainer">
-         <Text className="font-medium text-onSurface">
-           Total Items Updated: {totalUpdated}
-         </Text>
-          <TouchableOpacity onPress={handleSaveAllChanges} className="px-4 py-2 rounded-md" style={{ backgroundColor: Colors.primary }}>
-            <Text className="text-sm font-medium text-white">Save All Changes</Text>
+        <View className="flex-row justify-between items-center px-6 py-2 bg-secondaryContainer">
+          <Text className="font-medium text-onSurface">
+            Total Items Updated: {totalUpdated}
+          </Text>
+          <TouchableOpacity
+            onPress={handleSaveAllChanges}
+            disabled={totalUpdated === 0}
+            className="px-4 py-2 rounded-md"
+            style={{
+              backgroundColor: totalUpdated === 0 ? '#d1d5db' : Colors.primary,
+            }}
+          >
+            <Text
+              className="text-sm font-medium"
+              style={{ color: totalUpdated === 0 ? '#9ca3af' : Colors.onPrimary }}
+            >
+              Save All Changes
+            </Text>
           </TouchableOpacity>
-       </View>
+        </View>
        <BottomNavBar activeTab="inventory" onHeightMeasured={setBottomNavHeight} />
      </View>
    );
