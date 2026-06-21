@@ -114,7 +114,7 @@ export const INVENTORY_ITEMS: InventoryItem[] = [
     id: 'bag-001',
     name: 'Plastic Bags',
     description: 'Size: Medium - Heavy Duty',
-    icon: 'shopping_bag',
+    icon: 'local-mall',
     category: 'bags',
     currentStock: 1200,
     buyingUnit: 'piece',
