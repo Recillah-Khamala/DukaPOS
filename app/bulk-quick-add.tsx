@@ -14,7 +14,7 @@ export default function BulkQuickAddScreen() {
   const [activeTab, setActiveTab] = useState('Cereals');
   const [deliveryAmounts, setDeliveryAmounts] = useState<Record<string, number>>({});
 
-  const { allItems } = useInventory();
+  const { allItems, getItemById, updateItem } = useInventory();
 
   const getFilteredItems = (): InventoryItem[] => {
     switch (activeTab) {
@@ -36,7 +36,23 @@ export default function BulkQuickAddScreen() {
       }));
     };
 
-   const totalUpdated = Object.values(deliveryAmounts).filter(v => v > 0).length;
+    const totalUpdated = Object.values(deliveryAmounts).filter(v => v > 0).length;
+
+    const handleSaveAllChanges = () => {
+      Object.entries(deliveryAmounts).forEach(([itemId, deliveryAmount]) => {
+        if (deliveryAmount > 0) {
+          const item = getItemById(itemId);
+          if (!item) return;
+          const newStock = item.currentStock + deliveryAmount;
+          updateItem(itemId, {
+            currentStock: newStock,
+            isLowStock: newStock <= item.lowStockThreshold,
+          });
+        }
+      });
+      // Optionally reset delivery amounts after save
+      setDeliveryAmounts({});
+    };
 
    return (
     <View className="flex-1 bg-gray-50">
@@ -91,9 +107,9 @@ export default function BulkQuickAddScreen() {
          <Text className="font-medium text-onSurface">
            Total Items Updated: {totalUpdated}
          </Text>
-         <TouchableOpacity onPress={() => console.log('Save all changes', deliveryAmounts)} className="px-4 py-2 rounded-md" style={{ backgroundColor: Colors.primary }}>
-           <Text className="text-sm font-medium text-white">Save All Changes</Text>
-         </TouchableOpacity>
+          <TouchableOpacity onPress={handleSaveAllChanges} className="px-4 py-2 rounded-md" style={{ backgroundColor: Colors.primary }}>
+            <Text className="text-sm font-medium text-white">Save All Changes</Text>
+          </TouchableOpacity>
        </View>
        <BottomNavBar activeTab="inventory" onHeightMeasured={setBottomNavHeight} />
      </View>
