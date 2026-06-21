@@ -4,10 +4,9 @@ import { MaterialIcons } from '@expo/vector-icons';
 import Colors from '../../constants/colors';
 import type { InventoryItem } from '../../types/index';
 import { useInventory } from '../../context/InventoryContext';
-
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-const ICON_OPTIONS = ['grass', 'grain', 'eco', 'potted_plant', 'rice_bowl', 'category', 'inventory_2'] as const;
+const ICON_OPTIONS = ['grass', 'grain', 'eco', 'nature', 'rice-bowl', 'category', 'inventory-2'] as const;
 type IconOption = typeof ICON_OPTIONS[number];
 
 const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
@@ -329,7 +328,7 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
               </View>
               {buyingPrice && price1 ? (
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
-                  <MaterialIcons name="trending_up" size={14} color={parseFloat(price1) - parseFloat(buyingPrice) >= 0 ? '#16a34a' : '#dc2626'} />
+                  <MaterialIcons name="trending-up" size={14} color={parseFloat(price1) - parseFloat(buyingPrice) >= 0 ? '#16a34a' : '#dc2626'} />
                   <Text style={{ fontSize: 12, marginLeft: 6, color: parseFloat(price1) - parseFloat(buyingPrice) >= 0 ? '#16a34a' : '#dc2626' }}>
                     Profit Margin: KES {(parseFloat(price1) - parseFloat(buyingPrice)).toFixed(2)} per unit
                   </Text>
