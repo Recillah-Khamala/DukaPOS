@@ -12,6 +12,7 @@ export default function BulkQuickAddScreen() {
   const router = useRouter();
   const [bottomNavHeight, setBottomNavHeight] = useState(0);
   const [activeTab, setActiveTab] = useState('Cereals');
+  const [deliveryAmounts, setDeliveryAmounts] = useState<Record<string, number>>({});
 
   const { allItems } = useInventory();
 
@@ -26,6 +27,13 @@ export default function BulkQuickAddScreen() {
       default:
         return [];
     }
+  };
+
+  const handleDeliveryAmountChange = (itemId: string, value: number) => {
+    setDeliveryAmounts(prev => ({
+      ...prev,
+      [itemId]: value,
+    }));
   };
 
   return (
@@ -71,6 +79,8 @@ export default function BulkQuickAddScreen() {
                 icon: item.icon ?? 'grain',
                 status: item.isLowStock ? 'Low Stock' : undefined,
               }}
+              deliveryAmount={deliveryAmounts[item.id] ?? 0}
+              onDeliveryAmountChange={(value) => handleDeliveryAmountChange(item.id, value)}
             />
           ))}
         </View>
