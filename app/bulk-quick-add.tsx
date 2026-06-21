@@ -1,4 +1,3 @@
-// app/bulk-quick-add.tsx
 import { useState } from 'react';
 import { Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -6,18 +5,28 @@ import TopAppBar from '../components/layout/TopAppBar';
 import BottomNavBar from '../components/layout/BottomNavBar';
 import Colors from '../constants/colors';
 import BulkStockEntryRow, { BulkStockEntryRowProps } from '../components/inventory/BulkStockEntryRow';
+import { useInventory } from '../context/InventoryContext';
+import { InventoryItem } from '../constants/inventoryData';
 
 export default function BulkQuickAddScreen() {
   const router = useRouter();
   const [bottomNavHeight, setBottomNavHeight] = useState(0);
   const [activeTab, setActiveTab] = useState('Cereals');
 
-  const mockItems: BulkStockEntryRowProps['product'][] = [
-    { id: '1', name: 'Maize Meal', currentStock: 25, icon: 'grass', status: 'Low Stock' },
-    { id: '2', name: 'Wheat Flour', currentStock: 100, icon: 'grain' },
-    { id: '3', name: 'Sugar', currentStock: 50, icon: 'eco', status: 'High Demand' },
-    { id: '4', name: 'Rice', currentStock: 75, icon: 'grain' },
-  ];
+  const { allItems } = useInventory();
+
+  const getFilteredItems = (): InventoryItem[] => {
+    switch (activeTab) {
+      case 'Cereals':
+        return allItems.filter(item => item.category === 'cereal');
+      case 'Bags':
+        return allItems.filter(item => item.category === 'bags');
+      case 'Services':
+        return allItems.filter(item => item.category === 'poshomill');
+      default:
+        return [];
+    }
+  };
 
   return (
     <View className="flex-1 bg-gray-50">
@@ -52,8 +61,17 @@ export default function BulkQuickAddScreen() {
           ))}
         </ScrollView>
         <View className="mt-6">
-          {mockItems.map((item) => (
-            <BulkStockEntryRow key={item.id} product={item} />
+          {getFilteredItems().map((item: InventoryItem) => (
+            <BulkStockEntryRow
+              key={item.id}
+              product={{
+                id: item.id,
+                name: item.name,
+                currentStock: item.currentStock,
+                icon: item.icon ?? 'grain',
+                status: item.isLowStock ? 'Low Stock' : undefined,
+              }}
+            />
           ))}
         </View>
       </View>
