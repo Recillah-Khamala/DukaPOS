@@ -6,6 +6,7 @@ import BottomNavBar from '../../components/layout/BottomNavBar';
 import Colors from '../../constants/colors';
 import { useInventory } from '../../context/InventoryContext';
 import StockItemCard from '../../components/inventory/StockItemCard';
+import BagItemCard from '../../components/inventory/BagItemCard';
 import AddStockModal from '../../components/inventory/AddStockModal';
 
 export default function InventoryScreen() {
@@ -14,6 +15,7 @@ export default function InventoryScreen() {
   const { allItems } = useInventory();
   const lowStockItems = allItems.filter(item => item.isLowStock);
   const cerealItems = allItems.filter(item => item.category === 'cereal');
+  const bagItems = allItems.filter(item => item.category === 'bags');
   const router = useRouter();
 
   const handleOverflowMenu = () => {
@@ -111,8 +113,30 @@ export default function InventoryScreen() {
               </Pressable>
             ))
           )}
-        </View>
-      </ScrollView>
+         </View>
+
+         <View style={{ paddingHorizontal: 16, marginTop: 24 }}>
+           <Text style={{ fontSize: 18, fontWeight: '600', color: Colors.onSurface, marginBottom: 12 }}>
+             Bags Inventory
+           </Text>
+           {bagItems.length === 0 ? (
+             <View style={{ alignItems: 'center', paddingTop: 48 }}>
+               <MaterialIcons name="inventory" size={48} color="#d1d5db" />
+               <Text style={{ fontSize: 15, color: '#9ca3af', marginTop: 8 }}>
+                 No bag items yet
+               </Text>
+             </View>
+           ) : (
+             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+               {bagItems.map(item => (
+                 <Pressable key={item.id} style={{ width: '48%' }} onPress={() => router.push({ pathname: '/inventory/unit-management', params: { id: item.id } })}>
+                   <BagItemCard item={item} />
+                 </Pressable>
+               ))}
+             </View>
+           )}
+         </View>
+       </ScrollView>
 
       <AddStockModal visible={showAddStock} onClose={() => setShowAddStock(false)} />
       <BottomNavBar activeTab="inventory" onHeightMeasured={setBottomNavHeight} />
