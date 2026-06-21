@@ -1,5 +1,6 @@
 // components/inventory/BulkStockEntryRow.tsx
-import { View, Text } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { useState, useEffect } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Colors from '../../constants/colors';
 
@@ -14,6 +15,15 @@ export interface BulkStockEntryRowProps {
 }
 
 export default function BulkStockEntryRow({ product }: BulkStockEntryRowProps) {
+  const [deliveryAmount, setDeliveryAmount] = useState(0);
+
+  useEffect(() => {
+    console.log('Delivery amount:', deliveryAmount);
+  }, [deliveryAmount]);
+
+  const handleIncrement = () => setDeliveryAmount(deliveryAmount + 1);
+  const handleDecrement = () => setDeliveryAmount(Math.max(0, deliveryAmount - 1));
+
   return (
     <View className="flex-row items-center py-4 px-6 bg-white rounded-lg shadow-sm mb-3">
       <View className="w-12 h-12 bg-primary rounded-full items-center justify-center mr-4">
@@ -48,6 +58,32 @@ export default function BulkStockEntryRow({ product }: BulkStockEntryRowProps) {
           </Text>
         </View>
       )}
+      <View className="flex-row items-center space-x-2">
+        <TouchableOpacity
+          onPress={handleDecrement}
+          className="px-2 py-1 rounded-md"
+          style={{ backgroundColor: Colors.secondaryContainer }}
+        >
+          <MaterialIcons name="remove" size={20} color="white" />
+        </TouchableOpacity>
+        <TextInput
+          value={deliveryAmount.toString()}
+          onChangeText={(text) => {
+            const num = parseInt(text) || 0;
+            setDeliveryAmount(num);
+          }}
+          keyboardType="numeric"
+          className="w-16 border border-gray-300 rounded-md px-2 text-center"
+          style={{ textAlign: 'center' }}
+        />
+        <TouchableOpacity
+          onPress={handleIncrement}
+          className="px-2 py-1 rounded-md"
+          style={{ backgroundColor: Colors.secondaryContainer }}
+        >
+          <MaterialIcons name="add" size={20} color="white" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
