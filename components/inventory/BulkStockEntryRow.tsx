@@ -18,7 +18,8 @@ export interface BulkStockEntryRowProps {
 
 export default function BulkStockEntryRow({ product, deliveryAmount, onDeliveryAmountChange }: BulkStockEntryRowProps) {
   const handleDecrement = () => {
-    const newValue = Math.max(0, deliveryAmount - 1);
+    if (deliveryAmount <= 0) return;
+    const newValue = deliveryAmount - 1;
     onDeliveryAmountChange(newValue);
   };
 
@@ -28,7 +29,7 @@ export default function BulkStockEntryRow({ product, deliveryAmount, onDeliveryA
   };
 
   return (
-    <View className="flex-row items-center py-4 px-6 bg-white rounded-lg shadow-sm mb-3">
+    <View className="flex-row items-center py-4 px-6 bg-white rounded-lg shadow-sm mb-3" style={{ opacity: deliveryAmount === 0 ? 0.5 : 1 }}>
       <View className="w-12 h-12 bg-primary rounded-full items-center justify-center mr-4">
         <MaterialIcons name={(product.icon as any) || 'grain'} size={24} color="white" />
       </View>
@@ -64,18 +65,19 @@ export default function BulkStockEntryRow({ product, deliveryAmount, onDeliveryA
       <View className="flex-row items-center space-x-2">
         <TouchableOpacity
           onPress={handleDecrement}
+          disabled={deliveryAmount <= 0}
           className="px-2 py-1 rounded-md"
-          style={{ backgroundColor: Colors.secondaryContainer }}
+          style={{ backgroundColor: deliveryAmount <= 0 ? '#d1d5db' : Colors.secondaryContainer }}
         >
-          <MaterialIcons name="remove" size={20} color="white" />
+          <MaterialIcons name="remove" size={20} color={deliveryAmount <= 0 ? '#9ca3af' : 'white'} />
         </TouchableOpacity>
         <TextInput
           value={deliveryAmount.toString()}
           onChangeText={(text) => {
-            const num = parseInt(text) || 0;
+            const num = parseFloat(text) || 0;
             onDeliveryAmountChange(num);
           }}
-          keyboardType="numeric"
+          keyboardType="decimal-pad"
           className="w-16 border border-gray-300 rounded-md px-2 text-center"
           style={{ textAlign: 'center' }}
         />
