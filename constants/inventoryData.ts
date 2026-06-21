@@ -82,7 +82,7 @@ export const INVENTORY_ITEMS: InventoryItem[] = [
     lowStockThreshold: 40,
     isLowStock: false,
     category: 'cereal',
-    icon: 'potted_plant',
+     icon: 'eco',
     description: 'Grade A - White Sorghum',
     fractionPrices: [
       { label: '1/8', fraction: 0.125, price: 15 },
@@ -133,7 +133,7 @@ export const INVENTORY_ITEMS: InventoryItem[] = [
     id: 'bag-002',
     name: 'Woven Bags',
     description: 'Size: Large (90kg Capacity)',
-    icon: 'work',
+     icon: 'inventory',
     category: 'bags',
     currentStock: 450,
     buyingUnit: 'piece',
