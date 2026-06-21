@@ -29,12 +29,12 @@ export default function BulkQuickAddScreen() {
     }
   };
 
-   const handleDeliveryAmountChange = (itemId: string, value: number) => {
-     setDeliveryAmounts(prev => ({
-       ...prev,
-       [itemId]: value,
-     }));
-   });
+    const handleDeliveryAmountChange = (itemId: string, value: number) => {
+      setDeliveryAmounts(prev => ({
+        ...prev,
+        [itemId]: value,
+      }));
+    };
 
    const totalUpdated = Object.values(deliveryAmounts).filter(v => v > 0).length;
 
