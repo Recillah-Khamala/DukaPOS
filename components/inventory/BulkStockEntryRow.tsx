@@ -19,22 +19,20 @@ export default function BulkStockEntryRow({ product }: BulkStockEntryRowProps) {
       <View className="w-12 h-12 bg-primary rounded-full items-center justify-center mr-4">
         <MaterialIcons name={(product.icon as any) || 'grain'} size={24} color="white" />
       </View>
-
       <View className="flex-1">
         <Text className="font-medium text-onSurface">{product.name}</Text>
         <Text className="text-sm text-onSurfaceVariant">
           Current Stock: {product.currentStock} units
         </Text>
       </View>
-
       {product.status && (
         <View
           className="px-3 py-1 rounded-md"
           style={{
             backgroundColor:
               product.status === 'High Demand'
-                ? Colors.tertiaryFixed
-                : Colors.errorContainer,
+                ? Colors.secondaryContainer
+                : Colors.error,
           }}
         >
           <Text
@@ -42,8 +40,8 @@ export default function BulkStockEntryRow({ product }: BulkStockEntryRowProps) {
             style={{
               color:
                 product.status === 'High Demand'
-                  ? Colors.onTertiaryFixed
-                  : Colors.onErrorContainer,
+                  ? Colors.onSecondaryContainer
+                  : Colors.white,
             }}
           >
             {product.status}
