@@ -29,14 +29,16 @@ export default function BulkQuickAddScreen() {
     }
   };
 
-  const handleDeliveryAmountChange = (itemId: string, value: number) => {
-    setDeliveryAmounts(prev => ({
-      ...prev,
-      [itemId]: value,
-    }));
-  };
+   const handleDeliveryAmountChange = (itemId: string, value: number) => {
+     setDeliveryAmounts(prev => ({
+       ...prev,
+       [itemId]: value,
+     }));
+   });
 
-  return (
+   const totalUpdated = Object.values(deliveryAmounts).filter(v => v > 0).length;
+
+   return (
     <View className="flex-1 bg-gray-50">
       <TopAppBar title="Bulk Quick Add" onBack={() => router.back()} />
       <View className="flex-1 px-6 pt-6">
@@ -85,7 +87,15 @@ export default function BulkQuickAddScreen() {
           ))}
         </View>
       </View>
-      <BottomNavBar activeTab="inventory" onHeightMeasured={setBottomNavHeight} />
-    </View>
-  );
-}
+       <View className="flex-row justify-between items-center px-6 py-2 bg-secondaryContainer">
+         <Text className="font-medium text-onSurface">
+           Total Items Updated: {totalUpdated}
+         </Text>
+         <TouchableOpacity onPress={() => console.log('Save all changes', deliveryAmounts)} className="px-4 py-2 rounded-md" style={{ backgroundColor: Colors.primary }}>
+           <Text className="text-sm font-medium text-white">Save All Changes</Text>
+         </TouchableOpacity>
+       </View>
+       <BottomNavBar activeTab="inventory" onHeightMeasured={setBottomNavHeight} />
+     </View>
+   );
+ }
