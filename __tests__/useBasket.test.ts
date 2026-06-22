@@ -1,4 +1,5 @@
-﻿import { renderHook, act } from '@testing-library/react';
+﻿/// <reference types="jest" />
+import { renderHook, act } from '@testing-library/react';
 import { useBasket } from '../hooks/useBasket';
 
 describe('useBasket', () => {

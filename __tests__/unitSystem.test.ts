@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import { CEREAL_PRODUCTS, POSHOMILL_SERVICES, BAG_PRODUCTS } from '../constants/salesData';
 import type { BagProduct, BasketItem } from '../types';
 import { roundToNearest5, formatUnitQty } from '../utils/formatQuantity';
