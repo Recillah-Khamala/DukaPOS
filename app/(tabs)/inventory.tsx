@@ -18,12 +18,13 @@ export default function InventoryScreen() {
   const bagItems = allItems.filter(item => item.category === 'bags');
   const router = useRouter();
 
-  const handleOverflowMenu = () => {
-    Alert.alert('Inventory Options', undefined, [
-      { text: 'Bulk Quick Add', onPress: () => router.push('/bulk-quick-add') },
-      { text: 'Cancel', style: 'cancel' },
-    ]);
-  };
+   const handleOverflowMenu = () => {
+     Alert.alert('Inventory Options', undefined, [
+       { text: 'Bulk Quick Add', onPress: () => router.push('/bulk-quick-add') },
+       { text: 'Scan Barcode', onPress: () => router.push('/inventory/barcode-scanner') },
+       { text: 'Cancel', style: 'cancel' },
+     ]);
+   };
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
