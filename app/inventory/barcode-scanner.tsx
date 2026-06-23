@@ -1,25 +1,24 @@
-import React from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, Animated } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Camera, useCameraPermissions, CameraType } from 'expo-camera';
-import { Animated } from 'react-native';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import Colors from '../../constants/colors';
 
 export default function BarcodeScannerScreen() {
   const router = useRouter();
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
-  const [hasPermission, setHasPermission] = React.useState(false);
+  const [hasPermission, setHasPermission] = React.useState<boolean | null>(null);
   const [cameraContainerDimensions, setCameraContainerDimensions] = React.useState({ width: 0, height: 0 });
-  const [flashMode, setFlashMode] = React.useState(Camera.FlashMode.off);
-  const scanLinePosition = new Animated.Value(0);
+  const [flashMode, setFlashMode] = React.useState<'off' | 'on'>('off');
+  const scanLinePosition = React.useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     (async () => {
-      const { status } = await requestCameraPermission();
-      setHasPermission(status === 'granted');
+      const result = await requestCameraPermission();
+      setHasPermission(result.granted);
     })();
-  }, [requestCameraPermission]);
+  }, []);
 
   useEffect(() => {
     if (cameraContainerDimensions.width > 0 && cameraContainerDimensions.height > 0) {
@@ -32,22 +31,24 @@ export default function BarcodeScannerScreen() {
         })
       ).start();
     }
-  }, [cameraContainerDimensions.width, cameraContainerDimensions.height, scanLinePosition]);
+  }, [cameraContainerDimensions.width, cameraContainerDimensions.height]);
 
   const handleGoBack = () => {
     router.back();
   };
 
   const toggleFlash = () => {
-    setFlashMode(prev => {
-      const next = prev === Camera.FlashMode.off ? Camera.FlashMode.on : Camera.FlashMode.off;
-      return next;
-    });
+    setFlashMode((prev: 'off' | 'on') => (prev === 'off' ? 'on' : 'off'));
   };
 
   if (hasPermission === null) {
-    return <View style={styles.container}>Requesting camera permission...</View>;
+    return (
+      <View style={styles.container}>
+        <Text style={styles.permissionDeniedText}>Requesting camera permission...</Text>
+      </View>
+    );
   }
+
   if (hasPermission === false) {
     return (
       <View style={styles.container}>
@@ -57,9 +58,7 @@ export default function BarcodeScannerScreen() {
         <View style={styles.permissionDeniedButtonContainer}>
           <Text
             style={styles.permissionDeniedButtonText}
-            onPress={() => {
-              requestCameraPermission();
-            }}
+            onPress={() => requestCameraPermission()}
           >
             Try Again
           </Text>
@@ -68,14 +67,14 @@ export default function BarcodeScannerScreen() {
     );
   }
 
-  // Calculate cutout dimensions if we have cameraContainerDimensions
+  // Calculate cutout dimensions
   let cutoutWidth = 0;
   let cutoutHeight = 0;
   let cutoutLeft = 0;
   let cutoutTop = 0;
   if (cameraContainerDimensions.width > 0 && cameraContainerDimensions.height > 0) {
     cutoutWidth = cameraContainerDimensions.width * 0.8;
-    cutoutHeight = cutoutWidth * 3 / 4;
+    cutoutHeight = (cutoutWidth * 3) / 4;
     cutoutLeft = (cameraContainerDimensions.width - cutoutWidth) / 2;
     cutoutTop = (cameraContainerDimensions.height - cutoutHeight) / 2;
   }
@@ -86,108 +85,100 @@ export default function BarcodeScannerScreen() {
       <View style={styles.header}>
         <MaterialIcons name="arrow-back" size={24} color="white" onPress={handleGoBack} />
         <Text style={styles.headerTitle}>Barcode Scanner</Text>
-        <View style={{ width: 24 }} /> /* Spacer to align back button */
+        <View style={{ width: 24 }} />
       </View>
 
       {/* Camera Viewfinder */}
-      <View 
-        style={[styles.cameraContainer, { position: 'relative' }]} 
+      <View
+        style={styles.cameraContainer}
         onLayout={e => {
           const { width, height } = e.nativeEvent.layout;
           setCameraContainerDimensions({ width, height });
         }}
       >
-        <Camera
+        <CameraView
           style={StyleSheet.absoluteFillObject}
-          type={CameraType.back}
-          isActive={true}
-          flashMode={flashMode}
+          facing="back"
+          flash={flashMode}
         />
-        {/* Overlay and scan line */}
+
         {cameraContainerDimensions.width > 0 && cameraContainerDimensions.height > 0 ? (
           <>
-            {/* Dark mask with cutout */}
+            {/* Dark overlay masks around the cutout */}
             <View style={styles.overlay}>
-              <View 
-                style={[styles.overlayRect, { 
-                  top: 0, 
-                  left: 0, 
-                  right: 0, 
-                  height: cutoutTop 
-                }]} 
-              />
-              <View 
-                style={[styles.overlayRect, { 
-                  bottom: 0, 
-                  left: 0, 
-                  right: 0, 
-                  height: cameraContainerDimensions.height - (cutoutTop + cutoutHeight) 
-                }]} 
-              />
-              <View 
-                style={[styles.overlayRect, { 
-                  top: cutoutTop, 
-                  bottom: cutoutTop, 
-                  left: 0, 
-                  width: cutoutLeft 
-                }]} 
-              />
-              <View 
-                style={[styles.overlayRect, { 
-                  top: cutoutTop, 
-                  bottom: cutoutTop, 
-                  right: 0, 
-                  width: cutoutLeft 
-                }]} 
-              />
-
-              {/* Scan line */}
-              <Animated.View
+              {/* Top */}
+              <View style={[styles.overlayRect, { top: 0, left: 0, right: 0, height: cutoutTop }]} />
+              {/* Bottom */}
+              <View
                 style={[
-                  styles.scanLine,
+                  styles.overlayRect,
                   {
-                    position: 'absolute',
-                    top: cutoutTop,
-                    left: cutoutLeft,
-                    width: cutoutWidth,
-                    height: 2,
-                    // We animate the top position within the cutout
-                    // We want to animate from cutoutTop to cutoutTop+cutoutHeight
-                    // We have scanLinePosition going from 0 to 1
-                    top: cutoutTop + (scanLinePosition.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0, cutoutHeight],
-                    })),
-                  }
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: cameraContainerDimensions.height - (cutoutTop + cutoutHeight),
+                  },
                 ]}
               />
-
-              {/* Label */}
-              <Text 
+              {/* Left */}
+              <View
                 style={[
-                  styles.scanLabel,
-                  {
-                    position: 'absolute',
-                    top: cutoutTop + cutoutHeight + 10, // 10 pixels below the cutout
-                    left: cutoutLeft,
-                    right: cutoutLeft,
-                    textAlign: 'center',
-                  }
+                  styles.overlayRect,
+                  { top: cutoutTop, height: cutoutHeight, left: 0, width: cutoutLeft },
                 ]}
-              >
-                Align barcode within frame
-              </Text>
-
-              {/* Flash toggle button */}
-              <MaterialIcons
-                name="flashlight-on"
-                size={24}
-                color="white"
-                style={styles.flashButton}
-                onPress={toggleFlash}
               />
-            </>
-          ) : null}
+              {/* Right */}
+              <View
+                style={[
+                  styles.overlayRect,
+                  { top: cutoutTop, height: cutoutHeight, right: 0, width: cutoutLeft },
+                ]}
+              />
+            </View>
+
+            {/* Animated scan line — sibling of overlay, sits above it */}
+            <Animated.View
+              style={[
+                styles.scanLine,
+                {
+                  position: 'absolute',
+                  left: cutoutLeft,
+                  width: cutoutWidth,
+                  height: 2,
+                  top: scanLinePosition.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [cutoutTop, cutoutTop + cutoutHeight],
+                  }),
+                },
+              ]}
+            />
+
+            {/* Label below cutout */}
+            <Text
+              style={[
+                styles.scanLabel,
+                {
+                  position: 'absolute',
+                  top: cutoutTop + cutoutHeight + 10,
+                  left: cutoutLeft,
+                  right: cutoutLeft,
+                  textAlign: 'center',
+                },
+              ]}
+            >
+              Align barcode within frame
+            </Text>
+
+            {/* Flash toggle */}
+            <MaterialIcons
+              name="flashlight-on"
+              size={24}
+              color="white"
+              style={styles.flashButton}
+              onPress={toggleFlash}
+            />
+          </>
+        ) : null}
       </View>
     </View>
   );
@@ -215,7 +206,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   cameraContainer: {
-    height: '55%', // Approximately 55% of the screen height
+    height: '55%',
     width: '100%',
   },
   overlay: {
@@ -230,7 +221,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.6)',
   },
   scanLine: {
-    backgroundColor: Colors.secondaryContainer, // Amber color for scan line
+    backgroundColor: Colors.secondaryContainer,
   },
   scanLabel: {
     color: 'white',
@@ -240,7 +231,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     left: 10,
-    zIndex: 10, // Ensure it's above the overlay
+    zIndex: 10,
   },
   permissionDeniedText: {
     fontSize: 16,
