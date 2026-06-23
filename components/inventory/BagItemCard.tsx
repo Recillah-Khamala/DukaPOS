@@ -1,12 +1,22 @@
-import { View, Text } from 'react-native';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+// components/inventory/BagItemCard.tsx
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import type { ComponentProps } from 'react';
+import { InventoryItem } from '../../constants/inventoryData';
 import Colors from '../../constants/colors';
-import type { InventoryItem } from '../../constants/inventoryData';
 
-export default function BagItemCard({ item }: { item: InventoryItem }) {
+type BagItemCardProps = {
+  item: InventoryItem;
+};
+
+type MaterialIconName = ComponentProps<typeof MaterialIcons>['name'];
+
+export default function BagItemCard({ item }: BagItemCardProps) {
+  // Determine badge text and colors (same as StockItemCard)
   let badgeText = 'Moderate';
-  let bgColor = Colors.secondaryContainer;
-  let textColor = Colors.onSecondaryContainer;
+  let bgColor = '#fffbeb';
+  let textColor = '#b45309';
 
   if (item.isLowStock) {
     badgeText = 'Low Stock';
@@ -14,34 +24,134 @@ export default function BagItemCard({ item }: { item: InventoryItem }) {
     textColor = '#dc2626';
   } else if (item.currentStock > item.lowStockThreshold * 4) {
     badgeText = 'Full Stock';
-    bgColor = Colors.primaryFixed;
-    textColor = Colors.primary;
+    bgColor = '#ecfdf5';
+    textColor = '#047857';
+  } else if (item.currentStock > item.lowStockThreshold * 2) {
+    badgeText = 'In Stock';
+    bgColor = '#ecfdf5';
+    textColor = '#047857';
   }
 
-  const unitPrice = item.fractionPrices?.[3]?.price ?? '—';
+  const iconName = (item.icon || 'grain') as MaterialIconName;
 
   return (
-    <View style={{ backgroundColor: 'white', borderRadius: 12, padding: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-        <View style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: Colors.primaryFixed, justifyContent: 'center', alignItems: 'center' }}>
-          <MaterialIcons name={(item.icon as any) || 'local-mall'} size={24} color={Colors.primary} />
+    <TouchableOpacity activeOpacity={0.8}>
+      <View style={styles.card}>
+        {/* Row 1: top row with icon and badge */}
+        <View style={styles.topRow}>
+          {/* Left side: icon */}
+          <View style={styles.iconBox}>
+            <MaterialIcons name={iconName} size={24} color={Colors.primary} />
+          </View>
+          {/* Right side: badge */}
+          <View style={[styles.badge, { backgroundColor: bgColor }]}>
+            <Text style={[styles.badgeText, { color: textColor }]}>
+              {badgeText}
+            </Text>
+          </View>
         </View>
-        <View style={{ paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20, backgroundColor: bgColor }}>
-          <Text style={{ fontSize: 10, fontWeight: '700', color: textColor }}>{badgeText}</Text>
+
+        {/* Row 2: product name and description */}
+        <View style={styles.content}>
+          <Text style={styles.productName}>{item.name}</Text>
+          {item.description && (
+            <Text style={styles.description}>{item.description}</Text>
+          )}
+        </View>
+
+        {/* Row 3: stock and price */}
+        <View style={styles.stockPriceRow}>
+          {/* Left: current stock */}
+          <View style={styles.stockLeft}>
+            <Text style={styles.label}>Current Stock</Text>
+            <Text style={styles.stockValue}>
+              {item.currentStock} {item.buyingUnit}
+            </Text>
+          </View>
+          {/* Right: price per unit */}
+          <View style={styles.stockRight}>
+            <Text style={styles.label}>Price/Unit</Text>
+            <Text style={styles.priceValue}>
+              KES {item.fractionPrices.find(p => p.label === '1')?.price ?? '—'}
+            </Text>
+          </View>
         </View>
       </View>
-      <Text style={{ fontSize: 14, fontWeight: '700', color: Colors.onSurface, marginBottom: 2 }}>{item.name}</Text>
-      {item.description && <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant, marginBottom: 8 }}>{item.description}</Text>}
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 4 }}>
-        <View>
-          <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant }}>Current Stock</Text>
-          <Text style={{ fontSize: 16, fontWeight: '800', color: Colors.primary }}>{item.currentStock} {item.buyingUnit}</Text>
-        </View>
-        <View style={{ alignItems: 'flex-end' }}>
-          <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant }}>Price/Unit</Text>
-          <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurface }}>KES {unitPrice}</Text>
-        </View>
-      </View>
-    </View>
+    </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
+    marginBottom: 12,
+  },
+  topRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  iconBox: {
+    width: 48,
+    height: 48,
+    backgroundColor: Colors.primaryFixed,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badge: {
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  content: {
+    marginVertical: 8,
+  },
+  productName: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: Colors.onSurface,
+  },
+  description: {
+    fontSize: 13,
+    color: Colors.onSurfaceVariant,
+  },
+  stockPriceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12,
+  },
+  stockLeft: {
+    flex: 1,
+  },
+  stockRight: {
+    alignItems: 'flex-end',
+  },
+  label: {
+    fontSize: 12,
+    color: Colors.onSurfaceVariant,
+  },
+  stockValue: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: Colors.primary,
+  },
+  priceValue: {
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'right',
+  },
+});

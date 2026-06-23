@@ -1,5 +1,3 @@
-import { type CerealProduct } from './salesData';
-
 export type InventoryItem = {
   id: string;
   name: string;
@@ -84,7 +82,7 @@ export const INVENTORY_ITEMS: InventoryItem[] = [
     lowStockThreshold: 40,
     isLowStock: false,
     category: 'cereal',
-    icon: 'nature',
+     icon: 'eco',
     description: 'Grade A - White Sorghum',
     fractionPrices: [
       { label: '1/8', fraction: 0.125, price: 15 },
@@ -110,6 +108,44 @@ export const INVENTORY_ITEMS: InventoryItem[] = [
       { label: '1/4', fraction: 0.25, price: 40 },
       { label: '1/2', fraction: 0.5, price: 80 },
       { label: '1', fraction: 1, price: 145 },
+    ],
+  },
+  {
+    id: 'bag-001',
+    name: 'Plastic Bags',
+    description: 'Size: Medium - Heavy Duty',
+    icon: 'local-mall',
+    category: 'bags',
+    currentStock: 1200,
+    buyingUnit: 'piece',
+    sellingUnit: 'piece',
+    conversionRate: 1,
+    lowStockThreshold: 200,
+    isLowStock: false,
+    fractionPrices: [
+      { label: '1/8', fraction: 0.125, price: 2 },
+      { label: '1/4', fraction: 0.25, price: 4 },
+      { label: '1/2', fraction: 0.5, price: 8 },
+      { label: '1', fraction: 1, price: 15 },
+    ],
+  },
+  {
+    id: 'bag-002',
+    name: 'Woven Bags',
+    description: 'Size: Large (90kg Capacity)',
+     icon: 'inventory',
+    category: 'bags',
+    currentStock: 450,
+    buyingUnit: 'piece',
+    sellingUnit: 'piece',
+    conversionRate: 1,
+    lowStockThreshold: 50,
+    isLowStock: false,
+    fractionPrices: [
+      { label: '1/8', fraction: 0.125, price: 8 },
+      { label: '1/4', fraction: 0.25, price: 16 },
+      { label: '1/2', fraction: 0.5, price: 32 },
+      { label: '1', fraction: 1, price: 65 },
     ],
   },
 ];

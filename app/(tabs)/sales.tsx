@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, ScrollView, Pressable, Animated } from 'react-native';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import AdjustItemModal from '../../components/sales/AdjustItemModal';
@@ -13,6 +13,7 @@ import type { BagProduct } from '../../types';
 export default function SalesScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ saleSuccess?: string; total?: string }>();
+  const { items, total } = useSharedBasket();
   const [bottomNavHeight, setBottomNavHeight] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState <
     typeof CEREAL_PRODUCTS[number] | typeof POSHOMILL_SERVICES[number] | null
@@ -21,7 +22,6 @@ export default function SalesScreen() {
   const [bannerTotal, setBannerTotal] = useState('');
   const [showBanner, setShowBanner] = useState(false);
   const bannerAnim = useRef(new Animated.Value(-48)).current;
-  const { items, total } = useSharedBasket();
 
   useEffect(() => {
     if (params.saleSuccess === 'true') {
@@ -103,7 +103,7 @@ export default function SalesScreen() {
               const minPrice = fractionPrices[0]?.price ?? 0;
               const maxPrice = fractionPrices[fractionPrices.length - 1]?.price ?? 0;
               const unitLabel = product.units[0]?.label ?? 'Korokoro';
-              const basketItem = items.find(i => i.productId === product.id);
+              const basketItem = items.find((i) => i.productId === product.id);
               return (
                 <Pressable
                   key={product.id}
@@ -162,7 +162,7 @@ export default function SalesScreen() {
               const minPrice = fractionPrices[0]?.price ?? 0;
               const maxPrice = fractionPrices[fractionPrices.length - 1]?.price ?? 0;
               const unitLabel = service.units[0]?.label ?? 'Korokoro';
-              const basketItem = items.find(i => i.productId === service.id);
+              const basketItem = items.find((i) => i.productId === service.id);
               return (
                 <Pressable
                   key={service.id}
@@ -207,7 +207,7 @@ export default function SalesScreen() {
             {BAG_PRODUCTS.map((bag) => {
               const minPrice = bag.variants[0]?.price ?? 0;
               const maxPrice = bag.variants[bag.variants.length - 1]?.price ?? 0;
-              const basketItem = items.find(i => i.productId === bag.id);
+              const basketItem = items.find((i) => i.productId === bag.id);
               return (
                 <Pressable
                   key={bag.id}

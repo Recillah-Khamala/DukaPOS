@@ -1,4 +1,5 @@
-﻿import { formatQty, formatLineTotal, formatUnitQty, formatPriceRange, roundToNearest5 } from '../utils/formatQuantity';
+﻿/// <reference types="jest" />
+import { formatQty, formatLineTotal, formatUnitQty, formatPriceRange, roundToNearest5 } from '../utils/formatQuantity';
 import type { FractionPrice } from '../types';
 
 describe('formatQty', () => {
