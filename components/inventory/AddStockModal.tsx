@@ -17,7 +17,7 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
   const [selectedIcon, setSelectedIcon] = useState<IconOption>('grain');
   const [selectedCategory, setSelectedCategory] = useState<'Cereal' | 'Poshomill Service' | 'Bags'>('Cereal');
   const [quantity, setQuantity] = useState('');
-  const [buyingUnit, setBuyingUnit] = useState<'kg' | 'g' | 'sack' | 'piece'>('kg');
+  const [buyingUnit, setBuyingUnit] = useState<'Korokoro' | 'kg' | 'g' | 'sack' | 'piece'>('sack');
   const [sellingUnit, setSellingUnit] = useState<'Korokoro' | 'kg' | 'g' | 'piece'>('Korokoro');
   const [conversionRate, setConversionRate] = useState('');
   const [price18, setPrice18] = useState('');
@@ -289,7 +289,7 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
           <View style={{ marginTop: 16 }}>
             <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>Buying Unit (how you restock)</Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-              {(['kg', 'g', 'sack', 'piece'] as const).map((unit) => (
+              {(['Korokoro', 'kg', 'g', 'sack', 'piece'] as const).map((unit) => (
                 <TouchableOpacity key={unit} onPress={() => setBuyingUnit(unit)}>
                   <View style={{ borderRadius: 20, paddingHorizontal: 16, paddingVertical: 8, borderWidth: 1.5, backgroundColor: buyingUnit === unit ? Colors.primaryFixed : '#f3f4f6', borderColor: buyingUnit === unit ? Colors.primary : '#e5e7eb' }}>
                     <Text style={{ fontSize: 14, color: buyingUnit === unit ? Colors.primary : Colors.onSurfaceVariant, fontWeight: buyingUnit === unit ? '700' : '400' }}>{unit}</Text>
