@@ -217,10 +217,12 @@ export default function SalesScreen() {
               const minPrice = bag.variants[0]?.price ?? 0;
               const maxPrice = bag.variants[bag.variants.length - 1]?.price ?? 0;
               const basketItem = items.find((i) => i.productId === bag.id);
+              const isOutOfStock = outOfStockIds.has(bag.id);
               return (
                 <Pressable
                   key={bag.id}
                   onPress={() => setSelectedBagProduct(bag)}
+                  disabled={isOutOfStock}
                   className="flex-row items-center justify-between rounded-xl p-4 border-l-4 active:scale-95"
                   style={{
                     backgroundColor: basketItem ? Colors.primaryFixed : '#ffffff',
@@ -230,6 +232,7 @@ export default function SalesScreen() {
                     shadowOpacity: 0.08,
                     shadowRadius: 12,
                     elevation: 3,
+                    opacity: isOutOfStock ? 0.4 : 1,
                   }}
                 >
                   <View className="flex-row items-center gap-4">
