@@ -10,7 +10,7 @@ const ICON_OPTIONS = ['grass', 'grain', 'eco', 'nature', 'rice-bowl', 'category'
 type IconOption = typeof ICON_OPTIONS[number];
 
 const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
-  const { addItem, allItems } = useInventory();
+  const { addItem } = useInventory();
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
   const [selectedIcon, setSelectedIcon] = useState<IconOption>('grain');
@@ -99,12 +99,8 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
      setErrors({});
    };
 
-const handleConfirm = () => {
-      if (validate()) {
-        const trimmedName = productName.trim().toLowerCase();
-        const existingItem = allItems.find(
-          item => item.name.trim().toLowerCase() === trimmedName
-        );
+   const handleConfirm = () => {
+     if (validate()) {
        const newItem: InventoryItem = {
          id: Date.now().toString(),
          name: productName.trim(),
