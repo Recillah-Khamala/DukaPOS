@@ -159,52 +159,55 @@ export default function SalesScreen() {
           <Text className="text-base font-semibold" style={{ color: Colors.outline }}>+ Add Custom Item</Text>
         </Pressable>
 
-        {/* Poshomill Services Section */}
-        <View className="px-4 mt-4">
-          <Text className="text-xl font-semibold mb-3" style={{ color: Colors.primary }}>Poshomill Services</Text>
-          <View className="gap-2">
-            {POSHOMILL_SERVICES.map((service) => {
-              const fractionPrices = service.units[0]?.fractionPrices ?? [];
-              const minPrice = fractionPrices[0]?.price ?? 0;
-              const maxPrice = fractionPrices[fractionPrices.length - 1]?.price ?? 0;
-              const unitLabel = service.units[0]?.label ?? 'Korokoro';
-              const basketItem = items.find((i) => i.productId === service.id);
-              return (
-                <Pressable
-                  key={service.id}
-                  onPress={() => setSelectedProduct(service)}
-                  className="flex-row items-center justify-between rounded-xl p-4 border-l-4 active:scale-95"
-                  style={{
-                    backgroundColor: basketItem ? Colors.primaryFixed : '#ffffff',
-                    borderLeftColor: Colors.secondary,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: 0.08,
-                    shadowRadius: 12,
-                    elevation: 3,
-                  }}
-                >
-                  <View className="flex-row items-center gap-4">
-                    <MaterialIcons name={service.icon.replace('_', '-') as any} size={28} color={Colors.secondary} />
-                    <View>
-                      <Text className="font-bold text-base" style={{ color: Colors.onSurface }}>{service.name}</Text>
-                      <Text className="text-sm" style={{ color: Colors.onSurfaceVariant }}>
-                        {minPrice} – {maxPrice} KES / {unitLabel}
-                      </Text>
-                    </View>
-                  </View>
-                  {basketItem && (
-                    <View className="rounded-full px-2 py-0.5" style={{ backgroundColor: Colors.primary }}>
-                      <Text className="text-xs font-bold" style={{ color: Colors.onPrimary }}>
-                        {basketItem.fractionLabel ?? basketItem.qty} in basket
-                      </Text>
-                    </View>
-                  )}
-                </Pressable>
-              );
-            })}
-          </View>
-        </View>
+{/* Poshomill Services Section */}
+         <View className="px-4 mt-4">
+           <Text className="text-xl font-semibold mb-3" style={{ color: Colors.primary }}>Poshomill Services</Text>
+           <View className="gap-2">
+             {POSHOMILL_SERVICES.map((service) => {
+               const fractionPrices = service.units[0]?.fractionPrices ?? [];
+               const minPrice = fractionPrices[0]?.price ?? 0;
+               const maxPrice = fractionPrices[fractionPrices.length - 1]?.price ?? 0;
+               const unitLabel = service.units[0]?.label ?? 'Korokoro';
+               const basketItem = items.find((i) => i.productId === service.id);
+               const isOutOfStock = outOfStockIds.has(service.id);
+               return (
+                 <Pressable
+                   key={service.id}
+                   onPress={() => setSelectedProduct(service)}
+                   disabled={isOutOfStock}
+                   className="flex-row items-center justify-between rounded-xl p-4 border-l-4 active:scale-95"
+                   style={{
+                     backgroundColor: basketItem ? Colors.primaryFixed : '#ffffff',
+                     borderLeftColor: Colors.secondary,
+                     shadowColor: '#000',
+                     shadowOffset: { width: 0, height: 4 },
+                     shadowOpacity: 0.08,
+                     shadowRadius: 12,
+                     elevation: 3,
+                     opacity: isOutOfStock ? 0.4 : 1,
+                   }}
+                 >
+                   <View className="flex-row items-center gap-4">
+                     <MaterialIcons name={service.icon.replace('_', '-') as any} size={28} color={Colors.secondary} />
+                     <View>
+                       <Text className="font-bold text-base" style={{ color: Colors.onSurface }}>{service.name}</Text>
+                       <Text className="text-sm" style={{ color: Colors.onSurfaceVariant }}>
+                         {minPrice} – {maxPrice} KES / {unitLabel}
+                       </Text>
+                     </View>
+                   </View>
+                   {basketItem && (
+                     <View className="rounded-full px-2 py-0.5" style={{ backgroundColor: Colors.primary }}>
+                       <Text className="text-xs font-bold" style={{ color: Colors.onPrimary }}>
+                         {basketItem.fractionLabel ?? basketItem.qty} in basket
+                       </Text>
+                     </View>
+                   )}
+                 </Pressable>
+               );
+             })}
+           </View>
+         </View>
 
         {/* Packaging Section */}
         <View className="px-4 mt-4">
