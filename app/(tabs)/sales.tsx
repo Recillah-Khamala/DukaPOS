@@ -15,6 +15,8 @@ export default function SalesScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ saleSuccess?: string; total?: string }>();
   const { items, total } = useSharedBasket();
+  const { allItems } = useInventory();
+  const outOfStockIds = new Set(allItems.filter(item => item.currentStock === 0).map(item => item.id));
   const [bottomNavHeight, setBottomNavHeight] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState <
     typeof CEREAL_PRODUCTS[number] | typeof POSHOMILL_SERVICES[number] | null
