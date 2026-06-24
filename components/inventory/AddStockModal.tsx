@@ -280,14 +280,15 @@ const handleConfirm = () => {
                onBlur={() => setQuantityFocused(false)}
              />
              {errors.quantity && <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>{errors.quantity}</Text>}
-</View>
+            </View>
+
             {/* Entry Unit */}
             <View style={{ marginTop: 16 }}>
               <Text style={{ fontSize: 13, fontWeight: '600', 
                 color: Colors.onSurfaceVariant, marginBottom: 6 }}>
                 Entry Unit (what unit are you counting in?)
               </Text>
-              <View style={{ flexDirection: 'row', gap: 8 }}>
+<View style={{ flexDirection: 'row', gap: 8 }}>
                 {(['Korokoro', 'kg', 'sack'] as const).map((unit) => (
                   <TouchableOpacity key={unit} onPress={() => setEntryUnit(unit)}>
                     <View style={{ borderRadius: 20, paddingHorizontal: 16, 
@@ -298,14 +299,14 @@ const handleConfirm = () => {
                         ? Colors.primary : '#e5e7eb' }}>
                       <Text style={{ fontSize: 14, 
                         color: entryUnit === unit 
-                          ? Colors.primary : Colors.onSurfaceVariant,
+                            ? Colors.primary : Colors.onSurfaceVariant,
                         fontWeight: entryUnit === unit ? '700' : '400' }}>
-                      {unit}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              )}
-            </View>
+                        {unit}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
             {/* Buying Unit */}
            <View style={{ marginTop: 16 }}>
              <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>Buying Unit (how you restock)</Text>
