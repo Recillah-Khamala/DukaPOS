@@ -104,24 +104,18 @@ const resetForm = () => {
 
 const handleConfirm = () => {
     if (validate()) {
-if (existingItem) {
-         const enteredQty = parseFloat(quantity);
-         const rate = existingItem.conversionRate ?? 1;
-         let addedInKorokoro: number;
-         if (buyingUnit === 'sack') {
-           addedInKorokoro = enteredQty * 90 * rate;
-         } else if (buyingUnit === 'kg') {
-           addedInKorokoro = enteredQty * rate;
-         } else {
-           // piece, g — no conversion needed
-           addedInKorokoro = enteredQty;
-         }
-         const newStock = existingItem.currentStock + addedInKorokoro;
-         updateItem(existingItem.id, {
-           currentStock: newStock,
-           isLowStock: newStock <= existingItem.lowStockThreshold,
-         });
-       }
+      if (existingItem) {
+        const enteredQty = parseFloat(quantity);
+        const rate = existingItem.conversionRate ?? 1;
+        let addedInKorokoro: number;
+        if (buyingUnit === 'sack') {
+          addedInKorokoro = enteredQty * 90 * rate;
+        } else if (buyingUnit === 'kg') {
+          addedInKorokoro = enteredQty * rate;
+        } else {
+          // piece, g — no conversion needed
+          addedInKorokoro = enteredQty;
+        }
         const newStock = existingItem.currentStock + addedInKorokoro;
         updateItem(existingItem.id, {
           currentStock: newStock,
