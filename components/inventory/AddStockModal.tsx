@@ -10,7 +10,7 @@ const ICON_OPTIONS = ['grass', 'grain', 'eco', 'nature', 'rice-bowl', 'category'
 type IconOption = typeof ICON_OPTIONS[number];
 
 const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
-  const { addItem } = useInventory();
+  const { addItem, allItems } = useInventory();
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
   const [selectedIcon, setSelectedIcon] = useState<IconOption>('grain');
