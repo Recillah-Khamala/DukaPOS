@@ -72,7 +72,7 @@ export default function InventoryScreen() {
                   </View>
                   <View style={{ alignItems: 'flex-end' }}>
                     <Text style={{ fontSize: 16, fontWeight: '800', color: '#dc2626' }}>{item.currentStock}</Text>
-                     <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant }}>{item.buyingUnit}</Text>
+                     <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant }}>{item.sellingUnit}</Text>
                     <View style={{ backgroundColor: '#dc2626', borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2, marginTop: 2 }}>
                       <Text style={{ fontSize: 10, fontWeight: '700', color: 'white' }}>Critically Low</Text>
                     </View>
