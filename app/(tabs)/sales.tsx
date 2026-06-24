@@ -100,52 +100,55 @@ export default function SalesScreen() {
               <Text style={{ color: Colors.onSecondaryContainer, fontSize: 12, fontWeight: '700' }}>Unit: Korokoro</Text>
             </View>
           </View>
-          <View className="flex-row flex-wrap gap-3">
-            {CEREAL_PRODUCTS.map((product) => {
-              const fractionPrices = product.units[0]?.fractionPrices ?? [];
-              const minPrice = fractionPrices[0]?.price ?? 0;
-              const maxPrice = fractionPrices[fractionPrices.length - 1]?.price ?? 0;
-              const unitLabel = product.units[0]?.label ?? 'Korokoro';
-              const basketItem = items.find((i) => i.productId === product.id);
-              return (
-                <Pressable
-                  key={product.id}
-                  onPress={() => setSelectedProduct(product)}
-                  className="w-[48%] rounded-xl p-4 border-2 active:scale-95"
-                  style={{
-                    backgroundColor: basketItem ? Colors.primaryFixed : '#ffffff',
-                    borderColor: basketItem ? Colors.primary : 'transparent',
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: 0.08,
-                    shadowRadius: 12,
-                    elevation: 3,
-                  }}
-                >
-                  <View
-                    className="w-12 h-12 rounded-lg mb-2 items-center justify-center"
-                    style={{ backgroundColor: Colors.primaryFixed }}
-                  >
-                    <MaterialIcons name={product.icon.replace('_', '-') as any} size={32} color={Colors.primary} />
-                  </View>
-                  <Text className="font-bold text-sm" style={{ color: Colors.onSurfaceVariant }}>{product.name}</Text>
-                  <Text className="text-lg font-extrabold mt-1" style={{ color: Colors.primary }}>
-                    {minPrice} – {maxPrice} KES
-                  </Text>
-                  <Text className="text-xs mt-0.5" style={{ color: Colors.onSurfaceVariant }}>
-                    per {unitLabel}
-                  </Text>
-                  {basketItem && (
-                    <View className="mt-2 rounded-full px-2 py-0.5 self-start" style={{ backgroundColor: Colors.primary }}>
-                      <Text className="text-xs font-bold" style={{ color: Colors.onPrimary }}>
-                        {basketItem.fractionLabel ?? basketItem.qty} in basket
-                      </Text>
-                    </View>
-                  )}
-                </Pressable>
-              );
-            })}
-          </View>
+<View className="flex-row flex-wrap gap-3">
+             {CEREAL_PRODUCTS.map((product) => {
+               const fractionPrices = product.units[0]?.fractionPrices ?? [];
+               const minPrice = fractionPrices[0]?.price ?? 0;
+               const maxPrice = fractionPrices[fractionPrices.length - 1]?.price ?? 0;
+               const unitLabel = product.units[0]?.label ?? 'Korokoro';
+               const basketItem = items.find((i) => i.productId === product.id);
+               const isOutOfStock = outOfStockIds.has(product.id);
+               return (
+                 <Pressable
+                   key={product.id}
+                   onPress={() => setSelectedProduct(product)}
+                   disabled={isOutOfStock}
+                   className="w-[48%] rounded-xl p-4 border-2 active:scale-95"
+                   style={{
+                     backgroundColor: basketItem ? Colors.primaryFixed : '#ffffff',
+                     borderColor: basketItem ? Colors.primary : 'transparent',
+                     shadowColor: '#000',
+                     shadowOffset: { width: 0, height: 4 },
+                     shadowOpacity: 0.08,
+                     shadowRadius: 12,
+                     elevation: 3,
+                     opacity: isOutOfStock ? 0.4 : 1,
+                   }}
+                 >
+                   <View
+                     className="w-12 h-12 rounded-lg mb-2 items-center justify-center"
+                     style={{ backgroundColor: Colors.primaryFixed }}
+                   >
+                     <MaterialIcons name={product.icon.replace('_', '-') as any} size={32} color={Colors.primary} />
+                   </View>
+                   <Text className="font-bold text-sm" style={{ color: Colors.onSurfaceVariant }}>{product.name}</Text>
+                   <Text className="text-lg font-extrabold mt-1" style={{ color: Colors.primary }}>
+                     {minPrice} – {maxPrice} KES
+                   </Text>
+                   <Text className="text-xs mt-0.5" style={{ color: Colors.onSurfaceVariant }}>
+                     per {unitLabel}
+                   </Text>
+                   {basketItem && (
+                     <View className="mt-2 rounded-full px-2 py-0.5 self-start" style={{ backgroundColor: Colors.primary }}>
+                       <Text className="text-xs font-bold" style={{ color: Colors.onPrimary }}>
+                         {basketItem.fractionLabel ?? basketItem.qty} in basket
+                       </Text>
+                     </View>
+                   )}
+                 </Pressable>
+               );
+             })}
+           </View>
         </View>
 
         {/* Add Custom Item */}
