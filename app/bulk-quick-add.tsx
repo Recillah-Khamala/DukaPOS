@@ -38,28 +38,33 @@ export default function BulkQuickAddScreen() {
 
     const totalUpdated = Object.values(deliveryAmounts).filter(v => v > 0).length;
 
-    const handleSaveAllChanges = () => {
-      Object.entries(deliveryAmounts).forEach(([itemId, deliveryAmount]) => {
-        if (deliveryAmount > 0) {
-          const item = getItemById(itemId);
-          if (!item) return;
-          const newStock = item.currentStock + deliveryAmount;
-          updateItem(itemId, {
-            currentStock: newStock,
-            isLowStock: newStock <= item.lowStockThreshold,
-          });
-        }
-      });
-      Alert.alert('Success', 'Stock updated', [
-        {
-          text: 'OK',
-          onPress: () => {
-            setDeliveryAmounts({});
-            router.back();
-          },
+const handleSaveAllChanges = () => {
+    Object.entries(deliveryAmounts).forEach(([itemId, deliveryAmount]) => {
+      if (deliveryAmount > 0) {
+        const item = getItemById(itemId);
+        if (!item) return;
+        const rate = item.conversionRate ?? 1;
+        // For cereals, stock is stored in sellingUnit (Korokoro)
+        // deliveryAmount is entered in buyingUnit
+        // For bags, conversionRate is 1 so this is a no-op
+        const addedInStorageUnit = deliveryAmount * rate;
+        const newStock = item.currentStock + addedInStorageUnit;
+        updateItem(itemId, {
+          currentStock: newStock,
+          isLowStock: newStock <= item.lowStockThreshold,
+        });
+      }
+    });
+    Alert.alert('Success', 'Stock updated', [
+      {
+        text: 'OK',
+        onPress: () => {
+          setDeliveryAmounts({});
+          router.back();
         },
-      ]);
-    };
+      },
+    ]);
+  };
 
    return (
     <View className="flex-1 bg-gray-50">
