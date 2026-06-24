@@ -6,6 +6,7 @@ import BottomNavBar from '../../components/layout/BottomNavBar';
 import AdjustItemModal from '../../components/sales/AdjustItemModal';
 import BagSelectionModal from '../../components/sales/BagSelectionModal';
 import { useSharedBasket } from '../../context/BasketContext';
+import { useInventory } from '../../context/InventoryContext';
 import Colors from '../../constants/colors';
 import { CEREAL_PRODUCTS, POSHOMILL_SERVICES, BAG_PRODUCTS } from '../../constants/salesData';
 import type { BagProduct } from '../../types';
