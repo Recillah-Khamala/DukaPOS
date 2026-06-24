@@ -18,7 +18,6 @@ const { addItem, updateItem, allItems } = useInventory();
     const [quantity, setQuantity] = useState('');
     const [buyingUnit, setBuyingUnit] = useState<'kg' | 'g' | 'sack' | 'piece'>('kg');
     const [sellingUnit, setSellingUnit] = useState<'Korokoro' | 'kg' | 'g' | 'piece'>('Korokoro');
-    const [entryUnit, setEntryUnit] = useState<'Korokoro' | 'kg' | 'sack'>('Korokoro');
     const [conversionRate, setConversionRate] = useState('');
     const [price18, setPrice18] = useState('');
     const [price14, setPrice14] = useState('');
@@ -85,44 +84,44 @@ const [buyingPrice, setBuyingPrice] = useState('');
    };
 
 const resetForm = () => {
-      setProductName('');
-      setDescription('');
-      setSelectedIcon('grain');
-      setSelectedCategory('Cereal');
-      setQuantity('');
-      setBuyingUnit('kg');
-      setSellingUnit('Korokoro');
-      setEntryUnit('Korokoro');
-      setConversionRate('');
-      setPrice18('');
-      setPrice14('');
-      setPrice12('');
-      setPrice1('');
-       setLowStockThreshold('');
-       setBuyingPrice('');
-       setBuyingPriceFocused(false);
-      setErrors({});
-    };
+       setProductName('');
+       setDescription('');
+       setSelectedIcon('grain');
+       setSelectedCategory('Cereal');
+       setQuantity('');
+       setBuyingUnit('kg');
+       setSellingUnit('Korokoro');
+       setConversionRate('');
+       setPrice18('');
+       setPrice14('');
+       setPrice12('');
+       setPrice1('');
+        setLowStockThreshold('');
+        setBuyingPrice('');
+        setBuyingPriceFocused(false);
+       setErrors({});
+     };
 
 const handleConfirm = () => {
     if (validate()) {
-      if (existingItem) {
-        const enteredQty = parseFloat(quantity);
-        const rate = existingItem.conversionRate ?? 1;
-        // currentStock is stored in sellingUnit (Korokoro)
-        // entryUnit options and their conversion to Korokoro:
-        //   'Korokoro' → multiply by 1
-        //   'kg'       → multiply by conversionRate (Korokoro per kg)
-        //   'sack'     → sack is 90kg, so multiply by 90 × conversionRate
-        let addedInKorokoro: number;
-        if (entryUnit === 'Korokoro') {
-          addedInKorokoro = enteredQty;
-        } else if (entryUnit === 'kg') {
-          addedInKorokoro = enteredQty * rate;
-        } else {
-          // sack: 1 sack = 90 kg
-          addedInKorokoro = enteredQty * 90 * rate;
-        }
+if (existingItem) {
+         const enteredQty = parseFloat(quantity);
+         const rate = existingItem.conversionRate ?? 1;
+         let addedInKorokoro: number;
+         if (buyingUnit === 'sack') {
+           addedInKorokoro = enteredQty * 90 * rate;
+         } else if (buyingUnit === 'kg') {
+           addedInKorokoro = enteredQty * rate;
+         } else {
+           // piece, g — no conversion needed
+           addedInKorokoro = enteredQty;
+         }
+         const newStock = existingItem.currentStock + addedInKorokoro;
+         updateItem(existingItem.id, {
+           currentStock: newStock,
+           isLowStock: newStock <= existingItem.lowStockThreshold,
+         });
+       }
         const newStock = existingItem.currentStock + addedInKorokoro;
         updateItem(existingItem.id, {
           currentStock: newStock,
@@ -297,32 +296,7 @@ const handleConfirm = () => {
              {errors.quantity && <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>{errors.quantity}</Text>}
             </View>
 
-            {/* Entry Unit */}
-            <View style={{ marginTop: 16 }}>
-              <Text style={{ fontSize: 13, fontWeight: '600', 
-                color: Colors.onSurfaceVariant, marginBottom: 6 }}>
-                Entry Unit (what unit are you counting in?)
-              </Text>
-<View style={{ flexDirection: 'row', gap: 8 }}>
-                {(['Korokoro', 'kg', 'sack'] as const).map((unit) => (
-                  <TouchableOpacity key={unit} onPress={() => setEntryUnit(unit)}>
-                    <View style={{ borderRadius: 20, paddingHorizontal: 16, 
-                      paddingVertical: 8, borderWidth: 1.5,
-                      backgroundColor: entryUnit === unit 
-                        ? Colors.primaryFixed : '#f3f4f6',
-                      borderColor: entryUnit === unit 
-                        ? Colors.primary : '#e5e7eb' }}>
-                      <Text style={{ fontSize: 14, 
-                        color: entryUnit === unit 
-                            ? Colors.primary : Colors.onSurfaceVariant,
-                        fontWeight: entryUnit === unit ? '700' : '400' }}>
-                        {unit}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                ))}
-</View>
-            </View>
+
              {/* Buying Unit */}
            <View style={{ marginTop: 16 }}>
              <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>Buying Unit (how you restock)</Text>
