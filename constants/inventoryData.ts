@@ -15,25 +15,25 @@ export type InventoryItem = {
 };
 
 export const INVENTORY_ITEMS: InventoryItem[] = [
-  {
-    id: 'c1',
-    name: 'Maize',
-    currentStock: 10,
-    buyingUnit: 'kg',
-    sellingUnit: 'Korokoro',
-    conversionRate: 2,
-    lowStockThreshold: 15,
-    isLowStock: true,
-    category: 'cereal',
-    icon: 'grass',
-    description: 'Yellow - Dry Shell',
-    fractionPrices: [
-      { label: '1/8', fraction: 0.125, price: 20 },
-      { label: '1/4', fraction: 0.25, price: 38 },
-      { label: '1/2', fraction: 0.5, price: 70 },
-      { label: '1', fraction: 1, price: 130 },
-    ],
-  },
+{
+     id: 'c1',
+     name: 'Maize',
+     currentStock: 10,
+     buyingUnit: 'sack',
+     sellingUnit: 'Korokoro',
+     conversionRate: 90,
+     lowStockThreshold: 15,
+     isLowStock: true,
+     category: 'cereal',
+     icon: 'grass',
+     description: 'Yellow - Dry Shell',
+     fractionPrices: [
+       { label: '1/8', fraction: 0.125, price: 20 },
+       { label: '1/4', fraction: 0.25, price: 38 },
+       { label: '1/2', fraction: 0.5, price: 70 },
+       { label: '1', fraction: 1, price: 130 },
+     ],
+   },
   {
     id: 'c2',
     name: 'Beans',
