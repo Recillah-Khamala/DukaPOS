@@ -25,6 +25,9 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
    const [price1, setPrice1] = useState('');
    const [lowStockThreshold, setLowStockThreshold] = useState('');
 const [buyingPrice, setBuyingPrice] = useState('');
+    const existingItem = allItems.find(
+      item => item.name.trim().toLowerCase() === productName.trim().toLowerCase()
+    );
   const existingItem = allItems.find(
     item => item.name.trim().toLowerCase() === productName.trim().toLowerCase()
   );
