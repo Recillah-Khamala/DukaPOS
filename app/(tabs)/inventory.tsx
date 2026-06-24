@@ -88,7 +88,7 @@ export default function InventoryScreen() {
                 <MaterialIcons name="add-circle" size={20} color="white" />
                 <Text style={{ color: 'white', fontWeight: '600' }}>Add Stock</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={{ flex: 1, backgroundColor: Colors.secondaryContainer, borderRadius: 12, height: 56, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 8 }} onPress={() => console.log('Update Prices pressed')}>
+              <TouchableOpacity style={{ flex: 1, backgroundColor: Colors.secondaryContainer, borderRadius: 12, height: 56, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 8 }} onPress={() => router.push('/bulk-quick-add')}>
                 <MaterialIcons name="edit-square" size={20} color={Colors.onSecondaryContainer} />
                 <Text style={{ color: Colors.onSecondaryContainer, fontWeight: '600' }}>Update Prices</Text>
               </TouchableOpacity>
