@@ -74,9 +74,9 @@ export default function StockItemCard({ item }: StockItemCardProps) {
           {/* Left */}
           <View>
             <Text style={styles.label}>Current Stock</Text>
-            <Text style={styles.stockValue}>
-              {item.currentStock} {item.buyingUnit}
-            </Text>
+<Text style={styles.stockValue}>
+               {item.currentStock.toLocaleString()} {item.buyingUnit}
+             </Text>
           </View>
 
           {/* Right */}
