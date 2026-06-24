@@ -132,6 +132,11 @@ export default function SalesScreen() {
                      <MaterialIcons name={product.icon.replace('_', '-') as any} size={32} color={Colors.primary} />
                    </View>
                    <Text className="font-bold text-sm" style={{ color: Colors.onSurfaceVariant }}>{product.name}</Text>
+                   {isOutOfStock && (
+                     <Text style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>
+                       Out of Stock
+                     </Text>
+                   )}
                    <Text className="text-lg font-extrabold mt-1" style={{ color: Colors.primary }}>
                      {minPrice} – {maxPrice} KES
                    </Text>
@@ -191,6 +196,11 @@ export default function SalesScreen() {
                      <MaterialIcons name={service.icon.replace('_', '-') as any} size={28} color={Colors.secondary} />
                      <View>
                        <Text className="font-bold text-base" style={{ color: Colors.onSurface }}>{service.name}</Text>
+                   {isOutOfStock && (
+                     <Text style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>
+                       Out of Stock
+                     </Text>
+                   )}
                        <Text className="text-sm" style={{ color: Colors.onSurfaceVariant }}>
                          {minPrice} – {maxPrice} KES / {unitLabel}
                        </Text>
