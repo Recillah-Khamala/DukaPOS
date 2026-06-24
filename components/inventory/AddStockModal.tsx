@@ -306,8 +306,9 @@ const handleConfirm = () => {
                     </View>
                   </TouchableOpacity>
                 ))}
-              </View>
-            {/* Buying Unit */}
+</View>
+            </View>
+             {/* Buying Unit */}
            <View style={{ marginTop: 16 }}>
              <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>Buying Unit (how you restock)</Text>
              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
