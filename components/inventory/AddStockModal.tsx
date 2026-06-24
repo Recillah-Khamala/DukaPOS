@@ -24,9 +24,12 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
    const [price12, setPrice12] = useState('');
    const [price1, setPrice1] = useState('');
    const [lowStockThreshold, setLowStockThreshold] = useState('');
-   const [buyingPrice, setBuyingPrice] = useState('');
+const [buyingPrice, setBuyingPrice] = useState('');
+  const existingItem = allItems.find(
+    item => item.name.trim().toLowerCase() === productName.trim().toLowerCase()
+  );
 
-   const [productNameFocused, setProductNameFocused] = useState(false);
+    const [productNameFocused, setProductNameFocused] = useState(false);
    const [descriptionFocused, setDescriptionFocused] = useState(false);
    const [quantityFocused, setQuantityFocused] = useState(false);
    const [conversionRateFocused, setConversionRateFocused] = useState(false);
