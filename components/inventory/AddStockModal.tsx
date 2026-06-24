@@ -107,8 +107,23 @@ const resetForm = () => {
 const handleConfirm = () => {
     if (validate()) {
       if (existingItem) {
-        const addedQty = parseFloat(quantity);
-        const newStock = existingItem.currentStock + addedQty;
+        const enteredQty = parseFloat(quantity);
+        const rate = existingItem.conversionRate ?? 1;
+        // currentStock is stored in sellingUnit (Korokoro)
+        // entryUnit options and their conversion to Korokoro:
+        //   'Korokoro' → multiply by 1
+        //   'kg'       → multiply by conversionRate (Korokoro per kg)
+        //   'sack'     → sack is 90kg, so multiply by 90 × conversionRate
+        let addedInKorokoro: number;
+        if (entryUnit === 'Korokoro') {
+          addedInKorokoro = enteredQty;
+        } else if (entryUnit === 'kg') {
+          addedInKorokoro = enteredQty * rate;
+        } else {
+          // sack: 1 sack = 90 kg
+          addedInKorokoro = enteredQty * 90 * rate;
+        }
+        const newStock = existingItem.currentStock + addedInKorokoro;
         updateItem(existingItem.id, {
           currentStock: newStock,
           isLowStock: newStock <= existingItem.lowStockThreshold,
