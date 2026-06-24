@@ -98,30 +98,30 @@ const handleSaveAllChanges = () => {
             </TouchableOpacity>
           ))}
         </ScrollView>
-        {getFilteredItems().length > 0 ? (
-          <View className="mt-6">
-            {getFilteredItems().map((item: InventoryItem) => (
-              <BulkStockEntryRow
-                key={item.id}
-                product={{
-                  id: item.id,
-                  name: item.name,
-                  currentStock: item.currentStock,
-                  icon: item.icon ?? 'grain',
-                  status: item.isLowStock ? 'Low Stock' : undefined,
-                }}
-                deliveryAmount={deliveryAmounts[item.id] ?? 0}
-                onDeliveryAmountChange={(value) => handleDeliveryAmountChange(item.id, value)}
-              />
-            ))}
-          </View>
-        ) : (
-          <View className="mt-6 items-center justify-center">
-            <Text className="text-onSurfaceVariant text-center">
-              No items in this category
-            </Text>
-          </View>
-        )}
+{getFilteredItems().length > 0 ? (
+  <ScrollView showsVerticalScrollIndicator={true} contentContainerStyle={{ paddingBottom: 20 }}>
+    {getFilteredItems().map((item: InventoryItem) => (
+      <BulkStockEntryRow
+        key={item.id}
+        product={{
+          id: item.id,
+          name: item.name,
+          currentStock: item.currentStock,
+          icon: item.icon ?? 'grain',
+          status: item.isLowStock ? 'Low Stock' : undefined,
+        }}
+        deliveryAmount={deliveryAmounts[item.id] ?? 0}
+        onDeliveryAmountChange={(value) => handleDeliveryAmountChange(item.id, value)}
+      />
+    ))}
+  </ScrollView>
+) : (
+  <View className="mt-6 items-center justify-center">
+    <Text className="text-onSurfaceVariant text-center">
+      No items in this category
+    </Text>
+  </View>
+)}
       </View>
         <View className="flex-row justify-between items-center px-6 py-2 bg-secondaryContainer">
           <Text className="font-medium text-onSurface">
