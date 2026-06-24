@@ -186,12 +186,12 @@ const handleConfirm = () => {
          </View>
 
          {/* Scrollable form */}
-         <ScrollView
-           style={{ flex: 1 }}
-           keyboardShouldPersistTaps="handled"
-           showsVerticalScrollIndicator={false}
-           contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 8, paddingBottom: 24 }}
-         >
+<ScrollView
+            style={{ flex: 1 }}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={true}
+            contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 8, paddingBottom: 24 }}
+          >
            {/* Product Name */}
            <View>
              <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>Product Name</Text>
