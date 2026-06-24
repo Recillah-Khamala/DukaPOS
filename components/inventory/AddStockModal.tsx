@@ -10,20 +10,21 @@ const ICON_OPTIONS = ['grass', 'grain', 'eco', 'nature', 'rice-bowl', 'category'
 type IconOption = typeof ICON_OPTIONS[number];
 
 const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
-  const { addItem, updateItem, allItems } = useInventory();
-  const [productName, setProductName] = useState('');
-  const [description, setDescription] = useState('');
-  const [selectedIcon, setSelectedIcon] = useState<IconOption>('grain');
-   const [selectedCategory, setSelectedCategory] = useState<'Cereal' | 'Poshomill Service' | 'Bags'>('Cereal');
-   const [quantity, setQuantity] = useState('');
-   const [buyingUnit, setBuyingUnit] = useState<'kg' | 'g' | 'sack' | 'piece'>('kg');
-   const [sellingUnit, setSellingUnit] = useState<'Korokoro' | 'kg' | 'g' | 'piece'>('Korokoro');
-   const [conversionRate, setConversionRate] = useState('');
-   const [price18, setPrice18] = useState('');
-   const [price14, setPrice14] = useState('');
-   const [price12, setPrice12] = useState('');
-   const [price1, setPrice1] = useState('');
-   const [lowStockThreshold, setLowStockThreshold] = useState('');
+const { addItem, updateItem, allItems } = useInventory();
+   const [productName, setProductName] = useState('');
+   const [description, setDescription] = useState('');
+   const [selectedIcon, setSelectedIcon] = useState<IconOption>('grain');
+    const [selectedCategory, setSelectedCategory] = useState<'Cereal' | 'Poshomill Service' | 'Bags'>('Cereal');
+    const [quantity, setQuantity] = useState('');
+    const [buyingUnit, setBuyingUnit] = useState<'kg' | 'g' | 'sack' | 'piece'>('kg');
+    const [sellingUnit, setSellingUnit] = useState<'Korokoro' | 'kg' | 'g' | 'piece'>('Korokoro');
+    const [entryUnit, setEntryUnit] = useState<'Korokoro' | 'kg' | 'sack'>('Korokoro');
+    const [conversionRate, setConversionRate] = useState('');
+    const [price18, setPrice18] = useState('');
+    const [price14, setPrice14] = useState('');
+    const [price12, setPrice12] = useState('');
+    const [price1, setPrice1] = useState('');
+    const [lowStockThreshold, setLowStockThreshold] = useState('');
 const [buyingPrice, setBuyingPrice] = useState('');
     const existingItem = allItems.find(
       item => item.name.trim().toLowerCase() === productName.trim().toLowerCase()
@@ -83,24 +84,25 @@ const [buyingPrice, setBuyingPrice] = useState('');
      return Object.keys(newErrors).length === 0;
    };
 
-   const resetForm = () => {
-     setProductName('');
-     setDescription('');
-     setSelectedIcon('grain');
-     setSelectedCategory('Cereal');
-     setQuantity('');
-     setBuyingUnit('kg');
-     setSellingUnit('Korokoro');
-     setConversionRate('');
-     setPrice18('');
-     setPrice14('');
-     setPrice12('');
-     setPrice1('');
-      setLowStockThreshold('');
-      setBuyingPrice('');
-      setBuyingPriceFocused(false);
-     setErrors({});
-   };
+const resetForm = () => {
+      setProductName('');
+      setDescription('');
+      setSelectedIcon('grain');
+      setSelectedCategory('Cereal');
+      setQuantity('');
+      setBuyingUnit('kg');
+      setSellingUnit('Korokoro');
+      setEntryUnit('Korokoro');
+      setConversionRate('');
+      setPrice18('');
+      setPrice14('');
+      setPrice12('');
+      setPrice1('');
+       setLowStockThreshold('');
+       setBuyingPrice('');
+       setBuyingPriceFocused(false);
+      setErrors({});
+    };
 
 const handleConfirm = () => {
     if (validate()) {
@@ -278,9 +280,33 @@ const handleConfirm = () => {
                onBlur={() => setQuantityFocused(false)}
              />
              {errors.quantity && <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>{errors.quantity}</Text>}
-           </View>
-
-           {/* Buying Unit */}
+</View>
+            {/* Entry Unit */}
+            <View style={{ marginTop: 16 }}>
+              <Text style={{ fontSize: 13, fontWeight: '600', 
+                color: Colors.onSurfaceVariant, marginBottom: 6 }}>
+                Entry Unit (what unit are you counting in?)
+              </Text>
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                {(['Korokoro', 'kg', 'sack'] as const).map((unit) => (
+                  <TouchableOpacity key={unit} onPress={() => setEntryUnit(unit)}>
+                    <View style={{ borderRadius: 20, paddingHorizontal: 16, 
+                      paddingVertical: 8, borderWidth: 1.5,
+                      backgroundColor: entryUnit === unit 
+                        ? Colors.primaryFixed : '#f3f4f6',
+                      borderColor: entryUnit === unit 
+                        ? Colors.primary : '#e5e7eb' }}>
+                      <Text style={{ fontSize: 14, 
+                        color: entryUnit === unit 
+                          ? Colors.primary : Colors.onSurfaceVariant,
+                        fontWeight: entryUnit === unit ? '700' : '400' }}>
+                      {unit}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              )}
+            </View>
+            {/* Buying Unit */}
            <View style={{ marginTop: 16 }}>
              <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>Buying Unit (how you restock)</Text>
              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
