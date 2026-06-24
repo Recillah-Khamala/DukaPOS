@@ -186,6 +186,14 @@ const [buyingPrice, setBuyingPrice] = useState('');
                onBlur={() => setProductNameFocused(false)}
              />
              {errors.productName && <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>{errors.productName}</Text>}
+  {existingItem && (
+    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6, backgroundColor: '#f0fdf4', borderRadius: 8, padding: 8 }}>
+      <MaterialIcons name="info" size={14} color="#16a34a" />
+      <Text style={{ fontSize: 12, color: '#16a34a', marginLeft: 6 }}>
+        "{existingItem.name}" already exists — this will add to its current stock of {existingItem.currentStock} {existingItem.buyingUnit}
+      </Text>
+    </View>
+  )}
            </View>
 
             {/* Description */}
