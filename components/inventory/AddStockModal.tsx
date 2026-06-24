@@ -99,8 +99,12 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
      setErrors({});
    };
 
-   const handleConfirm = () => {
-     if (validate()) {
+const handleConfirm = () => {
+      if (validate()) {
+        const trimmedName = productName.trim().toLowerCase();
+        const existingItem = allItems.find(
+          item => item.name.trim().toLowerCase() === trimmedName
+        );
        const newItem: InventoryItem = {
          id: Date.now().toString(),
          name: productName.trim(),
