@@ -102,33 +102,42 @@ const [buyingPrice, setBuyingPrice] = useState('');
      setErrors({});
    };
 
-   const handleConfirm = () => {
-     if (validate()) {
-       const newItem: InventoryItem = {
-         id: Date.now().toString(),
-         name: productName.trim(),
-         description: description.trim() || undefined,
-         icon: selectedIcon,
+const handleConfirm = () => {
+    if (validate()) {
+      if (existingItem) {
+        const addedQty = parseFloat(quantity);
+        const newStock = existingItem.currentStock + addedQty;
+        updateItem(existingItem.id, {
+          currentStock: newStock,
+          isLowStock: newStock <= existingItem.lowStockThreshold,
+        });
+      } else {
+        const newItem: InventoryItem = {
+          id: Date.now().toString(),
+          name: productName.trim(),
+          description: description.trim() || undefined,
+          icon: selectedIcon,
           buyingPrice: parseFloat(buyingPrice) || undefined,
           category: selectedCategory.toLowerCase() as 'cereal' | 'poshomill' | 'bags',
-         currentStock: parseFloat(quantity),
-         buyingUnit,
-         sellingUnit,
-         conversionRate: parseFloat(conversionRate) || 1,
-         lowStockThreshold: parseFloat(lowStockThreshold),
-         isLowStock: parseFloat(quantity) <= parseFloat(lowStockThreshold),
-         fractionPrices: [
-           { label: '1/8', fraction: 0.125, price: parseFloat(price18) || 0 },
-           { label: '1/4', fraction: 0.25, price: parseFloat(price14) || 0 },
-           { label: '1/2', fraction: 0.5, price: parseFloat(price12) || 0 },
-           { label: '1', fraction: 1, price: parseFloat(price1) || 0 },
-         ],
-       };
-       addItem(newItem);
-       resetForm();
-       onClose();
-     }
-   };
+          currentStock: parseFloat(quantity),
+          buyingUnit,
+          sellingUnit,
+          conversionRate: parseFloat(conversionRate) || 1,
+          lowStockThreshold: parseFloat(lowStockThreshold),
+          isLowStock: parseFloat(quantity) <= parseFloat(lowStockThreshold),
+          fractionPrices: [
+            { label: '1/8', fraction: 0.125, price: parseFloat(price18) || 0 },
+            { label: '1/4', fraction: 0.25, price: parseFloat(price14) || 0 },
+            { label: '1/2', fraction: 0.5, price: parseFloat(price12) || 0 },
+            { label: '1', fraction: 1, price: parseFloat(price1) || 0 },
+          ],
+        };
+        addItem(newItem);
+      }
+      resetForm();
+      onClose();
+    }
+  };
 
    if (!visible) return null;
 
