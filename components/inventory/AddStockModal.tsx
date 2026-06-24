@@ -199,10 +199,10 @@ const handleConfirm = () => {
                placeholder="e.g. Maize"
                placeholderTextColor="#9ca3af"
                style={{ borderWidth: 1.5, borderColor: errors.productName ? '#dc2626' : productNameFocused ? Colors.primary : '#e5e7eb', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: Colors.onSurface }}
-               value={productName}
-               onChangeText={text => { setProductName(text); setErrors(prev => { const e = { ...prev }; delete e.productName; return e; }); }}
-               onFocus={() => setProductNameFocused(true)}
-               onBlur={() => setProductNameFocused(false)}
+value={productName}
+                onChangeText={text => { setProductName(text); setErrors((prev: Record<string, string>) => { const e = { ...prev }; delete e.productName; return e; }); }}
+                onFocus={() => setProductNameFocused(true)}
+                onBlur={() => setProductNameFocused(false)}
              />
              {errors.productName && <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>{errors.productName}</Text>}
   {existingItem && (
@@ -282,10 +282,10 @@ const handleConfirm = () => {
                placeholderTextColor="#9ca3af"
                keyboardType="numeric"
                style={{ borderWidth: 1.5, borderColor: errors.quantity ? '#dc2626' : quantityFocused ? Colors.primary : '#e5e7eb', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: Colors.onSurface }}
-               value={quantity}
-               onChangeText={text => { setQuantity(text); setErrors(prev => { const e = { ...prev }; delete e.quantity; return e; }); }}
-               onFocus={() => setQuantityFocused(true)}
-               onBlur={() => setQuantityFocused(false)}
+value={quantity}
+                onChangeText={text => { setQuantity(text); setErrors((prev: Record<string, string>) => { const e = { ...prev }; delete e.quantity; return e; }); }}
+                onFocus={() => setQuantityFocused(true)}
+                onBlur={() => setQuantityFocused(false)}
              />
              {errors.quantity && <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>{errors.quantity}</Text>}
             </View>
@@ -330,10 +330,10 @@ const handleConfirm = () => {
                placeholderTextColor="#9ca3af"
                keyboardType="numeric"
                style={{ borderWidth: 1.5, borderColor: errors.conversionRate ? '#dc2626' : conversionRateFocused ? Colors.primary : '#e5e7eb', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: Colors.onSurface }}
-               value={conversionRate}
-               onChangeText={text => { setConversionRate(text); setErrors(prev => { const e = { ...prev }; delete e.conversionRate; return e; }); }}
-               onFocus={() => setConversionRateFocused(true)}
-               onBlur={() => setConversionRateFocused(false)}
+value={conversionRate}
+                onChangeText={text => { setConversionRate(text); setErrors((prev: Record<string, string>) => { const e = { ...prev }; delete e.conversionRate; return e; }); }}
+                onFocus={() => setConversionRateFocused(true)}
+                onBlur={() => setConversionRateFocused(false)}
              />
              {errors.conversionRate && <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>{errors.conversionRate}</Text>}
              <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant, marginTop: 4 }}>
@@ -352,7 +352,7 @@ const handleConfirm = () => {
                   keyboardType="numeric"
                   style={{ borderWidth: 1.5, borderColor: buyingPriceFocused ? Colors.primary : '#e5e7eb', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: Colors.onSurface, flex: 1 }}
                   value={buyingPrice}
-                  onChangeText={text => { setBuyingPrice(text); setErrors(prev => { const e = { ...prev }; delete e.buyingPrice; return e; }); }}
+                  onChangeText={text => { setBuyingPrice(text); setErrors((prev: Record<string, string>) => { const e = { ...prev }; delete e.buyingPrice; return e; }); }}
                   onFocus={() => setBuyingPriceFocused(true)}
                   onBlur={() => setBuyingPriceFocused(false)}
                 />
@@ -385,7 +385,7 @@ const handleConfirm = () => {
                      keyboardType="numeric"
                      style={{ borderWidth: 1.5, borderColor: errors[errorKey] ? '#dc2626' : focused ? Colors.primary : '#e5e7eb', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: Colors.onSurface }}
                      value={value}
-                     onChangeText={text => { setValue(text); setErrors(prev => { const e = { ...prev }; delete e[errorKey]; return e; }); }}
+                     onChangeText={text => { setValue(text); setErrors((prev: Record<string, string>) => { const e = { ...prev }; delete e[errorKey]; return e; }); }}
                      onFocus={() => setFocused(true)}
                      onBlur={() => setFocused(false)}
                    />
@@ -403,10 +403,10 @@ const handleConfirm = () => {
                placeholderTextColor="#9ca3af"
                keyboardType="numeric"
                style={{ borderWidth: 1.5, borderColor: errors.lowStockThreshold ? '#dc2626' : lowStockThresholdFocused ? Colors.primary : '#e5e7eb', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: Colors.onSurface }}
-               value={lowStockThreshold}
-               onChangeText={text => { setLowStockThreshold(text); setErrors(prev => { const e = { ...prev }; delete e.lowStockThreshold; return e; }); }}
-               onFocus={() => setLowStockThresholdFocused(true)}
-               onBlur={() => setLowStockThresholdFocused(false)}
+value={lowStockThreshold}
+                onChangeText={text => { setLowStockThreshold(text); setErrors((prev: Record<string, string>) => { const e = { ...prev }; delete e.lowStockThreshold; return e; }); }}
+                onFocus={() => setLowStockThresholdFocused(true)}
+                onBlur={() => setLowStockThresholdFocused(false)}
              />
              {errors.lowStockThreshold && <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>{errors.lowStockThreshold}</Text>}
              <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant, marginTop: 4 }}>
