@@ -28,9 +28,6 @@ const [buyingPrice, setBuyingPrice] = useState('');
     const existingItem = allItems.find(
       item => item.name.trim().toLowerCase() === productName.trim().toLowerCase()
     );
-  const existingItem = allItems.find(
-    item => item.name.trim().toLowerCase() === productName.trim().toLowerCase()
-  );
 
     const [productNameFocused, setProductNameFocused] = useState(false);
    const [descriptionFocused, setDescriptionFocused] = useState(false);
