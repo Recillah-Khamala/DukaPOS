@@ -44,6 +44,7 @@ export default function UnitManagementScreen() {
       </View>
       <Text style={styles.subtitle}>{item.name}</Text>
       <ScrollView style={styles.scrollView}>
+
         {/* Current Configuration Card */}
         <View style={styles.configCard}>
           <Text style={styles.configTitle}>Current Configuration</Text>
@@ -60,7 +61,7 @@ export default function UnitManagementScreen() {
           <View style={styles.configRow}>
             <Text style={styles.configLabel}>Conversion Rate</Text>
             <Text style={styles.configValue}>
-              1 {item.sellingUnit} = {item.conversionRate} {item.buyingUnit}
+              1 {item.buyingUnit} = {item.conversionRate} {item.sellingUnit}
             </Text>
           </View>
           <View style={styles.configDivider} />
@@ -110,7 +111,7 @@ export default function UnitManagementScreen() {
                   <Text style={editSellingUnit === unit ? styles.editChipTextSelected : styles.editChipTextUnselected}>
                     {unit}
                   </Text>
-                </Passable>
+                </Pressable>
               ))}
             </View>
 
@@ -148,7 +149,7 @@ export default function UnitManagementScreen() {
                 <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>{editLowStockThresholdError}</Text>
               )}
               <Text style={styles.editHint}>
-                You'll be alerted when stock drops to this level (in {item.sellingUnit})
+                You'll be alerted when stock drops to this level (in {editSellingUnit})
               </Text>
             </View>
 
@@ -219,7 +220,7 @@ const styles = StyleSheet.create({
   },
   configTitle: { fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 12 },
   configRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8 },
-  configDivider: { borderBottomWeight: 1, borderBottomColor: '#f3f4f6' },
+  configDivider: { borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
   configLabel: { fontSize: 14, color: Colors.onSurfaceVariant },
   configValue: { fontSize: 14, fontWeight: '600', color: Colors.onSurface },
   derivedStock: { marginTop: 12, fontSize: 13, color: Colors.onSurfaceVariant, paddingHorizontal: 4 },
@@ -230,7 +231,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     marginTop: 16,
     alignItems: 'center',
-    justifyContent: 'center',
   },
   editButtonText: { color: Colors.onPrimary, fontSize: 14, fontWeight: '600' },
   editCard: {
