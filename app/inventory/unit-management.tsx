@@ -40,11 +40,13 @@ export default function UnitManagementScreen() {
     );
   }
 
-  const [showEdit, setShowEdit] = React.useState(false);
+const [showEdit, setShowEdit] = React.useState(false);
   const [editBuyingUnit, setEditBuyingUnit] = React.useState<'kg' | 'g' | 'sack' | 'piece'>(item.buyingUnit as 'kg' | 'g' | 'sack' | 'piece');
   const [editSellingUnit, setEditSellingUnit] = React.useState<'Korokoro' | 'kg' | 'g' | 'piece'>(item.sellingUnit as 'Korokoro' | 'kg' | 'g' | 'piece');
   const [editConversionRate, setEditConversionRate] = React.useState<string>(item.conversionRate.toString());
   const [editConversionRateError, setEditConversionRateError] = React.useState<string | null>(null);
+  const [editLowStockThreshold, setEditLowStockThreshold] = React.useState<string>(item.lowStockThreshold.toString());
+  const [editLowStockThresholdError, setEditLowStockThresholdError] = React.useState<string | null>(null);
 
   return (
     <View style={styles.container}>
@@ -59,17 +61,40 @@ export default function UnitManagementScreen() {
       </View>
       <Text style={styles.subtitle}>{item.name}</Text>
       <ScrollView style={styles.scrollView}>
-        <View style={styles.configCard}>
-          <Text style={styles.configTitle}>Current Configuration</Text>
-          <View style={styles.configRow}>
-            <Text style={styles.configLabel}>Buying Unit</Text>
-            <Text style={styles.configValue}>{item.buyingUnit}</Text>
-          </View>
+<View style={styles.configCard}>
+           <Text style={styles.configTitle}>Current Configuration</Text>
+           <View style={styles.configRow}>
+             <Text style={styles.configLabel}>Buying Unit</Text>
+             <Text style={styles.configValue}>{item.buyingUnit}</Text>
+           </View>
+           <View style={styles.configDivider />
+           <View style={styles.configRow}>
+             <Text style={styles.configLabel}>Selling Unit</Text>
+             <Text style={styles.configValue}>{item.sellingUnit}</Text>
+           </View>
+           <View style={styles.configDivider} />
+           <View style={styles.configRow}>
+             <Text style={styles.configLabel}>Conversion Rate</Text>
+             <Text style={styles.configValue}>
+               1 {item.sellingUnit} = {item.conversionRate} {item.buyingUnit}
+             </Text>
+           </View>
+           <View style={styles.configDivider} />
+           <View style={styles.configRow}>
+             <Text style={styles.configLabel}>Low Stock Alert Below</Text>
+             <Text style={styles.configValue}>{item.lowStockThreshold} {item.sellingUnit}</Text>
+           </View>
+         </View>
           <View style={styles.configDivider} />
-          <View style={styles.configRow}>
-            <Text style={styles.configLabel}>Selling Unit</Text>
-            <Text style={styles.configValue}>{item.sellingUnit}</Text>
-          </View>
+<View style={styles.configRow}>
+             <Text style={styles.configLabel}>Conversion Rate</Text>
+             <Text style={styles.configValue}>{item.conversionRate}</Text>
+           </View>
+           <View style={styles.configDivider} />
+           <View style={styles.configRow}>
+             <Text style={styles.configLabel}>Low Stock Alert Below</Text>
+             <Text style={styles.configValue}>{item.lowStockThreshold} {item.sellingUnit}</Text>
+           </View>
           <View style={styles.configDivider} />
           <View style={styles.configRow}>
             <Text style={styles.configLabel}>Conversion Rate</Text>
@@ -126,49 +151,81 @@ export default function UnitManagementScreen() {
                 </Pressable>
               ))}
             </View>
-            <View style={{ marginTop: 12 }}>
-              <Text style={styles.editSubtitle}>Conversion Rate</Text>
-              <TextInput
-                style={styles.editInput}
-                value={editConversionRate}
-                onChangeText={setEditConversionRate}
-                keyboardType="numeric"
-                placeholder="1.0"
-                placeholderTextColor="#9ca3af"
-              />
-              {editConversionRateError && (
-                <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>
-                  {editConversionRateError}
+<View style={{ marginTop: 12 }}>
+                <Text style={styles.editSubtitle}>Conversion Rate</Text>
+                <TextInput
+                  style={styles.editInput}
+                  value={editConversionRate}
+                  onChangeText={setEditConversionRate}
+                  keyboardType="numeric"
+                  placeholder="1.0"
+                  placeholderTextColor="#9ca3af"
+                />
+                {editConversionRateError && (
+                  <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>
+                    {editConversionRateError}
+                  </Text>
+                )}
+                <Text style={styles.editHint}>
+                  1 {editSellingUnit} = how many {editBuyingUnit}?
                 </Text>
-              )}
-              <Text style={styles.editHint}>
-                1 {editSellingUnit} = how many {editBuyingUnit}?
-              </Text>
-            </View>
+              </View>
+              <View style={{ marginTop: 12 }}>
+                <Text style={styles.editSubtitle}>Low Stock Alert Below</Text>
+                <TextInput
+                  style={styles.editInput}
+                  value={editLowStockThreshold}
+                  onChangeText={setEditLowStockThreshold}
+                  keyboardType="numeric"
+                  placeholder="15"
+                  placeholderTextColor="#9ca3af"
+                />
+                {editLowStockThresholdError && (
+                  <Text style={{ color: '#dc2626', fontSize: 12, marginTop: 4 }}>
+                    {editLowStockThresholdError}
+                  </Text>
+                )}
+<Text style={styles.editHint}>
+                 You'll be alerted when stock drops to this level (in {item.sellingUnit})
+               </Text>
+              </View>
             <View style={styles.editButtonRow}>
               <Pressable onPress={() => setShowEdit(false)} style={styles.editCancelButton}>
                 <Text style={styles.editCancelButtonText}>Cancel</Text>
               </Pressable>
-              <Pressable onPress={() => {
-                // Validate conversion rate
-                const conversionRateNum = parseFloat(editConversionRate);
-                if (!editConversionRate || isNaN(conversionRateNum) || conversionRateNum <= 0) {
-                  setEditConversionRateError('Must be a positive number');
-                  return;
-                }
-                // Clear any previous error
-                setEditConversionRateError(null);
-                // Update the item via InventoryContext
-                updateItem(item.id, {
-                  buyingUnit: editBuyingUnit,
-                  sellingUnit: editSellingUnit,
-                  conversionRate: conversionRateNum,
-                });
-                // Hide the edit form
-                setShowEdit(false);
-              }} style={styles.editSaveButton}>
-                <Text style={styles.editSaveButtonText}>Save Changes</Text>
-              </Pressable>
+<Pressable onPress={() => {
+                 // Validate conversion rate
+                 const conversionRateNum = parseFloat(editConversionRate);
+                 const isValidConversionRate =
+                   !isNaN(conversionRateNum) && conversionRateNum > 0;
+                 
+                 // Validate low stock threshold
+                 const newThreshold = parseFloat(editLowStockThreshold);
+                 const isValidThreshold =
+                   !isNaN(newThreshold) && newThreshold > 0;
+                 
+                 // Set errors
+                 setEditConversionRateError(
+                   isValidConversionRate ? null : 'Must be a positive number'
+                 );
+                 setEditLowStockThresholdError(
+                   isValidThreshold ? null : 'Must be a positive number'
+                 );
+                 
+                 // If valid, update the item
+                 if (isValidConversionRate && isValidThreshold) {
+                   updateItem(item.id, {
+                     buyingUnit: editBuyingUnit,
+                     sellingUnit: editSellingUnit,
+                     conversionRate: conversionRateNum,
+                     lowStockThreshold: newThreshold,
+                     isLowStock: item.currentStock <= newThreshold,
+                   });
+                   setShowEdit(false);
+                 }
+               }} style={styles.editSaveButton}>
+                 <Text style={styles.editSaveButtonText}>Save Changes</Text>
+               </Pressable>
             </View>
           </View>
         )}
