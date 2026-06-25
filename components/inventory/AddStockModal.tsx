@@ -104,19 +104,18 @@ const AddStockModal = ({ visible, onClose }: { visible: boolean; onClose: () => 
     setErrors({});
   };
 
-  const handleConfirm = () => {
-    if (validate()) {
-      if (existingItem) {
-        const enteredQty = parseFloat(quantity);
-        const rate = existingItem.conversionRate ?? 1;
-        // conversionRate = Korokoro per buyingUnit (e.g. 36.5 Korokoro per sack)
-        const addedInKorokoro = enteredQty * rate;
-        const newStock = existingItem.currentStock + addedInKorokoro;
-        updateItem(existingItem.id, {
-          currentStock: newStock,
-          isLowStock: newStock <= existingItem.lowStockThreshold,
-        });
-      } else {
+const handleConfirm = () => {
+     if (validate()) {
+       if (existingItem) {
+         const enteredQty = parseFloat(quantity);
+         const rate = existingItem.conversionRate ?? 1;
+         const addedInKorokoro = buyingUnit === sellingUnit ? enteredQty : enteredQty * rate;
+         const newStock = existingItem.currentStock + addedInKorokoro;
+         updateItem(existingItem.id, {
+           currentStock: newStock,
+           isLowStock: newStock <= existingItem.lowStockThreshold,
+         });
+       } else {
         const newItem: InventoryItem = {
           id: Date.now().toString(),
           name: productName.trim(),
