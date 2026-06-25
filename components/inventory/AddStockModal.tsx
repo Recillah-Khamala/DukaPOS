@@ -111,10 +111,15 @@ const handleConfirm = () => {
          const rate = existingItem.conversionRate ?? 1;
          const addedInKorokoro = buyingUnit === sellingUnit ? enteredQty : enteredQty * rate;
          const newStock = existingItem.currentStock + addedInKorokoro;
-         updateItem(existingItem.id, {
-           currentStock: newStock,
-           isLowStock: newStock <= existingItem.lowStockThreshold,
-         });
+const newThreshold = parseFloat(lowStockThreshold);
+        const thresholdToUse = !isNaN(newThreshold) && newThreshold > 0
+          ? newThreshold
+          : existingItem.lowStockThreshold;
+        updateItem(existingItem.id, {
+          currentStock: newStock,
+          lowStockThreshold: thresholdToUse,
+          isLowStock: newStock <= thresholdToUse,
+        });
        } else {
         const newItem: InventoryItem = {
           id: Date.now().toString(),
