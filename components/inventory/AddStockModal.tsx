@@ -115,11 +115,15 @@ const newThreshold = parseFloat(lowStockThreshold);
         const thresholdToUse = !isNaN(newThreshold) && newThreshold > 0
           ? newThreshold
           : existingItem.lowStockThreshold;
-        updateItem(existingItem.id, {
-          currentStock: newStock,
-          lowStockThreshold: thresholdToUse,
-          isLowStock: newStock <= thresholdToUse,
-        });
+const newThreshold = parseFloat(lowStockThreshold);
+          const thresholdToUse = !isNaN(newThreshold) && newThreshold > 0
+            ? newThreshold
+            : existingItem.lowStockThreshold;
+          updateItem(existingItem.id, {
+            currentStock: newStock,
+            lowStockThreshold: thresholdToUse,
+            isLowStock: newStock <= thresholdToUse,
+          });
        } else {
         const newItem: InventoryItem = {
           id: Date.now().toString(),
