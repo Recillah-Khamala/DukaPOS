@@ -10,6 +10,7 @@ import ChangeCalculator from '../components/ui/ChangeCalculator';
 import AdjustItemModal from '../components/sales/AdjustItemModal';
 import { useSharedBasket } from '../context/BasketContext';
 import { useSalesHistory } from '../hooks/useSalesHistory';
+import { useInventory } from '../context/InventoryContext';
 import { CEREAL_PRODUCTS, POSHOMILL_SERVICES, BAG_PRODUCTS } from '../constants/salesData';
 import type { PaymentMethod, UnitType, CompletedSale, BasketItem } from '../types';
 
@@ -56,6 +57,7 @@ export default function CheckoutScreen() {
   const router = useRouter();
   const { items, updateQuantity, removeItem, updateItem, total, clearBasket } = useSharedBasket();
   const { addSale } = useSalesHistory();
+  const { getItemById, updateItem: updateInventoryItem } = useInventory();
 
   const selectedEditProduct = selectedEditItem
     ? [...CEREAL_PRODUCTS, ...POSHOMILL_SERVICES].find(
@@ -82,11 +84,27 @@ export default function CheckoutScreen() {
     };
     try {
       await addSale(completedSale);
+      if (paymentMethod === 'cash' && cashReceived < total) {
+        return;
+      }
+      // Update inventory stock
+      try {
+        for (const item of items) {
+          const inventoryItem = getItemById(item.productId);
+          if (inventoryItem && inventoryItem.currentStock > 0) {
+            updateInventoryItem(item.productId, {
+              currentStock: Math.max(0, inventoryItem.currentStock - item.qty),
+            });
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to update inventory:', e);
+      }
+      clearBasket();
+      router.replace('/(tabs)/sales?saleSuccess=true&total=' + encodeURIComponent(String(total)));
     } catch (e) {
-      console.warn('Failed to save sale:', e);
+      console.warn('Failed to add sale:', e);
     }
-    clearBasket();
-    router.replace('/(tabs)/sales?saleSuccess=true&total=' + encodeURIComponent(String(total)));
   };
 
   const handlePaymentMethodChange = (method: PaymentMethod) => {
