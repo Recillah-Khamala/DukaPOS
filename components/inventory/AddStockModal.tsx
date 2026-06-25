@@ -112,10 +112,6 @@ const handleConfirm = () => {
          const addedInKorokoro = buyingUnit === sellingUnit ? enteredQty : enteredQty * rate;
          const newStock = existingItem.currentStock + addedInKorokoro;
 const newThreshold = parseFloat(lowStockThreshold);
-        const thresholdToUse = !isNaN(newThreshold) && newThreshold > 0
-          ? newThreshold
-          : existingItem.lowStockThreshold;
-const newThreshold = parseFloat(lowStockThreshold);
           const thresholdToUse = !isNaN(newThreshold) && newThreshold > 0
             ? newThreshold
             : existingItem.lowStockThreshold;
