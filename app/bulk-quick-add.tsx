@@ -55,15 +55,8 @@ const handleSaveAllChanges = () => {
         });
       }
     });
-    Alert.alert('Success', 'Stock updated', [
-      {
-        text: 'OK',
-        onPress: () => {
-          setDeliveryAmounts({});
-          router.back();
-        },
-      },
-    ]);
+    setDeliveryAmounts({});
+    router.back();
   };
 
    return (
