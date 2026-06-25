@@ -4,11 +4,24 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import Colors from '../../constants/colors';
+import useSalesHistory from '../../hooks/useSalesHistory';
 
 export default function ReportsScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = React.useState<'Business Health' | 'Market Insights'>('Business Health');
   const [bottomNavHeight, setBottomNavHeight] = React.useState(0);
+  const { sales } = useSalesHistory();
+
+  const todayStr = new Date().toDateString();
+  const todaySales = sales.filter(s => new Date(s.completedAt).toDateString() === todayStr);
+  const todayTotal = todaySales.reduce((sum, s) => sum + s.total, 0);
+  const yesterdayStr = new Date(Date.now() - 86400000).toDateString();
+  const yesterdayTotal = sales
+    .filter(s => new Date(s.completedAt).toDateString() === yesterdayStr)
+    .reduce((sum, s) => sum + s.total, 0);
+  const percentChange = yesterdayTotal === 0 ? null :
+    Math.round(((todayTotal - yesterdayTotal) / yesterdayTotal) * 100);
+  console.log('Today total:', todayTotal, 'Percent change:', percentChange);
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
@@ -23,7 +36,7 @@ export default function ReportsScreen() {
       }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <MaterialIcons name="assessment" size={24} color="white" />
-          <Text style={{ fontSize: 18, fontWeight: '600', color: 'white' }}>Kijiji Cereal Store</Text>
+          <Text style={{ fontSize={18;>'textAlign': 'center', 'fontSize': 18, 'fontWeight': '600', 'color': 'white'}>Kijiji Cereal Store</Text>
         </View>
         <MaterialIcons name="notifications-none" size={24} color="white" />
       </View>
