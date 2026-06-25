@@ -4,7 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import Colors from '../../constants/colors';
-import useSalesHistory from '../../hooks/useSalesHistory';
+import { useSalesHistory } from '../../hooks/useSalesHistory';
 
 export default function ReportsScreen() {
   const router = useRouter();
@@ -36,7 +36,7 @@ export default function ReportsScreen() {
       }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <MaterialIcons name="assessment" size={24} color="white" />
-          <Text style={{ fontSize={18;>'textAlign': 'center', 'fontSize': 18, 'fontWeight': '600', 'color': 'white'}>Kijiji Cereal Store</Text>
+          <Text style={{ fontSize: 18, fontWeight: '600', color: 'white' }}>Kijiji Cereal Store</Text>
         </View>
         <MaterialIcons name="notifications-none" size={24} color="white" />
       </View>
