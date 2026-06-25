@@ -5,16 +5,18 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Colors from '../../constants/colors';
 
 export interface BulkStockEntryRowProps {
-  product: {
-    id: string;
-    name: string;
-    currentStock: number;
-    icon?: string;
-    status?: 'High Demand' | 'Low Stock';
-  };
-  deliveryAmount: number;
-  onDeliveryAmountChange: (value: number) => void;
-}
+   product: {
+     id: string;
+     name: string;
+     currentStock: number;
+     icon?: string;
+     status?: 'High Demand' | 'Low Stock';
+     sellingUnit: string;
+     buyingUnit: string;
+   };
+   deliveryAmount: number;
+   onDeliveryAmountChange: (value: number) => void;
+ }
 
 export default function BulkStockEntryRow({ product, deliveryAmount, onDeliveryAmountChange }: BulkStockEntryRowProps) {
   const handleDecrement = () => {
@@ -36,7 +38,7 @@ export default function BulkStockEntryRow({ product, deliveryAmount, onDeliveryA
       <View className="flex-1">
         <Text className="font-medium text-onSurface">{product.name}</Text>
         <Text className="text-sm text-onSurfaceVariant">
-          Current Stock: {product.currentStock} units
+          Current Stock: {product.currentStock} {product.sellingUnit}
         </Text>
       </View>
       {product.status && (
@@ -62,33 +64,36 @@ export default function BulkStockEntryRow({ product, deliveryAmount, onDeliveryA
           </Text>
         </View>
       )}
-      <View className="flex-row items-center space-x-2">
-        <TouchableOpacity
-          onPress={handleDecrement}
-          disabled={deliveryAmount <= 0}
-          className="px-2 py-1 rounded-md"
-          style={{ backgroundColor: deliveryAmount <= 0 ? '#d1d5db' : Colors.secondaryContainer }}
-        >
-          <MaterialIcons name="remove" size={20} color={deliveryAmount <= 0 ? '#9ca3af' : 'white'} />
-        </TouchableOpacity>
-        <TextInput
-          value={deliveryAmount.toString()}
-          onChangeText={(text) => {
-            const num = parseFloat(text) || 0;
-            onDeliveryAmountChange(num);
-          }}
-          keyboardType="decimal-pad"
-          className="w-16 border border-gray-300 rounded-md px-2 text-center"
-          style={{ textAlign: 'center' }}
-        />
-        <TouchableOpacity
-          onPress={handleIncrement}
-          className="px-2 py-1 rounded-md"
-          style={{ backgroundColor: Colors.secondaryContainer }}
-        >
-          <MaterialIcons name="add" size={20} color="white" />
-        </TouchableOpacity>
-      </View>
+<View className="flex-row items-center space-x-2">
+         <TouchableOpacity
+           onPress={handleDecrement}
+           disabled={deliveryAmount <= 0}
+           className="px-2 py-1 rounded-md"
+           style={{ backgroundColor: deliveryAmount <= 0 ? '#d1d5db' : Colors.secondaryContainer }}
+         >
+           <MaterialIcons name="remove" size={20} color={deliveryAmount <= 0 ? '#9ca3af' : 'white'} />
+         </TouchableOpacity>
+         <TextInput
+           value={deliveryAmount.toString()}
+           onChangeText={(text) => {
+             const num = parseFloat(text) || 0;
+             onDeliveryAmountChange(num);
+           }}
+           keyboardType="decimal-pad"
+           className="w-16 border border-gray-300 rounded-md px-2 text-center"
+           style={{ textAlign: 'center' }}
+         />
+         <TouchableOpacity
+           onPress={handleIncrement}
+           className="px-2 py-1 rounded-md"
+           style={{ backgroundColor: Colors.secondaryContainer }}
+         >
+           <MaterialIcons name="add" size={20} color="white" />
+         </TouchableOpacity>
+       </View>
+       <Text className="text-xs text-onSurfaceVariant">
+         Adding in: {product.buyingUnit}
+       </Text>
     </View>
   );
 }

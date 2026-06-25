@@ -100,20 +100,22 @@ const handleSaveAllChanges = () => {
         </ScrollView>
 {getFilteredItems().length > 0 ? (
   <ScrollView showsVerticalScrollIndicator={true} contentContainerStyle={{ paddingBottom: 20 }}>
-    {getFilteredItems().map((item: InventoryItem) => (
-      <BulkStockEntryRow
-        key={item.id}
-        product={{
-          id: item.id,
-          name: item.name,
-          currentStock: item.currentStock,
-          icon: item.icon ?? 'grain',
-          status: item.isLowStock ? 'Low Stock' : undefined,
-        }}
-        deliveryAmount={deliveryAmounts[item.id] ?? 0}
-        onDeliveryAmountChange={(value) => handleDeliveryAmountChange(item.id, value)}
-      />
-    ))}
+{getFilteredItems().map((item: InventoryItem) => (
+       <BulkStockEntryRow
+         key={item.id}
+         product={{
+           id: item.id,
+           name: item.name,
+           currentStock: item.currentStock,
+           icon: item.icon ?? 'grain',
+           status: item.isLowStock ? 'Low Stock' : undefined,
+           sellingUnit: item.sellingUnit,
+           buyingUnit: item.buyingUnit,
+         }}
+         deliveryAmount={deliveryAmounts[item.id] ?? 0}
+         onDeliveryAmountChange={(value) => handleDeliveryAmountChange(item.id, value)}
+       />
+     ))}
   </ScrollView>
 ) : (
   <View className="mt-6 items-center justify-center">
