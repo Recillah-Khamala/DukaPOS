@@ -123,26 +123,26 @@ const handleSaveAllChanges = () => {
   </View>
 )}
       </View>
-        <View className="flex-row justify-between items-center px-6 py-2 bg-secondaryContainer">
-          <Text className="font-medium text-onSurface">
-            Total Items Updated: {totalUpdated}
-          </Text>
-          <TouchableOpacity
-            onPress={handleSaveAllChanges}
-            disabled={totalUpdated === 0}
-            className="px-4 py-2 rounded-md"
-            style={{
-              backgroundColor: totalUpdated === 0 ? '#d1d5db' : Colors.primary,
-            }}
-          >
-            <Text
-              className="text-sm font-medium"
-              style={{ color: totalUpdated === 0 ? '#9ca3af' : Colors.onPrimary }}
-            >
-              Save All Changes
-            </Text>
-          </TouchableOpacity>
-        </View>
+<View className="flex-row justify-between items-center px-6 py-2 bg-secondaryContainer" style={{ marginBottom: bottomNavHeight }}>
+           <Text className="font-medium text-onSurface">
+             Total Items Updated: {totalUpdated}
+           </Text>
+           <TouchableOpacity
+             onPress={handleSaveAllChanges}
+             disabled={totalUpdated === 0}
+             className="px-4 py-2 rounded-md"
+             style={{
+               backgroundColor: totalUpdated === 0 ? '#d1d5db' : Colors.primary,
+             }}
+           >
+             <Text
+               className="text-sm font-medium"
+               style={{ color: totalUpdated === 0 ? '#9ca3af' : Colors.onPrimary }}
+             >
+               Save All Changes
+             </Text>
+           </TouchableOpacity>
+         </View>
        <BottomNavBar activeTab="inventory" onHeightMeasured={setBottomNavHeight} />
      </View>
    );
