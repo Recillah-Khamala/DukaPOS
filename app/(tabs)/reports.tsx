@@ -307,7 +307,21 @@ export default function ReportsScreen() {
                 <View style={{ backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, alignItems: 'center' }}>
                   <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14 }}>No sales data yet</Text>
                 </View>
-              ) : null}
+              ) : fastestMoving.map((item) => (
+                <View key={item.name} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, marginBottom: 8 }}>
+                  <View style={{ width: 48, height: 48, borderRadius: 8, backgroundColor: Colors.surfaceContainerHigh, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                    <MaterialIcons name={item.icon as any} size={28} color={Colors.primary} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: Colors.onSurface, fontSize: 16, fontWeight: '600' }}>{item.name}</Text>
+                    <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14 }}>{item.qty.toFixed(2)} Korokoro sold</Text>
+                  </View>
+                  <View style={{ alignItems: 'flex-end' }}>
+                    <Text style={{ color: Colors.primary, fontSize: 14, fontWeight: '700' }}>↑ {Math.round((item.qty / fastestMoving[0].qty) * 100)}%</Text>
+                    <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>Demand</Text>
+                  </View>
+                </View>
+              ))}
             </View>
           </View>
         ) : (
