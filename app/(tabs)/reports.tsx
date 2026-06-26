@@ -332,6 +332,20 @@ export default function ReportsScreen() {
         ) : (
           <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 24 }} showsVerticalScrollIndicator={false}>
             <Text style={{ color: Colors.primary, fontSize: 24, fontWeight: '700', marginBottom: 16 }}>Insights & Analytics</Text>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 16 }}>
+              {[
+                { label: 'Regional Avg Price', value: 'KES 128/kg', icon: 'trending-up', iconColor: '#16a34a' },
+                { label: 'Active Traders', value: '142 Shops', icon: 'store', iconColor: Colors.primary },
+                { label: 'Top Commodity', value: 'Maize', icon: 'grass', iconColor: Colors.secondary },
+                { label: 'Market Demand', value: '+12% this week', icon: 'trending-up', iconColor: '#16a34a' },
+              ].map((card) => (
+                <View key={card.label} style={{ width: '47%', backgroundColor: 'white', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: Colors.outlineVariant }}>
+                  <MaterialIcons name={card.icon as any} size={24} color={card.iconColor} />
+                  <Text style={{ color: Colors.onSurface, fontSize: 16, fontWeight: '700', marginTop: 8 }}>{card.value}</Text>
+                  <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12, marginTop: 2 }}>{card.label}</Text>
+                </View>
+              ))}
+            </View>
           </ScrollView>
         )}
       </ScrollView>
