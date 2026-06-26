@@ -330,9 +330,9 @@ export default function ReportsScreen() {
             </View>
           </View>
         ) : (
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Market Insights coming soon</Text>
-          </View>
+          <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 24 }} showsVerticalScrollIndicator={false}>
+            <Text style={{ color: Colors.primary, fontSize: 24, fontWeight: '700', marginBottom: 16 }}>Insights & Analytics</Text>
+          </ScrollView>
         )}
       </ScrollView>
 
