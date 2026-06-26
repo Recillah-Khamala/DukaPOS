@@ -219,16 +219,6 @@ export default function ReportsScreen() {
                     {activeDays}-day consistency
                   </Text>
                 </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <MaterialIcons name="account-balance" size={16} color={Colors.onSurfaceVariant} />
-                  <Text style={{
-                    color: Colors.onSurfaceVariant,
-                    fontSize: 14,
-                    marginLeft: 4,
-                  }}>
-                    KES {loanAmount.toLocaleString()}
-                  </Text>
-                </View>
               </View>
               
               <View style={{ backgroundColor: Colors.surfaceContainerHigh, borderRadius: 8, padding: 8 }}>
