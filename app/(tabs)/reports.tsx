@@ -19,7 +19,7 @@ export default function ReportsScreen() {
   const yesterdayTotal = sales
     .filter(s => new Date(s.completedAt).toDateString() === yesterdayStr)
     .reduce((sum, s) => sum + s.total, 0);
-  const percentChange = yesterdayTotal === 0 ? null :
+  const percentChange = yesterdayTotal === 0 ? null : 
     Math.round(((todayTotal - yesterdayTotal) / yesterdayTotal) * 100);
   console.log('Today total:', todayTotal, 'Percent change:', percentChange);
 
@@ -78,8 +78,50 @@ export default function ReportsScreen() {
         contentContainerStyle={{ paddingBottom: bottomNavHeight + 24 }}
       >
         {activeTab === 'Business Health' ? (
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Business Health coming soon</Text>
+          <View>
+            <View style={{
+              backgroundColor: Colors.primaryContainer,
+              borderRadius: 12,
+              padding: 16,
+              alignItems: 'center',
+              marginBottom: 16,
+            }}>
+              <Text style={{
+                color: Colors.onPrimaryContainer,
+                fontSize: 12,
+                fontWeight: '700',
+                textTransform: 'uppercase',
+                letterSpacing: 0.5,
+              }}>
+                TODAY'S PROFIT
+              </Text>
+              <Text style={{
+                color: Colors.secondaryContainer,
+                fontSize: 28,
+                fontWeight: '800',
+                marginTop: 4,
+              }}>
+                KES {todayTotal.toLocaleString()}
+              </Text>
+              {percentChange !== null && (
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+                  <MaterialIcons
+                    name={percentChange >= 0 ? 'trending-up' : 'trending-down'}
+                    size={18}
+                    color={Colors.onPrimaryContainer}
+                  />
+                  <Text style={{
+                    color: Colors.onPrimaryContainer,
+                    fontSize: 14,
+                    fontWeight: '700',
+                    marginLeft: 4,
+                  }}>
+                    {Math.abs(percentChange)}% from yesterday
+                  </Text>
+                </View>
+              )}
+            </View>
+            <Text>More coming soon</Text>
           </View>
         ) : (
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
