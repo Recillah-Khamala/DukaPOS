@@ -313,7 +313,9 @@ export default function ReportsScreen() {
             <View style={{ marginBottom: 12 }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                 <Text style={{ color: Colors.primary, fontSize: 20, fontWeight: '600' }}>Fastest Moving Items</Text>
-                <Text style={{ color: Colors.secondary, fontSize: 14, fontWeight: '700' }}>Full Report</Text>
+                <TouchableOpacity onPress={() => router.push('/transaction-history')}>
+                  <Text style={{ color: Colors.secondary, fontSize: 14, fontWeight: '700' }}>Full Report</Text>
+                </TouchableOpacity>
               </View>
               {fastestMoving.length === 0 ? (
                 <View style={{ backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, alignItems: 'center' }}>
