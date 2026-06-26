@@ -346,6 +346,12 @@ export default function ReportsScreen() {
                 </View>
               ))}
             </View>
+            <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '600', marginBottom: 8 }}>Kitale Hub Activity</Text>
+            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12, marginBottom: 12 }}>Heatmap based on Posho Mill throughput</Text>
+            <View style={{ backgroundColor: Colors.surfaceContainerHigh, borderRadius: 12, height: 160, alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+              <MaterialIcons name="map" size={48} color={Colors.outlineVariant} />
+              <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14, marginTop: 8 }}>Live map coming soon</Text>
+            </View>
           </ScrollView>
         )}
       </ScrollView>
