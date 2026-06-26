@@ -303,7 +303,11 @@ export default function ReportsScreen() {
                 <Text style={{ color: Colors.primary, fontSize: 20, fontWeight: '600' }}>Fastest Moving Items</Text>
                 <Text style={{ color: Colors.secondary, fontSize: 14, fontWeight: '700' }}>Full Report</Text>
               </View>
-              {/* items go here next commit */}
+              {fastestMoving.length === 0 ? (
+                <View style={{ backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, alignItems: 'center' }}>
+                  <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14 }}>No sales data yet</Text>
+                </View>
+              ) : null}
             </View>
           </View>
         ) : (
