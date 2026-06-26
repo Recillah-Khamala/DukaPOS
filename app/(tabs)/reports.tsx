@@ -21,7 +21,32 @@ export default function ReportsScreen() {
     .reduce((sum, s) => sum + s.total, 0);
   const percentChange = yesterdayTotal === 0 ? null : 
     Math.round(((todayTotal - yesterdayTotal) / yesterdayTotal) * 100);
+  
+  // Calculate Business Health Score metrics
+  const thirtyDaysAgo = Date.now() - 30 * 86400000;
+  const recentSales = sales.filter(s => new Date(s.completedAt) >= thirtyDaysAgo);
+  
+  // Active days: unique days with sales in last 30 days
+  const activeDaysSet = new Set(recentSales.map(s => new Date(s.completedAt).toDateString()));
+  const activeDays = activeDaysSet.size;
+  
+  // Average daily sales in last 30 days
+  const totalRecentSales = recentSales.reduce((sum, s) => sum + s.total, 0);
+  const avgDailySales = activeDays > 0 ? totalRecentSales / activeDays : 0;
+  
+  // Loan amount estimate: 30% of monthly sales (avg daily * 30)
+  const loanAmount = avgDailySales * 30 * 0.3;
+  
+  // Tier based on average daily sales
+  let tier = 'Bronze';
+  if (avgDailySales >= 10000) tier = 'Platinum';
+  else if (avgDailySales >= 5000) tier = 'Gold';
+  else if (avgDailySales >= 1000) tier = 'Silver';
+  
+  const score = Math.min(100, Math.round((activeDays / 30) * 100));
+  
   console.log('Today total:', todayTotal, 'Percent change:', percentChange);
+  console.log('Active days:', activeDays, 'Avg daily sales:', avgDailySales, 'Loan amount:', loanAmount, 'Tier:', tier);
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
@@ -121,6 +146,89 @@ export default function ReportsScreen() {
                 </View>
               )}
             </View>
+            
+            {/* Business Health Score Card */}
+            <View style={{
+              backgroundColor: Colors.primaryContainer,
+              borderRadius: 12,
+              padding: 16,
+              marginBottom: 16,
+            }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                <View>
+                  <Text style={{
+                    color: Colors.onPrimaryContainer,
+                    fontSize: 14,
+                    fontWeight: '600',
+                  }}>
+                    Business Health Score
+                  </Text>
+                  <Text style={{
+                    color: Colors.onPrimaryContainer,
+                    fontSize: 24,
+                    fontWeight: '800',
+                    marginTop: 4,
+                  }}>
+                    {score}
+                  </Text>
+                </View>
+                <View style={{
+                  backgroundColor: Colors.primaryFixed,
+                  borderRadius: 20,
+                  paddingHorizontal: 12,
+                  paddingVertical: 4,
+                }}>
+                  <Text style={{
+                    color: Colors.primary,
+                    fontSize: 12,
+                    fontWeight: '700',
+                  }}>
+                    {tier}
+                  </Text>
+                </View>
+              </View>
+              
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <MaterialIcons name="timeline" size={16} color={Colors.onPrimaryContainer} />
+                  <Text style={{
+                    color: Colors.onPrimaryContainer,
+                    fontSize: 14,
+                    marginLeft: 4,
+                  }}>
+                    {activeDays}-day consistency
+                  </Text>
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <MaterialIcons name="account_balance_wallet" size={16} color={Colors.onPrimaryContainer} />
+                  <Text style={{
+                    color: Colors.onPrimaryContainer,
+                    fontSize: 14,
+                    marginLeft: 4,
+                  }}>
+                    KES {loanAmount.toLocaleString()}
+                  </Text>
+                </View>
+              </View>
+              
+              <View style={{ backgroundColor: Colors.surfaceContainerHigh, borderRadius: 8, padding: 8 }}>
+                <Text style={{
+                  color: Colors.secondary,
+                  fontSize: 14,
+                  fontWeight: '700',
+                }}>
+                  Ready for Micro-loan: KES {loanAmount.toLocaleString()}
+                </Text>
+                <Text style={{
+                  color: Colors.onSurfaceVariant,
+                  fontSize: 12,
+                  marginTop: 2,
+                }}>
+                  Based on {activeDays}-day consistency
+                </Text>
+              </View>
+            </View>
+            
             <Text>More coming soon</Text>
           </View>
         ) : (
