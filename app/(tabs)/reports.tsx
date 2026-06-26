@@ -249,25 +249,26 @@ export default function ReportsScreen() {
                 Sales Trend (Last 7 Days)
               </Text>
               <View style={{ 
-                flexDirection: 'row', 
-                justifyContent: 'space-around',
-                paddingHorizontal: 8 
+                flexDirection: 'row',
+                alignItems: 'flex-end',
+                justifyContent: 'space-between',
+                height: 120,
+                paddingHorizontal: 8,
               }}>
                 {last7Days.map((day, index) => (
-                  <View key={index} style={{ alignItems: 'center' }}>
-                    <Text style={{ 
-                      fontSize: 10, 
-                      color: index === 6 ? Colors.primary : Colors.onSurfaceVariant,
-                      marginBottom: 4,
-                    }}>
-                      {dayLabels[day.getDay()]}
-                    </Text>
+                  <View key={index} style={{ flex: 1, alignItems: 'center', gap: 4 }}>
                     <View style={{
-                      width: 20,
-                      height: (dailyTotals[index] / maxTotal) * 80, 
+                      width: '80%',
+                      height: Math.max(4, (dailyTotals[index] / maxTotal) * 100),
                       backgroundColor: index === 6 ? Colors.primary : Colors.primaryFixed,
                       borderRadius: 4,
                     }}/>
+                    <Text style={{ 
+                      fontSize: 10, 
+                      color: index === 6 ? Colors.primary : Colors.onSurfaceVariant,
+                    }}>
+                      {dayLabels[day.getDay()]}
+                    </Text>
                   </View>
                 ))}
               </View>
