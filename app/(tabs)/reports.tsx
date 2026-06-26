@@ -48,6 +48,22 @@ export default function ReportsScreen() {
   });
   const maxTotal = Math.max(...dailyTotals) || 1;
 
+  const productTotals: Record<string, { name: string; qty: number; icon: string; type: string }> = {};
+  sales.forEach(sale => {
+    sale.items.forEach(item => {
+      if (!productTotals[item.productId]) {
+        productTotals[item.productId] = { name: item.name, qty: 0, icon: item.icon ?? 'grain', type: item.type };
+      }
+      productTotals[item.productId].qty += item.qty;
+    });
+  });
+  const fastestMoving = Object.values(productTotals)
+    .filter(p => p.type === 'cereal')
+    .sort((a, b) => b.qty - a.qty)
+    .slice(0, 3);
+
+  console.log('Fastest moving:', fastestMoving);
+
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
       <View style={{
