@@ -68,6 +68,12 @@ export default function ReportsScreen() {
     { name: 'Sorghum', icon: 'grain', percent: 45, note: 'Kitale: -4% vs National' },
   ];
 
+  const topShops = [
+    { initials: 'WM', name: 'Wekesa Millers', tag: 'High Volume', icon: 'trending-up', iconColor: Colors.primary },
+    { initials: 'KM', name: 'Kitale Maize Hub', tag: 'Steady Repayment', icon: 'trending-up', iconColor: Colors.primary },
+    { initials: 'CP', name: 'Cherangani Posho', tag: 'Peak Season Growth', icon: 'star', iconColor: Colors.secondary },
+  ];
+
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
       <View style={{
@@ -371,6 +377,19 @@ export default function ReportsScreen() {
                 <View style={{ height: 8, backgroundColor: Colors.surfaceContainerHigh, borderRadius: 4 }}>
                   <View style={{ width: `${item.percent}%`, height: 8, backgroundColor: Colors.primary, borderRadius: 4 }} />
                 </View>
+              </View>
+            ))}
+            <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '600', marginBottom: 12 }}>Top Shops in Kitale</Text>
+            {topShops.map((shop) => (
+              <View key={shop.name} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: Colors.surface, borderRadius: 8, padding: 12, marginBottom: 8 }}>
+                <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.primaryFixed, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                  <Text style={{ color: Colors.primary, fontSize: 14, fontWeight: '700' }}>{shop.initials}</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: Colors.onSurface, fontSize: 14, fontWeight: '700' }}>{shop.name}</Text>
+                  <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>{shop.tag}</Text>
+                </View>
+                <MaterialIcons name={shop.icon as any} size={24} color={shop.iconColor} />
               </View>
             ))}
           </ScrollView>
