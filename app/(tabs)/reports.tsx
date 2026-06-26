@@ -30,20 +30,9 @@ export default function ReportsScreen() {
   const activeDaysSet = new Set(recentSales.map(s => new Date(s.completedAt).toDateString()));
   const activeDays = activeDaysSet.size;
   
-  // Average daily sales in last 30 days
-  const totalRecentSales = recentSales.reduce((sum, s) => sum + s.total, 0);
-  const avgDailySales = activeDays > 0 ? totalRecentSales / activeDays : 0;
-  
-  // Loan amount estimate: 30% of monthly sales (avg daily * 30)
-  const loanAmount = avgDailySales * 30 * 0.3;
-  
-  // Tier based on average daily sales
-  let tier = 'Bronze';
-  if (avgDailySales >= 10000) tier = 'Platinum';
-  else if (avgDailySales >= 5000) tier = 'Gold';
-  else if (avgDailySales >= 1000) tier = 'Silver';
-  
   const score = Math.min(100, Math.round((activeDays / 30) * 100));
+  const tier = score >= 80 ? 'Gold Tier' : score >= 50 ? 'Silver Tier' : 'Bronze Tier';
+  const loanAmount = score >= 80 ? 50000 : score >= 50 ? 25000 : 10000;
   
   // 7-Day Sales Trend data
   const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -58,9 +47,6 @@ export default function ReportsScreen() {
     return daySales.reduce((sum, s) => sum + s.total, 0);
   });
   const maxTotal = Math.max(...dailyTotals) || 1;
-
-  console.log('Today total:', todayTotal, 'Percent change:', percentChange);
-  console.log('Active days:', activeDays, 'Avg daily sales:', avgDailySales, 'Loan amount:', loanAmount, 'Tier:', tier);
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
