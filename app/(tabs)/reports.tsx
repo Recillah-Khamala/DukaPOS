@@ -165,14 +165,21 @@ export default function ReportsScreen() {
                   }}>
                     Business Health Score
                   </Text>
-                  <Text style={{
-                    color: Colors.primary,
-                    fontSize: 24,
-                    fontWeight: '800',
-                    marginTop: 4,
-                  }}>
-                    {score}
-                  </Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginTop: 4 }}>
+                    <Text style={{
+                      color: Colors.primary,
+                      fontSize: 32,
+                      fontWeight: '700',
+                    }}>
+                      {score}
+                    </Text>
+                    <Text style={{
+                      color: Colors.onSurfaceVariant,
+                      fontSize: 20,
+                    }}>
+                      /100
+                    </Text>
+                  </View>
                 </View>
                 <View style={{
                   backgroundColor: Colors.primaryFixed,
@@ -244,14 +251,16 @@ export default function ReportsScreen() {
               padding: 16,
               marginBottom: 16,
             }}>
-              <Text style={{
-                color: Colors.primary,
-                fontSize: 14,
-                fontWeight: '600',
-                marginBottom: 12,
-              }}>
-                Sales Trend (Last 7 Days)
-              </Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <Text style={{
+                  color: Colors.primary,
+                  fontSize: 14,
+                  fontWeight: '600',
+                }}>
+                  7-Day Sales Trend
+                </Text>
+                <MaterialIcons name="bar-chart" size={24} color={Colors.onSurfaceVariant} />
+              </View>
               <View style={{ 
                 flexDirection: 'row',
                 alignItems: 'flex-end',
@@ -263,7 +272,7 @@ export default function ReportsScreen() {
                   <View key={index} style={{ flex: 1, alignItems: 'center', gap: 4 }}>
                     <View style={{
                       width: 16,
-                      height: Math.max(4, (dailyTotals[index] / maxTotal) * 100),
+                      height: Math.max(8, (dailyTotals[index] / maxTotal) * 100),
                       backgroundColor: index === 6 ? Colors.primary : Colors.primaryFixed,
                       borderRadius: 4,
                     }}/>
