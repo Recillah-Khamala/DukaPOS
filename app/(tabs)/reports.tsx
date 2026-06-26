@@ -190,6 +190,10 @@ export default function ReportsScreen() {
                 </View>
               </View>
               
+              <View style={{ height: 8, backgroundColor: Colors.surfaceContainerHigh, borderRadius: 4, marginTop: 8, marginBottom: 12 }}>
+                <View style={{ width: `${score}%`, height: 8, backgroundColor: Colors.secondary, borderRadius: 4 }} />
+              </View>
+              
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <MaterialIcons name="today" size={16} color={Colors.onSurfaceVariant} />
@@ -258,7 +262,7 @@ export default function ReportsScreen() {
                 {last7Days.map((day, index) => (
                   <View key={index} style={{ flex: 1, alignItems: 'center', gap: 4 }}>
                     <View style={{
-                      width: '80%',
+                      width: 16,
                       height: Math.max(4, (dailyTotals[index] / maxTotal) * 100),
                       backgroundColor: index === 6 ? Colors.primary : Colors.primaryFixed,
                       borderRadius: 4,
