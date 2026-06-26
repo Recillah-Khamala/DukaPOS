@@ -307,10 +307,15 @@ export default function ReportsScreen() {
                 <View style={{ backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, alignItems: 'center' }}>
                   <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14 }}>No sales data yet</Text>
                 </View>
-              ) : fastestMoving.map((item) => (
+              ) : fastestMoving.map((item, index) => (
                 <View key={item.name} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, marginBottom: 8 }}>
-                  <View style={{ width: 48, height: 48, borderRadius: 8, backgroundColor: Colors.surfaceContainerHigh, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                  <View style={{ position: 'relative', width: 48, height: 48, borderRadius: 8, backgroundColor: Colors.surfaceContainerHigh, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
                     <MaterialIcons name={item.icon as any} size={28} color={Colors.primary} />
+                    {index === 0 && (
+                      <View style={{ position: 'absolute', bottom: 0, right: 0, backgroundColor: Colors.secondary, borderTopLeftRadius: 4, paddingHorizontal: 3, paddingVertical: 1 }}>
+                        <Text style={{ color: 'white', fontSize: 8, fontWeight: '800' }}>HOT</Text>
+                      </View>
+                    )}
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: Colors.onSurface, fontSize: 16, fontWeight: '600' }}>{item.name}</Text>
