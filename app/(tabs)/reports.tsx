@@ -62,8 +62,6 @@ export default function ReportsScreen() {
     .sort((a, b) => b.qty - a.qty)
     .slice(0, 3);
 
-  console.log('Fastest moving:', fastestMoving);
-
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
       <View style={{
@@ -300,7 +298,13 @@ export default function ReportsScreen() {
               </View>
             </View>
             
-            <Text>More coming soon</Text>
+            <View style={{ marginBottom: 12 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <Text style={{ color: Colors.primary, fontSize: 20, fontWeight: '600' }}>Fastest Moving Items</Text>
+                <Text style={{ color: Colors.secondary, fontSize: 14, fontWeight: '700' }}>Full Report</Text>
+              </View>
+              {/* items go here next commit */}
+            </View>
           </View>
         ) : (
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
