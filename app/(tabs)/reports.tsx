@@ -165,6 +165,13 @@ export default function ReportsScreen() {
                   }}>
                     Business Health Score
                   </Text>
+                  <Text style={{
+                    color: Colors.onSurfaceVariant,
+                    fontSize: 14,
+                    marginTop: 2,
+                  }}>
+                    Loan Eligibility Metric
+                  </Text>
                   <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginTop: 4 }}>
                     <Text style={{
                       color: Colors.primary,
@@ -198,7 +205,7 @@ export default function ReportsScreen() {
               </View>
               
               <View style={{ height: 8, backgroundColor: Colors.surfaceContainerHigh, borderRadius: 4, marginTop: 8, marginBottom: 12 }}>
-                <View style={{ width: `${score}%`, height: 8, backgroundColor: Colors.secondary, borderRadius: 4 }} />
+                <View style={{ width: `${score}%`, height: 8, backgroundColor: '#ffb702', borderRadius: 4 }} />
               </View>
               
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
