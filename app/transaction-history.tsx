@@ -15,10 +15,22 @@ export default function TransactionHistoryScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
       <TopAppBar title="Transaction History" onBack={() => router.back()} />
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ color: Colors.onSurfaceVariant }}>Loading transactions...</Text>
+        </View>
+      ) : (
       <FlatList
         data={sales}
         keyExtractor={(sale) => sale.id}
-        contentContainerStyle={{ paddingTop: 72, paddingBottom: bottomNavHeight + 24, paddingHorizontal: 16 }}
+        contentContainerStyle={{ paddingTop: 12, paddingBottom: bottomNavHeight + 24 }}
+        ListHeaderComponent={
+          <View style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
+            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600' }}>
+              {sales.length} transaction{sales.length !== 1 ? 's' : ''} total
+            </Text>
+          </View>
+        }
         renderItem={({ item: sale }) => (
           <View style={{ backgroundColor: 'white', borderRadius: 12, padding: 16, marginHorizontal: 16, marginBottom: 8, borderWidth: 1, borderColor: Colors.outlineVariant, flexDirection: 'row', alignItems: 'center' }}>
             <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: Colors.primaryFixed, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
@@ -53,6 +65,7 @@ export default function TransactionHistoryScreen() {
           </View>
         }
       />
+      )}
       <BottomNavBar activeTab="reports" onHeightMeasured={setBottomNavHeight} />
     </View>
   );
