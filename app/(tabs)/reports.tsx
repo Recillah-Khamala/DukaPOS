@@ -45,6 +45,20 @@ export default function ReportsScreen() {
   
   const score = Math.min(100, Math.round((activeDays / 30) * 100));
   
+  // 7-Day Sales Trend data
+  const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const last7Days = [];
+  for (let i = 6; i >= 0; i--) {
+    const day = new Date(Date.now() - i * 86400000);
+    last7Days.push(day);
+  }
+  const dailyTotals = last7Days.map(day => {
+    const dayStr = day.toDateString();
+    const daySales = sales.filter(s => new Date(s.completedAt).toDateString() === dayStr);
+    return daySales.reduce((sum, s) => sum + s.total, 0);
+  });
+  const maxTotal = Math.max(...dailyTotals) || 1;
+
   console.log('Today total:', todayTotal, 'Percent change:', percentChange);
   console.log('Active days:', activeDays, 'Avg daily sales:', avgDailySales, 'Loan amount:', loanAmount, 'Tier:', tier);
 
@@ -226,6 +240,46 @@ export default function ReportsScreen() {
                 }}>
                   Based on {activeDays}-day consistency
                 </Text>
+              </View>
+            </View>
+            
+            {/* 7-Day Sales Trend Chart */}
+            <View style={{
+              backgroundColor: Colors.primaryContainer,
+              borderRadius: 12,
+              padding: 16,
+              marginBottom: 16,
+            }}>
+              <Text style={{
+                color: Colors.onPrimaryContainer,
+                fontSize: 14,
+                fontWeight: '600',
+                marginBottom: 12,
+              }}>
+                Sales Trend (Last 7 Days)
+              </Text>
+              <View style={{ 
+                flexDirection: 'row', 
+                justifyContent: 'space-around',
+                paddingHorizontal: 8 
+              }}>
+                {last7Days.map((day, index) => (
+                  <View key={index} style={{ alignItems: 'center' }}>
+                    <Text style={{ 
+                      fontSize: 10, 
+                      color: index === 6 ? Colors.primary : Colors.onSurfaceVariant,
+                      marginBottom: 4,
+                    }}>
+                      {dayLabels[day.getDay()]}
+                    </Text>
+                    <View style={{
+                      width: 20,
+                      height: (dailyTotals[index] / maxTotal) * 80, 
+                      backgroundColor: index === 6 ? Colors.primary : Colors.primaryFixed,
+                      borderRadius: 4,
+                    }}/>
+                  </View>
+                ))}
               </View>
             </View>
             
