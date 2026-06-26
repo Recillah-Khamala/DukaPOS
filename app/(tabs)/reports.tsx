@@ -24,7 +24,7 @@ export default function ReportsScreen() {
   
   // Calculate Business Health Score metrics
   const thirtyDaysAgo = Date.now() - 30 * 86400000;
-  const recentSales = sales.filter(s => new Date(s.completedAt) >= thirtyDaysAgo);
+  const recentSales = sales.filter(s => new Date(s.completedAt).getTime() >= thirtyDaysAgo);
   
   // Active days: unique days with sales in last 30 days
   const activeDaysSet = new Set(recentSales.map(s => new Date(s.completedAt).toDateString()));
@@ -190,7 +190,7 @@ export default function ReportsScreen() {
               
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <MaterialIcons name="timeline" size={16} color={Colors.onPrimaryContainer} />
+                  <MaterialIcons name="today" size={16} color={Colors.onPrimaryContainer} />
                   <Text style={{
                     color: Colors.onPrimaryContainer,
                     fontSize: 14,
@@ -200,7 +200,7 @@ export default function ReportsScreen() {
                   </Text>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <MaterialIcons name="account_balance_wallet" size={16} color={Colors.onPrimaryContainer} />
+                  <MaterialIcons name="account-balance" size={16} color={Colors.onPrimaryContainer} />
                   <Text style={{
                     color: Colors.onPrimaryContainer,
                     fontSize: 14,
