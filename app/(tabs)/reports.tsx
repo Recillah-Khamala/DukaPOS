@@ -117,7 +117,7 @@ export default function ReportsScreen() {
         contentContainerStyle={{ paddingBottom: bottomNavHeight + 24 }}
       >
         {activeTab === 'Business Health' ? (
-          <View>
+          <View style={{ padding: 16 }}>
             <View style={{
               backgroundColor: Colors.primaryContainer,
               borderRadius: 12,
@@ -163,7 +163,9 @@ export default function ReportsScreen() {
             
             {/* Business Health Score Card */}
             <View style={{
-              backgroundColor: Colors.primaryContainer,
+              backgroundColor: 'white',
+              borderWidth: 1,
+              borderColor: Colors.outlineVariant,
               borderRadius: 12,
               padding: 16,
               marginBottom: 16,
@@ -171,14 +173,14 @@ export default function ReportsScreen() {
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                 <View>
                   <Text style={{
-                    color: Colors.onPrimaryContainer,
+                    color: Colors.primary,
                     fontSize: 14,
                     fontWeight: '600',
                   }}>
                     Business Health Score
                   </Text>
                   <Text style={{
-                    color: Colors.onPrimaryContainer,
+                    color: Colors.primary,
                     fontSize: 24,
                     fontWeight: '800',
                     marginTop: 4,
@@ -204,9 +206,9 @@ export default function ReportsScreen() {
               
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <MaterialIcons name="today" size={16} color={Colors.onPrimaryContainer} />
+                  <MaterialIcons name="today" size={16} color={Colors.onSurfaceVariant} />
                   <Text style={{
-                    color: Colors.onPrimaryContainer,
+                    color: Colors.onSurfaceVariant,
                     fontSize: 14,
                     marginLeft: 4,
                   }}>
@@ -214,9 +216,9 @@ export default function ReportsScreen() {
                   </Text>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <MaterialIcons name="account-balance" size={16} color={Colors.onPrimaryContainer} />
+                  <MaterialIcons name="account-balance" size={16} color={Colors.onSurfaceVariant} />
                   <Text style={{
-                    color: Colors.onPrimaryContainer,
+                    color: Colors.onSurfaceVariant,
                     fontSize: 14,
                     marginLeft: 4,
                   }}>
@@ -245,13 +247,15 @@ export default function ReportsScreen() {
             
             {/* 7-Day Sales Trend Chart */}
             <View style={{
-              backgroundColor: Colors.primaryContainer,
+              backgroundColor: 'white',
+              borderWidth: 1,
+              borderColor: Colors.outlineVariant,
               borderRadius: 12,
               padding: 16,
               marginBottom: 16,
             }}>
               <Text style={{
-                color: Colors.onPrimaryContainer,
+                color: Colors.primary,
                 fontSize: 14,
                 fontWeight: '600',
                 marginBottom: 12,
