@@ -62,6 +62,12 @@ export default function ReportsScreen() {
     .sort((a, b) => b.qty - a.qty)
     .slice(0, 3);
 
+  const demandItems = [
+    { name: 'Maize', icon: 'grass', percent: 88, note: 'Kitale: +24% vs National' },
+    { name: 'Millet', icon: 'eco', percent: 62, note: 'Kitale: +8% vs National' },
+    { name: 'Sorghum', icon: 'grain', percent: 45, note: 'Kitale: -4% vs National' },
+  ];
+
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
       <View style={{
@@ -352,6 +358,21 @@ export default function ReportsScreen() {
               <MaterialIcons name="map" size={48} color={Colors.outlineVariant} />
               <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14, marginTop: 8 }}>Live map coming soon</Text>
             </View>
+            <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '600', marginBottom: 12 }}>Demand by Commodity</Text>
+            {demandItems.map((item) => (
+              <View key={item.name} style={{ marginBottom: 16 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <MaterialIcons name={item.icon as any} size={18} color={Colors.secondary} />
+                    <Text style={{ color: Colors.onSurface, fontSize: 14, fontWeight: '700', marginLeft: 6 }}>{item.name}</Text>
+                  </View>
+                  <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11 }}>{item.note}</Text>
+                </View>
+                <View style={{ height: 8, backgroundColor: Colors.surfaceContainerHigh, borderRadius: 4 }}>
+                  <View style={{ width: `${item.percent}%`, height: 8, backgroundColor: Colors.primary, borderRadius: 4 }} />
+                </View>
+              </View>
+            ))}
           </ScrollView>
         )}
       </ScrollView>
