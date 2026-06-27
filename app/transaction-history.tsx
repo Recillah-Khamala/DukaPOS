@@ -62,7 +62,7 @@ export default function TransactionHistoryScreen() {
                      backgroundColor:
                        item.paymentMethod === 'mpesa'
                          ? Colors.secondaryContainer
-                         : Colors.primaryFixed,
+                         : Colors.primaryContainer,
                    },
                  ]}>
                    <Text style={styles.badgeText}>
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: Colors.primaryFixed,
+    backgroundColor: Colors.primaryContainer,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
