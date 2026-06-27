@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSalesHistory } from '../hooks/useSalesHistory';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-
 const { TopAppBar, BottomNavBar, Colors } = require('react-native-paper');
+const MaterialIcons = require('react-native-vector-icons/MaterialIcons');
 
 export default function TransactionHistoryScreen() {
   const router = useRouter();
