@@ -4,6 +4,8 @@ import { TopAppBar, BottomNavBar, Colors } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import { useSalesHistory } from '../hooks/useSalesHistory';
 
+/// <reference types="react-native-paper" />
+
 export default function TransactionHistoryScreen() {
   const router = useRouter();
   const { sales, loading } = useSalesHistory();
