@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSalesHistory } from '../hooks/useSalesHistory';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const { TopAppBar, BottomNavBar, Colors } = require('react-native-paper');
 
@@ -9,8 +10,6 @@ export default function TransactionHistoryScreen() {
   const router = useRouter();
   const { sales, loading } = useSalesHistory();
   const [bottomNavHeight, setBottomNavHeight] = useState(0);
-
-  console.log('Sales count:', sales.length);
 
   return (
     <View style={styles.container}>
@@ -28,8 +27,46 @@ export default function TransactionHistoryScreen() {
           data={sales}
           keyExtractor={(item) => String(item.id ?? '')}
           renderItem={({ item }) => (
-            <View style={styles.item}>
-              <Text>{item.id}</Text>
+            <View style={styles.row}>
+              <View style={styles.iconContainer}>
+                <MaterialIcons name="receipt-long" size={22} color={Colors.primary} />
+              </View>
+              <View style={styles.middle}>
+                <Text style={styles.date}>
+                  {new Date(item.completedAt).toLocaleDateString('en-KE', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </Text>
+                <Text style={styles.time}>
+                  {new Date(item.completedAt).toLocaleTimeString('en-KE', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </Text>
+                <Text style={styles.itemsCount}>
+                  {item.items.length} item{item.items.length !== 1 ? 's' : ''}
+                </Text>
+              </View>
+              <View style={styles.right}>
+                <Text style={styles.total}>
+                  KES {item.total.toLocaleString()}
+                </Text>
+                <View style={[
+                  styles.badge,
+                  {
+                    backgroundColor:
+                      item.paymentMethod === 'mpesa'
+                        ? Colors.secondaryContainer
+                        : Colors.primaryFixed,
+                  },
+                ]}>
+                  <Text style={styles.badgeText}>
+                    {item.paymentMethod.toUpperCase()}
+                  </Text>
+                </View>
+              </View>
             </View>
           )}
           ListEmptyComponent={
@@ -52,7 +89,58 @@ export default function TransactionHistoryScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
   appBar: { backgroundColor: Colors.primary },
-  item: { padding: 16, borderBottomWidth: 1, borderColor: Colors.divider },
+  row: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    marginHorizontal: 16,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: Colors.primaryFixed,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  middle: { flex: 1 },
+  date: {
+    color: Colors.onSurface,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  time: {
+    color: Colors.onSurfaceVariant,
+    fontSize: 12,
+  },
+  itemsCount: {
+    color: Colors.onSurfaceVariant,
+    fontSize: 12,
+    marginTop: 4,
+  },
+  right: { alignItems: 'flex-end' },
+  total: {
+    color: Colors.primary,
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  badge: {
+    borderRadius: 20,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  badgeText: {
+    color: Colors.onSurface,
+    fontSize: 10,
+    fontWeight: '700',
+  },
   emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   emptyText: { color: Colors.onSurfaceVariant },
   bottomNav: { position: 'absolute', bottom: 0, left: 0, right: 0 },
