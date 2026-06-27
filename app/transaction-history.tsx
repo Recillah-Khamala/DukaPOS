@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
-import { TopAppBar, BottomNavBar, Colors } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import { useSalesHistory } from '../hooks/useSalesHistory';
 
-/// <reference types="react-native-paper" />
+const { TopAppBar, BottomNavBar, Colors } = require('react-native-paper');
 
 export default function TransactionHistoryScreen() {
   const router = useRouter();
