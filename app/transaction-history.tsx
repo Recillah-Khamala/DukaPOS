@@ -17,65 +17,72 @@ export default function TransactionHistoryScreen() {
         onBack={() => router.back()}
         style={styles.appBar}
       />
-      {loading ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text>Loading...</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={sales}
-          keyExtractor={(item) => String(item.id ?? '')}
-          renderItem={({ item }) => (
-            <View style={styles.row}>
-              <View style={styles.iconContainer}>
-                <MaterialIcons name="receipt-long" size={22} color={Colors.primary} />
-              </View>
-              <View style={styles.middle}>
-                <Text style={styles.date}>
-                  {new Date(item.completedAt).toLocaleDateString('en-KE', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric',
-                  })}
-                </Text>
-                <Text style={styles.time}>
-                  {new Date(item.completedAt).toLocaleTimeString('en-KE', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </Text>
-                <Text style={styles.itemsCount}>
-                  {item.items.length} item{item.items.length !== 1 ? 's' : ''}
-                </Text>
-              </View>
-              <View style={styles.right}>
-                <Text style={styles.total}>
-                  KES {item.total.toLocaleString()}
-                </Text>
-                <View style={[
-                  styles.badge,
-                  {
-                    backgroundColor:
-                      item.paymentMethod === 'mpesa'
-                        ? Colors.secondaryContainer
-                        : Colors.primaryFixed,
-                  },
-                ]}>
-                  <Text style={styles.badgeText}>
-                    {item.paymentMethod.toUpperCase()}
-                  </Text>
-                </View>
-              </View>
-            </View>
-          )}
-          ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>No transactions yet</Text>
-            </View>
-          }
-          contentContainerStyle={{ paddingBottom: bottomNavHeight }}
-        />
-      )}
+{loading ? (
+         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+           <Text style={{ color: Colors.onSurfaceVariant }}>Loading transactions...</Text>
+         </View>
+       ) : (
+         <FlatList
+           data={sales}
+           keyExtractor={(item) => String(item.id ?? '')}
+           renderItem={({ item }) => (
+             <View style={styles.row}>
+               <View style={styles.iconContainer}>
+                 <MaterialIcons name="receipt-long" size={22} color={Colors.primary} />
+               </View>
+               <View style={styles.middle}>
+                 <Text style={styles.date}>
+                   {new Date(item.completedAt).toLocaleDateString('en-KE', {
+                     day: 'numeric',
+                     month: 'short',
+                     year: 'numeric',
+                   })}
+                 </Text>
+                 <Text style={styles.time}>
+                   {new Date(item.completedAt).toLocaleTimeString('en-KE', {
+                     hour: '2-digit',
+                     minute: '2-digit',
+                   })}
+                 </Text>
+                 <Text style={styles.itemsCount}>
+                   {item.items.length} item{item.items.length !== 1 ? 's' : ''}
+                 </Text>
+               </View>
+               <View style={styles.right}>
+                 <Text style={styles.total}>
+                   KES {item.total.toLocaleString()}
+                 </Text>
+                 <View style={[
+                   styles.badge,
+                   {
+                     backgroundColor:
+                       item.paymentMethod === 'mpesa'
+                         ? Colors.secondaryContainer
+                         : Colors.primaryFixed,
+                   },
+                 ]}>
+                   <Text style={styles.badgeText}>
+                     {item.paymentMethod.toUpperCase()}
+                   </Text>
+                 </View>
+               </View>
+             </View>
+           )}
+           ListHeaderComponent={() => (
+             <View style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
+               <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600' }}>
+                 {sales.length} transaction{sales.length !== 1 ? 's' : ''} total
+               </Text>
+             </View>
+           )}
+           ListEmptyComponent={
+             <View style={styles.emptyContainer}>
+               <Text style={styles.emptyText}>No transactions yet</Text>
+             </View>
+           }
+           contentContainerStyle={{ paddingTop: 12, paddingBottom: bottomNavHeight + 24 }}
+         />
+       )}
       <BottomNavBar
         activeTab="reports"
         onHeightMeasured={setBottomNavHeight}
