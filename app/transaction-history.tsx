@@ -5,7 +5,7 @@ import { useSalesHistory } from '../hooks/useSalesHistory';
 import * as RNPaper from 'react-native-paper';
 // @ts-ignore
 const MaterialIcons = require('react-native-vector-icons/MaterialIcons');
-const { TopAppBar, BottomNavBar, MD3DarkTheme as DefaultTheme } = RNPaper;
+const { TopAppBar, BottomNavBar, MD3DarkTheme: DefaultTheme } = RNPaper;
 const Colors = DefaultTheme.colors;
 
 export default function TransactionHistoryScreen() {
