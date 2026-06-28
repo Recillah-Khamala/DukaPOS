@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import Colors from '../../constants/colors';
 import { useSalesHistory } from '../../hooks/useSalesHistory';
@@ -10,7 +9,6 @@ import MarketInsightsTab from '../../components/reports/MarketInsightsTab';
 import PoshomillTab from '../../components/reports/PoshomillTab';
 
 export default function ReportsScreen() {
-  const router = useRouter();
   const [activeTab, setActiveTab] = React.useState<'Business Health' | 'Market Insights' | 'Poshomill'>('Business Health');
   const [bottomNavHeight, setBottomNavHeight] = React.useState(0);
   const { sales } = useSalesHistory();
@@ -18,15 +16,7 @@ export default function ReportsScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
       {/* Header */}
-      <View style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        paddingTop: 48,
-        paddingBottom: 12,
-        backgroundColor: Colors.primary,
-      }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 48, paddingBottom: 12, backgroundColor: Colors.primary }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <MaterialIcons name="assessment" size={24} color="white" />
           <Text style={{ fontSize: 18, fontWeight: '600', color: 'white' }}>Kijiji Cereal Store</Text>
@@ -39,17 +29,10 @@ export default function ReportsScreen() {
         {(['Business Health', 'Market Insights', 'Poshomill'] as const).map(tab => (
           <TouchableOpacity
             key={tab}
-            style={[
-              activeTab === tab ? { backgroundColor: Colors.secondaryContainer } : {},
-              { flex: 1, justifyContent: 'center', alignItems: 'center' },
-            ]}
+            style={[activeTab === tab ? { backgroundColor: Colors.secondaryContainer } : {}, { flex: 1, justifyContent: 'center', alignItems: 'center' }]}
             onPress={() => setActiveTab(tab)}
           >
-            <Text style={{
-              color: activeTab === tab ? Colors.onSecondaryContainer : Colors.onSurfaceVariant,
-              fontWeight: activeTab === tab ? '600' : '400',
-              fontSize: 12,
-            }}>
+            <Text style={{ color: activeTab === tab ? Colors.onSecondaryContainer : Colors.onSurfaceVariant, fontWeight: activeTab === tab ? '600' : '400', fontSize: 12 }}>
               {tab}
             </Text>
           </TouchableOpacity>
@@ -57,19 +40,11 @@ export default function ReportsScreen() {
       </View>
 
       {/* Tab Content */}
-      <ScrollView
-        style={{ flex: 1 }}
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ paddingBottom: bottomNavHeight + 24 }}
-      >
-        {activeTab === 'Business Health' ? (
-          <BusinessHealthTab sales={sales} />
-        ) : activeTab === 'Market Insights' ? (
-          <MarketInsightsTab />
-        ) : (
-          <PoshomillTab />
-        )}
-      </ScrollView>
+      <View style={{ flex: 1 }}>
+        {activeTab === 'Business Health' && <BusinessHealthTab sales={sales} />}
+        {activeTab === 'Market Insights' && <MarketInsightsTab />}
+        {activeTab === 'Poshomill' && <PoshomillTab />}
+      </View>
 
       <BottomNavBar activeTab="reports" onHeightMeasured={setBottomNavHeight} />
     </View>
