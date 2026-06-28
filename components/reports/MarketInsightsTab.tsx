@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Colors from '../../constants/colors';
 
@@ -17,173 +17,95 @@ const MarketInsightsTab: React.FC = () => {
   ];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <Text style={styles.sectionTitle}>Insights & Analytics</Text>
+    <ScrollView className="flex-1" contentContainerStyle={{ padding: 16, paddingBottom: 24 }}>
+
+      <Text className="text-2xl font-bold mb-4" style={{ color: Colors.primary }}>
+        Insights & Analytics
+      </Text>
 
       {/* 4 Stat Cards */}
-      <View style={styles.statCards}>
+      <View className="flex-row flex-wrap gap-3 mb-4">
         {[
           { label: 'Regional Avg Price', value: 'KES 128/kg', icon: 'trending-up', iconColor: '#16a34a' },
           { label: 'Active Traders', value: '142 Shops', icon: 'store', iconColor: Colors.primary },
           { label: 'Top Commodity', value: 'Maize', icon: 'grass', iconColor: Colors.secondary },
           { label: 'Market Demand', value: '+12% this week', icon: 'trending-up', iconColor: '#16a34a' },
         ].map((card) => (
-          <View key={card.label} style={styles.statCard}>
+          <View
+            key={card.label}
+            className="bg-white rounded-xl p-3 border border-outline-variant"
+            style={{ width: '47%' }}
+          >
             <MaterialIcons name={card.icon as any} size={24} color={card.iconColor} />
-            <Text style={styles.statValue}>{card.value}</Text>
-            <Text style={styles.statLabel}>{card.label}</Text>
+            <Text className="text-base font-bold mt-2" style={{ color: Colors.onSurface }}>{card.value}</Text>
+            <Text className="text-xs mt-0.5" style={{ color: Colors.onSurfaceVariant }}>{card.label}</Text>
           </View>
         ))}
       </View>
 
       {/* Kitale Hub Activity */}
-      <Text style={styles.sectionTitle}>Kitale Hub Activity</Text>
-      <Text style={styles.sectionSubtitle}>Heatmap based on Posho Mill throughput</Text>
-      <View style={styles.mapPlaceholder}>
+      <Text className="text-base font-semibold mb-2" style={{ color: Colors.primary }}>
+        Kitale Hub Activity
+      </Text>
+      <Text className="text-xs mb-3" style={{ color: Colors.onSurfaceVariant }}>
+        Heatmap based on Posho Mill throughput
+      </Text>
+      <View
+        className="rounded-xl items-center justify-center mb-4"
+        style={{ backgroundColor: Colors.surfaceContainerHigh, height: 160 }}
+      >
         <MaterialIcons name="map" size={48} color={Colors.outlineVariant} />
-        <Text style={styles.mapText}>Live map coming soon</Text>
+        <Text className="text-sm mt-2" style={{ color: Colors.onSurfaceVariant }}>Live map coming soon</Text>
       </View>
 
       {/* Demand by Commodity */}
-      <Text style={styles.sectionTitle}>Demand by Commodity</Text>
+      <Text className="text-base font-semibold mb-3" style={{ color: Colors.primary }}>
+        Demand by Commodity
+      </Text>
       {demandItems.map((item) => (
-        <View key={item.name} style={styles.demandItem}>
-          <View style={styles.demandLabelContainer}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View key={item.name} className="mb-4">
+          <View className="flex-row justify-between items-center mb-1.5">
+            <View className="flex-row items-center">
               <MaterialIcons name={item.icon as any} size={18} color={Colors.secondary} />
-              <Text style={styles.demandName}>{item.name}</Text>
+              <Text className="text-sm font-bold ml-1.5" style={{ color: Colors.onSurface }}>{item.name}</Text>
             </View>
-            <Text style={styles.demandNote}>{item.note}</Text>
+            <Text className="text-xs" style={{ color: Colors.onSurfaceVariant }}>{item.note}</Text>
           </View>
-          <View style={styles.demandBarBackground}>
-            <View style={{ width: `${item.percent}%`, height: 8, backgroundColor: Colors.primary, borderRadius: 4 }} />
+          <View className="h-2 rounded-full" style={{ backgroundColor: Colors.surfaceContainerHigh }}>
+            <View
+              className="h-2 rounded-full"
+              style={{ width: `${item.percent}%`, backgroundColor: Colors.primary }}
+            />
           </View>
         </View>
       ))}
 
       {/* Top Shops */}
-      <Text style={styles.sectionTitle}>Top Shops in Kitale</Text>
+      <Text className="text-base font-semibold mb-3" style={{ color: Colors.primary }}>
+        Top Shops in Kitale
+      </Text>
       {topShops.map((shop) => (
-        <View key={shop.name} style={styles.shopCard}>
-          <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.primaryFixed, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
-            <Text style={styles.shopInitials}>{shop.initials}</Text>
+        <View
+          key={shop.name}
+          className="flex-row items-center justify-between rounded-lg p-3 mb-2"
+          style={{ backgroundColor: Colors.surface }}
+        >
+          <View
+            className="w-10 h-10 rounded-full items-center justify-center mr-3"
+            style={{ backgroundColor: Colors.primaryFixed }}
+          >
+            <Text className="text-sm font-bold" style={{ color: Colors.primary }}>{shop.initials}</Text>
           </View>
-          <View style={styles.shopInfo}>
-            <Text style={styles.shopName}>{shop.name}</Text>
-            <Text style={styles.shopTag}>{shop.tag}</Text>
+          <View className="flex-1">
+            <Text className="text-sm font-bold" style={{ color: Colors.onSurface }}>{shop.name}</Text>
+            <Text className="text-xs" style={{ color: Colors.onSurfaceVariant }}>{shop.tag}</Text>
           </View>
           <MaterialIcons name={shop.icon as any} size={24} color={shop.iconColor} />
         </View>
       ))}
+
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: 16,
-    paddingBottom: 24,
-  },
-  sectionTitle: {
-    color: Colors.primary,
-    fontSize: 24,
-    fontWeight: '700',
-    marginBottom: 4,
-  },
-  sectionSubtitle: {
-    color: Colors.onSurfaceVariant,
-    fontSize: 14,
-    marginBottom: 16,
-  },
-  statCards: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-    marginBottom: 16,
-  },
-  statCard: {
-    width: '47%',
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: Colors.outlineVariant,
-  },
-  statValue: {
-    color: Colors.onSurface,
-    fontSize: 16,
-    fontWeight: '700',
-    marginTop: 8,
-  },
-  statLabel: {
-    color: Colors.onSurfaceVariant,
-    fontSize: 12,
-    marginTop: 2,
-  },
-  mapPlaceholder: {
-    backgroundColor: Colors.surfaceContainerHigh,
-    borderRadius: 12,
-    height: 160,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  mapText: {
-    color: Colors.onSurfaceVariant,
-    fontSize: 14,
-    marginTop: 8,
-  },
-  demandItem: {
-    marginBottom: 16,
-  },
-  demandLabelContainer: {
-    marginBottom: 6,
-  },
-  demandName: {
-    color: Colors.onSurface,
-    fontSize: 14,
-    fontWeight: '700',
-    marginLeft: 6,
-  },
-  demandNote: {
-    color: Colors.onSurfaceVariant,
-    fontSize: 11,
-  },
-  demandBarBackground: {
-    height: 8,
-    backgroundColor: Colors.surfaceContainerHigh,
-    borderRadius: 4,
-  },
-  shopCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: Colors.surface,
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 8,
-  },
-  shopInitials: {
-    color: Colors.primary,
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  shopName: {
-    color: Colors.onSurface,
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  shopTag: {
-    color: Colors.onSurfaceVariant,
-    fontSize: 12,
-  },
-  shopInfo: {
-    flex: 1,
-    marginLeft: 12,
-  },
-});
 
 export default MarketInsightsTab;
