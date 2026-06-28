@@ -103,7 +103,7 @@ export default function ReportsScreen() {
           onPress={() => setActiveTab('Business Health')}
         >
           <Text style={{ 
-              color: activeTab === 'Business Health' ? Colors.onSecondaryContainer : Colors.onSecondaryContainer : Colors.onSurfaceVariant,
+              color: activeTab === 'Business Health' ? Colors.onSecondaryContainer : Colors.onSurfaceVariant,
               fontWeight: activeTab === 'Business Health' ? '600' : '400',
               fontSize: 13,
             }}>
