@@ -8,7 +8,7 @@ import { useSalesHistory } from '../../hooks/useSalesHistory';
 
 export default function ReportsScreen() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = React.useState<'Business Health' | 'Market Insights'>('Business Health');
+  const [activeTab, setActiveTab] = React.useState<'Business Health' | 'Market Insights' | 'Poshomill'>('Business Health');
   const [bottomNavHeight, setBottomNavHeight] = React.useState(0);
   const { sales } = useSalesHistory();
 
@@ -100,303 +100,391 @@ export default function ReportsScreen() {
           ]}
           onPress={() => setActiveTab('Business Health')}
         >
-          <Text style={{ 
-            color: activeTab === 'Business Health' ? Colors.onSecondaryContainer : Colors.onSurfaceVariant,
-            fontWeight: activeTab === 'Business Health' ? '600' : '400',
-          }}>
-            Business Health
-          </Text>
+<Text style={{ 
+             color: activeTab === 'Business Health' ? Colors.onSecondaryContainer : Colors.onSurfaceVariant,
+             fontWeight: activeTab === 'Business Health' ? '600' : '400',
+             fontSize: 13,
+           }}>
+             Business Health
+           </Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            activeTab === 'Market Insights' ? { backgroundColor: Colors.secondaryContainer } : {},
-            { flex: 1, justifyContent: 'center', alignItems: 'center' },
-          ]}
-          onPress={() => setActiveTab('Market Insights')}
-        >
-          <Text style={{ 
-            color: activeTab === 'Market Insights' ? Colors.onSecondaryContainer : Colors.onSurfaceVariant,
-            fontWeight: activeTab === 'Market Insights' ? '600' : '400',
-          }}>
-            Market Insights
-          </Text>
-        </TouchableOpacity>
-      </View>
+<TouchableOpacity
+           style={[
+             activeTab === 'Market Insights' ? { backgroundColor: Colors.secondaryContainer } : {},
+             { flex: 1, justifyContent: 'center', alignItems: 'center' },
+           ]}
+           onPress={() => setActiveTab('Market Insights')}
+         >
+           <Text style={{ 
+             color: activeTab === 'Market Insights' ? Colors.onSecondaryContainer : Colors.onSurfaceVariant,
+             fontWeight: activeTab === 'Market Insights' ? '600' : '400',
+             fontSize: 13,
+           }}>
+             Market Insights
+           </Text>
+         </TouchableOpacity>
+         <TouchableOpacity
+           style={[
+             activeTab === 'Poshomill' ? { backgroundColor: Colors.secondaryContainer } : {},
+             { flex: 1, justifyContent: 'center', alignItems: 'center' },
+           ]}
+           onPress={() => setActiveTab('Poshomill')}
+         >
+           <Text style={{
+             color: activeTab === 'Poshomill' ? Colors.onSecondaryContainer : Colors.onSurfaceVariant,
+             fontWeight: activeTab === 'Poshomill' ? '600' : '400',
+             fontSize: 13,
+           }}>
+             Poshomill
+           </Text>
+         </TouchableOpacity>
+       </View>
 
-      <ScrollView
-        style={{ flex: 1 }}
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ paddingBottom: bottomNavHeight + 24 }}
-      >
-        {activeTab === 'Business Health' ? (
-          <View style={{ padding: 16 }}>
-            <View style={{
-              backgroundColor: Colors.primaryContainer,
-              borderRadius: 12,
-              padding: 16,
-              alignItems: 'center',
-              marginBottom: 16,
-            }}>
-              <Text style={{
-                color: Colors.onPrimaryContainer,
-                fontSize: 12,
-                fontWeight: '700',
-                textTransform: 'uppercase',
-                letterSpacing: 0.5,
-              }}>
-                TODAY'S PROFIT
-              </Text>
-              <Text style={{
-                color: Colors.secondaryContainer,
-                fontSize: 28,
-                fontWeight: '800',
-                marginTop: 4,
-              }}>
-                KES {todayTotal.toLocaleString()}
-              </Text>
-              {percentChange !== null && (
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
-                  <MaterialIcons
-                    name={percentChange >= 0 ? 'trending-up' : 'trending-down'}
-                    size={18}
-                    color={Colors.onPrimaryContainer}
-                  />
-                  <Text style={{
-                    color: Colors.onPrimaryContainer,
-                    fontSize: 14,
-                    fontWeight: '700',
-                    marginLeft: 4,
-                  }}>
-                    {Math.abs(percentChange)}% from yesterday
-                  </Text>
-                </View>
-              )}
-            </View>
-            
-            {/* Business Health Score Card */}
-            <View style={{
-              backgroundColor: 'white',
-              borderWidth: 1,
-              borderColor: Colors.outlineVariant,
-              borderRadius: 12,
-              padding: 16,
-              marginBottom: 16,
-            }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                <View>
-                  <Text style={{
-                    color: Colors.primary,
-                    fontSize: 14,
-                    fontWeight: '600',
-                  }}>
-                    Business Health Score
-                  </Text>
-                  <Text style={{
-                    color: Colors.onSurfaceVariant,
-                    fontSize: 14,
-                    marginTop: 2,
-                  }}>
-                    Loan Eligibility Metric
-                  </Text>
-                  <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginTop: 4 }}>
-                    <Text style={{
-                      color: Colors.primary,
-                      fontSize: 32,
-                      fontWeight: '700',
-                    }}>
-                      {score}
-                    </Text>
-                    <Text style={{
-                      color: Colors.onSurfaceVariant,
-                      fontSize: 20,
-                    }}>
-                      /100
-                    </Text>
-                  </View>
-                </View>
-                <View style={{
-                  backgroundColor: Colors.primaryFixed,
-                  borderRadius: 20,
-                  paddingHorizontal: 12,
-                  paddingVertical: 4,
-                }}>
-                  <Text style={{
-                    color: Colors.primary,
-                    fontSize: 12,
-                    fontWeight: '700',
-                  }}>
-                    {tier}
-                  </Text>
-                </View>
-              </View>
-              
-              <View style={{ height: 8, backgroundColor: Colors.surfaceContainerHigh, borderRadius: 4, marginTop: 8, marginBottom: 12 }}>
-                <View style={{ width: `${score}%`, height: 8, backgroundColor: '#ffb702', borderRadius: 4 }} />
-              </View>
-              
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <MaterialIcons name="today" size={16} color={Colors.onSurfaceVariant} />
-                  <Text style={{
-                    color: Colors.onSurfaceVariant,
-                    fontSize: 14,
-                    marginLeft: 4,
-                  }}>
-                    {activeDays}-day consistency
-                  </Text>
-                </View>
-              </View>
-              
-              <View style={{ backgroundColor: Colors.surfaceContainerHigh, borderRadius: 8, padding: 8 }}>
-                <Text style={{
-                  color: Colors.secondary,
-                  fontSize: 14,
-                  fontWeight: '700',
-                }}>
-                  Ready for Micro-loan: KES {loanAmount.toLocaleString()}
-                </Text>
-                <Text style={{
-                  color: Colors.onSurfaceVariant,
-                  fontSize: 12,
-                  marginTop: 2,
-                }}>
-                  Based on {activeDays}-day consistency
-                </Text>
-              </View>
-            </View>
-            
-            {/* 7-Day Sales Trend Chart */}
-            <View style={{
-              backgroundColor: 'white',
-              borderWidth: 1,
-              borderColor: Colors.outlineVariant,
-              borderRadius: 12,
-              padding: 16,
-              marginBottom: 16,
-            }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <Text style={{
-                  color: Colors.primary,
-                  fontSize: 14,
-                  fontWeight: '600',
-                }}>
-                  7-Day Sales Trend
-                </Text>
-                <MaterialIcons name="bar-chart" size={24} color={Colors.onSurfaceVariant} />
-              </View>
-              <View style={{ 
-                flexDirection: 'row',
-                alignItems: 'flex-end',
-                justifyContent: 'space-between',
-                height: 120,
-                paddingHorizontal: 8,
-              }}>
-                {last7Days.map((day, index) => (
-                  <View key={index} style={{ flex: 1, alignItems: 'center', gap: 4 }}>
-                    <View style={{
-                      width: 16,
-                      height: Math.max(8, (dailyTotals[index] / maxTotal) * 100),
-                      backgroundColor: index === 6 ? Colors.primary : Colors.primaryFixed,
-                      borderRadius: 4,
-                    }}/>
-                    <Text style={{ 
-                      fontSize: 10, 
-                      color: index === 6 ? Colors.primary : Colors.onSurfaceVariant,
-                    }}>
-                      {dayLabels[day.getDay()]}
-                    </Text>
+<ScrollView
+         style={{ flex: 1 }}
+         keyboardShouldPersistTaps="handled"
+         contentContainerStyle={{ paddingBottom: bottomNavHeight + 24 }}
+       >
+         {activeTab === 'Business Health' ? (
+           <View style={{ padding: 16 }}>
+             <View style={{
+               backgroundColor: Colors.primaryContainer,
+               borderRadius: 12,
+               padding: 16,
+               alignItems: 'center',
+               marginBottom: 16,
+             }}>
+               <Text style={{
+                 color: Colors.onPrimaryContainer,
+                 fontSize: 12,
+                 fontWeight: '700',
+                 textTransform: 'uppercase',
+                 letterSpacing: 0.5,
+               }}>
+                 TODAY'S PROFIT
+               </Text>
+               <Text style={{
+                 color: Colors.secondaryContainer,
+                 fontSize: 28,
+                 fontWeight: '800',
+                 marginTop: 4,
+               }}>
+                 KES {todayTotal.toLocaleString()}
+               </Text>
+               {percentChange !== null && (
+                 <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+                   <MaterialIcons
+                     name={percentChange >= 0 ? 'trending-up' : 'trending-down'}
+                     size={18}
+                     color={Colors.onPrimaryContainer}
+                   />
+                   <Text style={{
+                     color: Colors.onPrimaryContainer,
+                     fontSize: 14,
+                     fontWeight: '700',
+                     marginLeft: 4,
+                   }}>
+                     {Math.abs(percentChange)}% from yesterday
+                   </Text>
+                 </View>
+               )}
+             </View>
+             
+             {/* Business Health Score Card */}
+             <View style={{
+               backgroundColor: 'white',
+               borderWidth: 1,
+               borderColor: Colors.outlineVariant,
+               borderRadius: 12,
+               padding: 16,
+               marginBottom: 16,
+             }}>
+               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                 <View>
+                   <Text style={{
+                     color: Colors.primary,
+                     fontSize: 14,
+                     fontWeight: '600',
+                   }}>
+                     Business Health Score
+                   </Text>
+                   <Text style={{
+                     color: Colors.onSurfaceVariant,
+                     fontSize: 14,
+                     marginTop: 2,
+                   }}>
+                     Loan Eligibility Metric
+                   </Text>
+                   <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginTop: 4 }}>
+                     <Text style={{
+                       color: Colors.primary,
+                       fontSize: 32,
+                       fontWeight: '700',
+                     }}>
+                       {score}
+                     </Text>
+                     <Text style={{
+                       color: Colors.onSurfaceVariant,
+                       fontSize: 20,
+                     }}>
+                       /100
+                     </Text>
+                   </View>
+                 </View>
+                 <View style={{
+                   backgroundColor: Colors.primaryFixed,
+                   borderRadius: 20,
+                   paddingHorizontal: 12,
+                   paddingVertical: 4,
+                 }}>
+                   <Text style={{
+                     color: Colors.primary,
+                     fontSize: 12,
+                     fontWeight: '700',
+                   }}>
+                     {tier}
+                   </Text>
+                 </View>
+               </View>
+               
+               <View style={{ height: 8, backgroundColor: Colors.surfaceContainerHigh, borderRadius: 4, marginTop: 8, marginBottom: 12 }}>
+                 <View style={{ width: `${score}%`, height: 8, backgroundColor: '#ffb702', borderRadius: 4 }} />
+               </View>
+               
+               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
+                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                   <MaterialIcons name="today" size={16} color={Colors.onSurfaceVariant} />
+                   <Text style={{
+                     color: Colors.onSurfaceVariant,
+                     fontSize: 14,
+                     marginLeft: 4,
+                   }}>
+                     {activeDays}-day consistency
+                   </Text>
+                 </View>
+               </View>
+               
+               <View style={{ backgroundColor: Colors.surfaceContainerHigh, borderRadius: 8, padding: 8 }}>
+                 <Text style={{
+                   color: Colors.secondary,
+                   fontSize: 14,
+                   fontWeight: '700',
+                 }}>
+                   Ready for Micro-loan: KES {loanAmount.toLocaleString()}
+                 </Text>
+                 <Text style={{
+                   color: Colors.onSurfaceVariant,
+                   fontSize: 12,
+                   marginTop: 2,
+                 }}>
+                   Based on {activeDays}-day consistency
+                 </Text>
+               </View>
+             </View>
+             
+             {/* 7-Day Sales Trend Chart */}
+             <View style={{
+               backgroundColor: 'white',
+               borderWidth: 1,
+               borderColor: Colors.outlineVariant,
+               borderRadius: 12,
+               padding: 16,
+               marginBottom: 16,
+             }}>
+               <Text style={{
+                 color: Colors.onSurfaceVariant,
+                 fontSize: 12,
+                 fontWeight: '600',
+                 marginBottom: 8,
+               }}>
+                 7-Day Sales Trend
+               </Text>
+               <View style={{ height: 200 }}>
+                 {/* Chart would go here - simplified for now */}
+                 <View style={{ 
+                   flexDirection: 'row', 
+                   justifyContent: 'space-between', 
+                   paddingHorizontal: 12 
+                 }}>
+                   {dayLabels.map((day, index) => (
+                     <View key={index} style={{ alignItems: 'center', width: 30 }}>
+                       <View style={{ 
+                         width: 20, 
+                         height: `${(dailyTotals[index] / maxTotal) * 100}%`, 
+                         backgroundColor: Colors.primary,
+                         borderRadius: 4,
+                         marginVertical: 4
+                       }} />
+                       <Text style={{ fontSize: 10, color: Colors.onSurfaceVariant }}>{day}</Text>
+                     </View>
+                   ))}
+                 </View>
+               </View>
+             </View>
+             
+             {/* Top Selling Items */}
+             <View style={{
+               backgroundColor: 'white',
+               borderWidth: 1,
+               borderColor: Colors.outlineVariant,
+               borderRadius: 12,
+               padding: 16,
+               marginBottom: 16,
+             }}>
+               <Text style={{
+                 color: Colors.onSurfaceVariant,
+                 fontSize: 16,
+                 fontWeight: '600',
+                 marginBottom: 12,
+               }}>
+                 Top Selling Cereals
+               </Text>
+{fastestMoving.map((item, index) => (
+                  <View key={item.name} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderColor: Colors.outlineVariant }}>
+                    <MaterialIcons name={item.icon as any} size={24} color={Colors.primary} />
+                    <View style={{ flex: 1, marginLeft: 12 }}>
+                      <Text style={{ fontWeight: '600' }}>{item.name}</Text>
+                      <Text style={{ fontSize: 12, color: Colors.onSurfaceVariant }}>{item.qty} kg</Text>
+                    </View>
                   </View>
                 ))}
+             </View>
+             
+             {/* Demand Forecast */}
+             <View style={{
+               backgroundColor: 'white',
+               borderWidth: 1,
+               borderColor: Colors.outlineVariant,
+               borderRadius: 12,
+               padding: 16,
+               marginBottom: 16,
+             }}>
+               <Text style={{
+                 color: Colors.onSurfaceVariant,
+                 fontSize: 16,
+                 fontWeight: '600',
+                 marginBottom: 12,
+               }}>
+                 Demand Forecast (Kitale vs National)
+               </Text>
+               {demandItems.map((item) => (
+                 <View key={item.name} style={{ marginBottom: 12 }}>
+                   <Text style={{ fontWeight: '600' }}>{item.name}</Text>
+                   <View style={{ height: 8, backgroundColor: Colors.surfaceContainerHigh, borderRadius: 4 }}>
+                     <View style={{ width: `${item.percent}%`, height: 8, backgroundColor: Colors.primary, borderRadius: 4 }} />
+                   </View>
+                   <Text style={{ fontSize: 12, color: Colors.onSurfaceVariant }}>{item.note}</Text>
+                 </View>
+               ))}
+             </View>
+             
+             {/* Top Shops in Kitale */}
+             <View style={{
+               backgroundColor: 'white',
+               borderWidth: 1,
+               borderColor: Colors.outlineVariant,
+               borderRadius: 12,
+               padding: 16,
+             }}>
+               <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '600', marginBottom: 12 }}>Top Shops in Kitale</Text>
+               {topShops.map((shop) => (
+                 <View key={shop.name} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: Colors.surface, borderRadius: 8, padding: 12, marginBottom: 8 }}>
+                   <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.primaryFixed, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                     <Text style={{ color: Colors.primary, fontSize: 14, fontWeight: '700' }}>{shop.initials}</Text>
+                   </View>
+                   <View style={{ flex: 1 }}>
+                     <Text style={{ color: Colors.onSurface, fontSize: 14, fontWeight: '700' }}>{shop.name}</Text>
+                     <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>{shop.tag}</Text>
+                   </View>
+                   <MaterialIcons name={shop.icon as any} size={24} color={shop.iconColor} />
+                 </View>
+               ))}
+             </View>
+           </View>
+         ) : activeTab === 'Market Insights' ? (
+           <ScrollView
+             style={{ padding: 16, paddingBottom: 24 }}
+             showsVerticalScrollIndicator={false}
+           >
+             <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '600', marginBottom: 16 }}>Market Prices & Trends</Text>
+             
+             {/* Price Cards */}
+             <View style={{ marginBottom: 24 }}>
+               <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                 {[
+                   { name: 'Maize', price: 'KES 4,200', change: '+12%', trend: 'up', icon: 'trending-up' },
+                   { name: 'Wheat', price: 'KES 3,800', change: '-5%', trend: 'down', icon: 'trending-down' },
+                   { name: 'Sorghum', price: 'KES 2,900', change: '+8%', trend: 'up', icon: 'trending-up' },
+                   { name: 'Millet', price: 'KES 3,200', change: '+3%', trend: 'up', icon: 'trending-up' },
+                 ].map((item, index) => (
+                   <View key={item.name} style={{ width: '48%', marginBottom: 12 }}>
+                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                       <Text style={{ fontWeight: '600' }}>{item.name}</Text>
+                       <Text style={{ color: item.trend === 'up' ? Colors.primary : Colors.error }}>{item.price}</Text>
+                     </View>
+                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                       <MaterialIcons name={item.icon as any} size={16} color={item.trend === 'up' ? Colors.primary : Colors.error} />
+                       <Text style={{ marginLeft: 4, fontSize: 12 }}>{item.change}</Text>
+                     </View>
+                   </View>
+                 ))}
+               </View>
+             </View>
+             
+             {/* Market Trends */}
+             <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: Colors.outlineVariant, borderRadius: 12, padding: 16, marginBottom: 16 }}>
+               <Text style={{ color: Colors.onSurfaceVariant, fontSize: 16, fontWeight: '600', marginBottom: 12 }}>Market Trends</Text>
+               <View style={{ height: 120 }}>
+                 {/* Simplified trend chart */}
+                 <View style={{ 
+                   flexDirection: 'row', 
+                   justifyContent: 'space-around', 
+                   alignItems: 'flex-end', 
+                   paddingVertical: 8 
+                 }}>
+                   {[4, 7, 3, 5, 8, 6, 9].map((value, index) => (
+                     <View key={index} style={{ width: 20 }}>
+                       <View style={{ 
+                         width: 20, 
+                         height: `${value * 10}%`, 
+                         backgroundColor: Colors.primary,
+                         borderRadius: 4,
+                         marginBottom: 4
+                       }} />
+                       <Text style={{ fontSize: 10, color: Colors.onSurfaceVariant }}>{['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][index]}</Text>
+                     </View>
+                   ))}
+                 </View>
+               </View>
+             </View>
+             
+             {/* Agricultural News */}
+             <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: Colors.outlineVariant, borderRadius: 12, padding: 16 }}>
+               <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '600', marginBottom: 12 }}>Latest Agricultural News</Text>
+               <View style={{ marginBottom: 16 }}>
+                 <Text style={{ fontWeight: '600' }}>Fertilizer Subsidy Update</Text>
+                 <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12, marginTop: 4 }}>Government announces 15% subsidy for planting season</Text>
+               </View>
+               <View style={{ marginBottom: 16 }}>
+                 <Text style={{ fontWeight: '600' }}>Weather Forecast</Text>
+                 <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12, marginTop: 4 }}>Expected rainfall: 80-100mm this week</Text>
+               </View>
+               <View>
+                 <Text style={{ fontWeight: '600' }}>Market Advisory</Text>
+                 <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12, marginTop: 4 }}>Best time to sell: Early morning hours</Text>
+               </View>
+             </View>
+           </ScrollView>
+         ) : activeTab === 'Poshomill' ? (
+<View style={{ padding: 16 }}>
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ color: Colors.onSurfaceVariant, fontSize: 16 }}>
+                  Poshomill coming soon
+                </Text>
               </View>
             </View>
-            
-            <View style={{ marginBottom: 12 }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <Text style={{ color: Colors.primary, fontSize: 20, fontWeight: '600' }}>Fastest Moving Items</Text>
-                <TouchableOpacity onPress={() => router.push('/transaction-history')}>
-                  <Text style={{ color: Colors.secondary, fontSize: 14, fontWeight: '700' }}>Full Report</Text>
-                </TouchableOpacity>
-              </View>
-              {fastestMoving.length === 0 ? (
-                <View style={{ backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, alignItems: 'center' }}>
-                  <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14 }}>No sales data yet</Text>
-                </View>
-              ) : fastestMoving.map((item, index) => (
-                <View key={item.name} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, marginBottom: 8 }}>
-                  <View style={{ position: 'relative', width: 48, height: 48, borderRadius: 8, backgroundColor: Colors.surfaceContainerHigh, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
-                    <MaterialIcons name={item.icon as any} size={28} color={Colors.primary} />
-                    {index === 0 && (
-                      <View style={{ position: 'absolute', bottom: 0, right: 0, backgroundColor: Colors.secondary, borderTopLeftRadius: 4, paddingHorizontal: 3, paddingVertical: 1 }}>
-                        <Text style={{ color: 'white', fontSize: 8, fontWeight: '800' }}>HOT</Text>
-                      </View>
-                    )}
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ color: Colors.onSurface, fontSize: 16, fontWeight: '600' }}>{item.name}</Text>
-                    <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14 }}>{item.qty.toFixed(2)} Korokoro sold</Text>
-                  </View>
-                  <View style={{ alignItems: 'flex-end' }}>
-                    <Text style={{ color: Colors.primary, fontSize: 14, fontWeight: '700' }}>↑ {Math.round((item.qty / fastestMoving[0].qty) * 100)}%</Text>
-                    <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>Demand</Text>
-                  </View>
-                </View>
-              ))}
-            </View>
-          </View>
-        ) : (
-          <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 24 }} showsVerticalScrollIndicator={false}>
-            <Text style={{ color: Colors.primary, fontSize: 24, fontWeight: '700', marginBottom: 16 }}>Insights & Analytics</Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 16 }}>
-              {[
-                { label: 'Regional Avg Price', value: 'KES 128/kg', icon: 'trending-up', iconColor: '#16a34a' },
-                { label: 'Active Traders', value: '142 Shops', icon: 'store', iconColor: Colors.primary },
-                { label: 'Top Commodity', value: 'Maize', icon: 'grass', iconColor: Colors.secondary },
-                { label: 'Market Demand', value: '+12% this week', icon: 'trending-up', iconColor: '#16a34a' },
-              ].map((card) => (
-                <View key={card.label} style={{ width: '47%', backgroundColor: 'white', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: Colors.outlineVariant }}>
-                  <MaterialIcons name={card.icon as any} size={24} color={card.iconColor} />
-                  <Text style={{ color: Colors.onSurface, fontSize: 16, fontWeight: '700', marginTop: 8 }}>{card.value}</Text>
-                  <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12, marginTop: 2 }}>{card.label}</Text>
-                </View>
-              ))}
-            </View>
-            <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '600', marginBottom: 8 }}>Kitale Hub Activity</Text>
-            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12, marginBottom: 12 }}>Heatmap based on Posho Mill throughput</Text>
-            <View style={{ backgroundColor: Colors.surfaceContainerHigh, borderRadius: 12, height: 160, alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
-              <MaterialIcons name="map" size={48} color={Colors.outlineVariant} />
-              <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14, marginTop: 8 }}>Live map coming soon</Text>
-            </View>
-            <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '600', marginBottom: 12 }}>Demand by Commodity</Text>
-            {demandItems.map((item) => (
-              <View key={item.name} style={{ marginBottom: 16 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <MaterialIcons name={item.icon as any} size={18} color={Colors.secondary} />
-                    <Text style={{ color: Colors.onSurface, fontSize: 14, fontWeight: '700', marginLeft: 6 }}>{item.name}</Text>
-                  </View>
-                  <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11 }}>{item.note}</Text>
-                </View>
-                <View style={{ height: 8, backgroundColor: Colors.surfaceContainerHigh, borderRadius: 4 }}>
-                  <View style={{ width: `${item.percent}%`, height: 8, backgroundColor: Colors.primary, borderRadius: 4 }} />
-                </View>
-              </View>
-            ))}
-            <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '600', marginBottom: 12 }}>Top Shops in Kitale</Text>
-            {topShops.map((shop) => (
-              <View key={shop.name} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: Colors.surface, borderRadius: 8, padding: 12, marginBottom: 8 }}>
-                <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.primaryFixed, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
-                  <Text style={{ color: Colors.primary, fontSize: 14, fontWeight: '700' }}>{shop.initials}</Text>
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ color: Colors.onSurface, fontSize: 14, fontWeight: '700' }}>{shop.name}</Text>
-                  <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>{shop.tag}</Text>
-                </View>
-                <MaterialIcons name={shop.icon as any} size={24} color={shop.iconColor} />
-              </View>
-            ))}
-          </ScrollView>
-        )}
-      </ScrollView>
+) : null}
+        </ScrollView>
 
       <BottomNavBar activeTab="reports" onHeightMeasured={setBottomNavHeight} />
     </View>
