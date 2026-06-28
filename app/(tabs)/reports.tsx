@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import Colors from '../../constants/colors';
 import { useSalesHistory } from '../../hooks/useSalesHistory';
-import useFuelLog from '../../hooks/useFuelLog';
+import { useFuelLog, FuelEntry } from '../../hooks/useFuelLog';
 
 export default function ReportsScreen() {
   const router = useRouter();
@@ -345,7 +345,7 @@ export default function ReportsScreen() {
                 <View key={item.name} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderColor: Colors.outlineVariant }}>
                   <MaterialIcons name={item.icon as any} size={24} color={Colors.primary} />
                   <View style={{ flex: 1, marginLeft: 12 }}>
-                    <Text style={{ fontWeight: '600' }}>{item.name}</Text>
+                    <Text style={{ fontWeight: '60: {item.name}</Text>
                     <Text style={{ fontSize: 12, color: Colors.onSurfaceVariant }}>{item.qty} kg</Text>
                   </View>
                 </View>
@@ -501,7 +501,7 @@ export default function ReportsScreen() {
               </View>
             ) : (
               <>
-                {fuelEntries.map((entry) => (
+                {fuelEntries.map((entry: FuelEntry) => (
                   <View key={entry.id} style={{ marginBottom: 12, padding: 12, backgroundColor: 'white', borderRadius: 8 }}>
                     <Text>{entry.fuelType}: KES {entry.totalCost.toLocaleString()}</Text>
                   </View>
