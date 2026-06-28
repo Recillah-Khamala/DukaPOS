@@ -380,15 +380,16 @@ export default function ReportsScreen() {
               ))}
             </View>
             
-            {/* Top Shops in Kitale */}
-            <View style={{
-              backgroundColor: 'white',
-              borderWidth: 1,
-              borderColor: Colors.outlineVariant,
-              borderRadius: 12,
-              padding: 16,
-            }}>
-              <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '600', marginBottom: 12 }}>Top Shops in Kitale</Text>
+{/* Top Shops in Kitale */}
+             <View style={{
+               backgroundColor: 'white',
+               borderWidth: 1,
+               borderColor: Colors.outlineVariant,
+               borderRadius: 12,
+               padding: 16,
+             }}>
+                <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '600', marginBottom: 12 }}>Top Shops in Kitale</Text>
+               <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '600', marginBottom: 12 }}>Top Shops in Kitale</Text>
               {topShops.map((shop) => (
                 <View key={shop.name} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: Colors.surface, borderRadius: 8, padding: 12, marginBottom: 8 }}>
                   <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.primaryFixed, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
