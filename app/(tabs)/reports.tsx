@@ -103,7 +103,7 @@ export default function ReportsScreen() {
           onPress={() => setActiveTab('Business Health')}
         >
           <Text style={{ 
-              color: activeTab === 'Business Health' ? Colors.onSecondaryContainer : Colors.onSurfaceVariant,
+              color: activeTab === 'Business Health' ? Colors.onSecondaryContainer : Colors.onSecondaryContainer : Colors.onSurfaceVariant,
               fontWeight: activeTab === 'Business Health' ? '600' : '400',
               fontSize: 13,
             }}>
@@ -345,7 +345,7 @@ export default function ReportsScreen() {
                 <View key={item.name} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderColor: Colors.outlineVariant }}>
                   <MaterialIcons name={item.icon as any} size={24} color={Colors.primary} />
                   <View style={{ flex: 1, marginLeft: 12 }}>
-                    <Text style={{ fontWeight: '60: {item.name}</Text>
+                    <Text style={{ fontWeight: '600' }}>{item.name}</Text>
                     <Text style={{ fontSize: 12, color: Colors.onSurfaceVariant }}>{item.qty} kg</Text>
                   </View>
                 </View>
@@ -400,7 +400,7 @@ export default function ReportsScreen() {
                   </View>
                   <MaterialIcons name={shop.icon as any} size={24} color={shop.iconColor} />
                 </View>
-              ))}
+              )}
             </View>
           </View>
         ) : activeTab === 'Market Insights' ? (
