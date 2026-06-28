@@ -180,6 +180,10 @@ const styles = StyleSheet.create({
     color: Colors.onSurfaceVariant,
     fontSize: 12,
   },
+  shopInfo: {
+    flex: 1,
+    marginLeft: 12,
+  },
 });
 
 export default MarketInsightsTab;
