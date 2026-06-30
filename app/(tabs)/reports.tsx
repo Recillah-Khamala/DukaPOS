@@ -19,23 +19,37 @@ export default function ReportsScreen() {
   const [fuelQty, setFuelQty] = React.useState('');
   const [fuelCostPerUnit, setFuelCostPerUnit] = React.useState('');
   const [fuelNote, setFuelNote] = React.useState('');
+  const [buyMode, setBuyMode] = React.useState<'by-litres' | 'by-amount'>('by-litres');
 
   const handleAddFuelEntry = () => {
-    const qty = parseFloat(fuelQty);
     const cpu = parseFloat(fuelCostPerUnit);
-    if (!qty || !cpu) return;
+    if (!cpu) return;
+    let qty: number;
+    let totalCost: number;
+    if (buyMode === 'by-litres') {
+      const q = parseFloat(fuelQty);
+      if (!q) return;
+      qty = q;
+      totalCost = qty * cpu;
+    } else {
+      const amountSpent = parseFloat(fuelQty);
+      if (!amountSpent) return;
+      qty = parseFloat((amountSpent / cpu).toFixed(3));
+      totalCost = amountSpent;
+    }
     addEntry({
       id: Date.now().toString(),
       date: new Date().toISOString(),
       fuelType,
       quantity: qty,
       costPerUnit: cpu,
-      totalCost: qty * cpu,
+      totalCost: totalCost,
       note: fuelNote.trim() || undefined,
     });
     setFuelQty('');
     setFuelCostPerUnit('');
     setFuelNote('');
+    setBuyMode('by-litres');
     setShowFuelModal(false);
   };
 
@@ -104,18 +118,58 @@ export default function ReportsScreen() {
               ))}
             </View>
 
-            {/* Quantity */}
-            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
-              Quantity ({fuelType === 'diesel' ? 'Litres' : 'kWh'})
+            {/* Buy Mode */}
+            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
+              How did you buy?
             </Text>
-            <TextInput
-              value={fuelQty}
-              onChangeText={setFuelQty}
-              keyboardType="numeric"
-              placeholder={fuelType === 'diesel' ? 'e.g. 5' : 'e.g. 12'}
-              placeholderTextColor="#9ca3af"
-              style={{ borderWidth: 1.5, borderColor: '#e5e7eb', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: Colors.onSurface, marginBottom: 12 }}
-            />
+            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16 }}>
+              <TouchableOpacity
+                onPress={() => setBuyMode('by-litres')}
+                style={{ borderRadius: 20, paddingHorizontal: 16, paddingVertical: 8, borderWidth: 1.5, backgroundColor: buyMode === 'by-litres' ? Colors.primaryFixed : '#f3f4f6', borderColor: buyMode === 'by-litres' ? Colors.primary : '#e5e7eb' }}
+              >
+                <Text style={{ color: buyMode === 'by-litres' ? Colors.primary : Colors.onSurfaceVariant, fontWeight: buyMode === 'by-litres' ? '700' : '400', textTransform: 'capitalize' }}>
+                  By litres
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setBuyMode('by-amount')}
+                style={{ borderRadius: 20, paddingHorizontal: 16, paddingVertical: 8, borderWidth: 1.5, backgroundColor: buyMode === 'by-amount' ? Colors.primaryFixed : '#f3f4f6', borderColor: buyMode === 'by-amount' ? Colors.primary : '#e5e7eb' }}
+              >
+                <Text style={{ color: buyMode === 'by-amount' ? Colors.primary : Colors.onSurfaceVariant, fontWeight: buyMode === 'by-amount' ? '700' : '400', textTransform: 'capitalize' }}>
+                  By amount spent
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {buyMode === 'by-litres' ? (
+  <>
+    <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
+      Quantity ({fuelType === 'diesel' ? 'Litres' : 'kWh'})
+    </Text>
+    <TextInput
+      value={fuelQty}
+      onChangeText={setFuelQty}
+      keyboardType="numeric"
+      placeholder={fuelType === 'diesel' ? 'e.g. 5' : 'e.g. 12'}
+      placeholderTextColor="#9ca3af"
+      style={{ borderWidth: 1.5, borderColor: '#e5e7eb', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: Colors.onSurface, marginBottom: 12 }}
+    />
+  </>
+) : (
+  <>
+    <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
+      Amount Spent (KES)
+    </Text>
+    <TextInput
+      value={fuelQty}
+      onChangeText={setFuelQty}
+      keyboardType="numeric"
+      placeholder="e.g. 500"
+      placeholderTextColor="#9ca3af"
+      style={{ borderWidth: 1.5, borderColor: '#e5e7eb', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: Colors.onSurface, marginBottom: 12 }}
+    />
+  </>
+)}
 
             {/* Cost Per Unit */}
             <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
@@ -142,7 +196,12 @@ export default function ReportsScreen() {
 
             {/* Live Preview */}
             <Text style={{ color: Colors.primary, fontWeight: '700', fontSize: 15, marginBottom: 16 }}>
-              Total cost: KES {(parseFloat(fuelQty || '0') * parseFloat(fuelCostPerUnit || '0')).toLocaleString()}
+              {buyMode === 'by-litres' ? (
+                : (
+                  <>{'Total cost: KES ' + (parseFloat(fuelQty || '0') * parseFloat(fuelCostPerUnit || '0')).toLocaleString()}</>
+                ) : (
+                  <>{'= ' + (parseFloat(fuelQty || '0') / parseFloat(fuelCostPerUnit || '1')).toFixed(3) + ' litres'}</>
+                )}
             </Text>
 
             {/* Save Button */}
@@ -154,7 +213,10 @@ export default function ReportsScreen() {
             </TouchableOpacity>
 
             {/* Cancel */}
-            <TouchableOpacity onPress={() => setShowFuelModal(false)} style={{ alignItems: 'center', paddingVertical: 8 }}>
+            <TouchableOpacity onPress={() => {
+              setBuyMode('by-litres');
+              setShowFuelModal(false);
+            }} style={{ alignItems: 'center', paddingVertical: 8 }}>
               <Text style={{ color: Colors.onSurfaceVariant, fontSize: 15 }}>Cancel</Text>
             </TouchableOpacity>
           </View>
