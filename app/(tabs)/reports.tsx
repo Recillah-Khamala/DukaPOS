@@ -194,15 +194,14 @@ export default function ReportsScreen() {
               style={{ borderWidth: 1.5, borderColor: '#e5e7eb', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: Colors.onSurface, marginBottom: 12 }}
             />
 
-            {/* Live Preview */}
-            <Text style={{ color: Colors.primary, fontWeight: '700', fontSize: 15, marginBottom: 16 }}>
-              {buyMode === 'by-litres' ? (
-                : (
-                  <>{'Total cost: KES ' + (parseFloat(fuelQty || '0') * parseFloat(fuelCostPerUnit || '0')).toLocaleString()}</>
-                ) : (
-                  <>{'= ' + (parseFloat(fuelQty || '0') / parseFloat(fuelCostPerUnit || '1')).toFixed(3) + ' litres'}</>
-                )}
-            </Text>
+{/* Live Preview */}
+             <Text style={{ color: Colors.primary, fontWeight: '700', fontSize: 15, marginBottom: 16 }}>
+               {buyMode === 'by-litres' ? (
+                 <>{'Total cost: KES ' + (parseFloat(fuelQty || '0') * parseFloat(fuelCostPerUnit || '0')).toLocaleString()}</>
+               ) : (
+                 <>{'= ' + (parseFloat(fuelQty || '0') / parseFloat(fuelCostPerUnit || '1')).toFixed(3) + ' litres'}</>
+               )}
+             </Text>
 
             {/* Save Button */}
             <TouchableOpacity
