@@ -18,13 +18,13 @@ export default function InventoryScreen() {
   const bagItems = allItems.filter(item => item.category === 'bags');
   const router = useRouter();
 
-   const handleOverflowMenu = () => {
-     Alert.alert('Inventory Options', undefined, [
-       { text: 'Bulk Quick Add', onPress: () => router.push('/bulk-quick-add') },
-       { text: 'Scan Barcode', onPress: () => router.push('/inventory/barcode-scanner') },
-       { text: 'Cancel', style: 'cancel' },
-     ]);
-   };
+  const handleOverflowMenu = () => {
+    Alert.alert('Inventory Options', undefined, [
+      { text: 'Bulk Quick Add', onPress: () => router.push('/bulk-quick-add') },
+      { text: 'Scan Barcode', onPress: () => router.push('/inventory/barcode-scanner') },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
@@ -72,7 +72,7 @@ export default function InventoryScreen() {
                   </View>
                   <View style={{ alignItems: 'flex-end' }}>
                     <Text style={{ fontSize: 16, fontWeight: '800', color: '#dc2626' }}>{item.currentStock}</Text>
-                     <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant }}>{item.sellingUnit}</Text>
+                    <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant }}>{item.sellingUnit}</Text>
                     <View style={{ backgroundColor: '#dc2626', borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2, marginTop: 2 }}>
                       <Text style={{ fontSize: 10, fontWeight: '700', color: 'white' }}>Critically Low</Text>
                     </View>
@@ -88,11 +88,18 @@ export default function InventoryScreen() {
                 <MaterialIcons name="add-circle" size={20} color="white" />
                 <Text style={{ color: 'white', fontWeight: '600' }}>Add Stock</Text>
               </TouchableOpacity>
-<TouchableOpacity style={{ flex: 1, backgroundColor: Colors.secondaryContainer, borderRadius: 12, height: 56, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 8 }} onPress={() => router.push('/bulk-quick-add')}>
-                 <MaterialIcons name="add-box" size={20} color={Colors.onSecondaryContainer} />
-                 <Text style={{ color: Colors.onSecondaryContainer, fontWeight: '600' }}>Bulk Quick Add</Text>
-               </TouchableOpacity>
+              <TouchableOpacity style={{ flex: 1, backgroundColor: Colors.secondaryContainer, borderRadius: 12, height: 56, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 8 }} onPress={() => router.push('/bulk-quick-add')}>
+                <MaterialIcons name="add-box" size={20} color={Colors.onSecondaryContainer} />
+                <Text style={{ color: Colors.onSecondaryContainer, fontWeight: '600' }}>Bulk Quick Add</Text>
+              </TouchableOpacity>
             </View>
+            <TouchableOpacity
+              style={{ marginTop: 8, backgroundColor: Colors.surfaceContainerHigh, borderRadius: 12, height: 48, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 8, borderWidth: 1, borderColor: Colors.outlineVariant }}
+              onPress={() => router.push('/fuel-log')}
+            >
+              <MaterialIcons name="local-gas-station" size={20} color={Colors.onSurfaceVariant} />
+              <Text style={{ color: Colors.onSurfaceVariant, fontWeight: '600' }}>Fuel & Power Log</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -114,30 +121,30 @@ export default function InventoryScreen() {
               </Pressable>
             ))
           )}
-         </View>
+        </View>
 
-         <View style={{ paddingHorizontal: 16, marginTop: 24 }}>
-           <Text style={{ fontSize: 18, fontWeight: '600', color: Colors.onSurface, marginBottom: 12 }}>
-             Bags Inventory
-           </Text>
-           {bagItems.length === 0 ? (
-             <View style={{ alignItems: 'center', paddingTop: 48 }}>
-               <MaterialIcons name="inventory" size={48} color="#d1d5db" />
-               <Text style={{ fontSize: 15, color: '#9ca3af', marginTop: 8 }}>
-                 No bag items yet
-               </Text>
-             </View>
-           ) : (
-             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-               {bagItems.map(item => (
-                 <Pressable key={item.id} style={{ width: '48%' }} onPress={() => router.push({ pathname: '/inventory/unit-management', params: { id: item.id } })}>
-                   <BagItemCard item={item} />
-                 </Pressable>
-               ))}
-             </View>
-           )}
-         </View>
-       </ScrollView>
+        <View style={{ paddingHorizontal: 16, marginTop: 24 }}>
+          <Text style={{ fontSize: 18, fontWeight: '600', color: Colors.onSurface, marginBottom: 12 }}>
+            Bags Inventory
+          </Text>
+          {bagItems.length === 0 ? (
+            <View style={{ alignItems: 'center', paddingTop: 48 }}>
+              <MaterialIcons name="inventory" size={48} color="#d1d5db" />
+              <Text style={{ fontSize: 15, color: '#9ca3af', marginTop: 8 }}>
+                No bag items yet
+              </Text>
+            </View>
+          ) : (
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+              {bagItems.map(item => (
+                <Pressable key={item.id} style={{ width: '48%' }} onPress={() => router.push({ pathname: '/inventory/unit-management', params: { id: item.id } })}>
+                  <BagItemCard item={item} />
+                </Pressable>
+              ))}
+            </View>
+          )}
+        </View>
+      </ScrollView>
 
       <AddStockModal visible={showAddStock} onClose={() => setShowAddStock(false)} />
       <BottomNavBar activeTab="inventory" onHeightMeasured={setBottomNavHeight} />
