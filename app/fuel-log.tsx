@@ -56,9 +56,13 @@ export default function FuelLogScreen() {
       <ScrollView
         contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
-      = false="true">
-
-        >,>,Colors.onSurfaceVariant>Track diesel and electricity usage</Text>
+      >
+        <Text style={{ color: Colors.primary, fontSize: 24, fontWeight: '700', marginBottom: 4 }}>
+          Fuel & Power Log
+        </Text>
+        <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14, marginBottom: 16 }}>
+          Track diesel and electricity usage
+        </Text>
 
         {loading ? (
           <View style={{ alignItems: 'center', paddingTop: 32 }}>
