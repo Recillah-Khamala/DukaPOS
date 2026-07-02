@@ -132,8 +132,8 @@ export default function FuelLogScreen() {
                     paddingHorizontal: 16,
                     paddingVertical: 8,
                     borderWidth: 1.5,
-                    backgroundColor: fuelType === type ? Colors.primaryFixed : '#f3f4f6',
-                    borderColor: fuelType === type ? Colors.primary : '#e5e7eb',
+                    backgroundColor: fuelType === type ? Colors.primaryFixed : Colors.surfaceContainerHigh,
+                    borderColor: fuelType === type ? Colors.primary : Colors.outlineVariant,
                   }}
                 >
                   <Text
@@ -161,8 +161,8 @@ export default function FuelLogScreen() {
                   paddingHorizontal: 16,
                   paddingVertical: 8,
                   borderWidth: 1.5,
-                  backgroundColor: buyMode === 'by-litres' ? Colors.primaryFixed : '#f3f4f6',
-                  borderColor: buyMode === 'by-litres' ? Colors.primary : '#e5e7eb',
+                  backgroundColor: buyMode === 'by-litres' ? Colors.primaryFixed : Colors.surfaceContainerHigh,
+                  borderColor: buyMode === 'by-litres' ? Colors.primary : Colors.outlineVariant,
                 }}
               >
                 <Text
@@ -182,8 +182,8 @@ export default function FuelLogScreen() {
                   paddingHorizontal: 16,
                   paddingVertical: 8,
                   borderWidth: 1.5,
-                  backgroundColor: buyMode === 'by-amount' ? Colors.primaryFixed : '#f3f4f6',
-                  borderColor: buyMode === 'by-amount' ? Colors.primary : '#e5e7eb',
+                  backgroundColor: buyMode === 'by-amount' ? Colors.primaryFixed : Colors.surfaceContainerHigh,
+                  borderColor: buyMode === 'by-amount' ? Colors.primary : Colors.outlineVariant,
                 }}
               >
                 <Text
@@ -209,9 +209,9 @@ export default function FuelLogScreen() {
                 onChangeText={setFuelQty}
                 keyboardType="numeric"
                 style={{
-                  borderWidth: 1,
-                  borderColor: '#e5e7eb',
-                  borderRadius: 8,
+                  borderWidth: 1.5,
+                  borderColor: Colors.outlineVariant,
+                  borderRadius: 10,
                   paddingHorizontal: 14,
                   paddingVertical: 12,
                   fontSize: 15,
@@ -232,9 +232,9 @@ export default function FuelLogScreen() {
                 placeholder="e.g. 180"
                 placeholderTextColor="#9ca3af"
                 style={{
-                  borderWidth: 1,
-                  borderColor: '#e5e7eb',
-                  borderRadius: 8,
+                  borderWidth: 1.5,
+                  borderColor: Colors.outlineVariant,
+                  borderRadius: 10,
                   paddingHorizontal: 14,
                   paddingVertical: 12,
                   fontSize: 15,
@@ -252,9 +252,9 @@ export default function FuelLogScreen() {
                 placeholder="e.g. Weekly refill"
                 placeholderTextColor="#9ca3af"
                 style={{
-                  borderWidth: 1,
-                  borderColor: '#e5e7eb',
-                  borderRadius: 8,
+                  borderWidth: 1.5,
+                  borderColor: Colors.outlineVariant,
+                  borderRadius: 10,
                   paddingHorizontal: 14,
                   paddingVertical: 12,
                   fontSize: 15,
