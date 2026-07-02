@@ -201,7 +201,10 @@ export default function FuelLogScreen() {
             {/* Inputs */}
             <View style={{ marginBottom: 16 }}>
               <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 4 }}>
-                Quantity
+                {buyMode === 'by-litres'
+                  ? `Quantity (${fuelType === 'diesel' ? 'Litres' : 'kWh'})`
+                  : 'Amount Spent (KES)'
+                }
               </Text>
               <TextInput
                 placeholder={buyMode === 'by-litres' ? 'Litres' : 'Amount spent (KES)'}
@@ -269,7 +272,7 @@ export default function FuelLogScreen() {
               {buyMode === 'by-litres' ? (
                 <>{'Total cost: KES ' + (parseFloat(fuelQty || '0') * parseFloat(fuelCostPerUnit || '0')).toLocaleString()}</>
               ) : (
-                <>{'= ' + (parseFloat(fuelQty || '0') / parseFloat(fuelCostPerUnit || '1')).toFixed(3) + ' litres'}</>
+                <>{'= ' + (parseFloat(fuelQty || '0') / parseFloat(fuelCostPerUnit || '1')).toFixed(3) + ` ${fuelType === 'diesel' ? 'litres' : 'kWh'}`}</>
               )}
             </Text>
 
