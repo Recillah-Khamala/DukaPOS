@@ -1,23 +1,15 @@
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import Colors from '../../constants/colors';
-import useSalesHistory from '../../hooks/useSalesHistory';
+import { useSalesHistory } from '../../hooks/useSalesHistory';
 
 const CreditLedgerTab: React.FC = () => {
-  const { sales, loading, error } = useSalesHistory();
+  const { sales, loading } = useSalesHistory();
 
   if (loading) {
     return (
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 24 }}>
         <Text style={{ color: Colors.onSurfaceVariant }}>Loading...</Text>
-      </ScrollView>
-    );
-  }
-
-  if (error) {
-    return (
-      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 24 }}>
-        <Text style={{ color: Colors.error }}>Error loading sales data</Text>
       </ScrollView>
     );
   }
