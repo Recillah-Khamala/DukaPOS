@@ -184,33 +184,33 @@ const fastestMoving = Object.values(productTotals)
    ))}
  </View>
 
-       {/* Mill Profitability */}
-       <View style={{ backgroundColor: isMillingProfit ? Colors.primaryContainer : '#fef2f2', borderRadius: 12, padding: 16, marginBottom: 16 }}>
-         <Text style={{ color: isMillingProfit ? Colors.onPrimaryContainer : Colors.error, fontSize: 13, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
-           Mill Profitability — Last 30 Days
-         </Text>
-         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
-           <Text style={{ color: isMillingProfit ? Colors.onPrimaryContainer : Colors.onSurface, fontSize: 14 }}>Milling Revenue</Text>
-           <Text style={{ color: '#16a34a', fontSize: 14, fontWeight: '700' }}>KES {millingRevenue.toLocaleString()}</Text>
-         </View>
-         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
-           <Text style={{ color: isMillingProfit ? Colors.onPrimaryContainer : Colors.onSurface, fontSize: 14 }}>Fuel Costs</Text>
-           <Text style={{ color: Colors.error, fontSize: 14, fontWeight: '700' }}>KES {totalFuelCost.toLocaleString()}</Text>
-         </View>
-         <View style={{ height: 1, backgroundColor: Colors.outlineVariant, marginVertical: 8 }} />
-         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-           <Text style={{ color: isMillingProfit ? Colors.onPrimaryContainer : Colors.onSurface, fontSize: 16, fontWeight: '700' }}>Net Profit</Text>
-           <Text style={{ color: isMillingProfit ? Colors.primaryContainer : Colors.error, fontSize: 16, fontWeight: '800' }}>
-             KES {Math.abs(millingProfit).toLocaleString()}
-           </Text>
-         </View>
-         <Text style={{ color: isMillingProfit ? '#16a34a' : Colors.error, fontSize: 12, marginTop: 8 }}>
-           {isMillingProfit ? '✓ Milling is profitable' : '⚠ Fuel costs exceed milling revenue'}
-         </Text>
-         <TouchableOpacity onPress={() => router.push('/fuel-log')} style={{ marginTop: 12 }}>
-           <Text style={{ color: Colors.secondary, fontSize: 13, fontWeight: '700' }}>View Fuel & Power Log →</Text>
-         </TouchableOpacity>
-       </View>
+{/* Mill Profitability */}
+        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: Colors.outlineVariant, borderRadius: 12, padding: 16, marginBottom: 16 }}>
+          <Text style={{ color: Colors.primary, fontSize: 13, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
+            Mill Profitability — Last 30 Days
+          </Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
+            <Text style={{ color: Colors.onSurface, fontSize: 14 }}>Milling Revenue</Text>
+            <Text style={{ color: '#16a34a', fontSize: 14, fontWeight: '700' }}>KES {millingRevenue.toLocaleString()}</Text>
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
+            <Text style={{ color: Colors.onSurface, fontSize: 14 }}>Fuel Costs</Text>
+            <Text style={{ color: Colors.error, fontSize: 14, fontWeight: '700' }}>KES {totalFuelCost.toLocaleString()}</Text>
+          </View>
+          <View style={{ height: 1, backgroundColor: Colors.outlineVariant, marginVertical: 8 }} />
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ color: Colors.onSurface, fontSize: 16, fontWeight: '700' }}>Net Profit</Text>
+            <Text style={{ color: isMillingProfit ? Colors.primary : Colors.error, fontSize: 16, fontWeight: '800' }}>
+              KES {Math.abs(millingProfit).toLocaleString()}
+            </Text>
+          </View>
+          <Text style={{ color: isMillingProfit ? '#16a34a' : Colors.error, fontSize: 12, marginTop: 8 }}>
+            {isMillingProfit ? '✓ Milling is profitable' : '⚠ Fuel costs exceed milling revenue'}
+          </Text>
+          <TouchableOpacity onPress={() => router.push('/fuel-log')} style={{ marginTop: 12 }}>
+            <Text style={{ color: Colors.secondary, fontSize: 13, fontWeight: '700' }}>View Fuel & Power Log →</Text>
+          </TouchableOpacity>
+        </View>
      </ScrollView>
    );
 };
