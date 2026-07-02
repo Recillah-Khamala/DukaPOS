@@ -3,28 +3,28 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import Colors from '../../constants/colors';
-import CreditOverviewTab from './../../components/credit/CreditOverviewTab';
-import CreditDetailsTab from './../../components/credit/CreditDetailsTab';
+import ShopLoansTab from '../../components/credit/ShopLoansTab';
+import CreditLedgerTab from '../../components/credit/CreditLedgerTab';
 
 export default function CreditScreen() {
-  const [activeTab, setActiveTab] = React.useState<'Overview' | 'Details'>('Overview');
+  const [activeTab, setActiveTab] = React.useState<'Shop Loans' | 'Credit Ledger'>('Shop Loans');
   const [bottomNavHeight, setBottomNavHeight] = React.useState(0);
   const sales: any[] = []; // Placeholder data
 
   return (
     <View style={{ flex: 1 }}>
       {/* Header */}
-<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 48, paddingBottom: 12, backgroundColor: Colors.primary }}>
-         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-           <MaterialIcons name="account-balance" size={24} color="white" />
-           <Text style={{ fontSize: 18, fontWeight: '600', color: 'white' }}>Credit</Text>
-         </View>
-         <MaterialIcons name="notifications-none" size={24} color="white" />
-       </View>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 48, paddingBottom: 12, backgroundColor: Colors.primary }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <MaterialIcons name="account-balance" size={24} color="white" />
+          <Text style={{ fontSize: 18, fontWeight: '600', color: 'white' }}>Credit</Text>
+        </View>
+        <MaterialIcons name="notifications-none" size={24} color="white" />
+      </View>
 
       {/* Tab Row */}
       <View style={{ flexDirection: 'row', height: 44 }}>
-        {(['Overview', 'Details'] as const).map(tab => (
+        {(['Shop Loans', 'Credit Ledger'] as const).map(tab => (
           <TouchableOpacity
             key={tab}
             style={[activeTab === tab ? { backgroundColor: Colors.secondaryContainer } : {}, { flex: 1, justifyContent: 'center', alignItems: 'center' }]}
@@ -39,8 +39,8 @@ export default function CreditScreen() {
 
       {/* Tab Content */}
       <View style={{ flex: 1 }}>
-        {activeTab === 'Overview' && <CreditOverviewTab sales={sales} />}
-        {activeTab === 'Details' && <CreditDetailsTab sales={sales} />}
+        {activeTab === 'Shop Loans' && <ShopLoansTab />}
+        {activeTab === 'Credit Ledger' && <CreditLedgerTab />}
       </View>
 
       <BottomNavBar activeTab="credit" onHeightMeasured={setBottomNavHeight} />
