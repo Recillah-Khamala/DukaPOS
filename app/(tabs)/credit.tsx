@@ -3,8 +3,8 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import Colors from '../../constants/colors';
-import CreditOverviewTab from '../../components/credit/CreditOverviewTab';
-import CreditDetailsTab from '../../components/credit/CreditDetailsTab';
+import CreditOverviewTab from './../../components/credit/CreditOverviewTab';
+import CreditDetailsTab from './../../components/credit/CreditDetailsTab';
 
 export default function CreditScreen() {
   const [activeTab, setActiveTab] = React.useState<'Overview' | 'Details'>('Overview');
