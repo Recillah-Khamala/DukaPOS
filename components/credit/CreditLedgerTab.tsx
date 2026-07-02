@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import { Colors } from '../../constants/colors';
+import Colors from '../../constants/colors';
 
 const CreditLedgerTab: React.FC = () => {
   return (
