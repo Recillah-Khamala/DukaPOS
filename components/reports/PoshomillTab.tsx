@@ -2,13 +2,11 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { useFuelLog } from '../../hooks/useFuelLog';
 import { useSalesHistory } from '../../hooks/useSalesHistory';
-import { useRouter } from 'expo-router';
 import Colors from '../../constants/colors';
 
 const PoshomillTab: React.FC = () => {
   const { sales } = useSalesHistory();
   const { entries: fuelEntries } = useFuelLog();
-  const router = useRouter();
   const thirtyDaysAgo = Date.now() - 30 * 86400000;
   const millingRevenue = sales
     .filter(s => new Date(s.completedAt).getTime() >= thirtyDaysAgo)
@@ -59,15 +57,6 @@ const PoshomillTab: React.FC = () => {
           {isProfit ? '✓ Milling is profitable' : '⚠ Fuel costs exceed milling revenue'}
         </Text>
       </View>
-
-      <TouchableOpacity
-        onPress={() => router.push('/fuel-log')}
-        style={{ alignItems: 'center', marginTop: 12 }}
-      >
-        <Text style={{ color: Colors.secondary, fontSize: 14, fontWeight: '700' }}>
-          View Fuel & Power Log →
-        </Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 };
