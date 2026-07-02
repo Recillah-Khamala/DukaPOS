@@ -6,10 +6,9 @@ import Colors from '../../constants/colors';
 import { useSalesHistory } from '../../hooks/useSalesHistory';
 import BusinessHealthTab from '../../components/reports/BusinessHealthTab';
 import MarketInsightsTab from '../../components/reports/MarketInsightsTab';
-import PoshomillTab from '../../components/reports/PoshomillTab';
 
 export default function ReportsScreen() {
-  const [activeTab, setActiveTab] = React.useState<'Business Health' | 'Market Insights' | 'Poshomill'>('Business Health');
+  const [activeTab, setActiveTab] = React.useState<'Business Health' | 'Market Insights'>('Business Health');
   const [bottomNavHeight, setBottomNavHeight] = React.useState(0);
   const { sales } = useSalesHistory();
 
@@ -26,7 +25,7 @@ export default function ReportsScreen() {
 
       {/* Tab Row */}
       <View style={{ flexDirection: 'row', height: 44 }}>
-        {(['Business Health', 'Market Insights', 'Poshomill'] as const).map(tab => (
+        {(['Business Health', 'Market Insights'] as const).map(tab => (
           <TouchableOpacity
             key={tab}
             style={[activeTab === tab ? { backgroundColor: Colors.secondaryContainer } : {}, { flex: 1, justifyContent: 'center', alignItems: 'center' }]}
@@ -39,12 +38,11 @@ export default function ReportsScreen() {
         ))}
       </View>
 
-      {/* Tab Content */}
-      <View style={{ flex: 1 }}>
-        {activeTab === 'Business Health' && <BusinessHealthTab sales={sales} />}
-        {activeTab === 'Market Insights' && <MarketInsightsTab />}
-        {activeTab === 'Poshomill' && <PoshomillTab />}
-      </View>
+{/* Tab Content */}
+       <View style={{ flex: 1 }}>
+         {activeTab === 'Business Health' && <BusinessHealthTab sales={sales} />}
+         {activeTab === 'Market Insights' && <MarketInsightsTab />}
+       </View>
 
       <BottomNavBar activeTab="reports" onHeightMeasured={setBottomNavHeight} />
     </View>
