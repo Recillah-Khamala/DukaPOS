@@ -4,6 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import Colors from '../../constants/colors';
 import { CompletedSale } from '../../types';
+import { useFuelLog } from '../../hooks/useFuelLog';
 
 interface BusinessHealthTabProps {
   sales: CompletedSale[];
@@ -52,12 +53,24 @@ const BusinessHealthTab: React.FC<BusinessHealthTabProps> = ({ sales }) => {
       productTotals[item.productId].qty += item.qty;
     });
   });
-  const fastestMoving = Object.values(productTotals)
-    .filter(p => p.type === 'cereal')
-    .sort((a, b) => b.qty - a.qty)
-    .slice(0, 3);
+const fastestMoving = Object.values(productTotals)
+     .filter(p => p.type === 'cereal')
+     .sort((a, b) => b.qty - a.qty)
+     .slice(0, 3);
 
-  return (
+   const { entries: fuelEntries } = useFuelLog();
+   const millingRevenue = sales
+     .filter(s => new Date(s.completedAt).getTime() >= thirtyDaysAgo)
+     .flatMap(s => s.items)
+     .filter(item => item.type === 'service')
+     .reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
+   const totalFuelCost = fuelEntries
+     .filter(e => new Date(e.date).getTime() >= thirtyDaysAgo)
+     .reduce((sum, e) => sum + e.totalCost, 0);
+   const millingProfit = millingRevenue - totalFuelCost;
+   const isMillingProfit = millingProfit >= 0;
+
+   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: 24 }}>
 
       {/* Today's Profit Hero */}
@@ -166,13 +179,40 @@ const BusinessHealthTab: React.FC<BusinessHealthTabProps> = ({ sales }) => {
             <View style={{ alignItems: 'flex-end' }}>
               <Text style={{ color: Colors.primary, fontSize: 14, fontWeight: '700' }}>↑ {Math.round((item.qty / fastestMoving[0].qty) * 100)}%</Text>
               <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>Demand</Text>
-            </View>
-          </View>
-        ))}
-      </View>
+</View>
+     </View>
+   ))}
+ </View>
 
-    </ScrollView>
-  );
+       {/* Mill Profitability */}
+       <View style={{ backgroundColor: isMillingProfit ? Colors.primaryContainer : '#fef2f2', borderRadius: 12, padding: 16, marginBottom: 16 }}>
+         <Text style={{ color: isMillingProfit ? Colors.onPrimaryContainer : Colors.error, fontSize: 13, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
+           Mill Profitability — Last 30 Days
+         </Text>
+         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
+           <Text style={{ color: isMillingProfit ? Colors.onPrimaryContainer : Colors.onSurface, fontSize: 14 }}>Milling Revenue</Text>
+           <Text style={{ color: '#16a34a', fontSize: 14, fontWeight: '700' }}>KES {millingRevenue.toLocaleString()}</Text>
+         </View>
+         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
+           <Text style={{ color: isMillingProfit ? Colors.onPrimaryContainer : Colors.onSurface, fontSize: 14 }}>Fuel Costs</Text>
+           <Text style={{ color: Colors.error, fontSize: 14, fontWeight: '700' }}>KES {totalFuelCost.toLocaleString()}</Text>
+         </View>
+         <View style={{ height: 1, backgroundColor: Colors.outlineVariant, marginVertical: 8 }} />
+         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+           <Text style={{ color: isMillingProfit ? Colors.onPrimaryContainer : Colors.onSurface, fontSize: 16, fontWeight: '700' }}>Net Profit</Text>
+           <Text style={{ color: isMillingProfit ? Colors.primaryContainer : Colors.error, fontSize: 16, fontWeight: '800' }}>
+             KES {Math.abs(millingProfit).toLocaleString()}
+           </Text>
+         </View>
+         <Text style={{ color: isMillingProfit ? '#16a34a' : Colors.error, fontSize: 12, marginTop: 8 }}>
+           {isMillingProfit ? '✓ Milling is profitable' : '⚠ Fuel costs exceed milling revenue'}
+         </Text>
+         <TouchableOpacity onPress={() => router.push('/fuel-log')} style={{ marginTop: 12 }}>
+           <Text style={{ color: Colors.secondary, fontSize: 13, fontWeight: '700' }}>View Fuel & Power Log →</Text>
+         </TouchableOpacity>
+       </View>
+     </ScrollView>
+   );
 };
 
 export default BusinessHealthTab;
