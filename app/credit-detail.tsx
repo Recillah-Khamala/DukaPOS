@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCreditLedger } from '../hooks/useCreditLedger';
 import TopAppBar from '../components/layout/TopAppBar';
@@ -8,11 +8,24 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 const CreditDetailScreen: React.FC = () => {
   const { customerId, customerName } = useLocalSearchParams<{ customerId: string; customerName: string }>();
-  const { entries } = useCreditLedger();
+  const { entries, updateEntry } = useCreditLedger();
   const router = useRouter();
 
   const customerEntries = entries.filter(e => e.customerId === customerId && e.status === 'active');
   const totalBalance = customerEntries.reduce((sum, e) => sum + e.balance, 0);
+
+  const handleMarkAsPaid = () => {
+    customerEntries.forEach(entry => {
+      updateEntry({
+        ...entry,
+        status: 'paid',
+        amountPaid: entry.totalAmount,
+        balance: 0,
+        lastUpdatedAt: new Date().toISOString(),
+      });
+    });
+    router.back();
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -31,6 +44,23 @@ const CreditDetailScreen: React.FC = () => {
               Purchase history for credit ledger
             </Text>
           </View>
+          <TouchableOpacity 
+            style={{ 
+              backgroundColor: Colors.secondaryContainer, 
+              borderRadius: 8, 
+              paddingHorizontal: 16, 
+              paddingVertical: 8, 
+              flexDirection: 'row', 
+              alignItems: 'center', 
+              gap: 6 
+            }}
+            onPress={handleMarkAsPaid}
+          >
+            <MaterialIcons name="check-circle" size={16} color={Colors.onSecondaryContainer} />
+            <Text style={{ color: Colors.onSecondaryContainer, fontSize: 13, fontWeight: '700' }}>
+              Mark as Paid
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* Entries list */}
@@ -63,7 +93,7 @@ const CreditDetailScreen: React.FC = () => {
               <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '700' }}>
                 KES {entry.balance.toLocaleString()}
               </Text>
-            </View>
+            </Vie1.
           </View>
         ))}
 
