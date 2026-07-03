@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import Colors from '../../constants/colors';
 import { useSalesHistory } from '../../hooks/useSalesHistory';
 
@@ -29,6 +29,7 @@ const ShopLoansTab: React.FC = () => {
   });
   const activeDays = activeDaysSet.size;
   const score = Math.min(100, Math.round((activeDays / 30) * 100));
+  const loanAmount = score >= 80 ? 50000 : score >= 50 ? 25000 : 10000;
 
   return (
     <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 24 }}>
@@ -91,6 +92,53 @@ const ShopLoansTab: React.FC = () => {
             </Text>
           </View>
         </View>
+      </View>
+
+      {/* Available Credit Limit Hero Card */}
+      <View style={{
+        backgroundColor: Colors.primary,
+        borderRadius: 12,
+        padding: 20,
+        alignItems: 'center',
+        marginBottom: 16,
+        overflow: 'hidden'
+      }}>
+        <Text style={{ 
+          color: Colors.primaryContainer, 
+          fontSize: 11, 
+          fontWeight: '700', 
+          letterSpacing: 1, 
+          textTransform: 'uppercase',
+          marginBottom: 4
+        }}>
+          AVAILABLE CREDIT LIMIT
+        </Text>
+        <Text style={{ 
+          color: Colors.onPrimary, 
+          fontSize: 28, 
+          fontWeight: '800', 
+          marginBottom: 16
+        }}>
+          KES {loanAmount.toLocaleString()}
+        </Text>
+        <TouchableOpacity 
+          style={{ 
+            backgroundColor: Colors.secondaryContainer, 
+            borderRadius: 24, 
+            paddingVertical: 12, 
+            paddingHorizontal: 32, 
+            width: '100%', 
+            alignItems: 'center' 
+          }}
+        >
+          <Text style={{ 
+            color: Colors.onSecondaryContainer, 
+            fontSize: 14, 
+            fontWeight: '700' 
+          }}>
+            Withdraw to M-Pesa
+          </Text>
+        </TouchableOpacity>
       </View>
 
       {/* Placeholder */}
