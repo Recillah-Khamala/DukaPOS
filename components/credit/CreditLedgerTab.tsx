@@ -15,29 +15,6 @@ const CreditLedgerTab: React.FC = () => {
         <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 24 }}>
           <Text style={{ color: Colors.onSurfaceVariant }}>Loading...</Text>
         </ScrollView>
-        <TouchableOpacity 
-          style={{ 
-            position: 'absolute', 
-            bottom: 16, 
-            right: 16, 
-            height: 48, 
-            paddingHorizontal: 20, 
-            borderRadius: 24, 
-            backgroundColor: Colors.secondaryContainer, 
-            flexDirection: 'row', 
-            alignItems: 'center', 
-            gap: 8, 
-            elevation: 4, 
-            borderWidth: 2, 
-            borderColor: Colors.secondary 
-          }}
-          onPress={() => router.push({ pathname: '/new-credit-entry' })}
-        >
-          <MaterialIcons name="add-circle" size={20} color={Colors.onSecondaryContainer} />
-          <Text style={{ color: Colors.onSecondaryContainer, fontSize: 14, fontWeight: '700' }}>
-            New Credit Entry
-          </Text>
-        </TouchableOpacity>
       </View>
     );
   }
@@ -183,29 +160,6 @@ const CreditLedgerTab: React.FC = () => {
           )}
         </View>
       </ScrollView>
-      <TouchableOpacity 
-        style={{
-          position: 'absolute',
-          bottom: 16,
-          right: 16,
-          height: 48,
-          paddingHorizontal: 20,
-          borderRadius: 24,
-          backgroundColor: Colors.secondaryContainer,
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 8,
-          elevation: 4,
-          borderWidth: 2,
-          borderColor: Colors.secondary
-        }}
-        onPress={() => router.push({ pathname: '/new-credit-entry' })}
-      >
-        <MaterialIcons name="add-circle" size={20} color={Colors.onSecondaryContainer} />
-        <Text style={{ color: Colors.onSecondaryContainer, fontSize: 14, fontWeight: '700' }}>
-          New Credit Entry
-        </Text>
-      </TouchableOpacity>
     </View>
   );
 };
