@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useCreditLedger } from '../hooks/useCreditLedger';
-import { TopAppBar } from '../components/layout/TopAppBar';
+import TopAppBar from '../components/layout/TopAppBar';
 import Colors from '../constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -152,7 +152,7 @@ const NewCreditEntryScreen: React.FC = () => {
         {/* Save button */}
         <TouchableOpacity
           style={{
-            backgroundColor: isFormValid ? Colors.primary : Colors.disabled,
+            backgroundColor: isFormValid ? Colors.primary : Colors.surfaceContainerHigh,
             borderRadius: 12,
             paddingVertical: 14,
             alignItems: 'center',
@@ -160,7 +160,7 @@ const NewCreditEntryScreen: React.FC = () => {
           }}
           onPress={isFormValid ? handleSave : undefined}
         >
-          <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>
+          <Text style={{ color: isFormValid ? '#fff' : Colors.onSurfaceVariant, fontSize: 16, fontWeight: '600' }}>
             Save Credit Entry
           </Text>
         </TouchableOpacity>
