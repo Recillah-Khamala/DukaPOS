@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import TopAppBar from '../components/layout/TopAppBar';
@@ -9,7 +9,7 @@ const LoanConsentScreen: React.FC = () => {
   const router = useRouter();
 
   return (
-    <View style={{ flex: 1, backgroundColor: Colors.background }}>
+    <View style={{ flex: 1, backgroundColor: Colors.surface }}>
       <TopAppBar title="Loan Consent" onBack={() => router.back()} />
       <View style={{ padding: 16 }}>
         {/* Data Sharing Consent Section */}
@@ -37,7 +37,7 @@ const LoanConsentScreen: React.FC = () => {
           {/* Consent items */}
           <View>
             {/* Item 1: Monthly Revenue */}
-            <View style={{ backgroundColor: Colors.surfaceContainerLow, borderRadius: 8, padding: 12, flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
+            <View style={{ backgroundColor: Colors.surfaceContainerLowest, borderRadius: 8, padding: 12, flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
               <View style={{ backgroundColor: Colors.primaryFixed, borderRadius: 20, padding: 8, marginRight: 12 }}>
                 <MaterialIcons name="payments" size={20} color={Colors.primary} />
               </View>
@@ -52,7 +52,7 @@ const LoanConsentScreen: React.FC = () => {
             </View>
 
             {/* Item 2: Inventory Value */}
-            <View style={{ backgroundColor: Colors.surfaceContainerLow, borderRadius: 8, padding: 12, flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
+            <View style={{ backgroundColor: Colors.surfaceContainerLowest, borderRadius: 8, padding: 12, flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
               <View style={{ backgroundColor: Colors.primaryFixed, borderRadius: 20, padding: 8, marginRight: 12 }}>
                 <MaterialIcons name="inventory-2" size={20} color={Colors.primary} />
               </View>
@@ -67,7 +67,7 @@ const LoanConsentScreen: React.FC = () => {
             </View>
 
             {/* Item 3: Transaction History */}
-            <View style={{ backgroundColor: Colors.surfaceContainerLow, borderRadius: 8, padding: 12, flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
+            <View style={{ backgroundColor: Colors.surfaceContainerLowest, borderRadius: 8, padding: 12, flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
               <View style={{ backgroundColor: Colors.primaryFixed, borderRadius: 20, padding: 8, marginRight: 12 }}>
                 <MaterialIcons name="receipt-long" size={20} color={Colors.primary} />
               </View>
