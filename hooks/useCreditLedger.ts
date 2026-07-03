@@ -47,7 +47,7 @@ export const useCreditLedger = () => {
     }
   };
 
-  const updateEntry = (updatedEntry: CreditEntry) => {
+  const updateEntry = async (updatedEntry: CreditEntry) => {
     const newEntries = entries.map((e) => (e.id === updatedEntry.id ? updatedEntry : e));
     setEntries(newEntries);
     try {
@@ -57,7 +57,7 @@ export const useCreditLedger = () => {
     }
   };
 
-  const deleteEntry = (id: string) => {
+  const deleteEntry = async (id: string) => {
     const newEntries = entries.filter((e) => e.id !== id);
     setEntries(newEntries);
     try {
