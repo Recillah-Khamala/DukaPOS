@@ -90,7 +90,7 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
             </Text>
           </View>
           {/* REPAYMENT */}
-          <View style={{ flex: 1, alignItems: 'center' }}>
+          <View style={{ flex: 1, alignItems: 'center', borderLeftWidth: 1, borderRightWidth: 1, borderColor: Colors.outlineVariant }}>
             <Text style={{ fontSize: 10, fontWeight: '700', color: Colors.onSurfaceVariant, textTransform: 'uppercase' }}>
               REPAYMENT
             </Text>
@@ -188,7 +188,7 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
           </View>
 
           {/* Info chip */}
-          <View style={{ backgroundColor: Colors.serveContainerHigh, borderRadius: 8, padding: 10, marginTop: 12, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
+          <View style={{ backgroundColor: Colors.surfaceContainerHigh, borderRadius: 8, padding: 10, marginTop: 12, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
             <MaterialIcons name="info" size={16} color={Colors.secondary} />
             <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>
               Your current sales data qualifies you for an instant KES 20,000 limit increase.
@@ -233,7 +233,7 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
             <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '700' }}>
               Locked
             </Text>
-          </View>
+          </Vot>
         </View>
       </View>
 
@@ -256,7 +256,7 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
         <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, lineHeight: 20 }}>
           Your shop's inventory and sales data is encrypted and only used to generate your Business Health Score. No financial data is shared with loan partners until you explicitly tap the 'Share Data & Apply' button. You maintain 100% ownership of your shop records.
         </Text>
-      </V>
+      </View>
     </ScrollView>
   );
 };
