@@ -14,8 +14,6 @@ const CreditDetailScreen: React.FC = () => {
   const customerEntries = entries.filter(e => e.customerId === customerId && e.status === 'active');
   const totalBalance = customerEntries.reduce((sum, e) => sum + e.balance, 0);
 
-  console.log('Customer entries:', customerEntries);
-
   return (
     <View style={{ flex: 1 }}>
       <TopAppBar 
@@ -23,7 +21,61 @@ const CreditDetailScreen: React.FC = () => {
         onBack={() => router.back()} 
       />
       <ScrollView contentContainerStyle={{ padding: 16 }}>
-        <Text>Customer detail coming soon</Text>
+        {/* Header row */}
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+          <View>
+            <Text style={{ color: Colors.primary, fontSize: 24, fontWeight: '700' }}>
+              {customerName}
+            </Text>
+            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14 }}>
+              Purchase history for credit ledger
+            </Text>
+          </View>
+        </View>
+
+        {/* Entries list */}
+        {customerEntries.map((entry, index) => (
+          <View key={index} style={{ backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, marginBottom: 8 }}>
+            {/* Date header */}
+            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11, fontWeight: '700', textTransform: 'uppercase', marginBottom: 8 }}>
+              {new Date(entry.createdAt).toLocaleDateString('en-KE', { day: 'numeric', month: 'short', year: 'numeric' })}
+            </Text>
+
+            {/* Items */}
+            {entry.items.map((item, itemIdx) => (
+              <React.Fragment key={itemIdx}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <Text style={{ color: Colors.onSurface, fontSize: 15 }}>
+                    {item.name}
+                  </Text>
+                  <Text style={{ color: Colors.onSurface, fontSize: 15, fontWeight: '600' }}>
+                    KES {item.total.toLocaleString()}
+                  </Text>
+                </View>
+                {itemIdx < entry.items.length - 1 && (
+                  <View style={{ height: 1, backgroundColor: Colors.outlineVariant }} />
+                )}
+              </React.Fragment>
+            ))}
+
+            {/* Footer */}
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 8 }}>
+              <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '700' }}>
+                KES {entry.balance.toLocaleString()}
+              </Text>
+            </View>
+          </View>
+        ))}
+
+        {/* Total balance card */}
+        <View style={{ backgroundColor: Colors.primary, borderRadius: 12, padding: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+          <Text style={{ color: Colors.onPrimary, fontSize: 16, fontWeight: '600' }}>
+            Total Balance
+          </Text>
+          <Text style={{ color: Colors.onPrimary, fontSize: 24, fontWeight: '800' }}>
+            KES {totalBalance.toLocaleString()}
+          </Text>
+        </View>
       </ScrollView>
     </View>
   );
