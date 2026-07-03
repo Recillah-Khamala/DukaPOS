@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import Colors from '../../constants/colors';
 import ShopLoansTab from '../../components/credit/ShopLoansTab';
@@ -9,7 +10,7 @@ import CreditLedgerTab from '../../components/credit/CreditLedgerTab';
 export default function CreditScreen() {
   const [activeTab, setActiveTab] = React.useState<'Shop Loans' | 'Credit Ledger'>('Shop Loans');
   const [bottomNavHeight, setBottomNavHeight] = React.useState(0);
-  const sales: any[] = []; // Placeholder data
+  const router = useRouter();
 
   return (
     <View style={{ flex: 1 }}>
@@ -44,6 +45,33 @@ export default function CreditScreen() {
       </View>
 
       <BottomNavBar activeTab="credit" onHeightMeasured={setBottomNavHeight} />
+
+      {activeTab === 'Credit Ledger' && (
+        <TouchableOpacity
+          onPress={() => router.push('/new-credit-entry')}
+          style={{
+            position: 'absolute',
+            bottom: bottomNavHeight + 16,
+            right: 16,
+            height: 48,
+            paddingHorizontal: 20,
+            borderRadius: 24,
+            backgroundColor: Colors.secondaryContainer,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8,
+            elevation: 4,
+            zIndex: 20,
+            borderWidth: 2,
+            borderColor: Colors.secondary,
+          }}
+        >
+          <MaterialIcons name="add-circle" size={20} color={Colors.onSecondaryContainer} />
+          <Text style={{ color: Colors.onSecondaryContainer, fontSize: 14, fontWeight: '700' }}>
+            New Credit Entry
+          </Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
