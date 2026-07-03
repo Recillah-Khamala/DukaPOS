@@ -1,11 +1,13 @@
 import React from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import Colors from '../../constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useCreditLedger } from '../../hooks/useCreditLedger';
+import { useRouter } from 'expo-router';
 
 const CreditLedgerTab: React.FC = () => {
   const { entries, loading } = useCreditLedger();
+  const router = useRouter();
 
   if (loading) {
     return (
@@ -97,53 +99,58 @@ const CreditLedgerTab: React.FC = () => {
                 day: 'numeric'
               });
               return (
-                <View key={customerId} style={{
-                  backgroundColor: isHighDebt ? '#fef2f2' : 'white',
-                  borderRadius: 12,
-                  padding: 16,
-                  borderWidth: 1,
-                  borderColor: isHighDebt ? Colors.error : Colors.outlineVariant,
-                  marginBottom: 8,
-                  flexDirection: 'row',
-                  alignItems: 'center'
-                }}>
+                <TouchableOpacity
+                  key={customerId}
+                  onPress={() => router.push({ pathname: '/credit-detail', params: { customerId, customerName: data.name } })}
+                >
                   <View style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 24,
-                    backgroundColor: isHighDebt ? Colors.error : Colors.primaryFixed,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginRight: 12
+                    backgroundColor: isHighDebt ? '#fef2f2' : 'white',
+                    borderRadius: 12,
+                    padding: 16,
+                    borderWidth: 1,
+                    borderColor: isHighDebt ? Colors.error : Colors.outlineVariant,
+                    marginBottom: 8,
+                    flexDirection: 'row',
+                    alignItems: 'center'
                   }}>
-                    <MaterialIcons name="person" size={24} color={isHighDebt ? 'white' : Colors.primary} />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ color: Colors.onSurface, fontSize: 16, fontWeight: '600' }}>
-                      {data.name}
-                    </Text>
-                    <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>
-                      Last update: {formattedDate}
-                    </Text>
-                  </View>
-                  <View style={{ alignItems: 'flex-end' }}>
-                    <Text style={{ 
-                      color: isHighDebt ? Colors.error : Colors.onSurface, 
-                      fontSize: 20, 
-                      fontWeight: '800' 
+                    <View style={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: 24,
+                      backgroundColor: isHighDebt ? Colors.error : Colors.primaryFixed,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginRight: 12
                     }}>
-                      KES {data.balance.toLocaleString()}
-                    </Text>
-                    <Text style={{ 
-                      color: isHighDebt ? Colors.error : Colors.onSurface, 
-                      fontSize: 11, 
-                      fontWeight: '700', 
-                      textTransform: 'uppercase'
-                    }}>
-                      {isHighDebt ? 'High Debt' : 'Standard'}
-                    </Text>
+                      <MaterialIcons name="person" size={24} color={isHighDebt ? 'white' : Colors.primary} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={{ color: Colors.onSurface, fontSize: 16, fontWeight: '600' }}>
+                        {data.name}
+                      </Text>
+                      <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>
+                        Last update: {formattedDate}
+                      </Text>
+                    </View>
+                    <View style={{ alignItems: 'flex-end' }}>
+                      <Text style={{ 
+                        color: isHighDebt ? Colors.error : Colors.onSurface, 
+                        fontSize: 20, 
+                        fontWeight: '800' 
+                      }}>
+                        KES {data.balance.toLocaleString()}
+                      </Text>
+                      <Text style={{ 
+                        color: isHighDebt ? Colors.error : Colors.onSurface, 
+                        fontSize: 11, 
+                        fontWeight: '700', 
+                        textTransform: 'uppercase'
+                      }}>
+                        {isHighDebt ? 'High Debt' : 'Standard'}
+                      </Text>
+                    </View>
                   </View>
-                </View>
+                </TouchableOpacity>
               );
             })}
           </>
