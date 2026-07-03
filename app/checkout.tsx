@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Text, View, FlatList, Pressable } from 'react-native';
+import { Text, View, FlatList, Pressable, TextInput, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import TopAppBar from '../components/layout/TopAppBar';
@@ -11,6 +11,7 @@ import AdjustItemModal from '../components/sales/AdjustItemModal';
 import { useSharedBasket } from '../context/BasketContext';
 import { useSalesHistory } from '../hooks/useSalesHistory';
 import { useInventory } from '../context/InventoryContext';
+import { useCreditLedger } from '../hooks/useCreditLedger';
 import { CEREAL_PRODUCTS, POSHOMILL_SERVICES, BAG_PRODUCTS } from '../constants/salesData';
 import type { PaymentMethod, UnitType, CompletedSale, BasketItem } from '../types';
 
@@ -52,12 +53,14 @@ const getSmallestFractionFromLabel = (label?: string): number => {
 export default function CheckoutScreen() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
   const [cashReceived, setCashReceived] = useState(0);
+  const [creditCustomerName, setCreditCustomerName] = useState('');
   const [bottomNavHeight, setBottomNavHeight] = useState(0);
   const [selectedEditItem, setSelectedEditItem] = useState<BasketItem | null>(null);
   const router = useRouter();
   const { items, updateQuantity, removeItem, updateItem, total, clearBasket } = useSharedBasket();
   const { addSale } = useSalesHistory();
   const { getItemById, updateItem: updateInventoryItem } = useInventory();
+  const { addEntry } = useCreditLedger();
 
   const selectedEditProduct = selectedEditItem
     ? [...CEREAL_PRODUCTS, ...POSHOMILL_SERVICES].find(
@@ -99,6 +102,27 @@ export default function CheckoutScreen() {
         }
       } catch (e) {
         console.warn('Failed to update inventory:', e);
+      }
+      // Credit ledger entry if credit payment
+      if (paymentMethod === 'credit' && creditCustomerName.trim()) {
+        const customerId = creditCustomerName.trim().toLowerCase().replace(/\s+/g, '-');
+        addEntry({
+          id: Date.now().toString(),
+          customerId,
+          customerName: creditCustomerName.trim(),
+          items: items.map(i => ({
+            name: i.name,
+            qty: i.qty,
+            unitPrice: i.unitPrice,
+            total: i.qty * i.unitPrice,
+          })),
+          totalAmount: total,
+          amountPaid: 0,
+          balance: total,
+          createdAt: new Date().toISOString(),
+          lastUpdatedAt: new Date().toISOString(),
+          status: 'active',
+        });
       }
       clearBasket();
       router.replace('/(tabs)/sales?saleSuccess=true&total=' + encodeURIComponent(String(total)));
@@ -212,10 +236,17 @@ export default function CheckoutScreen() {
                   </Text>
                 </View>
               ) : paymentMethod === 'credit' ? (
-                <View className="bg-white rounded-xl p-4 border border-gray-200">
-                  <Text className="text-center text-sm text-on-surface-variant italic">
-                    Credit sale — customer ledger coming soon
+                <View style={{ backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant }}>
+                  <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
+                    Customer Name
                   </Text>
+                  <TextInput
+                    value={creditCustomerName}
+                    onChangeText={setCreditCustomerName}
+                    placeholder="e.g. Mama Njeri"
+                    placeholderTextColor="#9ca3af"
+                    style={{ borderWidth: 1.5, borderColor: Colors.outlineVariant, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: Colors.onSurface }}
+                  />
                 </View>
               ) : (
                 <ChangeCalculator
@@ -226,7 +257,7 @@ export default function CheckoutScreen() {
               )}
               <Pressable
                 onPress={handleConfirm}
-                disabled={items.length === 0}
+                disabled={items.length === 0 || (paymentMethod === 'credit' && creditCustomerName.trim() === '')}
                 className="w-full flex-row items-center justify-center rounded-lg py-3.5 active:scale-95"
                 style={{
                   backgroundColor: items.length === 0 ? '#d1d5db' : '#012d1d',
