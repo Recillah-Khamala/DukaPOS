@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Alert } from 'react-native';
+import { View, Text, Alert, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import TopAppBar from '../components/layout/TopAppBar';
@@ -142,7 +142,7 @@ const LoanConsentScreen: React.FC = () => {
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </V</View>
     </View>
   );
 };
