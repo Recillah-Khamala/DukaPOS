@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import Colors from '../../constants/colors';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useCreditLedger } from '../../hooks/useCreditLedger';
 
 const CreditLedgerTab: React.FC = () => {
@@ -47,10 +48,34 @@ const CreditLedgerTab: React.FC = () => {
         </View>
       </View>
 
-      {/* Placeholder */}
-      <Text style={{ color: Colors.onSurfaceVariant, textAlign: 'center' }}>
-        More coming soon
-      </Text>
+      {/* Active Debts */}
+      <View style={{ marginTop: 24 }}>
+        <Text style={{ 
+          color: Colors.onSurfaceVariant, 
+          fontSize: 11, 
+          fontWeight: '700', 
+          textTransform: 'uppercase',
+          letterSpacing: 0.5,
+          marginBottom: 8
+        }}>
+          Active Debts
+        </Text>
+        {activeEntries.length === 0 ? (
+          <View style={{ 
+            backgroundColor: 'white', 
+            borderRadius: 12, 
+            padding: 24, 
+            borderWidth: 1, 
+            borderColor: Colors.outlineVariant, 
+            alignItems: 'center' 
+          }}>
+            <MaterialIcons name="person-off" size={48} color={Colors.outlineVariant} />
+            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14, marginTop: 8 }}>
+              No active debts
+            </Text>
+          </View>
+        ) : null}
+      </View>
     </ScrollView>
   );
 };
