@@ -88,7 +88,7 @@ const LoanConsentScreen: React.FC = () => {
             <Text style={{ color: Colors.onSecondaryContainer, fontSize: 13, fontWeight: '600' }}>
               This sharing is one-time and valid for 30 days.
             </Text>
-          </View>
+          </Vile>
         </View>
       </View>
     </View>
