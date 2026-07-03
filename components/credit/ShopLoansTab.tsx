@@ -233,7 +233,7 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
             <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '700' }}>
               Locked
             </Text>
-          </Vot>
+          </View>
         </View>
       </View>
 
