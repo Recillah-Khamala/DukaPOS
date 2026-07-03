@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import TopAppBar from '../components/layout/TopAppBar';
@@ -7,6 +7,19 @@ import Colors from '../constants/colors';
 
 const LoanConsentScreen: React.FC = () => {
   const router = useRouter();
+
+  const handleAuthorize = () => {
+    Alert.alert(
+      'Data Shared Successfully',
+      'Your data has been shared. The lender will contact you within 24 hours.',
+      [
+        {
+          text: 'OK',
+          onPress: () => router.back(),
+        },
+      ]
+    );
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: Colors.surface }}>
@@ -89,6 +102,45 @@ const LoanConsentScreen: React.FC = () => {
               This sharing is one-time and valid for 30 days.
             </Text>
           </View>
+        </View>
+
+        {/* Action buttons */}
+        <View>
+          {/* Authorize Sharing */}
+          <TouchableOpacity
+            style={{
+              backgroundColor: Colors.primary,
+              borderRadius: 12,
+              height: 56,
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexDirection: 'row',
+              gap: 8,
+              marginBottom: 12,
+            }}
+            onPress={handleAuthorize}
+          >
+            <MaterialIcons name="check-circle" size={20} color="#fff" />
+            <Text style={{ color: '#fff', fontSize: 18, fontWeight: '600' }}>
+              Authorize Sharing
+            </Text>
+          </TouchableOpacity>
+
+          {/* Cancel */}
+          <TouchableOpacity
+            style={{
+              backgroundColor: Colors.surfaceContainerHigh,
+              borderRadius: 12,
+              height: 56,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            onPress={() => router.back()}
+          >
+            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 18, fontWeight: '600' }}>
+              Cancel
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
