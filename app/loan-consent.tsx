@@ -142,7 +142,7 @@ const LoanConsentScreen: React.FC = () => {
             </Text>
           </TouchableOpacity>
         </View>
-      </V</View>
+      </View>
     </View>
   );
 };
