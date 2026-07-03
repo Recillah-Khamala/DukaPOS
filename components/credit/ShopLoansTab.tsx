@@ -233,10 +233,26 @@ const ShopLoansTab: React.FC = () => {
         </View>
       </View>
 
-      {/* Placeholder */}
-      <Text style={{ color: Colors.onSurfaceVariant, textAlign: 'center' }}>
-        More coming soon
-      </Text>
+      {/* Data Privacy Guarantee */}
+      <View style={{
+        backgroundColor: Colors.surfaceContainerLow,
+        borderRadius: 12,
+        padding: 16,
+        borderWidth: 2,
+        borderStyle: 'dashed',
+        borderColor: Colors.outlineVariant,
+        marginTop: 8
+      }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+          <MaterialIcons name="verified-user" size={20} color={Colors.primary} />
+          <Text style={{ color: Colors.primary, fontSize: 14, fontWeight: '700', marginLeft: 8 }}>
+            Data Privacy Guarantee
+          </Text>
+        </View>
+        <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, lineHeight: 20 }}>
+          Your shop's inventory and sales data is encrypted and only used to generate your Business Health Score. No financial data is shared with loan partners until you explicitly tap the 'Share Data & Apply' button. You maintain 100% ownership of your shop records.
+        </Text>
+      </View>
     </ScrollView>
   );
 };
