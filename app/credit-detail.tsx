@@ -93,7 +93,7 @@ const CreditDetailScreen: React.FC = () => {
               <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '700' }}>
                 KES {entry.balance.toLocaleString()}
               </Text>
-            </Vie1.
+            </View>
           </View>
         ))}
 
