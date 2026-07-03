@@ -2,9 +2,11 @@ import React from 'react';
 import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import Colors from '../../constants/colors';
 import { useSalesHistory } from '../../hooks/useSalesHistory';
+import { useRouter } from 'expo-router';
 
 const ShopLoansTab: React.FC = () => {
   const { sales, loading } = useSalesHistory();
+  const router = useRouter();
 
   if (loading) {
     return (
@@ -137,6 +139,23 @@ const ShopLoansTab: React.FC = () => {
             fontWeight: '700' 
           }}>
             Withdraw to M-Pesa
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Share Data & Apply Button */}
+      <View style={{ marginBottom: 16 }}>
+        <TouchableOpacity
+          style={{
+            backgroundColor: Colors.primary,
+            borderRadius: 12,
+            paddingVertical: 14,
+            alignItems: 'alignItems: 'center'
+          }}
+          onPress={() => router.push('/loan-consent')}
+        >
+          <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>
+            Share Data & Apply
           </Text>
         </TouchableOpacity>
       </View>
