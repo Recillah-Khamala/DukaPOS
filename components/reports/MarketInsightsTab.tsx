@@ -3,7 +3,11 @@ import { View, Text, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Colors from '../../constants/colors';
 
-const MarketInsightsTab: React.FC = () => {
+interface MarketInsightsTabProps {
+  bottomNavHeight: number;
+}
+
+const MarketInsightsTab: React.FC<MarketInsightsTabProps> = ({ bottomNavHeight }) => {
   const demandItems = [
     { name: 'Maize', icon: 'grass', percent: 88, note: 'Kitale: +24% vs National' },
     { name: 'Millet', icon: 'eco', percent: 62, note: 'Kitale: +8% vs National' },
@@ -17,7 +21,7 @@ const MarketInsightsTab: React.FC = () => {
   ];
 
   return (
-    <ScrollView className="flex-1" contentContainerStyle={{ padding: 16, paddingBottom: 24 }}>
+    <ScrollView className="flex-1" contentContainerStyle={{ padding: 16, paddingBottom: bottomNavHeight + 24 }}>
 
       <Text className="text-2xl font-bold mb-4" style={{ color: Colors.primary }}>
         Insights & Analytics

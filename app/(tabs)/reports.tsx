@@ -39,10 +39,10 @@ export default function ReportsScreen() {
       </View>
 
 {/* Tab Content */}
-       <View style={{ flex: 1 }}>
-         {activeTab === 'Business Health' && <BusinessHealthTab sales={sales} />}
-         {activeTab === 'Market Insights' && <MarketInsightsTab />}
-       </View>
+<View style={{ flex: 1 }}>
+          {activeTab === 'Business Health' && <BusinessHealthTab sales={sales} bottomNavHeight={bottomNavHeight} />}
+          {activeTab === 'Market Insights' && <MarketInsightsTab bottomNavHeight={bottomNavHeight} />}
+        </View>
 
       <BottomNavBar activeTab="reports" onHeightMeasured={setBottomNavHeight} />
     </View>

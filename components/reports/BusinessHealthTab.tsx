@@ -8,9 +8,10 @@ import { useFuelLog } from '../../hooks/useFuelLog';
 
 interface BusinessHealthTabProps {
   sales: CompletedSale[];
+  bottomNavHeight: number;
 }
 
-const BusinessHealthTab: React.FC<BusinessHealthTabProps> = ({ sales }) => {
+const BusinessHealthTab: React.FC<BusinessHealthTabProps> = ({ sales, bottomNavHeight }) => {
   const router = useRouter();
 
   const todayStr = new Date().toDateString();
@@ -70,8 +71,8 @@ const fastestMoving = Object.values(productTotals)
    const millingProfit = millingRevenue - totalFuelCost;
    const isMillingProfit = millingProfit >= 0;
 
-   return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: 24 }}>
+return (
+     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: bottomNavHeight + 24 }}>
 
       {/* Today's Profit Hero */}
       <View style={{ backgroundColor: Colors.primaryContainer, borderRadius: 12, padding: 16, alignItems: 'center', marginBottom: 16 }}>
