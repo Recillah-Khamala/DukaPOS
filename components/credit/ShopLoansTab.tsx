@@ -5,13 +5,17 @@ import { useSalesHistory } from '../../hooks/useSalesHistory';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const ShopLoansTab: React.FC = () => {
+interface ShopLoansTabProps {
+  bottomNavHeight: number;
+}
+
+const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
   const { sales, loading } = useSalesHistory();
   const router = useRouter();
 
   if (loading) {
     return (
-      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 24 }}>
+      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: bottomNavHeight + 24 }}>
         <Text style={{ color: Colors.onSurfaceVariant }}>Loading...</Text>
       </ScrollView>
     );
@@ -35,7 +39,7 @@ const ShopLoansTab: React.FC = () => {
   const loanAmount = score >= 80 ? 50000 : score >= 50 ? 25000 : 10000;
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 24 }}>
+    <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: bottomNavHeight + 24 }}>
       {/* Heading */}
       <Text style={{ color: Colors.primary, fontSize: 20, fontWeight: '600', marginBottom: 12 }}>
         Shop Growth Dashboard
@@ -184,7 +188,7 @@ const ShopLoansTab: React.FC = () => {
           </View>
 
           {/* Info chip */}
-          <View style={{ backgroundColor: Colors.surfaceContainerHigh, borderRadius: 8, padding: 10, marginTop: 12, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
+          <View style={{ backgroundColor: Colors.serveContainerHigh, borderRadius: 8, padding: 10, marginTop: 12, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
             <MaterialIcons name="info" size={16} color={Colors.secondary} />
             <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>
               Your current sales data qualifies you for an instant KES 20,000 limit increase.
@@ -252,7 +256,7 @@ const ShopLoansTab: React.FC = () => {
         <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, lineHeight: 20 }}>
           Your shop's inventory and sales data is encrypted and only used to generate your Business Health Score. No financial data is shared with loan partners until you explicitly tap the 'Share Data & Apply' button. You maintain 100% ownership of your shop records.
         </Text>
-      </View>
+      </V>
     </ScrollView>
   );
 };

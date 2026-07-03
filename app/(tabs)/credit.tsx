@@ -40,7 +40,7 @@ export default function CreditScreen() {
 
       {/* Tab Content */}
       <View style={{ flex: 1 }}>
-        {activeTab === 'Shop Loans' && <ShopLoansTab />}
+        {activeTab === 'Shop Loans' && <ShopLoansTab bottomNavHeight={bottomNavHeight} />}
         {activeTab === 'Credit Ledger' && <CreditLedgerTab />}
       </View>
 
