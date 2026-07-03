@@ -3,6 +3,7 @@ import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import Colors from '../../constants/colors';
 import { useSalesHistory } from '../../hooks/useSalesHistory';
 import { useRouter } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const ShopLoansTab: React.FC = () => {
   const { sales, loading } = useSalesHistory();
@@ -143,21 +144,93 @@ const ShopLoansTab: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Share Data & Apply Button */}
-      <View style={{ marginBottom: 16 }}>
-        <TouchableOpacity
-          style={{
-            backgroundColor: Colors.primary,
-            borderRadius: 12,
-            paddingVertical: 14,
-            alignItems: 'alignItems: 'center'
-          }}
-          onPress={() => router.push('/loan-consent')}
-        >
-          <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>
-            Share Data & Apply
+      {/* Loan Partners Section */}
+      <View>
+        {/* Section header row */}
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <Text style={{ color: Colors.primary, fontSize: 20, fontWeight: '600' }}>
+            Loan Partners
           </Text>
-        </TouchableOpacity>
+          <Text style={{ color: Colors.secondary, fontSize: 14, fontWeight: '700' }}>
+            View All
+          </Text>
+        </View>
+
+        {/* Safaricom card */}
+        <View style={{ backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, marginTop: 12, marginBottom: 8 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {/* Avatar */}
+            <View style={{ width: 56, height: 56, backgroundColor: '#4CAF50', borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+              <MaterialIcons name="phone-iphone" size={28} color="white" />
+            </View>
+            {/* Middle */}
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: Colors.onSurface, fontSize: 16, fontWeight: '600' }}>
+                Safaricom / M-Pesa
+              </Text>
+              <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13 }}>
+                Merchant Growth Fund
+              </Text>
+            </View>
+            {/* Right */}
+            <View style={{ alignItems: 'flex-end' }}>
+              <Text style={{ color: Colors.primary, fontSize: 13, fontWeight: '700' }}>
+                2.5% p.m.
+              </Text>
+              <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11 }}>
+                Interest Rate
+              </Text>
+            </View>
+          </View>
+
+          {/* Info chip */}
+          <View style={{ backgroundColor: Colors.surfaceContainerHigh, borderRadius: 8, padding: 10, marginTop: 12, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
+            <MaterialIcons name="info" size={16} color={Colors.secondary} />
+            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>
+              Your current sales data qualifies you for an instant KES 20,000 limit increase.
+            </Text>
+          </View>
+
+          {/* Share Data & Apply Button */}
+          <TouchableOpacity
+            style={{
+              backgroundColor: Colors.primary,
+              borderRadius: 10,
+              paddingVertical: 12,
+              alignItems: 'center',
+              flexDirection: 'row',
+              justifyContent: 'center',
+              gap: 8,
+              marginTop: 12,
+            }}
+            onPress={() => router.push('/loan-consent')}
+          >
+            <MaterialIcons name="share" size={18} color="white" />
+            <Text style={{ color: 'white', fontSize: 14, fontWeight: '700' }}>
+              Share Data & Apply
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Equity Bank card */}
+        <View style={{ backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, opacity: 0.7, flexDirection: 'row', alignItems: 'center', marginTop: 12, marginBottom: 8 }}>
+          <View style={{ width: 56, height: 56, backgroundColor: Colors.surfaceContainerHigh, borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+            <MaterialIcons name="business" size={28} color={Colors.outline} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ color: Colors.onSurface, fontSize: 16, fontWeight: '600' }}>
+              Equity Bank
+            </Text>
+            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13 }}>
+              SME Pivot Loan
+            </Text>
+          </View>
+          <View style={{ backgroundColor: Colors.surfaceContainerHigh, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 8 }}>
+            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '700' }}>
+              Locked
+            </Text>
+          </View>
+        </View>
       </View>
 
       {/* Placeholder */}
