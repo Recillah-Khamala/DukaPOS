@@ -29,16 +29,16 @@ export default function BulkQuickAddScreen() {
     }
   };
 
-    const handleDeliveryAmountChange = (itemId: string, value: number) => {
-      setDeliveryAmounts(prev => ({
-        ...prev,
-        [itemId]: value,
-      }));
-    };
+  const handleDeliveryAmountChange = (itemId: string, value: number) => {
+    setDeliveryAmounts(prev => ({
+      ...prev,
+      [itemId]: value,
+    }));
+  };
 
-    const totalUpdated = Object.values(deliveryAmounts).filter(v => v > 0).length;
+  const totalUpdated = Object.values(deliveryAmounts).filter(v => v > 0).length;
 
-const handleSaveAllChanges = () => {
+  const handleSaveAllChanges = () => {
     Object.entries(deliveryAmounts).forEach(([itemId, deliveryAmount]) => {
       if (deliveryAmount > 0) {
         const item = getItemById(itemId);
@@ -54,7 +54,7 @@ const handleSaveAllChanges = () => {
     router.back();
   };
 
-   return (
+  return (
     <View className="flex-1 bg-gray-50">
       <TopAppBar title="Bulk Quick Add" onBack={() => router.back()} />
       <View className="flex-1 px-6 pt-6">
@@ -64,7 +64,14 @@ const handleSaveAllChanges = () => {
         <Text style={{ fontSize: 14, fontWeight: '400', color: Colors.onSurfaceVariant }}>
           Update inventory levels for new deliveries quickly. Adjust quantities or type values directly.
         </Text>
-        <ScrollView horizontal className="py-2">
+
+        {/* FIX: pin this row so it can't be stretched by the flex-1 parent */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{ flexGrow: 0, flexShrink: 0 }}
+          contentContainerStyle={{ alignItems: 'center', paddingVertical: 8 }}
+        >
           {['Cereals', 'Bags', 'Services'].map((tab) => (
             <TouchableOpacity
               key={tab}
@@ -73,6 +80,8 @@ const handleSaveAllChanges = () => {
               style={{
                 backgroundColor: activeTab === tab ? Colors.primary : Colors.secondaryContainer,
                 marginRight: tab === 'Services' ? 0 : 8,
+                height: 40,
+                justifyContent: 'center',
               }}
             >
               <Text
@@ -86,54 +95,63 @@ const handleSaveAllChanges = () => {
             </TouchableOpacity>
           ))}
         </ScrollView>
-{getFilteredItems().length > 0 ? (
-  <ScrollView showsVerticalScrollIndicator={true} contentContainerStyle={{ paddingBottom: 20 }}>
-{getFilteredItems().map((item: InventoryItem) => (
-       <BulkStockEntryRow
-         key={item.id}
-         product={{
-           id: item.id,
-           name: item.name,
-           currentStock: item.currentStock,
-           icon: item.icon ?? 'grain',
-           status: item.isLowStock ? 'Low Stock' : undefined,
-           sellingUnit: item.sellingUnit,
-           buyingUnit: item.buyingUnit,
-         }}
-         deliveryAmount={deliveryAmounts[item.id] ?? 0}
-         onDeliveryAmountChange={(value) => handleDeliveryAmountChange(item.id, value)}
-       />
-     ))}
-  </ScrollView>
-) : (
-  <View className="mt-6 items-center justify-center">
-    <Text className="text-onSurfaceVariant text-center">
-      No items in this category
-    </Text>
-  </View>
-)}
+
+        {/* FIX: give the list its own explicit flex:1 container so IT claims
+            the remaining vertical space instead of the tab row above */}
+        <View style={{ flex: 1 }}>
+          {getFilteredItems().length > 0 ? (
+            <ScrollView showsVerticalScrollIndicator={true} contentContainerStyle={{ paddingBottom: 20 }}>
+              {getFilteredItems().map((item: InventoryItem) => (
+                <BulkStockEntryRow
+                  key={item.id}
+                  product={{
+                    id: item.id,
+                    name: item.name,
+                    currentStock: item.currentStock,
+                    icon: item.icon ?? 'grain',
+                    status: item.isLowStock ? 'Low Stock' : undefined,
+                    sellingUnit: item.sellingUnit,
+                    buyingUnit: item.buyingUnit,
+                  }}
+                  deliveryAmount={deliveryAmounts[item.id] ?? 0}
+                  onDeliveryAmountChange={(value) => handleDeliveryAmountChange(item.id, value)}
+                />
+              ))}
+            </ScrollView>
+          ) : (
+            <View className="mt-6 items-center justify-center">
+              <Text className="text-onSurfaceVariant text-center">
+                No items in this category
+              </Text>
+            </View>
+          )}
+        </View>
       </View>
-<View className="flex-row justify-between items-center px-6 py-2 bg-secondaryContainer" style={{ marginBottom: bottomNavHeight }}>
-           <Text className="font-medium text-onSurface">
-             Total Items Updated: {totalUpdated}
-           </Text>
-           <TouchableOpacity
-             onPress={handleSaveAllChanges}
-             disabled={totalUpdated === 0}
-             className="px-4 py-2 rounded-md"
-             style={{
-               backgroundColor: totalUpdated === 0 ? '#d1d5db' : Colors.primary,
-             }}
-           >
-             <Text
-               className="text-sm font-medium"
-               style={{ color: totalUpdated === 0 ? '#9ca3af' : Colors.onPrimary }}
-             >
-               Save All Changes
-             </Text>
-           </TouchableOpacity>
-         </View>
-       <BottomNavBar activeTab="inventory" onHeightMeasured={setBottomNavHeight} />
-     </View>
-   );
- }
+
+      <View
+        className="flex-row justify-between items-center px-6 py-2 bg-secondaryContainer"
+        style={{ marginBottom: bottomNavHeight }}
+      >
+        <Text className="font-medium text-onSurface">
+          Total Items Updated: {totalUpdated}
+        </Text>
+        <TouchableOpacity
+          onPress={handleSaveAllChanges}
+          disabled={totalUpdated === 0}
+          className="px-4 py-2 rounded-md"
+          style={{
+            backgroundColor: totalUpdated === 0 ? '#d1d5db' : Colors.primary,
+          }}
+        >
+          <Text
+            className="text-sm font-medium"
+            style={{ color: totalUpdated === 0 ? '#9ca3af' : Colors.onPrimary }}
+          >
+            Save All Changes
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <BottomNavBar activeTab="inventory" onHeightMeasured={setBottomNavHeight} />
+    </View>
+  );
+}
