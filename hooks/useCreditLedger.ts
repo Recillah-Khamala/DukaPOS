@@ -40,10 +40,12 @@ const normalizeEntry = (entry: CreditEntry): CreditEntry => ({
   })),
 });
 
-// Splits a payment across an entry's items proportionally to each item's
-// remaining balance. Last item absorbs any rounding remainder so the
-// entry-level total always reconciles exactly.
-const allocatePaymentToItems = (items: CreditItem[], payAmount: number): CreditItem[] => {
+// Splits a payment across a set of items proportionally to each item's
+// remaining balance. Last outstanding item absorbs any rounding remainder
+// so the total always reconciles exactly.
+// Exported so it can be reused both for later repayments (recordPayment)
+// and for an upfront deposit taken at the moment a credit entry is created.
+export const allocatePaymentToItems = (items: CreditItem[], payAmount: number): CreditItem[] => {
   const itemsWithBalance = items.map((item) => ({
     ...item,
     balance: item.balance ?? item.total,
