@@ -1,11 +1,24 @@
+// hooks/useCreditLedger.ts
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export type CreditItemCategory = 'cereal' | 'milling' | 'bags' | 'other';
+
+export type CreditItem = {
+  name: string;
+  qty: number;
+  unitPrice: number;
+  total: number;
+  category?: CreditItemCategory;
+  amountPaid?: number;
+  balance?: number;
+};
 
 export type CreditEntry = {
   id: string;
   customerId: string;
   customerName: string;
-  items: { name: string; qty: number; unitPrice: number; total: number }[];
+  items: CreditItem[];
   totalAmount: number;
   amountPaid: number;
   balance: number;
@@ -15,6 +28,52 @@ export type CreditEntry = {
 };
 
 const LEDGER_KEY = 'duka_credit_ledger';
+
+// Backfills item-level fields for entries created before partial-payment support existed.
+const normalizeEntry = (entry: CreditEntry): CreditEntry => ({
+  ...entry,
+  items: entry.items.map((item) => ({
+    ...item,
+    category: item.category ?? 'other',
+    amountPaid: item.amountPaid ?? (entry.status === 'paid' ? item.total : 0),
+    balance: item.balance ?? (entry.status === 'paid' ? 0 : item.total),
+  })),
+});
+
+// Splits a payment across an entry's items proportionally to each item's
+// remaining balance. Last item absorbs any rounding remainder so the
+// entry-level total always reconciles exactly.
+const allocatePaymentToItems = (items: CreditItem[], payAmount: number): CreditItem[] => {
+  const itemsWithBalance = items.map((item) => ({
+    ...item,
+    balance: item.balance ?? item.total,
+    amountPaid: item.amountPaid ?? 0,
+  }));
+
+  const totalOutstanding = itemsWithBalance.reduce((sum, i) => sum + (i.balance ?? 0), 0);
+  if (totalOutstanding <= 0) return itemsWithBalance;
+
+  let remaining = payAmount;
+  const outstandingIndices = itemsWithBalance
+    .map((item, idx) => ({ idx, balance: item.balance ?? 0 }))
+    .filter((x) => x.balance > 0);
+
+  return itemsWithBalance.map((item, idx) => {
+    const isLastOutstanding = outstandingIndices[outstandingIndices.length - 1]?.idx === idx;
+    if ((item.balance ?? 0) <= 0) return item;
+
+    const share = (item.balance ?? 0) / totalOutstanding;
+    let itemPayment = isLastOutstanding ? remaining : Math.min(payAmount * share, item.balance ?? 0);
+    itemPayment = Math.max(0, Math.min(itemPayment, item.balance ?? 0));
+    remaining -= itemPayment;
+
+    return {
+      ...item,
+      amountPaid: (item.amountPaid ?? 0) + itemPayment,
+      balance: Math.max(0, (item.balance ?? 0) - itemPayment),
+    };
+  });
+};
 
 export const useCreditLedger = () => {
   const [entries, setEntries] = useState<CreditEntry[]>([]);
@@ -26,7 +85,7 @@ export const useCreditLedger = () => {
         const raw = await AsyncStorage.getItem(LEDGER_KEY);
         if (raw) {
           const parsed = JSON.parse(raw) as CreditEntry[];
-          setEntries(parsed);
+          setEntries(parsed.map(normalizeEntry));
         }
       } catch (e) {
         console.warn('Failed to load credit ledger:', e);
@@ -37,35 +96,63 @@ export const useCreditLedger = () => {
     load();
   }, []);
 
-  const addEntry = async (entry: CreditEntry) => {
-    const newEntries = [entry, ...entries];
+  const persist = async (newEntries: CreditEntry[]) => {
     setEntries(newEntries);
     try {
       await AsyncStorage.setItem(LEDGER_KEY, JSON.stringify(newEntries));
     } catch (e) {
       console.warn('Failed to save credit ledger:', e);
     }
+  };
+
+  const addEntry = async (entry: CreditEntry) => {
+    await persist([normalizeEntry(entry), ...entries]);
   };
 
   const updateEntry = async (updatedEntry: CreditEntry) => {
-    const newEntries = entries.map((e) => (e.id === updatedEntry.id ? updatedEntry : e));
-    setEntries(newEntries);
-    try {
-      await AsyncStorage.setItem(LEDGER_KEY, JSON.stringify(newEntries));
-    } catch (e) {
-      console.warn('Failed to save credit ledger:', e);
-    }
+    await persist(entries.map((e) => (e.id === updatedEntry.id ? updatedEntry : e)));
   };
 
   const deleteEntry = async (id: string) => {
-    const newEntries = entries.filter((e) => e.id !== id);
-    setEntries(newEntries);
-    try {
-      await AsyncStorage.setItem(LEDGER_KEY, JSON.stringify(newEntries));
-    } catch (e) {
-      console.warn('Failed to save credit ledger:', e);
-    }
+    await persist(entries.filter((e) => e.id !== id));
   };
 
-  return { entries, loading, addEntry, updateEntry, deleteEntry };
+  // Applies a payment across a customer's active entries, oldest first (FIFO),
+  // splitting proportionally across each entry's line items.
+  const recordPayment = async (customerId: string, amount: number) => {
+    if (amount <= 0) return;
+
+    const activeEntries = entries
+      .filter((e) => e.customerId === customerId && e.status === 'active')
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
+    let remaining = amount;
+    const updatedById: Record<string, CreditEntry> = {};
+
+    for (const entry of activeEntries) {
+      if (remaining <= 0) break;
+      const payForEntry = Math.min(remaining, entry.balance);
+      if (payForEntry <= 0) continue;
+
+      const updatedItems = allocatePaymentToItems(entry.items, payForEntry);
+      const newAmountPaid = entry.amountPaid + payForEntry;
+      const newBalance = Math.max(0, entry.balance - payForEntry);
+
+      updatedById[entry.id] = {
+        ...entry,
+        items: updatedItems,
+        amountPaid: newAmountPaid,
+        balance: newBalance,
+        status: newBalance <= 0.01 ? 'paid' : 'active',
+        lastUpdatedAt: new Date().toISOString(),
+      };
+
+      remaining -= payForEntry;
+    }
+
+    const newEntries = entries.map((e) => updatedById[e.id] ?? e);
+    await persist(newEntries);
+  };
+
+  return { entries, loading, addEntry, updateEntry, deleteEntry, recordPayment };
 };
