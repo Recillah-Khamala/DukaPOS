@@ -13,6 +13,15 @@ const CATEGORY_LABELS: Record<CreditItemCategory, string> = {
   other: 'Other',
 };
 
+type CategoryBalanceMap = Partial<Record<CreditItemCategory, number>>;
+
+type CustomerCreditSummary = {
+  name: string;
+  balance: number;
+  lastUpdated: string;
+  categoryBalances: CategoryBalanceMap;
+};
+
 interface CreditLedgerTabProps {
   bottomNavHeight?: number;
 }
@@ -37,10 +46,7 @@ const CreditLedgerTab: React.FC<CreditLedgerTabProps> = ({ bottomNavHeight = 0 }
 
   // Group by customerId, and within each customer, break down outstanding
   // balance by category so a shopkeeper can see e.g. "Cereal KES 200 · Milling KES 50"
-  const customerMap: Record
-    string,
-    { name: string; balance: number; lastUpdated: string; categoryBalances: Partial<Record<CreditItemCategory, number>> }
-  > = {};
+  const customerMap: Record<string, CustomerCreditSummary> = {};
 
   activeEntries.forEach(e => {
     if (!customerMap[e.customerId]) {
