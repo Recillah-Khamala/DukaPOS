@@ -1,5 +1,5 @@
-import React, { ViewStyle } from 'react';
-import { View, Text, TextInput } from 'react-native';
+import React from 'react';
+import { View, Text, TextInput, ViewStyle, TextInputProps } from 'react-native';
 import Colors from '../../constants/colors';
 
 type FormFieldProps = {
@@ -7,7 +7,7 @@ type FormFieldProps = {
   value: string;
   onChangeText: (text: string) => void;
   placeholder?: string;
-  keyboardType?: React.TextInputProperties['keyboardType'];
+  keyboardType?: TextInputProps['keyboardType'];
   style?: ViewStyle;
 };
 
