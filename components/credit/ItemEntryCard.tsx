@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleProps } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import Colors from '../../constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import { FormField } from './FormField';
