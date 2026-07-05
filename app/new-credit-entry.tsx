@@ -6,6 +6,9 @@ import { useCreditLedger, CreditItemCategory, allocatePaymentToItems } from '../
 import TopAppBar from '../components/layout/TopAppBar';
 import Colors from '../constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
+import { categoryToBasketType, parseManualDate } from '../utils/creditEntryHelpers';
+import { LegacyDebtForm } from './components/credit/LegacyDebtForm';
+import { ItemEntryCard } from './components/credit/ItemEntryCard';
 
 type DraftItem = {
   key: string;
@@ -29,21 +32,6 @@ const makeEmptyItem = (): DraftItem => ({
   unitPrice: '',
   category: 'other',
 });
-
-// Parses a DD/MM/YYYY string into an ISO date string.
-// Falls back to "now" if the input is missing or malformed, rather than
-// blocking save — an approximate old date is still better than none.
-const parseManualDate = (day: string, month: string, year: string): string => {
-  const d = parseInt(day, 10);
-  const m = parseInt(month, 10);
-  const y = parseInt(year, 10);
-  if (!d || !m || !y || y < 2000 || m < 1 || m > 12 || d < 1 || d > 31) {
-    return new Date().toISOString();
-  }
-  const parsed = new Date(y, m - 1, d);
-  if (isNaN(parsed.getTime())) return new Date().toISOString();
-  return parsed.toISOString();
-};
 
 const NewCreditEntryScreen: React.FC = () => {
   const router = useRouter();
@@ -220,317 +208,60 @@ const NewCreditEntryScreen: React.FC = () => {
           }}
         />
 
-        {isExistingDebt ? (
-          <>
-            {/* Description */}
-            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
-              Description (optional)
-            </Text>
-            <TextInput
-              placeholder="e.g. Old balance from before the app"
-              value={debtDescription}
-              onChangeText={setDebtDescription}
-              style={{
-                borderWidth: 1.5,
-                borderColor: Colors.outlineVariant,
-                borderRadius: 10,
-                paddingHorizontal: 14,
-                paddingVertical: 12,
-                fontSize: 15,
-                color: Colors.onSurface,
-                marginBottom: 16,
-              }}
-            />
+{isExistingDebt ? (
+  <LegacyDebtForm
+    debtDescription={debtDescription}
+    setDebtDescription={setDebtDescription}
+    debtCategory={debtCategory}
+    setDebtCategory={setDebtCategory}
+    debtTotal={debtTotal}
+    setDebtTotal={setDebtTotal}
+    debtAlreadyPaid={debtAlreadyPaid}
+    setDebtAlreadyPaid={setDebtAlreadyPaid}
+    debtDay={debtDay}
+    setDebtDay={setDebtDay}
+    debtMonth={debtMonth}
+    setDebtMonth={setDebtMonth}
+    debtYear={debtYear}
+    setDebtYear={setDebtYear}
+  />
+) : (
+  <>
+    {/* Item rows */}
+    {items.map((item, index) => (
+      <ItemEntryCard
+        key={item.key}
+        item={item}
+        index={index}
+        onUpdate={updateItem}
+        onRemove={removeItemRow}
+        canRemove={items.length > 1}
+      />
+    ))}
 
-            {/* Category */}
-            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
-              Category (if known)
-            </Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
-              {CATEGORY_OPTIONS.map(opt => {
-                const selected = debtCategory === opt.value;
-                return (
-                  <TouchableOpacity
-                    key={opt.value}
-                    onPress={() => setDebtCategory(opt.value)}
-                    style={{
-                      paddingHorizontal: 14,
-                      paddingVertical: 8,
-                      borderRadius: 20,
-                      backgroundColor: selected ? Colors.primary : Colors.secondaryContainer,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: selected ? '#fff' : Colors.onSecondaryContainer,
-                        fontSize: 13,
-                        fontWeight: selected ? '700' : '500',
-                      }}
-                    >
-                      {opt.label}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-
-            {/* Total owed */}
-            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
-              Total Amount Owed (KES)
-            </Text>
-            <TextInput
-              placeholder="e.g. 400"
-              keyboardType="numeric"
-              value={debtTotal}
-              onChangeText={setDebtTotal}
-              style={{
-                borderWidth: 1.5,
-                borderColor: Colors.outlineVariant,
-                borderRadius: 10,
-                paddingHorizontal: 14,
-                paddingVertical: 12,
-                fontSize: 15,
-                color: Colors.onSurface,
-                marginBottom: 16,
-              }}
-            />
-
-            {/* Already paid */}
-            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
-              Amount Already Paid (optional)
-            </Text>
-            <TextInput
-              placeholder="e.g. 0"
-              keyboardType="numeric"
-              value={debtAlreadyPaid}
-              onChangeText={setDebtAlreadyPaid}
-              style={{
-                borderWidth: 1.5,
-                borderColor: Colors.outlineVariant,
-                borderRadius: 10,
-                paddingHorizontal: 14,
-                paddingVertical: 12,
-                fontSize: 15,
-                color: Colors.onSurface,
-                marginBottom: 16,
-              }}
-            />
-
-            {/* Debt origin date */}
-            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
-              Debt Started On (approximate is fine)
-            </Text>
-            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}>
-              <TextInput
-                placeholder="DD"
-                keyboardType="numeric"
-                maxLength={2}
-                value={debtDay}
-                onChangeText={setDebtDay}
-                style={{
-                  flex: 1,
-                  borderWidth: 1.5,
-                  borderColor: Colors.outlineVariant,
-                  borderRadius: 10,
-                  paddingHorizontal: 14,
-                  paddingVertical: 12,
-                  fontSize: 15,
-                  color: Colors.onSurface,
-                  textAlign: 'center',
-                }}
-              />
-              <TextInput
-                placeholder="MM"
-                keyboardType="numeric"
-                maxLength={2}
-                value={debtMonth}
-                onChangeText={setDebtMonth}
-                style={{
-                  flex: 1,
-                  borderWidth: 1.5,
-                  borderColor: Colors.outlineVariant,
-                  borderRadius: 10,
-                  paddingHorizontal: 14,
-                  paddingVertical: 12,
-                  fontSize: 15,
-                  color: Colors.onSurface,
-                  textAlign: 'center',
-                }}
-              />
-              <TextInput
-                placeholder="YYYY"
-                keyboardType="numeric"
-                maxLength={4}
-                value={debtYear}
-                onChangeText={setDebtYear}
-                style={{
-                  flex: 1.5,
-                  borderWidth: 1.5,
-                  borderColor: Colors.outlineVariant,
-                  borderRadius: 10,
-                  paddingHorizontal: 14,
-                  paddingVertical: 12,
-                  fontSize: 15,
-                  color: Colors.onSurface,
-                  textAlign: 'center',
-                }}
-              />
-            </View>
-            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12, marginBottom: 20 }}>
-              Leave blank to use today's date. This affects which debts get paid off first when the customer makes a payment.
-            </Text>
-          </>
-        ) : (
-          <>
-            {/* Item rows */}
-            {items.map((item, index) => (
-              <View
-                key={item.key}
-                style={{
-                  borderWidth: 1.5,
-                  borderColor: Colors.outlineVariant,
-                  borderRadius: 12,
-                  padding: 14,
-                  marginBottom: 14,
-                }}
-              >
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <Text style={{ color: Colors.onSurface, fontSize: 13, fontWeight: '700' }}>
-                    Item {index + 1}
-                  </Text>
-                  {items.length > 1 && (
-                    <TouchableOpacity onPress={() => removeItemRow(item.key)}>
-                      <MaterialIcons name="close" size={18} color={Colors.onSurfaceVariant} />
-                    </TouchableOpacity>
-                  )}
-                </View>
-
-                {/* Category picker */}
-                <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
-                  Category
-                </Text>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
-                  {CATEGORY_OPTIONS.map(opt => {
-                    const selected = item.category === opt.value;
-                    return (
-                      <TouchableOpacity
-                        key={opt.value}
-                        onPress={() => updateItem(item.key, { category: opt.value })}
-                        style={{
-                          paddingHorizontal: 14,
-                          paddingVertical: 8,
-                          borderRadius: 20,
-                          backgroundColor: selected ? Colors.primary : Colors.secondaryContainer,
-                        }}
-                      >
-                        <Text
-                          style={{
-                            color: selected ? '#fff' : Colors.onSecondaryContainer,
-                            fontSize: 13,
-                            fontWeight: selected ? '700' : '500',
-                          }}
-                        >
-                          {opt.label}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
-
-                {/* Item Name */}
-                <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
-                  Item Name
-                </Text>
-                <TextInput
-                  placeholder="e.g. Maize"
-                  value={item.name}
-                  onChangeText={text => updateItem(item.key, { name: text })}
-                  style={{
-                    borderWidth: 1.5,
-                    borderColor: Colors.outlineVariant,
-                    borderRadius: 10,
-                    paddingHorizontal: 14,
-                    paddingVertical: 12,
-                    fontSize: 15,
-                    color: Colors.onSurface,
-                    marginBottom: 14,
-                  }}
-                />
-
-                {/* Qty + Unit Price side by side */}
-                <View style={{ flexDirection: 'row', gap: 12, marginBottom: 10 }}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
-                      Quantity
-                    </Text>
-                    <TextInput
-                      placeholder="e.g. 2"
-                      keyboardType="numeric"
-                      value={item.qty}
-                      onChangeText={text => updateItem(item.key, { qty: text })}
-                      style={{
-                        borderWidth: 1.5,
-                        borderColor: Colors.outlineVariant,
-                        borderRadius: 10,
-                        paddingHorizontal: 14,
-                        paddingVertical: 12,
-                        fontSize: 15,
-                        color: Colors.onSurface,
-                      }}
-                    />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
-                      Unit Price (KES)
-                    </Text>
-                    <TextInput
-                      placeholder="e.g. 130"
-                      keyboardType="numeric"
-                      value={item.unitPrice}
-                      onChangeText={text => updateItem(item.key, { unitPrice: text })}
-                      style={{
-                        borderWidth: 1.5,
-                        borderColor: Colors.outlineVariant,
-                        borderRadius: 10,
-                        paddingHorizontal: 14,
-                        paddingVertical: 12,
-                        fontSize: 15,
-                        color: Colors.onSurface,
-                      }}
-                    />
-                  </View>
-                </View>
-
-                {/* Line total */}
-                <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600' }}>
-                  Line total: KES {itemTotal(item).toLocaleString()}
-                </Text>
-              </View>
-            ))}
-
-            {/* Add another item */}
-            <TouchableOpacity
-              onPress={addItemRow}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 6,
-                paddingVertical: 12,
-                borderRadius: 10,
-                borderWidth: 1.5,
-                borderColor: Colors.primary,
-                borderStyle: 'dashed',
-                marginBottom: 20,
-              }}
-            >
-              <MaterialIcons name="add" size={18} color={Colors.primary} />
-              <Text style={{ color: Colors.primary, fontSize: 14, fontWeight: '600' }}>
-                Add Another Item
-              </Text>
-            </TouchableOpacity>
-          </>
-        )}
+    {/* Add another item */}
+    <TouchableOpacity
+      onPress={addItemRow}
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 6,
+        paddingVertical: 12,
+        borderRadius: 10,
+        borderWidth: 1.5,
+        borderColor: Colors.primary,
+        borderStyle: 'dashed',
+        marginBottom: 20,
+      }}
+    >
+      <MaterialIcons name="add" size={18} color={Colors.primary} />
+      <Text style={{ color: Colors.primary, fontSize: 14, fontWeight: '600' }}>
+        Add Another Item
+      </Text>
+    </TouchableOpacity>
+  </>
+)}
 
         {/* Live grand total preview */}
         <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '700', marginBottom: 20 }}>
