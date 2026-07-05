@@ -9,6 +9,7 @@ type FormFieldProps = {
   placeholder?: string;
   keyboardType?: TextInputProps['keyboardType'];
   style?: ViewStyle;
+  maxLength?: number;
 };
 
 export const FormField = ({
@@ -18,6 +19,7 @@ export const FormField = ({
   placeholder,
   keyboardType,
   style,
+  maxLength,
 }: FormFieldProps) => {
   return (
     <View style={style}>
@@ -34,6 +36,85 @@ export const FormField = ({
         value={value}
         onChangeText={onChangeText}
         keyboardType={keyboardType}
+        maxLength={maxLength}
+        style={{
+          borderWidth: 1.5,
+          borderColor: Colors.outlineVariant,
+          borderRadius: 10,
+          paddingHorizontal: 14,
+          paddingVertical: 12,
+          fontSize: 15,
+          color: Colors.onSurface,
+        }}
+      />
+    </View>
+  );
+};
+
+export const FormField = ({
+  label,
+  value,
+  onChangeText,
+  placeholder,
+  keyboardType,
+  style,
+  maxLength,
+}: FormFieldProps) => {
+  return (
+    <View style={style}>
+      <Text style={{
+        color: Colors.onSurfaceVariant,
+        fontSize: 13,
+        fontWeight: '600',
+        marginBottom: 6,
+      }}>
+        {label}
+      </Text>
+      <TextInput
+        placeholder={placeholder}
+        value={value}
+        onChangeText={onChangeText}
+        keyboardType={keyboardType}
+        maxLength={maxLength}
+        style={{
+          borderWidth: 1.5,
+          borderColor: Colors.outlineVariant,
+          borderRadius: 10,
+          paddingHorizontal: 14,
+          paddingVertical: 12,
+          fontSize: 15,
+          color: Colors.onSurface,
+        }}
+      />
+    </View>
+  );
+};
+
+export const FormField = ({
+  label,
+  value,
+  onChangeText,
+  placeholder,
+  keyboardType,
+  style,
+  maxLength,
+}: FormFieldProps) => {
+  return (
+    <View style={style}>
+      <Text style={{
+        color: Colors.onSurfaceVariant,
+        fontSize: 13,
+        fontWeight: '600',
+        marginBottom: 6,
+      }}>
+        {label}
+      </Text>
+      <TextInput
+        placeholder={placeholder}
+        value={value}
+        onChangeText={onChangeText}
+        keyboardType={keyboardType}
+        maxLength={maxLength}
         style={{
           borderWidth: 1.5,
           borderColor: Colors.outlineVariant,
