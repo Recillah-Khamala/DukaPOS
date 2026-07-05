@@ -1,7 +1,9 @@
+// components/credit/ShopLoansTab.tsx
 import React from 'react';
 import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import Colors from '../../constants/colors';
 import { useSalesHistory } from '../../hooks/useSalesHistory';
+import { useCreditLedger } from '../../hooks/useCreditLedger';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -10,10 +12,11 @@ interface ShopLoansTabProps {
 }
 
 const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
-  const { sales, loading } = useSalesHistory();
+  const { sales, loading: salesLoading } = useSalesHistory();
+  const { entries, loading: creditLoading } = useCreditLedger();
   const router = useRouter();
 
-  if (loading) {
+  if (salesLoading || creditLoading) {
     return (
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: bottomNavHeight + 24 }}>
         <Text style={{ color: Colors.onSurfaceVariant }}>Loading...</Text>
@@ -37,6 +40,16 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
   const activeDays = activeDaysSet.size;
   const score = Math.min(100, Math.round((activeDays / 30) * 100));
   const loanAmount = score >= 80 ? 50000 : score >= 50 ? 25000 : 10000;
+
+  // Real repayment rate: how much of everything ever extended on credit
+  // has actually been collected, across both active and paid entries.
+  const totalExtended = entries.reduce((sum, e) => sum + e.totalAmount, 0);
+  const totalCollected = entries.reduce((sum, e) => sum + e.amountPaid, 0);
+  const hasCreditHistory = totalExtended > 0;
+  const repaymentRate = hasCreditHistory ? Math.round((totalCollected / totalExtended) * 100) : null;
+  const outstandingCredit = entries
+    .filter(e => e.status === 'active')
+    .reduce((sum, e) => sum + e.balance, 0);
 
   return (
     <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: bottomNavHeight + 24 }}>
@@ -89,13 +102,13 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
               Stable
             </Text>
           </View>
-          {/* REPAYMENT */}
+          {/* REPAYMENT — now computed from real credit ledger data */}
           <View style={{ flex: 1, alignItems: 'center', borderLeftWidth: 1, borderRightWidth: 1, borderColor: Colors.outlineVariant }}>
             <Text style={{ fontSize: 10, fontWeight: '700', color: Colors.onSurfaceVariant, textTransform: 'uppercase' }}>
               REPAYMENT
             </Text>
             <Text style={{ fontSize: 20, fontWeight: '600', color: Colors.primary }}>
-              100%
+              {hasCreditHistory ? `${repaymentRate}%` : 'N/A'}
             </Text>
           </View>
         </View>
@@ -110,38 +123,44 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
         marginBottom: 16,
         overflow: 'hidden'
       }}>
-        <Text style={{ 
-          color: Colors.primaryContainer, 
-          fontSize: 11, 
-          fontWeight: '700', 
-          letterSpacing: 1, 
+        <Text style={{
+          color: Colors.primaryContainer,
+          fontSize: 11,
+          fontWeight: '700',
+          letterSpacing: 1,
           textTransform: 'uppercase',
           marginBottom: 4
         }}>
           AVAILABLE CREDIT LIMIT
         </Text>
-        <Text style={{ 
-          color: Colors.onPrimary, 
-          fontSize: 28, 
-          fontWeight: '800', 
-          marginBottom: 16
+        <Text style={{
+          color: Colors.onPrimary,
+          fontSize: 28,
+          fontWeight: '800',
+          marginBottom: 4
         }}>
           KES {loanAmount.toLocaleString()}
         </Text>
-        <TouchableOpacity 
-          style={{ 
-            backgroundColor: Colors.secondaryContainer, 
-            borderRadius: 24, 
-            paddingVertical: 12, 
-            paddingHorizontal: 32, 
-            width: '100%', 
-            alignItems: 'center' 
+        {outstandingCredit > 0 && (
+          <Text style={{ color: Colors.primaryContainer, fontSize: 12, marginBottom: 12 }}>
+            KES {outstandingCredit.toLocaleString()} currently extended to customers
+          </Text>
+        )}
+        <TouchableOpacity
+          style={{
+            backgroundColor: Colors.secondaryContainer,
+            borderRadius: 24,
+            paddingVertical: 12,
+            paddingHorizontal: 32,
+            width: '100%',
+            alignItems: 'center',
+            marginTop: outstandingCredit > 0 ? 0 : 8,
           }}
         >
-          <Text style={{ 
-            color: Colors.onSecondaryContainer, 
-            fontSize: 14, 
-            fontWeight: '700' 
+          <Text style={{
+            color: Colors.onSecondaryContainer,
+            fontSize: 14,
+            fontWeight: '700'
           }}>
             Withdraw to M-Pesa
           </Text>
@@ -150,7 +169,6 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
 
       {/* Loan Partners Section */}
       <View>
-        {/* Section header row */}
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <Text style={{ color: Colors.primary, fontSize: 20, fontWeight: '600' }}>
             Loan Partners
@@ -160,14 +178,11 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
           </Text>
         </View>
 
-        {/* Safaricom card */}
         <View style={{ backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, marginTop: 12, marginBottom: 8 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            {/* Avatar */}
             <View style={{ width: 56, height: 56, backgroundColor: '#4CAF50', borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
               <MaterialIcons name="phone-iphone" size={28} color="white" />
             </View>
-            {/* Middle */}
             <View style={{ flex: 1 }}>
               <Text style={{ color: Colors.onSurface, fontSize: 16, fontWeight: '600' }}>
                 Safaricom / M-Pesa
@@ -176,7 +191,6 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
                 Merchant Growth Fund
               </Text>
             </View>
-            {/* Right */}
             <View style={{ alignItems: 'flex-end' }}>
               <Text style={{ color: Colors.primary, fontSize: 13, fontWeight: '700' }}>
                 2.5% p.m.
@@ -187,7 +201,6 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
             </View>
           </View>
 
-          {/* Info chip */}
           <View style={{ backgroundColor: Colors.surfaceContainerHigh, borderRadius: 8, padding: 10, marginTop: 12, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
             <MaterialIcons name="info" size={16} color={Colors.secondary} />
             <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>
@@ -195,7 +208,6 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
             </Text>
           </View>
 
-          {/* Share Data & Apply Button */}
           <TouchableOpacity
             style={{
               backgroundColor: Colors.primary,
@@ -216,7 +228,6 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Equity Bank card */}
         <View style={{ backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, opacity: 0.7, flexDirection: 'row', alignItems: 'center', marginTop: 12, marginBottom: 8 }}>
           <View style={{ width: 56, height: 56, backgroundColor: Colors.surfaceContainerHigh, borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
             <MaterialIcons name="business" size={28} color={Colors.outline} />
