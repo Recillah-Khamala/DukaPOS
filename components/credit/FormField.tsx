@@ -1,28 +1,28 @@
 import React from 'react';
-import { View, Text, TextInput, ViewStyle, TextInputProps } from 'react-native';
+import { View, Text, TextInput } from 'react-native';
 import Colors from '../../constants/colors';
 
-type FormFieldProps = {
+interface FormFieldProps {
   label: string;
   value: string;
   onChangeText: (text: string) => void;
   placeholder?: string;
-  keyboardType?: TextInputProps['keyboardType'];
-  style?: ViewStyle;
-  maxLength?: number;
-};
+  keyboardType?: 'default' | 'numeric' | 'decimal-pad';
+  containerStyle?: object;
+  inputStyle?: object;
+}
 
-export const FormField = ({
+const FormField: React.FC<FormFieldProps> = ({
   label,
   value,
   onChangeText,
   placeholder,
-  keyboardType,
-  style,
-  maxLength,
-}: FormFieldProps) => {
+  keyboardType = 'default',
+  containerStyle,
+  inputStyle,
+}) => {
   return (
-    <View style={style}>
+    <View style={{ marginBottom: 16, ...(containerStyle || {} )}>
       <Text style={{
         color: Colors.onSurfaceVariant,
         fontSize: 13,
@@ -32,11 +32,10 @@ export const FormField = ({
         {label}
       </Text>
       <TextInput
-        placeholder={placeholder}
         value={value}
         onChangeText={onChangeText}
+        placeholder={placeholder}
         keyboardType={keyboardType}
-        maxLength={maxLength}
         style={{
           borderWidth: 1.5,
           borderColor: Colors.outlineVariant,
@@ -45,8 +44,11 @@ export const FormField = ({
           paddingVertical: 12,
           fontSize: 15,
           color: Colors.onSurface,
+          ...(inputStyle || {}),
         }}
       />
     </View>
   );
 };
+
+export default FormField;
