@@ -6,7 +6,7 @@ import { useCreditLedger, CreditItemCategory, allocatePaymentToItems } from '../
 import TopAppBar from '../components/layout/TopAppBar';
 import Colors from '../constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
-import { categoryToBasketType, parseManualDate } from '../utils/creditEntryHelpers';
+import { parseManualDate } from '../utils/creditEntryHelpers';
 import { LegacyDebtForm } from '../components/credit/LegacyDebtForm';
 import { ItemEntryCard } from '../components/credit/ItemEntryCard';
 

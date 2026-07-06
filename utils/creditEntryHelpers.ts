@@ -1,3 +1,5 @@
+import type { CreditItemCategory } from '../hooks/useCreditLedger';
+
 // FormField props
 interface FormFieldProps {
   label: string;
@@ -49,3 +51,9 @@ interface LegacyDebtFormProps {
   year: string;
   onYearChange: (text: string) => void;
 }
+
+// Parses day, month, year strings into an ISO date string.
+export const parseManualDate = (day: string, month: string, year: string): string => {
+  const d = new Date(Number(year), Number(month) - 1, Number(day));
+  return d.toISOString();
+};
