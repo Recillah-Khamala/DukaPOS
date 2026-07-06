@@ -3,6 +3,8 @@ import React from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useCreditLedger, CreditItemCategory, allocatePaymentToItems } from '../hooks/useCreditLedger';
+import { useSalesHistory } from '../hooks/useSalesHistory';
+import type { BasketItem, CompletedSale } from '../types';
 import TopAppBar from '../components/layout/TopAppBar';
 import Colors from '../constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -29,6 +31,7 @@ const makeEmptyItem = (): DraftItem => ({
 const NewCreditEntryScreen: React.FC = () => {
   const router = useRouter();
   const { addEntry } = useCreditLedger();
+  const { addSale } = useSalesHistory();
 
   const [customerName, setCustomerName] = React.useState('');
   const [items, setItems] = React.useState<DraftItem[]>([makeEmptyItem()]);
@@ -136,6 +139,28 @@ const NewCreditEntryScreen: React.FC = () => {
       status: balance <= 0.01 ? 'paid' : 'active',
     };
     await addEntry(newEntry);
+
+    // Also record this as a completed sale so it feeds Reports/Business Health
+    // the same way a cash sale does — revenue is recognized now, at the moment
+    // of sale, regardless of how much (if any) has actually been collected yet.
+    const saleItems: BasketItem[] = builtItems.map((item, idx) => ({
+      id: `${newEntry.id}-${idx}`,
+      productId: `${newEntry.id}-${idx}`,
+      name: item.name,
+      qty: item.qty,
+      unitPrice: item.unitPrice,
+      type: categoryToBasketType(item.category as CreditItemCategory),
+    }));
+
+    const sale: CompletedSale = {
+      id: newEntry.id,
+      items: saleItems,
+      total,
+      paymentMethod: 'credit',
+      completedAt: createdAt,
+    };
+    await addSale(sale);
+
     router.back();
   };
 
