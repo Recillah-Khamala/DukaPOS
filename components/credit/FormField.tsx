@@ -11,7 +11,6 @@ interface FormFieldProps {
   maxLength?: number;
   containerStyle?: object;
   inputStyle?: object;
-  style?: any;
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -26,7 +25,10 @@ const FormField: React.FC<FormFieldProps> = ({
 }) => {
   const effectiveKeyboardType = keyboardType || 'default';
   return (
-    <View style={{ marginBottom: 16, ...(containerStyle || {} )}}>
+    <View style={[
+  { marginBottom: 16 },
+  containerStyle
+]}>
       <Text style={{
         color: Colors.onSurfaceVariant,
         fontSize: 13,
