@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { CreditItemCategory } from '../../hooks/useCreditLedger';
-import { FormField } from './FormField';
-import { CategoryPicker } from './CategoryPicker';
+import FormField from './FormField';
+import CategoryPicker from './CategoryPicker';
 import { MaterialIcons } from '@expo/vector-icons';
 import Colors from '../../constants/colors';
 

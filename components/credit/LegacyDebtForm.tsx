@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, TextInput } from 'react-native';
 import { CreditItemCategory } from '../../hooks/useCreditLedger';
-import { FormField } from './FormField';
-import { CategoryPicker } from './CategoryPicker';
+import FormField from './FormField';
+import CategoryPicker from './CategoryPicker';
 import Colors from '../../constants/colors';
 
 interface LegacyDebtFormProps {
