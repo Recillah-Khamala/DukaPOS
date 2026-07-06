@@ -30,10 +30,15 @@ const CreditLedgerTab: React.FC<CreditLedgerTabProps> = ({ bottomNavHeight = 0 }
   const { entries, loading } = useCreditLedger();
   const router = useRouter();
 
+  // Clears the bottom nav bar AND the floating "New Credit Entry" button
+  // (48px height + 16px offset + breathing room), which otherwise overlaps
+  // the last item in the list.
+  const scrollBottomPadding = bottomNavHeight + 80;
+
   if (loading) {
     return (
       <View style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: bottomNavHeight + 24 }}>
+        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: scrollBottomPadding }}>
           <Text style={{ color: Colors.onSurfaceVariant }}>Loading...</Text>
         </ScrollView>
       </View>
@@ -69,7 +74,11 @@ const CreditLedgerTab: React.FC<CreditLedgerTabProps> = ({ bottomNavHeight = 0 }
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: bottomNavHeight + 24 }}>
+      <ScrollView
+        showsVerticalScrollIndicator={true}
+        persistentScrollbar={true}
+        contentContainerStyle={{ padding: 16, paddingBottom: scrollBottomPadding }}
+      >
         {/* Heading */}
         <Text style={{ color: Colors.primary, fontSize: 20, fontWeight: '600', marginBottom: 12 }}>
           Shop Credit Health
