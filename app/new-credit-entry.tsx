@@ -6,9 +6,9 @@ import { useCreditLedger, CreditItemCategory, allocatePaymentToItems } from '../
 import TopAppBar from '../components/layout/TopAppBar';
 import Colors from '../constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
-import { parseManualDate } from '../utils/creditEntryHelpers';
-import { LegacyDebtForm } from '../components/credit/LegacyDebtForm';
-import { ItemEntryCard } from '../components/credit/ItemEntryCard';
+import { categoryToBasketType, parseManualDate } from '../utils/creditEntryHelpers';
+import ItemEntryCard from '../components/credit/ItemEntryCard';
+import LegacyDebtForm from '../components/credit/LegacyDebtForm';
 
 type DraftItem = {
   key: string;
@@ -17,13 +17,6 @@ type DraftItem = {
   unitPrice: string;
   category: CreditItemCategory;
 };
-
-const CATEGORY_OPTIONS: { label: string; value: CreditItemCategory }[] = [
-  { label: 'Cereal', value: 'cereal' },
-  { label: 'Milling', value: 'milling' },
-  { label: 'Bags', value: 'bags' },
-  { label: 'Other', value: 'other' },
-];
 
 const makeEmptyItem = (): DraftItem => ({
   key: Math.random().toString(36).substr(2, 9),
@@ -99,7 +92,7 @@ const NewCreditEntryScreen: React.FC = () => {
           name: debtDescription.trim() || 'Opening Balance (before app)',
           qty: 1,
           unitPrice: total,
-          total,
+          total: total,
           category: debtCategory,
           amountPaid: 0,
           balance: total,
@@ -208,60 +201,60 @@ const NewCreditEntryScreen: React.FC = () => {
           }}
         />
 
-{isExistingDebt ? (
-  <LegacyDebtForm
-    debtDescription={debtDescription}
-    setDebtDescription={setDebtDescription}
-    debtCategory={debtCategory}
-    setDebtCategory={setDebtCategory}
-    debtTotal={debtTotal}
-    setDebtTotal={setDebtTotal}
-    debtAlreadyPaid={debtAlreadyPaid}
-    setDebtAlreadyPaid={setDebtAlreadyPaid}
-    debtDay={debtDay}
-    setDebtDay={setDebtDay}
-    debtMonth={debtMonth}
-    setDebtMonth={setDebtMonth}
-    debtYear={debtYear}
-    setDebtYear={setDebtYear}
-  />
-) : (
-  <>
-    {/* Item rows */}
-    {items.map((item, index) => (
-      <ItemEntryCard
-        key={item.key}
-        item={item}
-        index={index}
-        onUpdate={updateItem}
-        onRemove={removeItemRow}
-        canRemove={items.length > 1}
-      />
-    ))}
+        {isExistingDebt ? (
+          <LegacyDebtForm
+            description={debtDescription}
+            onDescriptionChange={setDebtDescription}
+            category={debtCategory}
+            onCategoryChange={setDebtCategory}
+            total={debtTotal}
+            onTotalChange={setDebtTotal}
+            alreadyPaid=debtAlreadyPaid
+            onAlreadyPaidChange={setDebtAlreadyPaid}
+            day={debtDay}
+            onDayChange={setDebtDay}
+            month={debtMonth}
+            onMonthChange={setDebtMonth}
+            year={debtYear}
+            onYearChange={setDebtYear}
+          />
+        ) : (
+          <>
+            {/* Item rows */}
+            {items.map((item, index) => (
+              <ItemEntryCard
+                key={item.key}
+                item={item}
+                index={index}
+                onUpdate={updateItem}
+                onRemove={removeItemRow}
+                canRemove={items.length > 1}
+              />
+            ))}
 
-    {/* Add another item */}
-    <TouchableOpacity
-      onPress={addItemRow}
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 6,
-        paddingVertical: 12,
-        borderRadius: 10,
-        borderWidth: 1.5,
-        borderColor: Colors.primary,
-        borderStyle: 'dashed',
-        marginBottom: 20,
-      }}
-    >
-      <MaterialIcons name="add" size={18} color={Colors.primary} />
-      <Text style={{ color: Colors.primary, fontSize: 14, fontWeight: '600' }}>
-        Add Another Item
-      </Text>
-    </TouchableOpacity>
-  </>
-)}
+            {/* Add another item */}
+            <TouchableOpacity
+              onPress={addItemRow}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6,
+                paddingVertical: 12,
+                borderRadius: 10,
+                borderWidth: 1.5,
+                borderColor: Colors.primary,
+                borderStyle: 'dashed',
+                marginBottom: 20,
+              }}
+            >
+              <MaterialIcons name="add" size={18} color={Colors.primary} />
+              <Text style={{ color: Colors.primary, fontSize: 14, fontWeight: '600' }}>
+                Add Another Item
+              </Text>
+            </TouchableOpacity>
+          </>
+        )}
 
         {/* Live grand total preview */}
         <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '700', marginBottom: 20 }}>
