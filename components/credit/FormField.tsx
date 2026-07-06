@@ -8,7 +8,6 @@ interface FormFieldProps {
   onChangeText: (text: string) => void;
   placeholder?: string;
   keyboardType?: 'default' | 'numeric' | 'decimal-pad';
-  maxLength?: number;
   containerStyle?: object;
   inputStyle?: object;
 }
@@ -18,17 +17,12 @@ const FormField: React.FC<FormFieldProps> = ({
   value,
   onChangeText,
   placeholder,
-  keyboardType,
-  maxLength,
+  keyboardType = 'default',
   containerStyle,
   inputStyle,
 }) => {
-  const effectiveKeyboardType = keyboardType || 'default';
   return (
-    <View style={[
-  { marginBottom: 16 },
-  containerStyle
-]}>
+    <View style={[ { marginBottom: 16 }, containerStyle ]}>
       <Text style={{
         color: Colors.onSurfaceVariant,
         fontSize: 13,
@@ -41,8 +35,7 @@ const FormField: React.FC<FormFieldProps> = ({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        keyboardType={effectiveKeyboardType}
-        maxLength={maxLength}
+        keyboardType={keyboardType}
         style={{
           borderWidth: 1.5,
           borderColor: Colors.outlineVariant,
