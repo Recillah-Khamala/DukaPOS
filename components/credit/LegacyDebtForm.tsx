@@ -1,113 +1,165 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TextInput } from 'react-native';
+import { CreditItemCategory } from '../../hooks/useCreditLedger';
+import { FormField } from './FormField';
+import { CategoryPicker } from './CategoryPicker';
 import Colors from '../../constants/colors';
-import FormField from './FormField';
-import CategoryPicker from './CategoryPicker';
-import type { CreditItemCategory } from '../../hooks/useCreditLedger';
 
-type LegacyDebtFormProps = {
-  debtDescription: string;
-  setDebtDescription: (text: string) => void;
-  debtCategory: CreditItemCategory;
-  setDebtCategory: (value: CreditItemCategory) => void;
-  debtTotal: string;
-  setDebtTotal: (text: string) => void;
-  debtAlreadyPaid: string;
-  setDebtAlreadyPaid: (text: string) => void;
-  debtDay: string;
-  setDebtDay: (text: string) => void;
-  debtMonth: string;
-  setDebtMonth: (text: string) => void;
-  debtYear: string;
-  setDebtYear: (text: string) => void;
-};
+interface LegacyDebtFormProps {
+  description: string;
+  onDescriptionChange: (text: string) => void;
+  category: CreditItemCategory;
+  onCategoryChange: (category: CreditItemCategory) => void;
+  total: string;
+  onTotalChange: (text: string) => void;
+  alreadyPaid: string;
+  onAlreadyPaidChange: (text: string) => void;
+  day: string;
+  onDayChange: (text: string) => void;
+  month: string;
+  onMonthChange: (text: string) => void;
+  year: string;
+  onYearChange: (text: string) => void;
+}
 
-export const LegacyDebtForm = ({
-  debtDescription,
-  setDebtDescription,
-  debtCategory,
-  setDebtCategory,
-  debtTotal,
-  setDebtTotal,
-  debtAlreadyPaid,
-  setDebtAlreadyPaid,
-  debtDay,
-  setDebtDay,
-  debtMonth,
-  setDebtMonth,
-  debtYear,
-  setDebtYear,
-}: LegacyDebtFormProps) => {
+const LegacyDebtForm: React.FC<LegacyDebtFormProps> = ({
+  description,
+  onDescriptionChange,
+  category,
+  onCategoryChange,
+  total,
+  onTotalChange,
+  alreadyPaid,
+  onAlreadyPaidChange,
+  day,
+  onDayChange,
+  month,
+  onMonthChange,
+  year,
+  onYearChange,
+}) => {
   return (
     <>
       {/* Description */}
       <FormField
         label="Description (optional)"
-        value={debtDescription}
-        onChangeText={setDebtDescription}
         placeholder="e.g. Old balance from before the app"
+        value={description}
+        onChangeText={onDescriptionChange}
       />
 
       {/* Category */}
-      <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
+      <Text style={{
+        fontSize: 13,
+        fontWeight: '600',
+        color: Colors.onSurfaceVariant,
+        marginBottom: 6,
+      }}>
         Category (if known)
       </Text>
-      <CategoryPicker selected={debtCategory} onSelect={setDebtCategory} />
+      <CategoryPicker
+        selected={category}
+        onSelect={onCategoryChange}
+      />
 
-      {/* Total owed */}
+      {/* Total Amount Owed */}
       <FormField
         label="Total Amount Owed (KES)"
-        value={debtTotal}
-        onChangeText={setDebtTotal}
-        placeholder="e.g. 400"
         keyboardType="numeric"
+        placeholder="e.g. 400"
+        value={total}
+        onChangeText={onTotalChange}
       />
 
-      {/* Already paid */}
+      {/* Amount Already Paid */}
       <FormField
         label="Amount Already Paid (optional)"
-        value={debtAlreadyPaid}
-        onChangeText={setDebtAlreadyPaid}
-        placeholder="e.g. 0"
         keyboardType="numeric"
+        placeholder="e.g. 0"
+        value={alreadyPaid}
+        onChangeText={onAlreadyPaidChange}
       />
 
-      {/* Debt origin date */}
-      <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
+      {/* Debt Started On */}
+      <Text style={{
+        fontSize: 13,
+        fontWeight: '600',
+        color: Colors.onSurfaceVariant,
+        marginBottom: 6,
+      }}>
         Debt Started On (approximate is fine)
       </Text>
-      <View style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}>
-        <FormField
-          label="DD"
-          value={debtDay}
-          onChangeText={setDebtDay}
+      <View style={{
+        flexDirection: 'row',
+        gap: 8,
+        marginBottom: 8,
+      }}>
+        <TextInput
           placeholder="DD"
-          keyboardType="numeric"
           maxLength={2}
-          style={{ flex: 1 }}
+          keyboardType="numeric"
+          textAlign="center"
+          value={day}
+          onChangeText={onDayChange}
+          style={{
+            borderWidth: 1.5,
+            borderColor: Colors.outlineVariant,
+            borderRadius: 10,
+            paddingHorizontal: 14,
+            paddingVertical: 12,
+            fontSize: 15,
+            color: Colors.onSurface,
+            flex: 1,
+          }}
         />
-        <FormField
-          label="MM"
-          value={debtMonth}
-          onChangeText={setDebtMonth}
+        <TextInput
           placeholder="MM"
-          keyboardType="numeric"
           maxLength={2}
-          style={{ flex: 1 }}
-        />
-        <FormField
-          label="YYYY"
-          value={debtYear}
-          onChangeText={setDebtYear}
-          placeholder="YYYY"
           keyboardType="numeric"
+          textAlign="center"
+          value={month}
+          onChangeText={onMonthChange}
+          style={{
+            borderWidth: 1.5,
+            borderColor: Colors.outlineVariant,
+            borderRadius: 10,
+            paddingHorizontal: 14,
+            paddingVertical: 12,
+            fontSize: 15,
+            color: Colors.onSurface,
+            flex: 1,
+          }}
+        />
+        <TextInput
+          placeholder="YYYY"
           maxLength={4}
-          style={{ flex: 1.5 }}
+          keyboardType="numeric"
+          textAlign="center"
+          value={year}
+          onChangeText={onYearChange}
+          style={{
+            borderWidth: 1.5,
+            borderColor: Colors.outlineVariant,
+            borderRadius: 10,
+            paddingHorizontal: 14,
+            paddingVertical: 12,
+            fontSize: 15,
+            color: Colors.onSurface,
+            flex: 1.5,
+          }}
         />
       </View>
-      <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12, marginBottom: 20 }}>
+
+      {/* Caption */}
+      <Text style={{
+        fontSize: 12,
+        color: Colors.onSurfaceVariant,
+        marginBottom: 20,
+      }}>
         Leave blank to use today's date. This affects which debts get paid off first when the customer makes a payment.
       </Text>
     </>
   );
 };
+
+export default LegacyDebtForm;
