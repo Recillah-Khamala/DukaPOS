@@ -17,12 +17,13 @@ const FormField: React.FC<FormFieldProps> = ({
   value,
   onChangeText,
   placeholder,
-  keyboardType = 'default',
+  keyboardType,
   containerStyle,
   inputStyle,
 }) => {
+  const effectiveKeyboardType = keyboardType || 'default';
   return (
-    <View style={{ marginBottom: 16, ...(containerStyle || {} )}>
+    <View style={{ marginBottom: 16, ...(containerStyle || {} )}}>
       <Text style={{
         color: Colors.onSurfaceVariant,
         fontSize: 13,
@@ -35,7 +36,7 @@ const FormField: React.FC<FormFieldProps> = ({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        keyboardType={keyboardType}
+        keyboardType={effectiveKeyboardType}
         style={{
           borderWidth: 1.5,
           borderColor: Colors.outlineVariant,

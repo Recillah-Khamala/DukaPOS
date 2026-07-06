@@ -2,8 +2,8 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Colors from '../../constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
-import { FormField } from './FormField';
-import { CategoryPicker } from './CategoryPicker';
+import FormField from './FormField';
+import CategoryPicker from './CategoryPicker';
 import type { CreditItemCategory } from '../../hooks/useCreditLedger';
 
 type DraftItem = {
