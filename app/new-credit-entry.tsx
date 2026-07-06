@@ -6,7 +6,7 @@ import { useCreditLedger, CreditItemCategory, allocatePaymentToItems } from '../
 import TopAppBar from '../components/layout/TopAppBar';
 import Colors from '../constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
-import { categoryToBasketType, parseManualDate } from '../utils/creditEntryHelpers';
+import { parseManualDate } from '../utils/creditEntryHelpers';
 import ItemEntryCard from '../components/credit/ItemEntryCard';
 import LegacyDebtForm from '../components/credit/LegacyDebtForm';
 
@@ -209,7 +209,7 @@ const NewCreditEntryScreen: React.FC = () => {
             onCategoryChange={setDebtCategory}
             total={debtTotal}
             onTotalChange={setDebtTotal}
-            alreadyPaid=debtAlreadyPaid
+            alreadyPaid={debtAlreadyPaid}
             onAlreadyPaidChange={setDebtAlreadyPaid}
             day={debtDay}
             onDayChange={setDebtDay}
