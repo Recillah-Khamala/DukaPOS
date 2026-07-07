@@ -139,39 +139,42 @@ const handleSave = async () => {
       builtItems = allocatePaymentToItems(builtItems, deposit);
     }
 
-    // Log intended inventory deductions and update stock
-    // Inventory deducted once at sale time — do not duplicate in repayment flow.
+    // Legacy debt (pre-DukaPOS) does not affect inventory; skip deduction.
     const warnings: string[] = [];
-    builtItems.forEach(item => {
-      if (item.productId) {
-        const inventoryItem = allItems.find(it => it.id === item.productId);
-        if (inventoryItem) {
-          const deduction = computeInventoryDeduction(item, inventoryItem);
-          const currentStock = inventoryItem.stock;
-          let newStock: number;
-          if (deduction > currentStock) {
-            newStock = 0;
-            const warningMsg = `${inventoryItem.name} stock is now 0 — sale exceeded recorded stock`;
-            warnings.push(warningMsg);
-            console.warn(warningMsg);
-          } else {
-            newStock = currentStock - deduction;
-            const isLowStock = newStock <= inventoryItem.lowStockThreshold;
-            if (isLowStock) {
-              const warningMsg = `Low stock: ${inventoryItem.name} (${newStock} left)`;
+    if (!isExistingDebt) {
+      // Log intended inventory deductions and update stock
+      // Inventory deducted once at sale time — do not duplicate in repayment flow.
+      builtItems.forEach(item => {
+        if (item.productId) {
+          const inventoryItem = allItems.find(it => it.id === item.productId);
+          if (inventoryItem) {
+            const deduction = computeInventoryDeduction(item, inventoryItem);
+            const currentStock = inventoryItem.stock;
+            let newStock: number;
+            if (deduction > currentStock) {
+              newStock = 0;
+              const warningMsg = `${inventoryItem.name} stock is now 0 — sale exceeded recorded stock`;
               warnings.push(warningMsg);
               console.warn(warningMsg);
+            } else {
+              newStock = currentStock - deduction;
+              const isLowStock = newStock <= inventoryItem.lowStockThreshold;
+              if (isLowStock) {
+                const warningMsg = `Low stock: ${inventoryItem.name} (${newStock} left)`;
+                warnings.push(warningMsg);
+                console.warn(warningMsg);
+              }
             }
+            updateItem(inventoryItem.id, { stock: newStock, isLowStock: newStock <= inventoryItem.lowStockThreshold });
+            console.log('would deduct', item.productId, deduction);
+          } else {
+            console.log('skipped - inventory item not found', item.productId);
           }
-          updateItem(inventoryItem.id, { stock: newStock, isLowStock: newStock <= inventoryItem.lowStockThreshold });
-          console.log('would deduct', item.productId, deduction);
         } else {
-          console.log('skipped - inventory item not found', item.productId);
+          console.log('skipped - not linked', item.name);
         }
-      } else {
-        console.log('skipped - not linked', item.name);
-      }
-    });
+      });
+    }
 
     const balance = Math.max(0, total - deposit);
 
