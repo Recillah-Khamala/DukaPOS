@@ -140,6 +140,7 @@ const handleSave = async () => {
     }
 
     // Log intended inventory deductions and update stock
+    // Inventory deducted once at sale time — do not duplicate in repayment flow.
     const warnings: string[] = [];
     builtItems.forEach(item => {
       if (item.productId) {
@@ -219,93 +220,7 @@ const handleSave = async () => {
     } else {
       router.back();
     }
-  };
-        });
-       total = builtItems.reduce((sum, i) => sum + i.total, 0);
-     }
-
-// Apply any prior payment (deposit at sale time, or already-paid portion
-     // of an old debt) using the same proportional-split logic as a later repayment.
-     if (deposit > 0) {
-       builtItems = allocatePaymentToItems(builtItems, deposit);
-     }
-
-// Log intended inventory deductions and update stock
-    const warnings: string[] = [];
-    builtItems.forEach(item => {
-      if (item.productId) {
-        const inventoryItem = allItems.find(it => it.id === item.productId);
-        if (inventoryItem) {
-          const deduction = computeInventoryDeduction(item, inventoryItem);
-          const currentStock = inventoryItem.stock;
-          let newStock: number;
-          if (deduction > currentStock) {
-            newStock = 0;
-            const warningMsg = `${inventoryItem.name} stock is now 0 — sale exceeded recorded stock`;
-            warnings.push(warningMsg);
-            console.warn(warningMsg);
-          } else {
-            newStock = currentStock - deduction;
-            const isLowStock = newStock <= inventoryItem.lowStockThreshold;
-            if (isLowStock) {
-              const warningMsg = `Low stock: ${inventoryItem.name} (${newStock} left)`;
-              warnings.push(warningMsg);
-              console.warn(warningMsg);
-            }
-          }
-          updateItem(inventoryItem.id, { stock: newStock, isLowStock: newStock <= inventoryItem.lowStockThreshold });
-          console.log('would deduct', item.productId, deduction);
-        } else {
-          console.log('skipped - inventory item not found', item.productId);
-        }
-      } else {
-        console.log('skipped - not linked', item.name);
-      }
-    });
-
-     const balance = Math.max(0, total - deposit);
-
-    const newEntry: any = {
-      id: Math.random().toString(36).substr(2, 9),
-      customerId: customerName.trim().toLowerCase().replace(/\s+/g, '-'),
-      customerName: customerName.trim(),
-      items: builtItems,
-      totalAmount: total,
-      amountPaid: deposit,
-      balance,
-      createdAt,
-      lastUpdatedAt: new Date().toISOString(),
-      status: balance <= 0.01 ? 'paid' : 'active',
-    };
-    await addEntry(newEntry);
-
-    // Also record this as a completed sale so it feeds Reports/Business Health
-    // the same way a cash sale does — revenue is recognized now, at the moment
-    // of sale, regardless of how much (if any) has actually been collected yet.
-    const saleItems: BasketItem[] = builtItems.map((item, idx) => ({
-      id: `${newEntry.id}-${idx}`,
-      productId: `${newEntry.id}-${idx}`,
-      name: item.name,
-      qty: item.qty,
-      unitPrice: item.unitPrice,
-      type: categoryToBasketType(item.category as CreditItemCategory),
-    }));
-
-    const sale: CompletedSale = {
-      id: newEntry.id,
-      items: saleItems,
-      total,
-      paymentMethod: 'credit',
-      completedAt: createdAt,
-    };
-    await addSale(sale);
-
-    if (warnings.length > 0) {
-      await Alert.alert('Warning', warnings.join('\n'), [{ text: 'OK' }]);
-    }
-
-    router.back();
-  };
+};
 
 return (
     <View style={{ flex: 1 }}>
