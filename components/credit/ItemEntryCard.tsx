@@ -35,11 +35,11 @@ const ItemEntryCard: React.FC<ItemEntryCardProps> = ({
   const [showPicker, setShowPicker] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<{ id: string; name: string; category: string } | null>(null);
 
-  const handleNameChange = (text: string) => {
-    onUpdate(item.key, { name: text });
-    // If user manually edits the name, clear the product selection
-    setSelectedProduct(null);
-  };
+const handleNameChange = (text: string) => {
+     onUpdate(item.key, { name: text, productId: undefined });
+     // If user manually edits the name, clear the product selection
+     setSelectedProduct(null);
+   };
 
   const handleQtyChange = (text: string) => {
     onUpdate(item.key, { qty: text });
@@ -86,7 +86,7 @@ const ItemEntryCard: React.FC<ItemEntryCardProps> = ({
                 name="close"
                 size={18}
                 color={Colors.onSurfaceVariant}
-              />
+/>
             </TouchableOpacity>
           )}
         </View>
@@ -102,7 +102,7 @@ const ItemEntryCard: React.FC<ItemEntryCardProps> = ({
           <Text style={styles.selectButtonText}>Select Product</Text>
         </TouchableOpacity>
 
-        {/* Item Name - either selected product label or text input */}
+{/* Item Name - either selected product label or text input */}
         {selectedProduct ? (
           <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
             <Text style={{ fontSize: 16, color: Colors.onSurface }}>
@@ -112,19 +112,27 @@ const ItemEntryCard: React.FC<ItemEntryCardProps> = ({
               style={{ marginLeft: 12, padding: 4 }}
               onPress={() => {
                 setSelectedProduct(null);
-                // Note: we do NOT call onUpdate here; the name remains as set.
+                onUpdate(item.key, { productId: undefined });
+                // Clear product selection when user removes the selected product
               }}
             >
               <Text style={{ color: Colors.error, fontSize: 16 }}>✕</Text>
             </TouchableOpacity>
           </View>
-        ) : (
-          <FormField
-            label="Item Name"
-            placeholder="e.g. Maize"
-            value={item.name}
-            onChangeText={handleNameChange}
-          />
+) : (
+          <>
+            <FormField
+              label="Item Name"
+              placeholder="e.g. Maize"
+              value={item.name}
+              onChangeText={handleNameChange}
+            />
+            {item.productId === undefined && item.name.trim() !== '' && (
+              <Text style={{ fontSize: 12, color: Colors.onSurfaceVariant, marginTop: 4 }}>
+                not linked to inventory
+              </Text>
+            )}
+          </>
         )}
 
         {/* Quantity and Unit Price row */}
