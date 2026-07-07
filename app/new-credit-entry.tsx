@@ -141,6 +141,7 @@ const handleSave = async () => {
 
     // Legacy debt (pre-DukaPOS) does not affect inventory; skip deduction.
     const warnings: string[] = [];
+    const inventoryUpdates: Array<{id: string; stock: number; isLowStock: boolean}> = [];
     if (!isExistingDebt) {
       // Log intended inventory deductions and update stock
       // Inventory deducted once at sale time — do not duplicate in repayment flow.
@@ -151,6 +152,7 @@ const handleSave = async () => {
             const deduction = computeInventoryDeduction(item, inventoryItem);
             const currentStock = inventoryItem.stock;
             let newStock: number;
+            let isLowStock: boolean;
             if (deduction > currentStock) {
               newStock = 0;
               const warningMsg = `${inventoryItem.name} stock is now 0 — sale exceeded recorded stock`;
@@ -158,14 +160,14 @@ const handleSave = async () => {
               console.warn(warningMsg);
             } else {
               newStock = currentStock - deduction;
-              const isLowStock = newStock <= inventoryItem.lowStockThreshold;
+              isLowStock = newStock <= inventoryItem.lowStockThreshold;
               if (isLowStock) {
                 const warningMsg = `Low stock: ${inventoryItem.name} (${newStock} left)`;
                 warnings.push(warningMsg);
                 console.warn(warningMsg);
               }
             }
-            updateItem(inventoryItem.id, { stock: newStock, isLowStock: newStock <= inventoryItem.lowStockThreshold });
+            inventoryUpdates.push({ id: inventoryItem.id, stock: newStock, isLowStock });
             console.log('would deduct', item.productId, deduction);
           } else {
             console.log('skipped - inventory item not found', item.productId);
@@ -211,9 +213,13 @@ const handleSave = async () => {
       paymentMethod: 'credit',
       completedAt: createdAt,
     };
-    await addSale(sale);
+await addSale(sale);
+     // Apply inventory updates after successful ledger and sale writes.
+     inventoryUpdates.forEach(update => {
+       updateItem(update.id, { stock: update.stock, isLowStock: update.isLowStock });
+     });
 
-    // Show banner if there are warnings, then go back after a delay
+     // Show banner if there are warnings, then go back after a delay
     if (warnings.length > 0) {
       setBannerMessage(warnings.join('\n'));
       // Show banner for 3 seconds then go back
