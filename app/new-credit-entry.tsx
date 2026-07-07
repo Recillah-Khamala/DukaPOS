@@ -144,10 +144,21 @@ if (isExistingDebt) {
           const inventoryItem = allItems.find(it => it.id === item.productId);
           if (inventoryItem) {
             const deduction = computeInventoryDeduction(item, inventoryItem);
-            const newStock = inventoryItem.stock - deduction;
+            const currentStock = inventoryItem.stock;
+            let newStock: number;
+            let warningMessage: string | null = null;
+            if (deduction > currentStock) {
+              newStock = 0;
+              warningMessage = `${inventoryItem.name} stock is now 0 — sale exceeded recorded stock`;
+            } else {
+              newStock = currentStock - deduction;
+            }
             const isLowStock = newStock <= inventoryItem.lowStockThreshold;
             updateItem(inventoryItem.id, { stock: newStock, isLowStock });
             console.log('would deduct', item.productId, deduction);
+            if (warningMessage) {
+              console.warn(warningMessage);
+            }
           } else {
             console.log('skipped - inventory item not found', item.productId);
           }
