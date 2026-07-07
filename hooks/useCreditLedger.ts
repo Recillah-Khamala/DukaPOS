@@ -12,6 +12,7 @@ export type CreditItem = {
   category?: CreditItemCategory;
   amountPaid?: number;
   balance?: number;
+  productId?: string;
 };
 
 export type CreditEntry = {
