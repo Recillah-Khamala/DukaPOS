@@ -18,6 +18,7 @@ type DraftItem = {
   qty: string;
   unitPrice: string;
   category: CreditItemCategory;
+  productId?: string;
 };
 
 const makeEmptyItem = (): DraftItem => ({
@@ -26,6 +27,7 @@ const makeEmptyItem = (): DraftItem => ({
   qty: '',
   unitPrice: '',
   category: 'other',
+  productId: undefined,
 });
 
 const NewCreditEntryScreen: React.FC = () => {
@@ -88,33 +90,35 @@ const NewCreditEntryScreen: React.FC = () => {
     let total;
     let createdAt = new Date().toISOString();
 
-    if (isExistingDebt) {
-      total = grandTotal;
-      builtItems = [
-        {
-          name: debtDescription.trim() || 'Opening Balance (before app)',
-          qty: 1,
-          unitPrice: total,
-          total: total,
-          category: debtCategory,
-          amountPaid: 0,
-          balance: total,
-        },
-      ];
-      createdAt = parseManualDate(debtDay, debtMonth, debtYear);
-    } else {
-      builtItems = items.map(item => {
-        const t = itemTotal(item);
-        return {
-          name: item.name.trim(),
-          qty: parseFloat(item.qty),
-          unitPrice: parseFloat(item.unitPrice),
-          total: t,
-          category: item.category,
-          amountPaid: 0,
-          balance: t,
-        };
-      });
+if (isExistingDebt) {
+       total = grandTotal;
+       builtItems = [
+         {
+           name: debtDescription.trim() || 'Opening Balance (before app)',
+           qty: 1,
+           unitPrice: total,
+           total: total,
+           category: debtCategory,
+           amountPaid: 0,
+           balance: total,
+           productId: undefined,
+         },
+       ];
+       createdAt = parseManualDate(debtDay, debtMonth, debtYear);
+     } else {
+builtItems = items.map(item => {
+         const t = itemTotal(item);
+         return {
+           name: item.name.trim(),
+           qty: parseFloat(item.qty),
+           unitPrice: parseFloat(item.unitPrice),
+           total: t,
+           category: item.category,
+           amountPaid: 0,
+           balance: t,
+           productId: item.productId,
+         };
+       });
       total = builtItems.reduce((sum, i) => sum + i.total, 0);
     }
 
@@ -246,16 +250,17 @@ const NewCreditEntryScreen: React.FC = () => {
         ) : (
           <>
             {/* Item rows */}
-            {items.map((item, index) => (
-              <ItemEntryCard
-                key={item.key}
-                item={item}
-                index={index}
-                onUpdate={updateItem}
-                onRemove={removeItemRow}
-                canRemove={items.length > 1}
-              />
-            ))}
+{items.map((item, index) => (
+  <ItemEntryCard
+    key={item.key}
+    item={item}
+    index={index}
+    onUpdate={updateItem}
+    onRemove={removeItemRow}
+    canRemove={items.length > 1}
+    onProductSelect={(productId, name) => updateItem(item.key, { productId })}
+  />
+))}
 
             {/* Add another item */}
             <TouchableOpacity

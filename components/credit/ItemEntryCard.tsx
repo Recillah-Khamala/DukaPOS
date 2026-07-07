@@ -13,6 +13,7 @@ interface DraftItem {
   qty: string;
   unitPrice: string;
   category: CreditItemCategory;
+  productId?: string;
 }
 
 interface ItemEntryCardProps {
@@ -21,6 +22,7 @@ interface ItemEntryCardProps {
   onUpdate: (key: string, patch: Partial<DraftItem>) => void;
   onRemove: (key: string) => void;
   canRemove: boolean;
+  onProductSelect?: (product: { productId: string; name: string }) => void;
 }
 
 const ItemEntryCard: React.FC<ItemEntryCardProps> = ({
@@ -160,13 +162,16 @@ const ItemEntryCard: React.FC<ItemEntryCardProps> = ({
           Line total: KES {calculateLineTotal()}
         </Text>
       </View>
-      <ProductPickerModal
+<ProductPickerModal
         visible={showPicker}
         onClose={() => setShowPicker(false)}
         onSelect={(product) => {
           console.log('selected', product);
           setSelectedProduct({ id: product.id, name: product.name, category: product.category });
           onUpdate(item.key, { name: product.name });
+          if (onProductSelect) {
+            onProductSelect({ productId: product.id, name: product.name });
+          }
           setShowPicker(false);
         }}
       />
