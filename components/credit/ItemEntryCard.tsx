@@ -31,9 +31,12 @@ const ItemEntryCard: React.FC<ItemEntryCardProps> = ({
   canRemove,
 }) => {
   const [showPicker, setShowPicker] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<{ id: string; name: string; category: string } | null>(null);
 
   const handleNameChange = (text: string) => {
     onUpdate(item.key, { name: text });
+    // If user manually edits the name, clear the product selection
+    setSelectedProduct(null);
   };
 
   const handleQtyChange = (text: string) => {
@@ -97,13 +100,30 @@ const ItemEntryCard: React.FC<ItemEntryCardProps> = ({
           <Text style={styles.selectButtonText}>Select Product</Text>
         </TouchableOpacity>
 
-        {/* Item Name */}
-        <FormField
-          label="Item Name"
-          placeholder="e.g. Maize"
-          value={item.name}
-          onChangeText={handleNameChange}
-        />
+        {/* Item Name - either selected product label or text input */}
+        {selectedProduct ? (
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
+            <Text style={{ fontSize: 16, color: Colors.onSurface }}>
+              {selectedProduct.name}
+            </Text>
+            <TouchableOpacity
+              style={{ marginLeft: 12, padding: 4 }}
+              onPress={() => {
+                setSelectedProduct(null);
+                // Note: we do NOT call onUpdate here; the name remains as set.
+              }}
+            >
+              <Text style={{ color: Colors.error, fontSize: 16 }}>✕</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <FormField
+            label="Item Name"
+            placeholder="e.g. Maize"
+            value={item.name}
+            onChangeText={handleNameChange}
+          />
+        )}
 
         {/* Quantity and Unit Price row */}
         <View style={{
@@ -145,6 +165,8 @@ const ItemEntryCard: React.FC<ItemEntryCardProps> = ({
         onClose={() => setShowPicker(false)}
         onSelect={(product) => {
           console.log('selected', product);
+          setSelectedProduct({ id: product.id, name: product.name, category: product.category });
+          onUpdate(item.key, { name: product.name });
           setShowPicker(false);
         }}
       />
