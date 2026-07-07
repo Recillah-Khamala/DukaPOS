@@ -9,7 +9,7 @@ import type { BasketItem, CompletedSale } from '../types';
 import TopAppBar from '../components/layout/TopAppBar';
 import Colors from '../constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
-import { categoryToBasketType, parseManualDate, inventoryCategoryToCreditCategory } from '../utils/creditEntryHelpers';
+import { categoryToBasketType, parseManualDate, inventoryCategoryToCreditCategory, computeInventoryDeduction } from '../utils/creditEntryHelpers';
 import ItemEntryCard from '../components/credit/ItemEntryCard';
 import LegacyDebtForm from '../components/credit/LegacyDebtForm';
 
@@ -132,13 +132,29 @@ if (isExistingDebt) {
        total = builtItems.reduce((sum, i) => sum + i.total, 0);
      }
 
-    // Apply any prior payment (deposit at sale time, or already-paid portion
-    // of an old debt) using the same proportional-split logic as a later repayment.
-    if (deposit > 0) {
-      builtItems = allocatePaymentToItems(builtItems, deposit);
-    }
+// Apply any prior payment (deposit at sale time, or already-paid portion
+     // of an old debt) using the same proportional-split logic as a later repayment.
+     if (deposit > 0) {
+       builtItems = allocatePaymentToItems(builtItems, deposit);
+     }
 
-    const balance = Math.max(0, total - deposit);
+     // Log intended inventory deductions (stub)
+     builtItems.forEach(item => {
+       if (item.productId) {
+         const inventoryItem = allItems.find(it => it.id === item.productId);
+         if (inventoryItem) {
+           const deduction = computeInventoryDeduction(item, inventoryItem);
+           console.log('would deduct', item.productId, deduction);
+         } else {
+           // This should not happen due to the guard above, but just in case.
+           console.log('skipped - inventory item not found', item.productId);
+         }
+       } else {
+         console.log('skipped - not linked', item.name);
+       }
+     });
+
+     const balance = Math.max(0, total - deposit);
 
     const newEntry: any = {
       id: Math.random().toString(36).substr(2, 9),
