@@ -4,11 +4,11 @@ import type { CreditItemCategory } from '../hooks/useCreditLedger';
 export function inventoryCategoryToCreditCategory(category: InventoryItem['category']): CreditItemCategory {
   switch (category) {
     case 'cereal':
-      return 'Cereal' as CreditItemCategory;
+      return 'cereal';
     case 'poshomill':
-      return 'Milling' as CreditItemCategory;
+      return 'milling';
     case 'bags':
-      return 'Bags' as CreditItemCategory;
+      return 'bags';
     default:
       throw new Error(`Unknown inventory category: ${category}`);
   }

@@ -4,11 +4,12 @@ import { View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-nativ
 import { useRouter } from 'expo-router';
 import { useCreditLedger, CreditItemCategory, allocatePaymentToItems } from '../hooks/useCreditLedger';
 import { useSalesHistory } from '../hooks/useSalesHistory';
+import { useInventory } from '../context/InventoryContext';
 import type { BasketItem, CompletedSale } from '../types';
 import TopAppBar from '../components/layout/TopAppBar';
 import Colors from '../constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
-import { categoryToBasketType, parseManualDate } from '../utils/creditEntryHelpers';
+import { categoryToBasketType, parseManualDate, inventoryCategoryToCreditCategory } from '../utils/creditEntryHelpers';
 import ItemEntryCard from '../components/credit/ItemEntryCard';
 import LegacyDebtForm from '../components/credit/LegacyDebtForm';
 
@@ -35,9 +36,12 @@ const NewCreditEntryScreen: React.FC = () => {
   const { addEntry } = useCreditLedger();
   const { addSale } = useSalesHistory();
 
-  const [customerName, setCustomerName] = React.useState('');
+const [customerName, setCustomerName] = React.useState('');
   const [items, setItems] = React.useState<DraftItem[]>([makeEmptyItem()]);
   const [amountReceivedNow, setAmountReceivedNow] = React.useState('');
+
+  // Inventory for product lookup
+  const { allItems } = useInventory();
 
   // --- Existing debt (pre-DukaPOS) mode ---
   const [isExistingDebt, setIsExistingDebt] = React.useState(false);
@@ -251,16 +255,25 @@ builtItems = items.map(item => {
           <>
             {/* Item rows */}
 {items.map((item, index) => (
-  <ItemEntryCard
-    key={item.key}
-    item={item}
-    index={index}
-    onUpdate={updateItem}
-    onRemove={removeItemRow}
-    canRemove={items.length > 1}
-    onProductSelect={(productId, name) => updateItem(item.key, { productId })}
-  />
-))}
+   <ItemEntryCard
+     key={item.key}
+     item={item}
+     index={index}
+     onUpdate={updateItem}
+     onRemove={removeItemRow}
+     canRemove={items.length > 1}
+     onProductSelect={(productId, name) => {
+       const inventoryItem = allItems.find(it => it.id === productId);
+       if (inventoryItem) {
+         const creditCategory = inventoryCategoryToCreditCategory(inventoryItem.category);
+         updateItem(item.key, { productId, category: creditCategory });
+       } else {
+           // Fallback: just set productId if inventory item not found (shouldn't happen)
+           updateItem(item.key, { productId });
+         }
+     }}
+   />
+ ))}
 
             {/* Add another item */}
             <TouchableOpacity
