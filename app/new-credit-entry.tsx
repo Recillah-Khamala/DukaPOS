@@ -1,6 +1,6 @@
 // app/new-credit-entry.tsx
 import React from 'react';
-import { View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useCreditLedger, CreditItemCategory, allocatePaymentToItems } from '../hooks/useCreditLedger';
 import { useSalesHistory } from '../hooks/useSalesHistory';
@@ -36,9 +36,10 @@ const NewCreditEntryScreen: React.FC = () => {
   const { addEntry } = useCreditLedger();
   const { addSale } = useSalesHistory();
 
-const [customerName, setCustomerName] = React.useState('');
+  const [customerName, setCustomerName] = React.useState('');
   const [items, setItems] = React.useState<DraftItem[]>([makeEmptyItem()]);
   const [amountReceivedNow, setAmountReceivedNow] = React.useState('');
+  const [bannerMessage, setBannerMessage] = React.useState<string | null>(null);
 
   // Inventory for product lookup
   const { allItems, updateItem } = useInventory();
@@ -87,47 +88,138 @@ const [customerName, setCustomerName] = React.useState('');
           parseFloat(item.unitPrice || '0') > 0
       );
 
-  const handleSave = async () => {
+const handleSave = async () => {
     if (!isFormValid) return;
 
     let builtItems;
     let total;
     let createdAt = new Date().toISOString();
 
-if (isExistingDebt) {
-       total = grandTotal;
-       builtItems = [
-         {
-           name: debtDescription.trim() || 'Opening Balance (before app)',
-           qty: 1,
-           unitPrice: total,
-           total: total,
-           category: debtCategory,
-           amountPaid: 0,
-           balance: total,
-           productId: undefined,
-         },
-       ];
-       createdAt = parseManualDate(debtDay, debtMonth, debtYear);
-} else {
-        builtItems = items.map(item => {
-          let productId = item.productId;
-          // Guard against deleted inventory item
-          if (productId && !allItems.some(it => it.id === productId)) {
-            console.warn(`Product ID ${productId} not found in inventory. Removing product reference.`);
-            productId = undefined;
+    if (isExistingDebt) {
+      total = grandTotal;
+      builtItems = [
+        {
+          name: debtDescription.trim() || 'Opening Balance (before app)',
+          qty: 1,
+          unitPrice: total,
+          total: total,
+          category: debtCategory,
+          amountPaid: 0,
+          balance: total,
+          productId: undefined,
+        },
+      ];
+      createdAt = parseManualDate(debtDay, debtMonth, debtYear);
+    } else {
+      builtItems = items.map(item => {
+        let productId = item.productId;
+        // Guard against deleted inventory item
+        if (productId && !allItems.some(it => it.id === productId)) {
+          console.warn(`Product ID ${productId} not found in inventory. Removing product reference.`);
+          productId = undefined;
+        }
+        const t = itemTotal(item);
+        return {
+          name: item.name.trim(),
+          qty: parseFloat(item.qty),
+          unitPrice: parseFloat(item.unitPrice),
+          total: t,
+          category: item.category,
+          amountPaid: 0,
+          balance: t,
+          productId,
+        };
+      });
+      total = builtItems.reduce((sum, i) => sum + i.total, 0);
+    }
+
+    // Apply any prior payment (deposit at sale time, or already-paid portion
+    // of an old debt) using the same proportional-split logic as a later repayment.
+    if (deposit > 0) {
+      builtItems = allocatePaymentToItems(builtItems, deposit);
+    }
+
+    // Log intended inventory deductions and update stock
+    const warnings: string[] = [];
+    builtItems.forEach(item => {
+      if (item.productId) {
+        const inventoryItem = allItems.find(it => it.id === item.productId);
+        if (inventoryItem) {
+          const deduction = computeInventoryDeduction(item, inventoryItem);
+          const currentStock = inventoryItem.stock;
+          let newStock: number;
+          if (deduction > currentStock) {
+            newStock = 0;
+            const warningMsg = `${inventoryItem.name} stock is now 0 — sale exceeded recorded stock`;
+            warnings.push(warningMsg);
+            console.warn(warningMsg);
+          } else {
+            newStock = currentStock - deduction;
+            const isLowStock = newStock <= inventoryItem.lowStockThreshold;
+            if (isLowStock) {
+              const warningMsg = `Low stock: ${inventoryItem.name} (${newStock} left)`;
+              warnings.push(warningMsg);
+              console.warn(warningMsg);
+            }
           }
-          const t = itemTotal(item);
-          return {
-            name: item.name.trim(),
-            qty: parseFloat(item.qty),
-            unitPrice: parseFloat(item.unitPrice),
-            total: t,
-            category: item.category,
-            amountPaid: 0,
-            balance: t,
-            productId,
-          };
+          updateItem(inventoryItem.id, { stock: newStock, isLowStock: newStock <= inventoryItem.lowStockThreshold });
+          console.log('would deduct', item.productId, deduction);
+        } else {
+          console.log('skipped - inventory item not found', item.productId);
+        }
+      } else {
+        console.log('skipped - not linked', item.name);
+      }
+    });
+
+    const balance = Math.max(0, total - deposit);
+
+    const newEntry: any = {
+      id: Math.random().toString(36).substr(2, 9),
+      customerId: customerName.trim().toLowerCase().replace(/\s+/g, '-'),
+      customerName: customerName.trim(),
+      items: builtItems,
+      totalAmount: total,
+      amountPaid: deposit,
+      balance,
+      createdAt,
+      lastUpdatedAt: new Date().toISOString(),
+      status: balance <= 0.01 ? 'paid' : 'active',
+    };
+    await addEntry(newEntry);
+
+    // Also record this as a completed sale so it feeds Reports/Business Health
+    // the same way a cash sale does — revenue is recognized now, at the moment
+    // of sale, regardless of how much (if any) has actually been collected yet.
+    const saleItems: BasketItem[] = builtItems.map((item, idx) => ({
+      id: `${newEntry.id}-${idx}`,
+      productId: `${newEntry.id}-${idx}`,
+      name: item.name,
+      qty: item.qty,
+      unitPrice: item.unitPrice,
+      type: categoryToBasketType(item.category as CreditItemCategory),
+    }));
+
+    const sale: CompletedSale = {
+      id: newEntry.id,
+      items: saleItems,
+      total,
+      paymentMethod: 'credit',
+      completedAt: createdAt,
+    };
+    await addSale(sale);
+
+    // Show banner if there are warnings, then go back after a delay
+    if (warnings.length > 0) {
+      setBannerMessage(warnings.join('\n'));
+      // Show banner for 3 seconds then go back
+      setTimeout(() => {
+        router.back();
+      }, 3000);
+    } else {
+      router.back();
+    }
+  };
         });
        total = builtItems.reduce((sum, i) => sum + i.total, 0);
      }
@@ -139,33 +231,37 @@ if (isExistingDebt) {
      }
 
 // Log intended inventory deductions and update stock
-      builtItems.forEach(item => {
-        if (item.productId) {
-          const inventoryItem = allItems.find(it => it.id === item.productId);
-          if (inventoryItem) {
-            const deduction = computeInventoryDeduction(item, inventoryItem);
-            const currentStock = inventoryItem.stock;
-            let newStock: number;
-            let warningMessage: string | null = null;
-            if (deduction > currentStock) {
-              newStock = 0;
-              warningMessage = `${inventoryItem.name} stock is now 0 — sale exceeded recorded stock`;
-            } else {
-              newStock = currentStock - deduction;
-            }
-            const isLowStock = newStock <= inventoryItem.lowStockThreshold;
-            updateItem(inventoryItem.id, { stock: newStock, isLowStock });
-            console.log('would deduct', item.productId, deduction);
-            if (warningMessage) {
-              console.warn(warningMessage);
-            }
+    const warnings: string[] = [];
+    builtItems.forEach(item => {
+      if (item.productId) {
+        const inventoryItem = allItems.find(it => it.id === item.productId);
+        if (inventoryItem) {
+          const deduction = computeInventoryDeduction(item, inventoryItem);
+          const currentStock = inventoryItem.stock;
+          let newStock: number;
+          if (deduction > currentStock) {
+            newStock = 0;
+            const warningMsg = `${inventoryItem.name} stock is now 0 — sale exceeded recorded stock`;
+            warnings.push(warningMsg);
+            console.warn(warningMsg);
           } else {
-            console.log('skipped - inventory item not found', item.productId);
+            newStock = currentStock - deduction;
+            const isLowStock = newStock <= inventoryItem.lowStockThreshold;
+            if (isLowStock) {
+              const warningMsg = `Low stock: ${inventoryItem.name} (${newStock} left)`;
+              warnings.push(warningMsg);
+              console.warn(warningMsg);
+            }
           }
+          updateItem(inventoryItem.id, { stock: newStock, isLowStock: newStock <= inventoryItem.lowStockThreshold });
+          console.log('would deduct', item.productId, deduction);
         } else {
-          console.log('skipped - not linked', item.name);
+          console.log('skipped - inventory item not found', item.productId);
         }
-      });
+      } else {
+        console.log('skipped - not linked', item.name);
+      }
+    });
 
      const balance = Math.max(0, total - deposit);
 
@@ -204,12 +300,21 @@ if (isExistingDebt) {
     };
     await addSale(sale);
 
+    if (warnings.length > 0) {
+      await Alert.alert('Warning', warnings.join('\n'), [{ text: 'OK' }]);
+    }
+
     router.back();
   };
 
-  return (
+return (
     <View style={{ flex: 1 }}>
       <TopAppBar title="New Credit Entry" onBack={() => router.back()} />
+      {bannerMessage && (
+        <View style={{ backgroundColor: Colors.primaryContainer, padding: 12, marginHorizontal: 16, marginTop: 8, borderRadius: 4 }}>
+          <Text style={{ color: Colors.onPrimaryContainer, fontSize: 14 }}>{bannerMessage}</Text>
+        </View>
+      )}
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 32 }}>
         {/* Heading */}
         <Text style={{ color: Colors.primary, fontSize: 24, fontWeight: '700', marginBottom: 4 }}>
@@ -289,26 +394,26 @@ if (isExistingDebt) {
         ) : (
           <>
             {/* Item rows */}
-{items.map((item, index) => (
-   <ItemEntryCard
-     key={item.key}
-     item={item}
-     index={index}
-     onUpdate={updateItem}
-     onRemove={removeItemRow}
-     canRemove={items.length > 1}
-     onProductSelect={(productId, name) => {
-       const inventoryItem = allItems.find(it => it.id === productId);
-       if (inventoryItem) {
-         const creditCategory = inventoryCategoryToCreditCategory(inventoryItem.category);
-         updateItem(item.key, { productId, category: creditCategory });
-       } else {
-           // Fallback: just set productId if inventory item not found (shouldn't happen)
-           updateItem(item.key, { productId });
-         }
-     }}
-   />
- ))}
+            {items.map((item, index) => (
+              <ItemEntryCard
+                key={item.key}
+                item={item}
+                index={index}
+                onUpdate={updateItem}
+                onRemove={removeItemRow}
+                canRemove={items.length > 1}
+                onProductSelect={(productId, name) => {
+                  const inventoryItem = allItems.find(it => it.id === productId);
+                  if (inventoryItem) {
+                    const creditCategory = inventoryCategoryToCreditCategory(inventoryItem.category);
+                    updateItem(item.key, { productId, category: creditCategory });
+                  } else {
+                    // Fallback: just set productId if inventory item not found (shouldn't happen)
+                    updateItem(item.key, { productId });
+                  }
+                }}
+              />
+            ))}
 
             {/* Add another item */}
             <TouchableOpacity
