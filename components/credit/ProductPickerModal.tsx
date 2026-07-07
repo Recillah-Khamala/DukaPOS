@@ -1,23 +1,21 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, Animated, Easing, Dimensions, StyleSheet } from 'react-native';
 import Colors from '../../constants/colors';
-
-// Hardcoded fake products for the picker
-const FAKE_PRODUCTS = [
-  { id: 'p1', name: 'Maize Korokoro', category: 'cereal' },
-  { id: 'p2', name: 'Wheat Flour', category: 'cereal' },
-  { id: 'p3', name: 'Plastic Bags', category: 'bags' },
-];
+import { useInventory } from '../../context/InventoryContext';
 
 interface ProductPickerModalProps {
   visible: boolean;
   onClose: () => void;
-  onSelect: (product: typeof FAKE_PRODUCTS[number]) => void;
+  onSelect: (product: { id: string; name: string; category: string }) => void;
 }
 
 const ProductPickerModal: React.FC<ProductPickerModalProps> = ({ visible, onClose, onSelect }) => {
   const [search, setSearch] = useState('');
   const translateY = React.useRef(new Animated.Value(Dimensions.get('window').height)).current;
+
+  // Get inventory items and filter out zero stock
+  const { allItems } = useInventory();
+  const availableItems = allItems.filter(item => item.currentStock > 0);
 
   React.useEffect(() => {
     if (visible) {
@@ -40,8 +38,6 @@ const ProductPickerModal: React.FC<ProductPickerModalProps> = ({ visible, onClos
       });
     }
   }, [visible, onClose]);
-
-  if (!!visible, onClose));
 
   if (!visible) {
     return null;
@@ -80,7 +76,7 @@ const ProductPickerModal: React.FC<ProductPickerModalProps> = ({ visible, onClos
 
         {/* Product List */}
         <FlatList
-          data={FAKE_PRODUCTS.filter(p => 
+          data={availableItems.filter(p => 
             p.name.toLowerCase().includes(search.toLowerCase())
           )}
           keyExtractor={item => item.id}
@@ -88,7 +84,7 @@ const ProductPickerModal: React.FC<ProductPickerModalProps> = ({ visible, onClos
             <TouchableOpacity
               style={styles.productItem}
               onPress={() => {
-                onSelect(item);
+                onSelect({ id: item.id, name: item.name, category: item.category });
                 onClose();
               }}
             >
