@@ -31,6 +31,7 @@ const ItemEntryCard: React.FC<ItemEntryCardProps> = ({
   onUpdate,
   onRemove,
   canRemove,
+  onProductSelect,
 }) => {
   const [showPicker, setShowPicker] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<{ id: string; name: string; category: string } | null>(null);
