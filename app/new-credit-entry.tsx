@@ -41,7 +41,7 @@ const [customerName, setCustomerName] = React.useState('');
   const [amountReceivedNow, setAmountReceivedNow] = React.useState('');
 
   // Inventory for product lookup
-  const { allItems } = useInventory();
+  const { allItems, updateItem } = useInventory();
 
   // --- Existing debt (pre-DukaPOS) mode ---
   const [isExistingDebt, setIsExistingDebt] = React.useState(false);
@@ -138,21 +138,23 @@ if (isExistingDebt) {
        builtItems = allocatePaymentToItems(builtItems, deposit);
      }
 
-     // Log intended inventory deductions (stub)
-     builtItems.forEach(item => {
-       if (item.productId) {
-         const inventoryItem = allItems.find(it => it.id === item.productId);
-         if (inventoryItem) {
-           const deduction = computeInventoryDeduction(item, inventoryItem);
-           console.log('would deduct', item.productId, deduction);
-         } else {
-           // This should not happen due to the guard above, but just in case.
-           console.log('skipped - inventory item not found', item.productId);
-         }
-       } else {
-         console.log('skipped - not linked', item.name);
-       }
-     });
+// Log intended inventory deductions and update stock
+      builtItems.forEach(item => {
+        if (item.productId) {
+          const inventoryItem = allItems.find(it => it.id === item.productId);
+          if (inventoryItem) {
+            const deduction = computeInventoryDeduction(item, inventoryItem);
+            const newStock = inventoryItem.stock - deduction;
+            const isLowStock = newStock <= inventoryItem.lowStockThreshold;
+            updateItem(inventoryItem.id, { stock: newStock, isLowStock });
+            console.log('would deduct', item.productId, deduction);
+          } else {
+            console.log('skipped - inventory item not found', item.productId);
+          }
+        } else {
+          console.log('skipped - not linked', item.name);
+        }
+      });
 
      const balance = Math.max(0, total - deposit);
 
