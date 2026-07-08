@@ -31,19 +31,19 @@ export function computeSaleProfit(sale: CompletedSale, allItems: InventoryItem[]
   let projectedCogs = 0;
   const itemsWithUnknownCost: string[] = [];
 
-for (const item of sale.items) {
-     const costResult = getItemCost(item, allItems);
-     if (costResult.costKnown) {
-       const cost = costResult.cost;
-       actualCogs += cost;
-       projectedCogs += cost;
-     } else {
-       // For unknown cost, we assume 0 cost for both actual and projected.
-       // This is a temporary defensible default (zero cost) until a better fallback is decided.
-       // We record the item name for UI to highlight unknown cost items.
-       itemsWithUnknownCost.push(item.name);
-     }
-   }
+  for (const item of sale.items) {
+      const costResult = getItemCost(item, allItems);
+      if (costResult.costKnown) {
+        const cost = costResult.cost;
+        actualCogs += cost;
+        projectedCogs += cost;
+      } else {
+        // For unknown cost, we assume 0 cost for both actual and projected.
+        // This is a temporary defensible default (zero cost) until a better fallback is decided.
+        // We record the item name for UI to highlight unknown cost items.
+        itemsWithUnknownCost.push(item.name);
+      }
+    }
 
   const actualProfit = revenue - actualCogs;
   const projectedProfit = revenue - projectedCogs; // same as actualProfit with current logic
@@ -55,5 +55,34 @@ for (const item of sale.items) {
     actualProfit,
     projectedProfit,
     itemsWithUnknownCost,
+  };
+}
+
+export function computeProfitSummary(sales: CompletedSale[], allItems: InventoryItem[]): {
+  totalRevenue: number;
+  totalActualProfit: number;
+  totalProjectedProfit: number;
+  itemsWithUnknownCost: Set<string>;
+} {
+  let totalRevenue = 0;
+  let totalActualProfit = 0;
+  let totalProjectedProfit = 0;
+  const itemsWithUnknownCostSet = new Set<string>();
+
+  for (const sale of sales) {
+    const profit = computeSaleProfit(sale, allItems);
+    totalRevenue += profit.revenue;
+    totalActualProfit += profit.actualProfit;
+    totalProjectedProfit += profit.projectedProfit;
+    for (const itemName of profit.itemsWithUnknownCost) {
+      itemsWithUnknownCostSet.add(itemName);
+    }
+  }
+
+  return {
+    totalRevenue,
+    totalActualProfit,
+    totalProjectedProfit,
+    itemsWithUnknownCost: itemsWithUnknownCostSet,
   };
 }
