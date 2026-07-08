@@ -4,6 +4,7 @@ import { CreditItemCategory } from '../../hooks/useCreditLedger';
 import FormField from './FormField';
 import CategoryPicker from './CategoryPicker';
 import ProductPickerModal from './ProductPickerModal';
+import UnitPicker from './UnitPicker';
 import { MaterialIcons } from '@expo/vector-icons';
 import Colors from '../../constants/colors';
 import { useInventory } from '../../context/InventoryContext';
@@ -175,7 +176,7 @@ const ItemEntryCard: React.FC<ItemEntryCardProps> = ({
               placeholder="e.g. 130"
               keyboardType="numeric"
               value={item.unitPrice}
-              onChangeText={handleUnitChange={handleUnitPriceChange}
+              onChangeText={handleUnitPriceChange}
             />
           </View>
         </View>
@@ -188,6 +189,33 @@ const ItemEntryCard: React.FC<ItemEntryCardProps> = ({
         }}>
           Line total: KES {calculateLineTotal()}
         </Text>
+
+        {/* UnitPicker - only show when a product is selected and there are multiple unit options */}
+        {selectedProduct && allItems ? () => {
+          const inventoryItem = allItems.find(it => it.id === selectedProduct.id);
+          if (!inventoryItem) return null;
+          // If conversionRate is 1, there's only one meaningful unit (sellingUnit == buyingUnit)
+          if (inventoryItem.conversionRate === 1) {
+            return null;
+          }
+          // Otherwise, show picker with both units (deduped)
+          const units = [...new Set([inventoryItem.sellingUnit, inventoryItem.buyingUnit])];
+          return (
+            <View style={{ marginVertical: 8 }}>
+              <Text style={{ fontSize: 12, color: Colors.onSurfaceVariant, marginBottom: 4 }}>
+                Unit:
+              </Text>
+              <UnitPicker
+                options={units}
+                selected={unit ?? inventoryItem.sellingUnit}
+                onSelect={(selectedUnit) => {
+                  setUnit(selectedUnit);
+                  onUpdate(item.key, { unit: selectedUnit });
+                }}
+              />
+            </View>
+          );
+        }() : null}
       </View>
       <ProductPickerModal
         visible={showPicker}
