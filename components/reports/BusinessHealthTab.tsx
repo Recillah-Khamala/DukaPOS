@@ -4,6 +4,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import Colors from '../../constants/colors';
 import { CompletedSale } from '../../types';
+import { useInventory } from '../hooks/useInventory';
+import { computeProfitSummary } from '../../utils/profitHelpers';
 import { useFuelLog } from '../../hooks/useFuelLog';
 
 interface BusinessHealthTabProps {
@@ -21,10 +23,13 @@ const BusinessHealthTab: React.FC<BusinessHealthTabProps> = ({ sales, bottomNavH
   const yesterdayTotal = sales
     .filter(s => new Date(s.completedAt).toDateString() === yesterdayStr)
     .reduce((sum, s) => sum + s.total, 0);
-  const percentChange = yesterdayTotal === 0 ? null :
-    Math.round(((todayTotal - yesterdayTotal) / yesterdayTotal) * 100);
+const percentChange = yesterdayTotal === 0 ? null :
+     Math.round(((todayTotal - yesterdayTotal) / yesterdayTotal) * 100);
 
-  const thirtyDaysAgo = Date.now() - 30 * 86400000;
+   const { items: allItems } = useInventory();
+   const todayProfitSummary = computeProfitSummary(todaySales, allItems);
+
+   const thirtyDaysAgo = Date.now() - 30 * 86400000;
   const recentSales = sales.filter(s => new Date(s.completedAt).getTime() >= thirtyDaysAgo);
   const activeDaysSet = new Set(recentSales.map(s => new Date(s.completedAt).toDateString()));
   const activeDays = activeDaysSet.size;
@@ -74,27 +79,30 @@ const fastestMoving = Object.values(productTotals)
 return (
      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: bottomNavHeight + 24 }}>
 
-      {/* Today's Profit Hero */}
-      <View style={{ backgroundColor: Colors.primaryContainer, borderRadius: 12, padding: 16, alignItems: 'center', marginBottom: 16 }}>
-        <Text style={{ color: Colors.onPrimaryContainer, fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-          TODAY'S PROFIT
-        </Text>
-        <Text style={{ color: Colors.secondaryContainer, fontSize: 28, fontWeight: '800', marginTop: 4 }}>
-          KES {todayTotal.toLocaleString()}
-        </Text>
-        {percentChange !== null && (
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
-            <MaterialIcons
-              name={percentChange >= 0 ? 'trending-up' : 'trending-down'}
-              size={18}
-              color={Colors.onPrimaryContainer}
-            />
-            <Text style={{ color: Colors.onPrimaryContainer, fontSize: 14, fontWeight: '700', marginLeft: 4 }}>
-              {Math.abs(percentChange)}% from yesterday
-            </Text>
-          </View>
-        )}
-      </View>
+{/* Today's Profit Hero */}
+       <View style={{ backgroundColor: Colors.primaryContainer, borderRadius: 12, padding: 16, alignItems: 'center', marginBottom: 16 }}>
+         <Text style={{ color: Colors.onPrimaryContainer, fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+           TODAY'S PROFIT
+         </Text>
+         <Text style={{ color: Colors.secondaryContainer, fontSize: 28, fontWeight: '800', marginTop: 4 }}>
+           KES {todayProfitSummary.actualProfit.toLocaleString()}
+         </Text>
+         <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14, marginTop: 2 }}>
+           Revenue: KES {todayProfitSummary.revenue.toLocaleString()}
+         </Text>
+         {percentChange !== null && (
+           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+             <MaterialIcons
+               name={percentChange >= 0 ? 'trending-up' : 'trending-down'}
+               size={18}
+               color={Colors.onPrimaryContainer}
+             />
+             <Text style={{ color: Colors.onPrimaryContainer, fontSize: 14, fontWeight: '700', marginLeft: 4 }}>
+               {Math.abs(percentChange)}% from yesterday
+             </Text>
+           </View>
+         )}
+       </View>
 
       {/* Business Health Score */}
       <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: Colors.outlineVariant, borderRadius: 12, padding: 16, marginBottom: 16 }}>
