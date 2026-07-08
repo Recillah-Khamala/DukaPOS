@@ -16,18 +16,19 @@ interface BusinessHealthTabProps {
 const BusinessHealthTab: React.FC<BusinessHealthTabProps> = ({ sales, bottomNavHeight }) => {
   const router = useRouter();
 
-  const todayStr = new Date().toDateString();
-  const todaySales = sales.filter(s => new Date(s.completedAt).toDateString() === todayStr);
-  const todayTotal = todaySales.reduce((sum, s) => sum + s.total, 0);
-  const yesterdayStr = new Date(Date.now() - 86400000).toDateString();
-  const yesterdayTotal = sales
-    .filter(s => new Date(s.completedAt).toDateString() === yesterdayStr)
-    .reduce((sum, s) => sum + s.total, 0);
-const percentChange = yesterdayTotal === 0 ? null :
-     Math.round(((todayTotal - yesterdayTotal) / yesterdayTotal) * 100);
+const todayStr = new Date().toDateString();
+   const todaySales = sales.filter(s => new Date(s.completedAt).toDateString() === todayStr);
+   const yesterdayStr = new Date(Date.now() - 86400000).toDateString();
+   const yesterdayTotal = sales
+     .filter(s => new Date(s.completedAt).toDateString() === yesterdayStr)
+     .reduce((sum, s) => sum + s.total, 0);
 
    const { items: allItems } = useInventory();
    const todayProfitSummary = computeProfitSummary(todaySales, allItems);
+   const todayTotal = todayProfitSummary.totalRevenue;
+
+   const percentChange = yesterdayTotal === 0 ? null :
+     Math.round(((todayTotal - yesterdayTotal) / yesterdayTotal) * 100);
 
    const thirtyDaysAgo = Date.now() - 30 * 86400000;
   const recentSales = sales.filter(s => new Date(s.completedAt).getTime() >= thirtyDaysAgo);
@@ -85,10 +86,7 @@ return (
            TODAY'S PROFIT
          </Text>
          <Text style={{ color: Colors.secondaryContainer, fontSize: 28, fontWeight: '800', marginTop: 4 }}>
-           KES {todayProfitSummary.actualProfit.toLocaleString()}
-         </Text>
-         <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14, marginTop: 2 }}>
-           Revenue: KES {todayProfitSummary.revenue.toLocaleString()}
+           KES {todayProfitSummary.totalActualProfit.toLocaleString()}
          </Text>
          {percentChange !== null && (
            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
@@ -102,6 +100,14 @@ return (
              </Text>
            </View>
          )}
+         {todayProfitSummary.itemsWithUnknownCost.size > 0 && (
+           <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14, marginTop: 2 }}>
+             Actual: KES {todayProfitSummary.totalActualProfit.toLocaleString()} · Projected: KES {todayProfitSummary.totalProjectedProfit.toLocaleString()}
+           </Text>
+         )}
+         <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14, marginTop: 2 }}>
+           Revenue: KES {todayProfitSummary.totalRevenue.toLocaleString()}
+         </Text>
        </View>
 
       {/* Business Health Score */}
