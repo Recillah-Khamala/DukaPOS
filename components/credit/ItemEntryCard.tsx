@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { CreditItemCategory } from '../../hooks/useCreditLedger';
 import FormField from './FormField';
@@ -6,6 +6,7 @@ import CategoryPicker from './CategoryPicker';
 import ProductPickerModal from './ProductPickerModal';
 import { MaterialIcons } from '@expo/vector-icons';
 import Colors from '../../constants/colors';
+import { useInventory } from '../../context/InventoryContext';
 
 interface DraftItem {
   key: string;
@@ -14,6 +15,7 @@ interface DraftItem {
   unitPrice: string;
   category: CreditItemCategory;
   productId?: string;
+  unit?: string;
 }
 
 interface ItemEntryCardProps {
@@ -35,12 +37,13 @@ const ItemEntryCard: React.FC<ItemEntryCardProps> = ({
 }) => {
   const [showPicker, setShowPicker] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<{ id: string; name: string; category: string } | null>(null);
+  const { allItems } = useInventory();
 
-const handleNameChange = (text: string) => {
-     onUpdate(item.key, { name: text, productId: undefined });
-     // If user manually edits the name, clear the product selection
-     setSelectedProduct(null);
-   };
+  const handleNameChange = (text: string) => {
+    onUpdate(item.key, { name: text, productId: undefined });
+    // If user manually edits the name, clear the product selection
+    setSelectedProduct(null);
+  };
 
   const handleQtyChange = (text: string) => {
     onUpdate(item.key, { qty: text });
@@ -55,6 +58,16 @@ const handleNameChange = (text: string) => {
     const unitPrice = parseFloat(item.unitPrice || '0') || 0;
     return (qty * unitPrice).toLocaleString();
   };
+
+  useEffect(() => {
+    if (!selectedProduct || !allItems) return;
+    const inventoryItem = allItems.find(it => it.id === selectedProduct.id);
+    if (inventoryItem) {
+      // Deduplicate sellingUnit and buyingUnit
+      const units = [...new Set([inventoryItem.sellingUnit, inventoryItem.buyingUnit])];
+      console.log('Valid units for product', selectedProduct.name, ':', units);
+    }
+  }, [selectedProduct, allItems]);
 
   return (
     <>
@@ -87,7 +100,7 @@ const handleNameChange = (text: string) => {
                 name="close"
                 size={18}
                 color={Colors.onSurfaceVariant}
-/>
+              />
             </TouchableOpacity>
           )}
         </View>
@@ -103,7 +116,7 @@ const handleNameChange = (text: string) => {
           <Text style={styles.selectButtonText}>Select Product</Text>
         </TouchableOpacity>
 
-{/* Item Name - either selected product label or text input */}
+        {/* Item Name - either selected product label or text input */}
         {selectedProduct ? (
           <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
             <Text style={{ fontSize: 16, color: Colors.onSurface }}>
@@ -120,7 +133,7 @@ const handleNameChange = (text: string) => {
               <Text style={{ color: Colors.error, fontSize: 16 }}>✕</Text>
             </TouchableOpacity>
           </View>
-) : (
+        ) : (
           <>
             <FormField
               label="Item Name"
@@ -171,7 +184,7 @@ const handleNameChange = (text: string) => {
           Line total: KES {calculateLineTotal()}
         </Text>
       </View>
-<ProductPickerModal
+      <ProductPickerModal
         visible={showPicker}
         onClose={() => setShowPicker(false)}
         onSelect={(product) => {
