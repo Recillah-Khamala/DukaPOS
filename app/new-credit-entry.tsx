@@ -54,7 +54,7 @@ const NewCreditEntryScreen: React.FC = () => {
   const [debtMonth, setDebtMonth] = React.useState('');
   const [debtYear, setDebtYear] = React.useState('');
 
-  const updateItem = (key: string, patch: Partial<DraftItem>) => {
+  const updateDraftItem = (key: string, patch: Partial<DraftItem>) => {
     setItems(prev => prev.map(item => (item.key === key ? { ...item, ...patch } : item)));
   };
 
@@ -141,33 +141,34 @@ const handleSave = async () => {
 
     // Legacy debt (pre-DukaPOS) does not affect inventory; skip deduction.
     const warnings: string[] = [];
-    const inventoryUpdates: Array<{id: string; stock: number; isLowStock: boolean}> = [];
+    const inventoryUpdates: Array<{id: string; currentStock: number; isLowStock: boolean}> = [];
     if (!isExistingDebt) {
       // Log intended inventory deductions and update stock
       // Inventory deducted once at sale time — do not duplicate in repayment flow.
       builtItems.forEach(item => {
         if (item.productId) {
-          const inventoryItem = allItems.find(it => it.id === item.productId);
-          if (inventoryItem) {
-            const deduction = computeInventoryDeduction(item, inventoryItem);
-            const currentStock = inventoryItem.stock;
-            let newStock: number;
-            let isLowStock: boolean;
-            if (deduction > currentStock) {
-              newStock = 0;
-              const warningMsg = `${inventoryItem.name} stock is now 0 — sale exceeded recorded stock`;
-              warnings.push(warningMsg);
-              console.warn(warningMsg);
-            } else {
-              newStock = currentStock - deduction;
-              isLowStock = newStock <= inventoryItem.lowStockThreshold;
-              if (isLowStock) {
-                const warningMsg = `Low stock: ${inventoryItem.name} (${newStock} left)`;
-                warnings.push(warningMsg);
-                console.warn(warningMsg);
-              }
-            }
-            inventoryUpdates.push({ id: inventoryItem.id, stock: newStock, isLowStock });
+const inventoryItem = allItems.find(it => it.id === item.productId);
+            if (inventoryItem) {
+                const deduction = computeInventoryDeduction(item, inventoryItem);
+                const currentStock = inventoryItem.currentStock;
+                let newStock: number;
+                let isLowStock: boolean;
+if (deduction > currentStock) {
+                    newStock = 0;
+                    isLowStock = true;
+                    const warningMsg = `${inventoryItem.name} stock is now 0 — sale exceeded recorded stock`;
+                    warnings.push(warningMsg);
+                    console.warn(warningMsg);
+                } else {
+                    newStock = currentStock - deduction;
+                    isLowStock = newStock <= inventoryItem.lowStockThreshold;
+                    if (isLowStock) {
+                        const warningMsg = `Low stock: ${inventoryItem.name} (${newStock} left)`;
+                        warnings.push(warningMsg);
+                        console.warn(warningMsg);
+                    }
+                }
+            inventoryUpdates.push({ id: inventoryItem.id, currentStock: newStock, isLowStock });
             console.log('would deduct', item.productId, deduction);
           } else {
             console.log('skipped - inventory item not found', item.productId);
@@ -214,10 +215,10 @@ const handleSave = async () => {
       completedAt: createdAt,
     };
 await addSale(sale);
-     // Apply inventory updates after successful ledger and sale writes.
-     inventoryUpdates.forEach(update => {
-       updateItem(update.id, { stock: update.stock, isLowStock: update.isLowStock });
-     });
+// Apply inventory updates after successful ledger and sale writes.
+      inventoryUpdates.forEach(update => {
+        updateItem(update.id, { currentStock: update.currentStock, isLowStock: update.isLowStock });
+      });
 
      // Show banner if there are warnings, then go back after a delay
     if (warnings.length > 0) {
@@ -319,24 +320,24 @@ return (
           <>
             {/* Item rows */}
             {items.map((item, index) => (
-              <ItemEntryCard
-                key={item.key}
-                item={item}
-                index={index}
-                onUpdate={updateItem}
-                onRemove={removeItemRow}
-                canRemove={items.length > 1}
-                onProductSelect={(productId, name) => {
-                  const inventoryItem = allItems.find(it => it.id === productId);
-                  if (inventoryItem) {
-                    const creditCategory = inventoryCategoryToCreditCategory(inventoryItem.category);
-                    updateItem(item.key, { productId, category: creditCategory });
-                  } else {
-                    // Fallback: just set productId if inventory item not found (shouldn't happen)
-                    updateItem(item.key, { productId });
-                  }
-                }}
-              />
+<ItemEntryCard
+  key={item.key}
+  item={item}
+  index={index}
+  onUpdate={updateDraftItem}
+  onRemove={removeItemRow}
+  canRemove={items.length > 1}
+  onProductSelect={({ productId, name }) => {
+    const inventoryItem = allItems.find(it => it.id === productId);
+    if (inventoryItem) {
+      const creditCategory = inventoryCategoryToCreditCategory(inventoryItem.category);
+      updateDraftItem(item.key, { productId, category: creditCategory });
+    } else {
+      // Fallback: just set productId if inventory item not found (shouldn't happen)
+      updateDraftItem(item.key, { productId });
+    }
+  }}
+/>
             ))}
 
             {/* Add another item */}
