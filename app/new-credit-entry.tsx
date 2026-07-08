@@ -177,6 +177,7 @@ if (deduction > currentStock) {
             console.log('skipped - inventory item not found', item.productId);
           }
         } else {
+          // unlinked (free-text) items never reach computeInventoryDeduction at all — their qty is only ever used for the line-total/ledger math, never for stock, so no unit ambiguity applies there.
           console.log('skipped - not linked', item.name);
         }
       });
