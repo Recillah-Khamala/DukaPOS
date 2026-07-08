@@ -20,6 +20,7 @@ type DraftItem = {
   unitPrice: string;
   category: CreditItemCategory;
   productId?: string;
+  unit?: string;
 };
 
 const makeEmptyItem = (): DraftItem => ({
@@ -29,6 +30,7 @@ const makeEmptyItem = (): DraftItem => ({
   unitPrice: '',
   category: 'other',
   productId: undefined,
+  unit: undefined,
 });
 
 const NewCreditEntryScreen: React.FC = () => {

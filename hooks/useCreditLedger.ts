@@ -13,6 +13,7 @@ export type CreditItem = {
   amountPaid?: number;
   balance?: number;
   productId?: string;
+  unit?: string;
 };
 
 export type CreditEntry = {
