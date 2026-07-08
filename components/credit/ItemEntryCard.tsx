@@ -37,6 +37,7 @@ const ItemEntryCard: React.FC<ItemEntryCardProps> = ({
 }) => {
   const [showPicker, setShowPicker] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<{ id: string; name: string; category: string } | null>(null);
+  const [unit, setUnit] = useState<string | undefined>(undefined);
   const { allItems } = useInventory();
 
   const handleNameChange = (text: string) => {
@@ -66,8 +67,12 @@ const ItemEntryCard: React.FC<ItemEntryCardProps> = ({
       // Deduplicate sellingUnit and buyingUnit
       const units = [...new Set([inventoryItem.sellingUnit, inventoryItem.buyingUnit])];
       console.log('Valid units for product', selectedProduct.name, ':', units);
+      // Set the unit state to the sellingUnit
+      setUnit(inventoryItem.sellingUnit);
+      // Update the DraftItem's unit
+      onUpdate(item.key, { unit: inventoryItem.sellingUnit });
     }
-  }, [selectedProduct, allItems]);
+  }, [selectedProduct, allItems, onUpdate, item.key]);
 
   return (
     <>
@@ -170,7 +175,7 @@ const ItemEntryCard: React.FC<ItemEntryCardProps> = ({
               placeholder="e.g. 130"
               keyboardType="numeric"
               value={item.unitPrice}
-              onChangeText={handleUnitPriceChange}
+              onChangeText={handleUnitChange={handleUnitPriceChange}
             />
           </View>
         </View>
