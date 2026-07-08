@@ -27,16 +27,16 @@ export function categoryToBasketType(category: CreditItemCategory): 'cereal' | '
 }
 
 export function computeInventoryDeduction(item: CreditItem, inventoryItem: InventoryItem): number {
-  // If unit is not set (e.g., legacy data), default to sellingUnit.
+  // If unit is not set (e.g., legacy draft or bags/poshomill path), default to sellingUnit
   // This is safe because the selling unit is the canonical unit in which stock is tracked.
-  const unitToCheck = item.unit ?? inventoryItem.sellingUnit;
-  if (unitToCheck === inventoryItem.sellingUnit) {
+  const unitToUse = item.unit ?? inventoryItem.sellingUnit;
+  if (unitToUse === inventoryItem.sellingUnit) {
     return item.qty;
   }
-  if (unitToCheck === inventoryItem.buyingUnit) {
+  if (unitToUse === inventoryItem.buyingUnit) {
     return item.qty * inventoryItem.conversionRate;
   }
-  throw new Error(`Invalid unit ${unitToCheck} for item ${item.name}. Expected ${inventoryItem.sellingUnit} or ${inventoryItem.buyingUnit}.`);
+  throw new Error(`Invalid unit ${item.unit} for item ${item.name}. Expected ${inventoryItem.sellingUnit} or ${inventoryItem.buyingUnit}.`);
 }
 
 export function parseManualDate(day: string, month: string, year: string): string {

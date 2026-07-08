@@ -187,11 +187,13 @@ const ItemEntryCard: React.FC<ItemEntryCardProps> = ({
           fontWeight: '600',
           color: Colors.onSurfaceVariant,
         }}>
-          Line total: KES {calculateLineTotal()}
+          {item.qty}
+          {unit && ` ${unit}`}
+          · Line total: KES {calculateLineTotal()}
         </Text>
 
         {/* UnitPicker - only show when a product is selected and there are multiple unit options */}
-        {selectedProduct && allItems ? 
+        {selectedProduct && allItems ? (
           (() => {
             const inventoryItem = allItems.find(it => it.id === selectedProduct.id);
             if (!inventoryItem) return null;
@@ -216,8 +218,8 @@ const ItemEntryCard: React.FC<ItemEntryCardProps> = ({
                 />
               </View>
             );
-          })() 
-        : null}
+          })()
+        ) : null}
       </View>
       <ProductPickerModal
         visible={showPicker}
