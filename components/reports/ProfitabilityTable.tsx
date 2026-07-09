@@ -122,7 +122,7 @@ const ProfitabilityTable: React.FC<ProfitabilityTableProps> = ({ sales, allItems
         </View>
       )}
       
-      {/* Table Header and Table (only show if we have data and not all cost unknown)}}
+      {/* Table Header and Table (only show if we have data and not all cost unknown) */}
       {!allCostUnknown && hasData && (
         <View>
           <View style={styles.header}>
