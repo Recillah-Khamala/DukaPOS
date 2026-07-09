@@ -106,7 +106,7 @@ const ProfitabilityTable: React.FC<ProfitabilityTableProps> = ({ sales, allItems
         </View>
       )}
       
-      {/* Empty state when no buying prices are set */}
+      {/* Empty state when no sales data */}
       {!hasData && (
         <View style={styles.emptyStateContainer}>
           <Text style={styles.emptyStateText}>No sales data for the selected period.</Text>
@@ -122,9 +122,9 @@ const ProfitabilityTable: React.FC<ProfitabilityTableProps> = ({ sales, allItems
         </View>
       )}
       
-      {/* Table Header (only show if we have data and not all cost unknown)}}
+      {/* Table Header and Table (only show if we have data and not all cost unknown)}}
       {!allCostUnknown && hasData && (
-        <>
+        <View>
           <View style={styles.header}>
             <Text style={styles.headerText}>Item Profitability</Text>
           </View>
@@ -148,7 +148,7 @@ const ProfitabilityTable: React.FC<ProfitabilityTableProps> = ({ sales, allItems
               </View>
             ))}
           </View>
-        </>
+        </View>
       )}
     </View>
   );
