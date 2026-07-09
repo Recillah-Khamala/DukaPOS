@@ -204,7 +204,7 @@ if (deduction > currentStock) {
     // of sale, regardless of how much (if any) has actually been collected yet.
     const saleItems: BasketItem[] = builtItems.map((item, idx) => ({
       id: `${newEntry.id}-${idx}`,
-      productId: `${newEntry.id}-${idx}`,
+      productId: item.productId ?? `${newEntry.id}-${idx}`,
       name: item.name,
       qty: item.qty,
       unitPrice: item.unitPrice,
