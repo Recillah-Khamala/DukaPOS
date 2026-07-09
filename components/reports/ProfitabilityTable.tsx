@@ -60,6 +60,11 @@ const ProfitabilityTable: React.FC<ProfitabilityTableProps> = ({ sales, allItems
   });
 
   const rows = Array.from(itemStats.values());
+  
+  // Check if we have any data
+  const hasData = rows.length > 0;
+  // Check if all rows have costKnown: false (meaning no buying prices set)
+  const allCostUnknown = hasData && rows.every(row => !row.costKnown);
 
   return (
     <View style={styles.container}>
@@ -101,30 +106,50 @@ const ProfitabilityTable: React.FC<ProfitabilityTableProps> = ({ sales, allItems
         </View>
       )}
       
-      {/* Table Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Item Profitability</Text>
-      </View>
-      
-      {/* Table */}
-      <View style={styles.table}>
-        <View style={styles.headerRow}>
-          <Text style={styles.headerCell}>{groupByCategory ? 'Category' : 'Name'}</Text>
-          <Text style={styles.headerCell}>Qty Sold</Text>
-          <Text style={styles.headerCell}>Revenue</Text>
-          <Text style={styles.headerCell}>Profit</Text>
-          <Text style={styles.headerCell}>Cost Known</Text>
+      {/* Empty state when no buying prices are set */}
+      {!hasData && (
+        <View style={styles.emptyStateContainer}>
+          <Text style={styles.emptyStateText}>No sales data for the selected period.</Text>
         </View>
-        {rows.map((row, index) => (
-          <View key={index} style={styles.row}>
-            <Text style={styles.cell}>{row.name}</Text>
-            <Text style={styles.cell}>{row.qtySold.toFixed(2)}</Text>
-            <Text style={styles.cell}>KES {row.revenue.toLocaleString()}</Text>
-            <Text style={styles.cell}>KES {row.profit.toLocaleString()}</Text>
-            <Text style={styles.cell}>{row.costKnown ? '✓' : '⚠'}</Text>
+      )}
+      
+      {/* Empty state when all items have unknown cost */}
+      {allCostUnknown && (
+        <View style={styles.emptyStateContainer}>
+          <Text style={styles.emptyStateText}>
+            Set buying prices in Inventory to see real profit numbers
+          </Text>
+        </View>
+      )}
+      
+      {/* Table Header (only show if we have data and not all cost unknown)}}
+      {!allCostUnknown && hasData && (
+        <>
+          <View style={styles.header}>
+            <Text style={styles.headerText}>Item Profitability</Text>
           </View>
-        ))}
-      </View>
+          
+          {/* Table */}
+          <View style={styles.table}>
+            <View style={styles.headerRow}>
+              <Text style={styles.headerCell}>{groupByCategory ? 'Category' : 'Name'}</Text>
+              <Text style={styles.headerCell}>Qty Sold</Text>
+              <Text style={styles.headerCell}>Revenue</Text>
+              <Text style={styles.headerCell}>Profit</Text>
+              <Text style={styles.headerCell}>Cost Known</Text>
+            </View>
+            {rows.map((row, index) => (
+              <View key={index} style={styles.row}>
+                <Text style={styles.cell}>{row.name}</Text>
+                <Text style={styles.cell}>{row.qtySold.toFixed(2)}</Text>
+                <Text style={styles.cell}>KES {row.revenue.toLocaleString()}</Text>
+                <Text style={styles.cell}>KES {row.profit.toLocaleString()}</Text>
+                <Text style={styles.cell}>{row.costKnown ? '✓' : '⚠'}</Text>
+              </View>
+            ))}
+          </View>
+        </>
+      )}
     </View>
   );
 };
@@ -167,6 +192,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.onSurfaceVariant,
     fontStyle: 'italic',
+  },
+  emptyStateContainer: {
+    padding: 24,
+    alignItems: 'center',
+  },
+  emptyStateText: {
+    fontSize: 16,
+    color: Colors.onSurfaceVariant,
+    textAlign: 'center',
   },
   header: {
     paddingVertical: 12,
