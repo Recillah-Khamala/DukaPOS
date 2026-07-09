@@ -4,7 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import Colors from '../../constants/colors';
 import { CompletedSale } from '../../types';
-import { useInventory } from '../.useDateFilter./hooks/useInventory';
+import { useInventory } from '../../hooks/useInventory';
 import { computeProfitSummary } from '../../utils/profitHelpers';
 import { useFuelLog } from '../../hooks/useFuelLog';
 
@@ -82,80 +82,35 @@ return (
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: bottomNavHeight + 24 }}>
         {!bannerDismissed && todayProfitSummary.itemsWithUnknownCost.size > 0 && (
           <TouchableOpacity onPress={() => {
+            setBannerDismissed(true);
             router.push('/inventory');
-          }} style={{ marginBottom: 16 }}>
-            <View style={styles.banner}>
-              <Text style={styles.bannerText}>
-                {todayProfitSummary.itemsWithUnknownCost.size} items don't have a buying price set — profit is estimated for these. Tap to update.
-              </Text>
-              <TouchableOpacity onPress={e => {
-                e.stopPropagation();
-                setBannerDismissed(true);
-              }}>
-                <MaterialIcons name="close" size={20} color={Colors.onSurfaceVariant} />
-              </TouchableOpacity>
-            </View>
+          }} style={styles.bannerContainer}>
+            <MaterialIcons name="info" size={20} color={Colors.onSecondaryContainer} />
+            <Text style={styles.bannerText}>
+              {todayProfitSummary.itemsWithUnknownCost.size} items don't have a buying price set — profit is estimated for these. Tap to update.
+            </Text>
           </TouchableOpacity>
         )}
+
         {/* Today's Profit Hero */}
-        <View style={{ backgroundColor: Colors.primaryContainer, borderRadius: 12, padding: 16, alignItems: 'center', marginBottom: 16 }}>
-          <Text style={{ color: Colors.onPrimaryContainer, fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-            TODAY'S PROFIT
-          </Text>
-          <Text style={{ color: Colors.secondaryContainer, fontSize: 28, fontWeight: '800', marginTop: 4 }}>
-            KES {todayProfitSummary.totalActualProfit.toLocaleString()}
-          </Text>
-          {percentChange !== null && (
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
-              <MaterialIcons
-                name={percentChange >= 0 ? 'trending-up' : 'trending-down'}
-                size={18}
-                color={Colors.onPrimaryContainer}
-              />
-              <Text style={{ color: Colors.onPrimaryContainer, fontSize: 14, fontWeight: '700', marginLeft: 4 }}>
-                {Math.abs(percentChange)}% from yesterday
-              </Text>
-            </View>
-          )}
-          {todayProfitSummary.itemsWithUnknownCost.size > 0 && (
-            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14, marginTop: 2 }}>
-              Actual: KES {todayProfitSummary.totalActualProfit.toLocaleString()} · Projected: KES {todayProfitSummary.totalProjectedProfit.toLocaleString()}
-            </Text>
-          )}
-          <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14, marginTop: 2 }}>
-            Revenue: KES {todayProfitSummary.totalRevenue.toLocaleString()}
-          </Text>
-        </View>
-        )}
-        {/* Today's Profit Hero */}
-        <View style={{ backgroundColor: Colors.primaryContainer, borderRadius: 12, padding: 16, alignItems: 'center', marginBottom: 16 }}>
-          <Text style={{ color: Colors.onPrimaryContainer, fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-            TODAY'S PROFIT
-          </Text>
-          <Text style={{ color: Colors.secondaryContainer, fontSize: 28, fontWeight: '800', marginTop: 4 }}>
-            KES {todayProfitSummary.totalActualProfit.toLocaleString()}
-          </Text>
-          {percentChange !== null && (
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
-              <MaterialIcons
-                name={percentChange >= 0 ? 'trending-up' : 'trending-down'}
-                size={18}
-                color={Colors.onPrimaryContainer}
-              />
-              <Text style={{ color: Colors.onPrimaryContainer, fontSize: 14, fontWeight: '700', marginLeft: 4 }}>
-                {Math.abs(percentChange)}% from yesterday
-              </Text>
-            </View>
-          )}
-          {todayProfitSummary.itemsWithUnknownCost.size > 0 && (
-            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14, marginTop: 2 }}>
-              Actual: KES {todayProfitSummary.totalActualProfit.toLocaleString()} · Projected: KES {todayProfitSummary.totalProjectedProfit.toLocaleString()}
-            </Text>
-          )}
-          <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14, marginTop: 2 }}>
-            Revenue: KES {todayProfitSummary.totalRevenue.toLocaleString()}
-          </Text>
-        </View>
+       <View style={{ backgroundColor: Colors.primaryContainer, borderRadius: 12, padding: 16, alignItems: 'center', marginBottom: 16 }}>
+         <Text style={{ color: Colors.onPrimaryContainer, fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+           TODAY'S PROFIT
+         </Text>
+         <Text style={{ color: Colors.secondaryContainer, fontSize: 28, fontWeight: '800', marginTop: 4 }}>
+           KES {todayProfitSummary.totalActualProfit.toLocaleString()}
+         </Text>
+         {percentChange !== null && (
+           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+             <MaterialIcons
+               name={percentChange >= 0 ? 'trending-up' : 'trending-down'}
+               size={18}
+               color={Colors.onPrimaryContainer}
+             />
+             <Text style={{ color: Colors.onPrimaryContainer, fontSize: 14, fontWeight: '700', marginLeft: 4 }}>
+               {Math.abs(percentChange)}% from yesterday
+             </Text>
+           </View>
          )}
          {todayProfitSummary.itemsWithUnknownCost.size > 0 && (
            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14, marginTop: 2 }}>
@@ -287,20 +242,21 @@ return (
    );
 };
 
-export default BusinessHealthTab;
-
 const styles = StyleSheet.create({
-  banner: {
-    backgroundColor: Colors.infoContainer,
-    borderRadius: 12,
+  bannerContainer: {
+    backgroundColor: Colors.secondaryContainer,
     padding: 12,
-    marginBottom: 16,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    borderRadius: 8,
+    marginBottom: 16,
   },
   bannerText: {
-    color: Colors.onInfoContainer,
+    color: Colors.onSecondaryContainer,
     fontSize: 14,
+    marginLeft: 8,
+    flexShrink: 1,
   },
 });
+
+export default BusinessHealthTab;
