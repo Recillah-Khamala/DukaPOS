@@ -4,7 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import Colors from '../../constants/colors';
 import { CompletedSale } from '../../types';
-import { useInventory } from '../../hooks/useInventory';
+import { useInventory } from '../../context/InventoryContext';
 import { computeProfitSummary } from '../../utils/profitHelpers';
 import { useFuelLog } from '../../hooks/useFuelLog';
 import ProfitabilityTable from './ProfitabilityTable';
@@ -25,7 +25,7 @@ const BusinessHealthTab: React.FC<BusinessHealthTabProps> = ({ sales, bottomNavH
      .filter(s => new Date(s.completedAt).toDateString() === yesterdayStr)
      .reduce((sum, s) => sum + s.total, 0);
 
-   const { items: allItems } = useInventory();
+   const { allItems } = useInventory();
    const todayProfitSummary = computeProfitSummary(todaySales, allItems);
    const todayTotal = todayProfitSummary.totalRevenue;
 
