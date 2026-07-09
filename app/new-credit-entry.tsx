@@ -208,6 +208,9 @@ if (deduction > currentStock) {
       status: balance <= 0.01 ? 'paid' : 'active',
     };
     await addEntry(newEntry);
+    if (excessPayment > 0) {
+      await recordPayment(customerId, excessPayment);
+    }
 
     // Also record this as a completed sale so it feeds Reports/Business Health
     // the same way a cash sale does — revenue is recognized now, at the moment
