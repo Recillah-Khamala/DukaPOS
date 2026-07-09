@@ -7,6 +7,7 @@ import { CompletedSale } from '../../types';
 import { useInventory } from '../../hooks/useInventory';
 import { computeProfitSummary } from '../../utils/profitHelpers';
 import { useFuelLog } from '../../hooks/useFuelLog';
+import ProfitabilityTable from './ProfitabilityTable';
 
 interface BusinessHealthTabProps {
   sales: CompletedSale[];
@@ -189,29 +190,32 @@ return (
           <View style={{ backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, alignItems: 'center' }}>
             <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14 }}>No sales data yet</Text>
           </View>
-        ) : fastestMoving.map((item, index) => (
-          <View key={item.name} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, marginBottom: 8 }}>
-            <View style={{ position: 'relative', width: 48, height: 48, borderRadius: 8, backgroundColor: Colors.surfaceContainerHigh, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
-              <MaterialIcons name={item.icon as any} size={28} color={Colors.primary} />
-              {index === 0 && (
-                <View style={{ position: 'absolute', bottom: 0, right: 0, backgroundColor: Colors.secondary, borderTopLeftRadius: 4, paddingHorizontal: 3, paddingVertical: 1 }}>
-                  <Text style={{ color: 'white', fontSize: 8, fontWeight: '800' }}>HOT</Text>
-                </View>
-              )}
+) : fastestMoving.map((item, index) => (
+            <View key={item.name} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, marginBottom: 8 }}>
+              <View style={{ position: 'relative', width: 48, height: 48, borderRadius: 8, backgroundColor: Colors.surfaceContainerHigh, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                <MaterialIcons name={item.icon as any} size={28} color={Colors.primary} />
+                {index === 0 && (
+                  <View style={{ position: 'absolute', bottom: 0, right: 0, backgroundColor: Colors.secondary, borderTopLeftRadius: 4, paddingHorizontal: 3, paddingVertical: 1 }}>
+                    <Text style={{ color: 'white', fontSize: 8, fontWeight: '800' }}>HOT</Text>
+                  </View>
+                )}
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: Colors.onSurface, fontSize: 16, fontWeight: '600' }}>{item.name}</Text>
+                <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14 }}>{item.qty.toFixed(2)} Korokoro sold</Text>
+              </View>
+              <View style={{ alignItems: 'flex-end' }}>
+                <Text style={{ color: Colors.primary, fontSize: 14, fontWeight: '700' }}>↑ {Math.round((item.qty / fastestMoving[0].qty) * 100)}%</Text>
+                <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>Demand</Text>
+              </View>
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={{ color: Colors.onSurface, fontSize: 16, fontWeight: '600' }}>{item.name}</Text>
-              <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14 }}>{item.qty.toFixed(2)} Korokoro sold</Text>
-            </View>
-            <View style={{ alignItems: 'flex-end' }}>
-              <Text style={{ color: Colors.primary, fontSize: 14, fontWeight: '700' }}>↑ {Math.round((item.qty / fastestMoving[0].qty) * 100)}%</Text>
-              <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>Demand</Text>
-</View>
-     </View>
-   ))}
- </View>
+          ))}
+        </View>
 
-{/* Mill Profitability */}
+        {/* Profitability Table */}
+        <ProfitabilityTable sales={recentSales} allItems={allItems} />
+
+        {/* Mill Profitability */}
         <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: Colors.outlineVariant, borderRadius: 12, padding: 16, marginBottom: 16 }}>
           <Text style={{ color: Colors.primary, fontSize: 13, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
             Mill Profitability — Last 30 Days
