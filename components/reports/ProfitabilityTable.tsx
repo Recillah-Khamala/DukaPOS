@@ -1,7 +1,8 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { CompletedSale, InventoryItem, BasketItem } from '../../types';
 import { computeSaleItemProfit } from '../../utils/profitHelpers';
+import Colors from '../../constants/colors';
 
 interface ProfitabilityTableProps {
   sales: CompletedSale[];
@@ -9,38 +10,51 @@ interface ProfitabilityTableProps {
 }
 
 const ProfitabilityTable: React.FC<ProfitabilityTableProps> = ({ sales, allItems }) => {
-  // Create a map of inventory items by productId for quick lookup in computeSaleItemProfit (though it's inside the function)
-  // We don't need to create a map here because the helper function does the lookup.
+  const [groupByCategory, setGroupByCategory] = useState(false);
 
-  // Aggregate data by item name
+  const getCategory = (item: BasketItem): string => {
+    switch (item.type) {
+      case 'cereal':
+        return 'Cereal';
+      case 'bag':
+        return 'Bags';
+      case 'service':
+        return 'Service';
+      default:
+        return 'Unknown';
+    }
+  };
+
+  // Aggregate data by either item name or category
   const itemStats = new Map<string, {
     name: string;
     qtySold: number;
     revenue: number;
     profit: number;
-    costKnown: boolean; // true if at least one occurrence had cost known? Actually, for a given item, costKnown should be consistent.
+    costKnown: boolean; // true if all items in group have known cost
   }>();
 
   sales.forEach(sale => {
     sale.items.forEach(saleItem => {
-      const { quantity, revenue, profit, costKnown } = computeSaleItemProfit(saleItem, allItems);
-      const existing = itemStats.get(saleItem.name) || {
-        name: saleItem.name,
+      const { quantity, revenue: itemRevenue, profit: itemProfit, costKnown: itemCostKnown } = 
+        computeSaleItemProfit(saleItem, allItems);
+      
+      const groupKey = groupByCategory ? getCategory(saleItem) : saleItem.name;
+      
+      const existing = itemStats.get(groupKey) || {
+        name: groupKey,
         qtySold: 0,
         revenue: 0,
         profit: 0,
-        costKnown: false
+        costKnown: true // Start with true, will become false if any item has unknown cost
       };
-
-      itemStats.set(saleItem.name, {
-        name: saleItem.name,
+      
+      itemStats.set(groupKey, {
+        name: groupKey,
         qtySold: existing.qtySold + quantity,
-        revenue: existing.revenue + revenue,
-        profit: existing.profit + profit,
-        costKnown: existing.costKnown || costKnown // if any occurrence has cost known, we mark as known? 
-          // But note: costKnown is a property of the inventory item, so it should be the same for the same productId.
-          // However, we are grouping by name, which might not be unique. We'll use OR: if any of the items in the group had cost known, we mark as known.
-          // This is acceptable because if two different products share the same name and one has cost known and the other doesn't, we still show known.
+        revenue: existing.revenue + itemRevenue,
+        profit: existing.profit + itemProfit,
+        costKnown: existing.costKnown && itemCostKnown // True only if all items so far have known cost
       });
     });
   });
@@ -49,12 +63,53 @@ const ProfitabilityTable: React.FC<ProfitabilityTableProps> = ({ sales, allItems
 
   return (
     <View style={styles.container}>
+      {/* Toggle between Item and Category grouping */}
+      <View style={styles.toggleContainer}>
+        <TouchableOpacity 
+          onPress={() => setGroupByCategory(false)}
+          style={[
+            styles.toggleButton,
+            !groupByCategory && styles.toggleButtonActive
+          ]}
+        >
+          <Text style={[
+            styles.toggleButtonText,
+            !groupByCategory && styles.toggleButtonTextActive
+          ]}>By Item</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          onPress={() => setGroupByCategory(true)}
+          style={[
+            styles.toggleButton,
+            groupByCategory && styles.toggleButtonActive
+          ]}
+        >
+          <Text style={[
+            styles.toggleButtonText,
+            groupByCategory && styles.toggleButtonTextActive
+          ]}>By Category</Text>
+        </TouchableOpacity>
+      </View>
+      
+      {/* Note for category grouping */}
+      {groupByCategory && (
+        <View style={styles.noteContainer}>
+          <Text style={styles.noteText}>
+            Note: Milling and other services are grouped together under "Service" category.
+          </Text>
+        </View>
+      )}
+      
+      {/* Table Header */}
       <View style={styles.header}>
         <Text style={styles.headerText}>Item Profitability</Text>
       </View>
+      
+      {/* Table */}
       <View style={styles.table}>
         <View style={styles.headerRow}>
-          <Text style={styles.headerCell}>Name</Text>
+          <Text style={styles.headerCell}>{groupByCategory ? 'Category' : 'Name'}</Text>
           <Text style={styles.headerCell}>Qty Sold</Text>
           <Text style={styles.headerCell}>Revenue</Text>
           <Text style={styles.headerCell}>Profit</Text>
@@ -77,6 +132,41 @@ const ProfitabilityTable: React.FC<ProfitabilityTableProps> = ({ sales, allItems
 const styles = StyleSheet.create({
   container: {
     marginVertical: 16,
+  },
+  toggleContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#f8f9fa',
+    padding: 8,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  toggleButton: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    marginHorizontal: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  toggleButtonActive: {
+    backgroundColor: Colors.primary,
+  },
+  toggleButtonText: {
+    fontSize: 14,
+    fontWeight: '600' as const,
+  },
+  toggleButtonTextActive: {
+    color: Colors.onPrimary,
+  },
+  noteContainer: {
+    marginBottom: 12,
+    paddingHorizontal: 16,
+  },
+  noteText: {
+    fontSize: 12,
+    color: Colors.onSurfaceVariant,
+    fontStyle: 'italic',
   },
   header: {
     paddingVertical: 12,
