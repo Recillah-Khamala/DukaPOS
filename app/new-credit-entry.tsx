@@ -73,12 +73,16 @@ const NewCreditEntryScreen: React.FC = () => {
     ? Math.max(0, parseFloat(debtTotal || '0') || 0)
     : items.reduce((sum, item) => sum + itemTotal(item), 0);
 
-  // Clamp deposit/already-paid to [0, grandTotal]
-  const depositRaw = isExistingDebt
-    ? parseFloat(debtAlreadyPaid || '0') || 0
-    : parseFloat(amountReceivedNow || '0') || 0;
-  const deposit = Math.max(0, Math.min(depositRaw, grandTotal));
-  const remainingAfterDeposit = Math.max(0, grandTotal - deposit);
+// Clamp deposit/already-paid to [0, grandTotal]
+   const depositRaw = isExistingDebt
+     ? parseFloat(debtAlreadyPaid || '0') || 0
+     : parseFloat(amountReceivedNow || '0') || 0;
+   const deposit = Math.max(0, Math.min(depositRaw, grandTotal));
+   const remainingAfterDeposit = Math.max(0, grandTotal - deposit);
+   const excessPayment = Math.max(0, depositRaw - grandTotal);
+   if (!isExistingDebt) {
+     console.log('Excess payment:', excessPayment);
+   }
 
   const isFormValid = isExistingDebt
     ? customerName.trim() !== '' && parseFloat(debtTotal || '0') > 0
