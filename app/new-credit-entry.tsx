@@ -35,7 +35,7 @@ const makeEmptyItem = (): DraftItem => ({
 
 const NewCreditEntryScreen: React.FC = () => {
   const router = useRouter();
-  const { addEntry } = useCreditLedger();
+  const { addEntry, entries, recordPayment } = useCreditLedger();
   const { addSale } = useSalesHistory();
 
   const [customerName, setCustomerName] = React.useState('');
@@ -96,6 +96,12 @@ const NewCreditEntryScreen: React.FC = () => {
 
 const handleSave = async () => {
     if (!isFormValid) return;
+
+    // Compute customerId for prior debt lookup and for the new entry
+    const customerId = customerName.trim().toLowerCase().replace(/\s+/g, '-');
+    const priorDebt = entries.filter(e => e.customerId === customerId && e.status === 'active')
+                             .reduce((sum, e) => sum + e.balance, 0);
+    console.log('Prior debt:', priorDebt);
 
     let builtItems;
     let total;
@@ -191,7 +197,7 @@ if (deduction > currentStock) {
 
     const newEntry: any = {
       id: Math.random().toString(36).substr(2, 9),
-      customerId: customerName.trim().toLowerCase().replace(/\s+/g, '-'),
+      customerId: customerId,
       customerName: customerName.trim(),
       items: builtItems,
       totalAmount: total,
