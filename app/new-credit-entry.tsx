@@ -93,11 +93,7 @@ const NewCreditEntryScreen: React.FC = () => {
           parseFloat(item.qty || '0') > 0 &&
           parseFloat(item.unitPrice || '0') > 0
 );
-      if (excessPayment > 0) {
-        const appliedToDebt = Math.min(excessPayment, priorDebt);
-        const stillOwing = Math.max(0, priorDebt - excessPayment);
-        warnings.push(`Sale paid in full. KES ${appliedToDebt.toLocaleString()} applied to previous debt. Remaining debt: KES ${stillOwing.toLocaleString()}.`);
-      }
+
 
 const handleSave = async () => {
     if (!isFormValid) return;
@@ -184,11 +180,7 @@ if (deduction > currentStock) {
                         const warningMsg = `Low stock: ${inventoryItem.name} (${newStock} left)`;
                         warnings.push(warningMsg);
                         console.warn(warningMsg);
-if (excessPayment > 0) {
-        const appliedToDebt = Math.min(excessPayment, priorDebt);
-        const stillOwing = Math.max(0, priorDebt - excessPayment);
-        warnings.push(`Sale paid in full. KES ${appliedToDebt.toLocaleString()} applied to previous debt. Remaining debt: KES ${stillOwing.toLocaleString()}.`);
-      }
+
     }
                 }
             inventoryUpdates.push({ id: inventoryItem.id, currentStock: newStock, isLowStock });
