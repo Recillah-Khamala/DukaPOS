@@ -56,6 +56,14 @@ const NewCreditEntryScreen: React.FC = () => {
   const [debtMonth, setDebtMonth] = React.useState('');
   const [debtYear, setDebtYear] = React.useState('');
 
+  // Live prior-debt for the currently typed customer name (shown inline)
+  const livePriorDebt = React.useMemo(() => {
+    const id = customerName.trim().toLowerCase().replace(/\s+/g, '-');
+    return entries
+      .filter(e => e.customerId === id && e.status === 'active')
+      .reduce((sum, e) => sum + e.balance, 0);
+  }, [entries, customerName]);
+
   const updateDraftItem = (key: string, patch: Partial<DraftItem>) => {
     setItems(prev => prev.map(item => (item.key === key ? { ...item, ...patch } : item)));
   };
@@ -330,6 +338,12 @@ return (
             marginBottom: 20,
           }}
         />
+
+        {livePriorDebt > 0 && (
+          <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, marginBottom: 12 }}>
+            {`This customer has an existing balance of KES ${livePriorDebt.toLocaleString()}.`}
+          </Text>
+        )}
 
         {isExistingDebt ? (
           <LegacyDebtForm
