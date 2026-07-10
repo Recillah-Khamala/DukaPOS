@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { CreditItemCategory } from '../../hooks/useCreditLedger';
+import Card from '../ui/Card';
 import FormField from './FormField';
 import CategoryPicker from './CategoryPicker';
 import ProductPickerModal from './ProductPickerModal';
@@ -77,7 +78,7 @@ const ItemEntryCard: React.FC<ItemEntryCardProps> = ({
 
   return (
     <>
-      <View style={{
+      <Card style={{
         borderWidth: 1.5,
         borderColor: Colors.outlineVariant,
         borderRadius: 12,
@@ -158,10 +159,9 @@ const ItemEntryCard: React.FC<ItemEntryCardProps> = ({
         {/* Quantity and Unit Price row */}
         <View style={{
           flexDirection: 'row',
-          gap: 12,
           marginBottom: 10,
         }}>
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, marginRight: 12 }}>
             <FormField
               label="Quantity"
               placeholder="e.g. 2"
@@ -220,7 +220,7 @@ const ItemEntryCard: React.FC<ItemEntryCardProps> = ({
             );
           })()
         ) : null}
-      </View>
+      </Card>
       <ProductPickerModal
         visible={showPicker}
         onClose={() => setShowPicker(false)}

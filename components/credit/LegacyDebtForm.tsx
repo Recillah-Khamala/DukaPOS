@@ -91,7 +91,6 @@ const LegacyDebtForm: React.FC<LegacyDebtFormProps> = ({
       </Text>
       <View style={{
         flexDirection: 'row',
-        gap: 8,
         marginBottom: 8,
       }}>
         <TextInput
@@ -110,6 +109,7 @@ const LegacyDebtForm: React.FC<LegacyDebtFormProps> = ({
             fontSize: 15,
             color: Colors.onSurface,
             flex: 1,
+            marginRight: 8,
           }}
         />
         <TextInput
@@ -128,6 +128,7 @@ const LegacyDebtForm: React.FC<LegacyDebtFormProps> = ({
             fontSize: 15,
             color: Colors.onSurface,
             flex: 1,
+            marginRight: 8,
           }}
         />
         <TextInput

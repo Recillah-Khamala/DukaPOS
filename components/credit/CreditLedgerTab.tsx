@@ -87,8 +87,8 @@ const CreditLedgerTab: React.FC<CreditLedgerTabProps> = ({ bottomNavHeight = 0 }
         </Text>
 
         {/* Stats row */}
-        <View style={{ flexDirection: 'row', gap: 12, marginBottom: 16 }}>
-          <Card style={{ flex: 1, marginBottom: 0 }} backgroundColor={Colors.surfaceContainerHigh}>
+        <View style={{ flexDirection: 'row', marginBottom: 16 }}>
+          <Card style={{ flex: 1, marginBottom: 0, marginRight: 12 }} backgroundColor={Colors.surfaceContainerHigh}>
             <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11, fontWeight: '700', textTransform: 'uppercase' }}>
               TOTAL DEBT
             </Text>
@@ -119,19 +119,12 @@ const CreditLedgerTab: React.FC<CreditLedgerTabProps> = ({ bottomNavHeight = 0 }
             Active Debts
           </Text>
           {customers.length === 0 ? (
-            <View style={{
-              backgroundColor: 'white',
-              borderRadius: 12,
-              padding: 24,
-              borderWidth: 1,
-              borderColor: Colors.outlineVariant,
-              alignItems: 'center'
-            }}>
+            <Card style={{ padding: 24, alignItems: 'center', borderColor: Colors.outlineVariant }} backgroundColor="white">
               <MaterialIcons name="person-off" size={48} color={Colors.outlineVariant} />
               <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14, marginTop: 8 }}>
                 No active debts
               </Text>
-            </View>
+            </Card>
           ) : (
             <>
               {customers.map(([customerId, data]) => {

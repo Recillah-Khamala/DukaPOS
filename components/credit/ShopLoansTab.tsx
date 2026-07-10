@@ -166,7 +166,7 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
             Withdraw to M-Pesa
           </Text>
         </TouchableOpacity>
-      </View>
+      </Card>
 
       {/* Loan Partners Section */}
       <View>
@@ -204,10 +204,10 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
 
           <Card style={{ backgroundColor: Colors.surfaceContainerHigh, borderRadius: 8, padding: 10, marginTop: 12, flexDirection: 'row', alignItems: 'flex-start' }}>
             <MaterialIcons name="info" size={16} color={Colors.secondary} />
-            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>
+            <Text style={{ marginLeft: 8, color: Colors.onSurfaceVariant, fontSize: 12 }}>
               Your current sales data qualifies you for an instant KES 20,000 limit increase.
             </Text>
-          </View>
+          </Card>
 
           <TouchableOpacity
             style={{
@@ -217,17 +217,16 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
               alignItems: 'center',
               flexDirection: 'row',
               justifyContent: 'center',
-              gap: 8,
               marginTop: 12,
             }}
             onPress={() => router.push('/loan-consent')}
           >
-            <MaterialIcons name="share" size={18} color="white" />
+            <MaterialIcons name="share" size={18} color="white" style={{ marginRight: 8 }} />
             <Text style={{ color: 'white', fontSize: 14, fontWeight: '700' }}>
               Share Data & Apply
             </Text>
           </TouchableOpacity>
-        </View>
+        </Card>
 
         <Card style={{ backgroundColor: 'white', padding: 16, borderColor: Colors.outlineVariant, opacity: 0.7, flexDirection: 'row', alignItems: 'center', marginTop: 12, marginBottom: 8 }}>
           <View style={{ width: 56, height: 56, backgroundColor: Colors.surfaceContainerHigh, borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
@@ -246,7 +245,7 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
               Locked
             </Text>
           </View>
-        </View>
+        </Card>
       </View>
 
       {/* Data Privacy Guarantee */}
@@ -269,7 +268,7 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
         <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, lineHeight: 20 }}>
           Your shop's inventory and sales data is encrypted and only used to generate your Business Health Score. No financial data is shared with loan partners until you explicitly tap the 'Share Data & Apply' button. You maintain 100% ownership of your shop records.
         </Text>
-      </View>
+      </Card>
     </ScrollView>
   );
 };

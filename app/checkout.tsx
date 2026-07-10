@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Text, View, FlatList, Pressable, TextInput, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import Colors from '../constants/colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import TopAppBar from '../components/layout/TopAppBar';
 import BottomNavBar from '../components/layout/BottomNavBar';
