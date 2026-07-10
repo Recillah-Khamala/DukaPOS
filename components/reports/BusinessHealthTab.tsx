@@ -7,6 +7,7 @@ import { CompletedSale } from '../../types';
 import { useInventory } from '../../context/InventoryContext';
 import Card from '../../components/ui/Card';
 import EmptyStateCard from '../../components/ui/EmptyStateCard';
+import WarningBanner from '../../components/ui/WarningBanner';
 import { computeProfitSummary } from '../../utils/profitHelpers';
 import { useFuelLog } from '../../hooks/useFuelLog';
 import ProfitabilityTable from './ProfitabilityTable';
@@ -87,11 +88,10 @@ return (
           <TouchableOpacity onPress={() => {
             setBannerDismissed(true);
             router.push('/inventory');
-          }} style={styles.bannerContainer}>
-            <MaterialIcons name="info" size={20} color={Colors.onSecondaryContainer} />
-            <Text style={styles.bannerText}>
-              {todayProfitSummary.itemsWithUnknownCost.size} items don't have a buying price set — profit is estimated for these. Tap to update.
-            </Text>
+          }}>
+            <WarningBanner
+              message={`${todayProfitSummary.itemsWithUnknownCost.size} items don't have a buying price set — profit is estimated for these. Tap to update.`}
+            />
           </TouchableOpacity>
         )}
 
@@ -250,21 +250,5 @@ return (
    );
 };
 
-const styles = StyleSheet.create({
-  bannerContainer: {
-    backgroundColor: Colors.secondaryContainer,
-    padding: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  bannerText: {
-    color: Colors.onSecondaryContainer,
-    fontSize: 14,
-    marginLeft: 8,
-    flexShrink: 1,
-  },
-});
 
 export default BusinessHealthTab;
