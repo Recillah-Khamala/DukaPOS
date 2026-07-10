@@ -4,6 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
 import { InventoryItem } from '../../constants/inventoryData';
 import Colors from '../../constants/colors';
+import Card from '../ui/Card';
 import { useRouter } from 'expo-router';
 
 type StockItemCardProps = {
@@ -45,7 +46,7 @@ export default function StockItemCard({ item }: StockItemCardProps) {
 
   return (
     <TouchableOpacity activeOpacity={0.8} onPress={handlePress}>
-      <View style={styles.card}>
+      <Card style={[styles.card, { borderWidth: 0 }]}>
         {/* Row 1: top row */}
         <View style={styles.topRow}>
           {/* Left side */}
@@ -87,7 +88,7 @@ export default function StockItemCard({ item }: StockItemCardProps) {
             </Text>
           </View>
         </View>
-      </View>
+      </Card>
     </TouchableOpacity>
   );
 }

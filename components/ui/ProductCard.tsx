@@ -1,5 +1,7 @@
 import { Pressable, Text, View } from 'react-native';
 import type { Product } from '../../types';
+import Card from './Card';
+import Colors from '../../constants/colors';
 
 export type ProductCardProps = {
   product: Product;
@@ -11,9 +13,12 @@ export type ProductCardProps = {
 export default function ProductCard({ product, onAdd, currentQty = 0, onRemove }: ProductCardProps) {
   return (
     <Pressable onPress={onAdd} disabled={currentQty > 0}>
-      <View
-        className="flex-row items-center gap-3 rounded-xl bg-white p-3"
+      <Card
         style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          padding: 12,
+          borderColor: Colors.outlineVariant,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 1 },
           shadowOpacity: 0.08,
@@ -62,7 +67,7 @@ export default function ProductCard({ product, onAdd, currentQty = 0, onRemove }
             <Text className="text-lg font-bold text-white">+</Text>
           </View>
         )}
-      </View>
+      </Card>
     </Pressable>
   );
 }

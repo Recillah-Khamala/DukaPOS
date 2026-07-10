@@ -5,6 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
 import { InventoryItem } from '../../constants/inventoryData';
 import Colors from '../../constants/colors';
+import Card from '../ui/Card';
 
 type BagItemCardProps = {
   item: InventoryItem;
@@ -36,7 +37,7 @@ export default function BagItemCard({ item }: BagItemCardProps) {
 
   return (
     <TouchableOpacity activeOpacity={0.8}>
-      <View style={styles.card}>
+      <Card style={[styles.card, { borderWidth: 0 }]}>
         {/* Row 1: top row with icon and badge */}
         <View style={styles.topRow}>
           {/* Left side: icon */}
@@ -76,7 +77,7 @@ export default function BagItemCard({ item }: BagItemCardProps) {
             </Text>
           </View>
         </View>
-      </View>
+      </Card>
     </TouchableOpacity>
   );
 }
