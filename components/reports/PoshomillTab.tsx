@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { useFuelLog } from '../../hooks/useFuelLog';
 import { useSalesHistory } from '../../hooks/useSalesHistory';
 import Colors from '../../constants/colors';
+import Card from '../../components/ui/Card';
 
 const PoshomillTab: React.FC = () => {
   const { sales } = useSalesHistory();
@@ -29,12 +30,7 @@ const PoshomillTab: React.FC = () => {
       </Text>
 
       {/* Profitability summary card */}
-      <View style={{
-        backgroundColor: isProfit ? Colors.primaryContainer : '#fef2f2',
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 16,
-      }}>
+      <Card style={{ marginBottom: 16 }} backgroundColor={isProfit ? Colors.primaryContainer : '#fef2f2'}>
         <Text style={{ color: isProfit ? Colors.onPrimaryContainer : Colors.error, fontSize: 13, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
           Last 30 Days — Milling vs Fuel
         </Text>

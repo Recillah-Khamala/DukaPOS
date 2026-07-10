@@ -8,6 +8,7 @@ import BasketItemCard from '../components/ui/BasketItemCard';
 import PaymentMethodSelector from '../components/ui/PaymentMethodSelector';
 import ChangeCalculator from '../components/ui/ChangeCalculator';
 import AdjustItemModal from '../components/sales/AdjustItemModal';
+import Card from '../components/ui/Card';
 import { useSharedBasket } from '../context/BasketContext';
 import { useSalesHistory } from '../hooks/useSalesHistory';
 import { useInventory } from '../context/InventoryContext';
@@ -230,13 +231,13 @@ export default function CheckoutScreen() {
             <View className="mt-4 gap-4">
               <PaymentMethodSelector value={paymentMethod} onChange={handlePaymentMethodChange} />
               {paymentMethod === 'mpesa' ? (
-                <View className="bg-white rounded-xl p-4 border border-gray-200">
-                  <Text className="text-center font-bold text-primary text-lg">
+                <Card style={{ marginBottom: 0 }}>
+                  <Text style={{ textAlign: 'center', fontWeight: '700', color: Colors.primary, fontSize: 18 }}>
                     M-Pesa Total: KES {total.toLocaleString()}
                   </Text>
-                </View>
+                </Card>
               ) : paymentMethod === 'credit' ? (
-                <View style={{ backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant }}>
+                <Card>
                   <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
                     Customer Name
                   </Text>
@@ -247,7 +248,7 @@ export default function CheckoutScreen() {
                     placeholderTextColor="#9ca3af"
                     style={{ borderWidth: 1.5, borderColor: Colors.outlineVariant, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: Colors.onSurface }}
                   />
-                </View>
+                </Card>
               ) : (
                 <ChangeCalculator
                   totalBill={total}

@@ -5,6 +5,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import AdjustItemModal from '../../components/sales/AdjustItemModal';
 import BagSelectionModal from '../../components/sales/BagSelectionModal';
+import SelectableTile from '../../components/ui/SelectableTile';
 import { useSharedBasket } from '../../context/BasketContext';
 import { useInventory } from '../../context/InventoryContext';
 import Colors from '../../constants/colors';
@@ -109,48 +110,18 @@ export default function SalesScreen() {
                const basketItem = items.find((i) => i.productId === product.id);
                const isOutOfStock = outOfStockIds.has(product.id);
                return (
-                 <Pressable
+                 <SelectableTile
                    key={product.id}
-                   onPress={() => setSelectedProduct(product)}
+                   title={product.name}
+                   subtitle={`${minPrice} – ${maxPrice} KES`}
+                   detail={`per ${unitLabel}`}
+                   iconName={product.icon.replace('_', '-')}
+                   active={Boolean(basketItem)}
                    disabled={isOutOfStock}
-                   className="w-[48%] rounded-xl p-4 border-2 active:scale-95"
-                   style={{
-                     backgroundColor: basketItem ? Colors.primaryFixed : '#ffffff',
-                     borderColor: basketItem ? Colors.primary : 'transparent',
-                     shadowColor: '#000',
-                     shadowOffset: { width: 0, height: 4 },
-                     shadowOpacity: 0.08,
-                     shadowRadius: 12,
-                     elevation: 3,
-                     opacity: isOutOfStock ? 0.4 : 1,
-                   }}
-                 >
-                   <View
-                     className="w-12 h-12 rounded-lg mb-2 items-center justify-center"
-                     style={{ backgroundColor: Colors.primaryFixed }}
-                   >
-                     <MaterialIcons name={product.icon.replace('_', '-') as any} size={32} color={Colors.primary} />
-                   </View>
-                   <Text className="font-bold text-sm" style={{ color: Colors.onSurfaceVariant }}>{product.name}</Text>
-                   {isOutOfStock && (
-                     <Text style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>
-                       Out of Stock
-                     </Text>
-                   )}
-                   <Text className="text-lg font-extrabold mt-1" style={{ color: Colors.primary }}>
-                     {minPrice} – {maxPrice} KES
-                   </Text>
-                   <Text className="text-xs mt-0.5" style={{ color: Colors.onSurfaceVariant }}>
-                     per {unitLabel}
-                   </Text>
-                   {basketItem && (
-                     <View className="mt-2 rounded-full px-2 py-0.5 self-start" style={{ backgroundColor: Colors.primary }}>
-                       <Text className="text-xs font-bold" style={{ color: Colors.onPrimary }}>
-                         {basketItem.fractionLabel ?? basketItem.qty} in basket
-                       </Text>
-                     </View>
-                   )}
-                 </Pressable>
+                   badge={basketItem ? (basketItem.fractionLabel ?? String(basketItem.qty)) + ' in basket' : undefined}
+                   onPress={() => setSelectedProduct(product)}
+                   style={{ width: '48%' }}
+                 />
                );
              })}
            </View>
@@ -176,44 +147,18 @@ export default function SalesScreen() {
                const basketItem = items.find((i) => i.productId === service.id);
                const isOutOfStock = outOfStockIds.has(service.id);
                return (
-                 <Pressable
+                 <SelectableTile
                    key={service.id}
-                   onPress={() => setSelectedProduct(service)}
+                   title={service.name}
+                   subtitle={`${minPrice} – ${maxPrice} KES / ${unitLabel}`}
+                   iconName={service.icon.replace('_', '-')}
+                   accentLeft
+                   accentColor={Colors.secondary}
+                   active={Boolean(basketItem)}
                    disabled={isOutOfStock}
-                   className="flex-row items-center justify-between rounded-xl p-4 border-l-4 active:scale-95"
-                   style={{
-                     backgroundColor: basketItem ? Colors.primaryFixed : '#ffffff',
-                     borderLeftColor: Colors.secondary,
-                     shadowColor: '#000',
-                     shadowOffset: { width: 0, height: 4 },
-                     shadowOpacity: 0.08,
-                     shadowRadius: 12,
-                     elevation: 3,
-                     opacity: isOutOfStock ? 0.4 : 1,
-                   }}
-                 >
-                   <View className="flex-row items-center gap-4">
-                     <MaterialIcons name={service.icon.replace('_', '-') as any} size={28} color={Colors.secondary} />
-                     <View>
-                       <Text className="font-bold text-base" style={{ color: Colors.onSurface }}>{service.name}</Text>
-                   {isOutOfStock && (
-                     <Text style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>
-                       Out of Stock
-                     </Text>
-                   )}
-                       <Text className="text-sm" style={{ color: Colors.onSurfaceVariant }}>
-                         {minPrice} – {maxPrice} KES / {unitLabel}
-                       </Text>
-                     </View>
-                   </View>
-                   {basketItem && (
-                     <View className="rounded-full px-2 py-0.5" style={{ backgroundColor: Colors.primary }}>
-                       <Text className="text-xs font-bold" style={{ color: Colors.onPrimary }}>
-                         {basketItem.fractionLabel ?? basketItem.qty} in basket
-                       </Text>
-                     </View>
-                   )}
-                 </Pressable>
+                   badge={basketItem ? (basketItem.fractionLabel ?? String(basketItem.qty)) + ' in basket' : undefined}
+                   onPress={() => setSelectedProduct(service)}
+                 />
                );
              })}
            </View>
@@ -229,37 +174,18 @@ export default function SalesScreen() {
               const basketItem = items.find((i) => i.productId === bag.id);
               const isOutOfStock = outOfStockIds.has(bag.id);
               return (
-                <Pressable
+                <SelectableTile
                   key={bag.id}
-                  onPress={() => setSelectedBagProduct(bag)}
+                  title={bag.name}
+                  subtitle={`${minPrice} – ${maxPrice} KES`}
+                  iconName={bag.icon.replace('_', '-')}
+                  accentLeft
+                  accentColor={Colors.secondary}
+                  active={Boolean(basketItem)}
                   disabled={isOutOfStock}
-                  className="flex-row items-center justify-between rounded-xl p-4 border-l-4 active:scale-95"
-                  style={{
-                    backgroundColor: basketItem ? Colors.primaryFixed : '#ffffff',
-                    borderLeftColor: Colors.secondary,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: 0.08,
-                    shadowRadius: 12,
-                    elevation: 3,
-                    opacity: isOutOfStock ? 0.4 : 1,
-                  }}
-                >
-                  <View className="flex-row items-center gap-4">
-                    <MaterialIcons name={bag.icon.replace('_', '-') as any} size={28} color={Colors.secondary} />
-                    <View>
-                      <Text className="font-bold text-base" style={{ color: Colors.onSurface }}>{bag.name}</Text>
-                      <Text className="text-sm" style={{ color: Colors.onSurfaceVariant }}>
-                        {minPrice} – {maxPrice} KES
-                      </Text>
-                    </View>
-                  </View>
-                  {basketItem && (
-                    <View className="rounded-full px-2 py-0.5" style={{ backgroundColor: Colors.primary }}>
-                      <Text className="text-xs font-bold" style={{ color: Colors.onPrimary }}>in basket</Text>
-                    </View>
-                  )}
-                </Pressable>
+                  badge={basketItem ? 'in basket' : undefined}
+                  onPress={() => setSelectedBagProduct(bag)}
+                />
               );
             })}
           </View>

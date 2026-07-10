@@ -5,6 +5,8 @@ import { useRouter } from 'expo-router';
 import Colors from '../../constants/colors';
 import { CompletedSale } from '../../types';
 import { useInventory } from '../../context/InventoryContext';
+import Card from '../../components/ui/Card';
+import EmptyStateCard from '../../components/ui/EmptyStateCard';
 import { computeProfitSummary } from '../../utils/profitHelpers';
 import { useFuelLog } from '../../hooks/useFuelLog';
 import ProfitabilityTable from './ProfitabilityTable';
@@ -124,7 +126,7 @@ return (
        </View>
 
       {/* Business Health Score */}
-      <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: Colors.outlineVariant, borderRadius: 12, padding: 16, marginBottom: 16 }}>
+      <Card style={{ marginBottom: 16 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
           <View>
             <Text style={{ color: Colors.primary, fontSize: 14, fontWeight: '600' }}>Business Health Score</Text>
@@ -153,10 +155,10 @@ return (
             Based on {activeDays}-day consistency
           </Text>
         </View>
-      </View>
+      </Card>
 
       {/* 7-Day Sales Trend */}
-      <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: Colors.outlineVariant, borderRadius: 12, padding: 16, marginBottom: 16 }}>
+      <Card style={{ marginBottom: 16 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
           <Text style={{ color: Colors.primary, fontSize: 20, fontWeight: '600' }}>7-Day Sales Trend</Text>
           <MaterialIcons name="bar-chart" size={24} color={Colors.onSurfaceVariant} />
@@ -176,7 +178,7 @@ return (
             </View>
           ))}
         </View>
-      </View>
+      </Card>
 
       {/* Fastest Moving Items */}
       <View style={{ marginBottom: 12 }}>
@@ -187,11 +189,13 @@ return (
           </TouchableOpacity>
         </View>
         {fastestMoving.length === 0 ? (
-          <View style={{ backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, alignItems: 'center' }}>
-            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14 }}>No sales data yet</Text>
-          </View>
+          <EmptyStateCard
+            icon={<MaterialIcons name="bar-chart" size={48} color={Colors.outlineVariant} />}
+            message="No sales data yet"
+            style={{ marginBottom: 16 }}
+          />
 ) : fastestMoving.map((item, index) => (
-            <View key={item.name} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, marginBottom: 8 }}>
+            <Card key={item.name} style={{ marginBottom: 8, flexDirection: 'row', alignItems: 'center' }}>
               <View style={{ position: 'relative', width: 48, height: 48, borderRadius: 8, backgroundColor: Colors.surfaceContainerHigh, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
                 <MaterialIcons name={item.icon as any} size={28} color={Colors.primary} />
                 {index === 0 && (
@@ -208,7 +212,7 @@ return (
                 <Text style={{ color: Colors.primary, fontSize: 14, fontWeight: '700' }}>↑ {Math.round((item.qty / fastestMoving[0].qty) * 100)}%</Text>
                 <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>Demand</Text>
               </View>
-            </View>
+            </Card>
           ))}
         </View>
 

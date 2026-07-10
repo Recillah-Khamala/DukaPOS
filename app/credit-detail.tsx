@@ -6,6 +6,8 @@ import { useCreditLedger } from '../hooks/useCreditLedger';
 import TopAppBar from '../components/layout/TopAppBar';
 import Colors from '../constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
+import Card from '../components/ui/Card';
+import PrimaryButton from '../components/ui/PrimaryButton';
 
 const CreditDetailScreen: React.FC = () => {
   const { customerId, customerName } = useLocalSearchParams<{ customerId: string; customerName: string }>();
@@ -68,7 +70,7 @@ const CreditDetailScreen: React.FC = () => {
 
         {/* Entries list */}
         {customerEntries.map((entry, index) => (
-          <View key={index} style={{ backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, marginBottom: 8 }}>
+          <Card key={index} style={{ marginBottom: 8 }}>
             {/* Date header */}
             <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11, fontWeight: '700', textTransform: 'uppercase', marginBottom: 8 }}>
               {new Date(entry.createdAt).toLocaleDateString('en-KE', { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -102,7 +104,7 @@ const CreditDetailScreen: React.FC = () => {
                 KES {entry.balance.toLocaleString()}
               </Text>
             </View>
-          </View>
+          </Card>
         ))}
 
         {/* Total balance card */}
@@ -116,7 +118,7 @@ const CreditDetailScreen: React.FC = () => {
         </View>
 
         {/* Record payment */}
-        <View style={{ backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant }}>
+        <Card>
           <Text style={{ color: Colors.onSurface, fontSize: 14, fontWeight: '600', marginBottom: 8 }}>
             Record Payment
           </Text>
@@ -135,12 +137,9 @@ const CreditDetailScreen: React.FC = () => {
                 paddingVertical: 10,
               }}
             />
-            <TouchableOpacity
-              onPress={handleRecordPayment}
-              style={{ backgroundColor: Colors.primary, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 12 }}
-            >
-              <Text style={{ color: Colors.onPrimary, fontWeight: '700' }}>Save</Text>
-            </TouchableOpacity>
+            <PrimaryButton onPress={handleRecordPayment} style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
+              Save
+            </PrimaryButton>
           </View>
           <TouchableOpacity
             onPress={handlePayFullBalance}
@@ -161,7 +160,7 @@ const CreditDetailScreen: React.FC = () => {
               Pay Full Balance (KES {totalBalance.toLocaleString()})
             </Text>
           </TouchableOpacity>
-        </View>
+        </Card>
       </ScrollView>
     </View>
   );

@@ -5,6 +5,8 @@ import { useFuelLog } from '../hooks/useFuelLog';
 import TopAppBar from '../components/layout/TopAppBar';
 import Colors from '../constants/colors';
 import { useRouter } from 'expo-router';
+import FuelEntryCard from '../components/ui/FuelEntryCard';
+import EmptyStateCard from '../components/ui/EmptyStateCard';
 
 export default function FuelLogScreen() {
   const { entries, loading, addEntry } = useFuelLog();
@@ -69,38 +71,23 @@ export default function FuelLogScreen() {
             <Text style={{ color: Colors.onSurfaceVariant }}>Loading...</Text>
           </View>
         ) : entries.length === 0 ? (
-          <View style={{ backgroundColor: 'white', borderRadius: 12, padding: 24, borderWidth: 1, borderColor: Colors.outlineVariant, alignItems: 'center' }}>
-            <MaterialIcons name="local-gas-station" size={48} color={Colors.outlineVariant} />
-            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14, marginTop: 8 }}>
-              No fuel entries yet
-            </Text>
-          </View>
+          <EmptyStateCard
+            icon={<MaterialIcons name="local-gas-station" size={48} color={Colors.outlineVariant} />}
+            message="No fuel entries yet"
+            style={{ marginBottom: 16 }}
+          />
         ) : (
           <>
             {entries.map((entry) => (
-              <View key={entry.id} style={{ backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, marginBottom: 8, flexDirection: 'row', alignItems: 'center' }}>
-                <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: entry.fuelType === 'diesel' ? Colors.secondaryContainer : Colors.primaryFixed, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
-                  <MaterialIcons name={entry.fuelType === 'diesel' ? 'local-gas-station' : 'bolt'} size={22} color={Colors.primary} />
-                </View>
-                <View className="flex-1">
-                  <Text style={{ color: Colors.onSurface, fontSize: 14, fontWeight: '600' }}>
-                    {entry.fuelType === 'diesel' ? 'Diesel' : 'Electricity'}
-                  </Text>
-                  <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>
-                    {new Date(entry.date).toLocaleDateString('en-KE', { day: 'numeric', month: 'short', year: 'numeric' })}
-                  </Text>
-                  <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>
-                    {entry.quantity} {entry.fuelType === 'diesel' ? 'L' : 'kWh'} @ KES {entry.costPerUnit}/unit
-                  </Text>
-                  {entry.note && (
-                    <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11, fontStyle: 'italic', marginTop: 2 }}>{entry.note}</Text>
-                  )}
-                </View>
-                <View style={{ alignItems: 'flex-end' }}>
-                  <Text style={{ color: Colors.error, fontSize: 16, fontWeight: '700' }}>KES {entry.totalCost.toLocaleString()}</Text>
-                  <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11 }}>fuel cost</Text>
-                </View>
-              </View>
+              <FuelEntryCard
+                key={entry.id}
+                fuelType={entry.fuelType}
+                date={entry.date}
+                quantity={entry.quantity}
+                costPerUnit={entry.costPerUnit}
+                totalCost={entry.totalCost}
+                note={entry.note}
+              />
             ))}
           </>
         )}
