@@ -29,7 +29,7 @@ const MarketInsightsTab: React.FC<MarketInsightsTabProps> = ({ bottomNavHeight }
       </Text>
 
       {/* 4 Stat Cards */}
-      <View className="flex-row flex-wrap gap-3 mb-4">
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: 16 }}>
         {[
           { label: 'Regional Avg Price', value: 'KES 128/kg', icon: 'trending-up', iconColor: '#16a34a' },
           { label: 'Active Traders', value: '142 Shops', icon: 'store', iconColor: Colors.primary },

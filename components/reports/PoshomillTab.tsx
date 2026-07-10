@@ -52,7 +52,7 @@ const PoshomillTab: React.FC = () => {
         <Text style={{ color: isProfit ? '#16a34a' : Colors.error, fontSize: 12, marginTop: 8 }}>
           {isProfit ? '✓ Milling is profitable' : '⚠ Fuel costs exceed milling revenue'}
         </Text>
-      </View>
+      </Card>
     </ScrollView>
   );
 };
