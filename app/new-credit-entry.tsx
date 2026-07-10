@@ -447,7 +447,7 @@ return (
 
         {isExistingDebt && deposit > 0 && (
           <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, marginBottom: 20 }}>
-            Already paid: KES {deposit.toLocaleString()} · Remaining: KES ${remainingAfterDeposit.toLocaleString()}
+            Already paid: KES {deposit.toLocaleString()} · Remaining: KES {remainingAfterDeposit.toLocaleString()}
           </Text>
         )}
 
