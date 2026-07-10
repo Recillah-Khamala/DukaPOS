@@ -37,9 +37,9 @@ const MarketInsightsTab: React.FC<MarketInsightsTabProps> = ({ bottomNavHeight }
           { label: 'Market Demand', value: '+12% this week', icon: 'trending-up', iconColor: '#16a34a' },
         ].map((card) => (
           <Card
-            key={card.label}
-            style={{ width: '47%' }}
-          >
+              key={card.label}
+              style={{ width: '47%', padding: 12, borderColor: Colors.outlineVariant }}
+            >
             <MaterialIcons name={card.icon as any} size={24} color={card.iconColor} />
             <Text className="text-base font-bold mt-2" style={{ color: Colors.onSurface }}>{card.value}</Text>
             <Text className="text-xs mt-0.5" style={{ color: Colors.onSurfaceVariant }}>{card.label}</Text>
@@ -55,7 +55,7 @@ const MarketInsightsTab: React.FC<MarketInsightsTabProps> = ({ bottomNavHeight }
         Heatmap based on Posho Mill throughput
       </Text>
       <Card
-        style={{ backgroundColor: Colors.surfaceContainerHigh, height: 160, marginBottom: 16, alignItems: 'center', justifyContent: 'center' }}
+        style={{ backgroundColor: Colors.surfaceContainerHigh, height: 160, marginBottom: 16, alignItems: 'center', justifyContent: 'center', padding: 12, borderColor: Colors.outlineVariant }}
       >
         <MaterialIcons name="map" size={48} color={Colors.outlineVariant} />
         <Text className="text-sm mt-2" style={{ color: Colors.onSurfaceVariant }}>Live map coming soon</Text>
@@ -90,7 +90,7 @@ const MarketInsightsTab: React.FC<MarketInsightsTabProps> = ({ bottomNavHeight }
       {topShops.map((shop) => (
         <Card
           key={shop.name}
-          style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8, backgroundColor: Colors.surface }}
+          style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8, backgroundColor: Colors.surface, padding: 12, borderColor: Colors.outlineVariant }}
         >
           <View
             style={{ width: 40, height: 40, borderRadius: 999, alignItems: 'center', justifyContent: 'center', marginRight: 12, backgroundColor: Colors.primaryFixed }}

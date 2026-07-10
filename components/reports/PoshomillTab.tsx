@@ -27,10 +27,10 @@ const PoshomillTab: React.FC = () => {
       </Text>
       <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14, marginBottom: 16 }}>
         Last 30 days milling revenue vs fuel costs
-      </Text>
+      </Text>a
 
       {/* Profitability summary card */}
-      <Card style={{ marginBottom: 16 }} backgroundColor={isProfit ? Colors.primaryContainer : '#fef2f2'}>
+      <Card style={{ marginBottom: 16, padding: 12, borderColor: Colors.outlineVariant }} backgroundColor={isProfit ? Colors.primaryContainer : '#fef2f2'}>
         <Text style={{ color: isProfit ? Colors.onPrimaryContainer : Colors.error, fontSize: 13, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
           Last 30 Days — Milling vs Fuel
         </Text>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import Colors from '../../constants/colors';
 import Card from '../../components/ui/Card';
 import { CompletedSale, InventoryItem, BasketItem } from '../../types';
 import { computeSaleItemProfit } from '../../utils/profitHelpers';
@@ -67,7 +68,7 @@ const ProfitabilityTable: React.FC<ProfitabilityTableProps> = ({ sales, allItems
   const allCostUnknown = hasData && rows.every(row => !row.costKnown);
 
   return (
-    <Card style={{ marginVertical: 16 }}>
+    <Card style={{ marginVertical: 16, padding: 12, borderColor: Colors.outlineVariant }}>
       {/* Toggle between Item and Category grouping */}
       <View className="flex-row bg-surface p-2 rounded-lg mb-3">
         <TouchableOpacity

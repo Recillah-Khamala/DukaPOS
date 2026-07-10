@@ -96,7 +96,7 @@ return (
         )}
 
         {/* Today's Profit Hero */}
-       <Card style={{ backgroundColor: Colors.primaryContainer, padding: 16, alignItems: 'center', marginBottom: 16 }}>
+      <Card style={{ backgroundColor: Colors.primaryContainer, padding: 12, alignItems: 'center', marginBottom: 16, borderColor: Colors.outlineVariant }}>
          <Text style={{ color: Colors.onPrimaryContainer, fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>
            TODAY'S PROFIT
          </Text>
@@ -126,7 +126,7 @@ return (
        </Card>
 
       {/* Business Health Score */}
-      <Card style={{ marginBottom: 16 }}>
+      <Card style={{ marginBottom: 16, padding: 12, borderColor: Colors.outlineVariant }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
           <View>
             <Text style={{ color: Colors.primary, fontSize: 14, fontWeight: '600' }}>Business Health Score</Text>
@@ -158,7 +158,7 @@ return (
       </Card>
 
       {/* 7-Day Sales Trend */}
-      <Card style={{ marginBottom: 16 }}>
+      <Card style={{ marginBottom: 16, padding: 12, borderColor: Colors.outlineVariant }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
           <Text style={{ color: Colors.primary, fontSize: 20, fontWeight: '600' }}>7-Day Sales Trend</Text>
           <MaterialIcons name="bar-chart" size={24} color={Colors.onSurfaceVariant} />
@@ -195,7 +195,7 @@ return (
             style={{ marginBottom: 16 }}
           />
 ) : fastestMoving.map((item, index) => (
-            <Card key={item.name} style={{ marginBottom: 8, flexDirection: 'row', alignItems: 'center' }}>
+            <Card key={item.name} style={{ marginBottom: 8, flexDirection: 'row', alignItems: 'center', padding: 12, borderColor: Colors.outlineVariant }}>
               <View style={{ position: 'relative', width: 48, height: 48, borderRadius: 8, backgroundColor: Colors.surfaceContainerHigh, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
                 <MaterialIcons name={item.icon as any} size={28} color={Colors.primary} />
                 {index === 0 && (
@@ -220,7 +220,7 @@ return (
         <ProfitabilityTable sales={recentSales} allItems={allItems} />
 
         {/* Mill Profitability */}
-        <Card style={{ backgroundColor: 'white', borderColor: Colors.outlineVariant, padding: 16, marginBottom: 16 }}>
+        <Card style={{ backgroundColor: 'white', borderColor: Colors.outlineVariant, padding: 12, marginBottom: 16 }}>
           <Text style={{ color: Colors.primary, fontSize: 13, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
             Mill Profitability — Last 30 Days
           </Text>
