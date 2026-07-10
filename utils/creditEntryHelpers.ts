@@ -52,3 +52,7 @@ export function makeCustomerId(name: string): string {
     .replace(/[^a-z0-9\s]/g, '')
     .replace(/\s+/g, '-');
 }
+
+export function shouldApplyExcessPaymentToPriorDebt(isExistingDebt: boolean, excessPayment: number): boolean {
+  return !isExistingDebt && excessPayment > 0;
+}

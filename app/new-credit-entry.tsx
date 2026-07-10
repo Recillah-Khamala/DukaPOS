@@ -9,7 +9,13 @@ import type { BasketItem, CompletedSale } from '../types';
 import TopAppBar from '../components/layout/TopAppBar';
 import Colors from '../constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
-import { categoryToBasketType, parseManualDate, inventoryCategoryToCreditCategory, computeInventoryDeduction, makeCustomerId } from '../utils/creditEntryHelpers';
+import {
+  categoryToBasketType,
+  parseManualDate,
+  inventoryCategoryToCreditCategory,
+  computeInventoryDeduction,
+  makeCustomerId,
+} from '../utils/creditEntryHelpers';
 import ItemEntryCard from '../components/credit/ItemEntryCard';
 import LegacyDebtForm from '../components/credit/LegacyDebtForm';
 import WarningBanner from '../components/ui/WarningBanner';
@@ -446,9 +452,18 @@ return (
         )}
 
         {isExistingDebt && deposit > 0 && (
-          <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, marginBottom: 20 }}>
-            Already paid: KES {deposit.toLocaleString()} · Remaining: KES {remainingAfterDeposit.toLocaleString()}
-          </Text>
+          <View
+            style={{
+              backgroundColor: Colors.secondaryContainer,
+              borderRadius: 12,
+              padding: 14,
+              marginBottom: 20,
+            }}
+          >
+            <Text style={{ color: Colors.onSecondaryContainer, fontSize: 13, fontWeight: '600' }}>
+              Already paid: KES {deposit.toLocaleString()} · Remaining: KES {remainingAfterDeposit.toLocaleString()}
+            </Text>
+          </View>
         )}
 
         {/* Save button */}
