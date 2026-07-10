@@ -210,12 +210,17 @@ if (deduction > currentStock) {
       status: balance <= 0.01 ? 'paid' : 'active',
     };
     await addEntry(newEntry);
-    if (excessPayment > 0) {
-      await recordPayment(customerId, excessPayment);
-      const appliedToDebt = Math.min(excessPayment, priorDebt);
-      const stillOwing = Math.max(0, priorDebt - excessPayment);
-      warnings.push(`Sale paid in full. KES ${appliedToDebt.toLocaleString()} applied to previous debt. Remaining debt: KES ${stillOwing.toLocaleString()}.`);
-    }
+if (excessPayment > 0) {
+       await recordPayment(customerId, excessPayment);
+       const appliedToDebt = Math.min(excessPayment, priorDebt);
+       const stillOwing = Math.max(0, priorDebt - excessPayment);
+       if (excessPayment > priorDebt) {
+         const changeDue = excessPayment - priorDebt;
+         warnings.push(`Customer overpaid by KES ${changeDue.toLocaleString()} beyond all debts — please give change.`);
+       } else {
+         warnings.push(`Sale paid in full. KES ${appliedToDebt.toLocaleString()} applied to previous debt. Remaining debt: KES ${stillOwing.toLocaleString()}.`);
+       }
+     }
 
     // Also record this as a completed sale so it feeds Reports/Business Health
     // the same way a cash sale does — revenue is recognized now, at the moment
