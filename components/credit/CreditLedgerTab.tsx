@@ -3,6 +3,7 @@ import React from 'react';
 import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import Colors from '../../constants/colors';
 import Card from '../ui/Card';
+import CustomerCard from '../ui/CustomerCard';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useCreditLedger, CreditItemCategory } from '../../hooks/useCreditLedger';
 import { useRouter } from 'expo-router';
@@ -143,79 +144,15 @@ const CreditLedgerTab: React.FC<CreditLedgerTabProps> = ({ bottomNavHeight = 0 }
                 const categoryEntries = Object.entries(data.categoryBalances) as [CreditItemCategory, number][];
 
                 return (
-                  <TouchableOpacity
-                    key={customerId}
-                    onPress={() => router.push({ pathname: '/credit-detail', params: { customerId, customerName: data.name } })}
-                  >
-                    <View style={{
-                      backgroundColor: isHighDebt ? '#fef2f2' : 'white',
-                      borderRadius: 12,
-                      padding: 16,
-                      borderWidth: 1,
-                      borderColor: isHighDebt ? Colors.error : Colors.outlineVariant,
-                      marginBottom: 8,
-                    }}>
-                    <Card style={{ marginBottom: 8 }} backgroundColor={isHighDebt ? '#fef2f2' : undefined} borderColor={isHighDebt ? Colors.error : undefined}>
-                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <View style={{
-                          width: 48,
-                          height: 48,
-                          borderRadius: 24,
-                          backgroundColor: isHighDebt ? Colors.error : Colors.primaryFixed,
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          marginRight: 12
-                        }}>
-                          <MaterialIcons name="person" size={24} color={isHighDebt ? 'white' : Colors.primary} />
-                        </View>
-                        <View style={{ flex: 1 }}>
-                          <Text style={{ color: Colors.onSurface, fontSize: 16, fontWeight: '600' }}>
-                            {data.name}
-                          </Text>
-                          <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>
-                            Last update: {formattedDate}
-                          </Text>
-                        </View>
-                        <View style={{ alignItems: 'flex-end' }}>
-                          <Text style={{
-                            color: isHighDebt ? Colors.error : Colors.onSurface,
-                            fontSize: 20,
-                            fontWeight: '800'
-                          }}>
-                            KES {data.balance.toLocaleString()}
-                          </Text>
-                          <Text style={{
-                            color: isHighDebt ? Colors.error : Colors.onSurface,
-                            fontSize: 11,
-                            fontWeight: '700',
-                            textTransform: 'uppercase'
-                          }}>
-                            {isHighDebt ? 'High Debt' : 'Standard'}
-                          </Text>
-                        </View>
-                      </View>
-
-                      {/* Category breakdown chips */}
-                      {categoryEntries.length > 0 && (
-                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 10 }}>
-                          {categoryEntries.map(([cat, amount]) => (
-                            <View
-                              key={cat}
-                              style={{
-                                backgroundColor: Colors.secondaryContainer,
-                                borderRadius: 12,
-                                paddingHorizontal: 10,
-                                paddingVertical: 4,
-                              }}
-                            >
-                              <Text style={{ color: Colors.onSecondaryContainer, fontSize: 11, fontWeight: '600' }}>
-                                {CATEGORY_LABELS[cat]}: KES {amount.toLocaleString()}
-                              </Text>
-                            </View>
-                          ))}
-                        </View>
-                      )}
-                    </View>
+                  <TouchableOpacity key={customerId} onPress={() => router.push({ pathname: '/credit-detail', params: { customerId, customerName: data.name } })}>
+                    <CustomerCard
+                      name={data.name}
+                      balance={data.balance}
+                      lastUpdated={data.lastUpdated}
+                      categoryBalances={data.categoryBalances}
+                      isHighDebt={isHighDebt}
+                      onPress={() => router.push({ pathname: '/credit-detail', params: { customerId, customerName: data.name } })}
+                    />
                   </TouchableOpacity>
                 );
               })}

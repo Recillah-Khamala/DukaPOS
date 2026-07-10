@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList } from 'react-native';
 import Card from '../components/ui/Card';
+import TransactionCard from '../components/ui/TransactionCard';
 import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import TopAppBar from '../components/layout/TopAppBar';
@@ -40,55 +41,12 @@ export default function TransactionHistoryScreen() {
           }
           contentContainerStyle={{ paddingTop: 12, paddingBottom: bottomNavHeight + 24 }}
           renderItem={({ item }) => (
-            <Card style={{ marginHorizontal: 16, marginBottom: 8 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              {/* Left icon */}
-              <View style={{
-                width: 44,
-                height: 44,
-                borderRadius: 22,
-                backgroundColor: Colors.primaryFixed,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginRight: 12,
-              }}>
-                <MaterialIcons name="receipt-long" size={22} color={Colors.primary} />
-              </View>
-
-              {/* Middle */}
-              <View className="flex-1">
-                <Text style={{ color: Colors.onSurface, fontSize: 14, fontWeight: '600' }}>
-                  {new Date(item.completedAt).toLocaleDateString('en-KE', {
-                    day: 'numeric', month: 'short', year: 'numeric',
-                  })}
-                </Text>
-                <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>
-                  {new Date(item.completedAt).toLocaleTimeString('en-KE', {
-                    hour: '2-digit', minute: '2-digit',
-                  })}
-                </Text>
-                <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12, marginTop: 2 }}>
-                  {item.items.length} item{item.items.length !== 1 ? 's' : ''}
-                </Text>
-              </View>
-
-              {/* Right */}
-              <View style={{ alignItems: 'flex-end' }}>
-                <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '700', marginBottom: 4 }}>
-                  KES {item.total.toLocaleString()}
-                </Text>
-                <View style={{
-                  backgroundColor: item.paymentMethod === 'mpesa' ? Colors.secondaryContainer : Colors.primaryFixed,
-                  borderRadius: 20,
-                  paddingHorizontal: 8,
-                  paddingVertical: 2,
-                }}>
-                  <Text style={{ color: Colors.onSurface, fontSize: 10, fontWeight: '700' }}>
-                    {item.paymentMethod.toUpperCase()}
-                  </Text>
-                </View>
-              </View>
-            </Card>
+            <TransactionCard
+              completedAt={item.completedAt}
+              itemsCount={item.items.length}
+              total={item.total}
+              paymentMethod={item.paymentMethod}
+            />
           )}
         />
       )}
