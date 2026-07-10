@@ -76,18 +76,4 @@ export interface Product {
   stockLevel?: number;
 }
 
-export type InventoryItem = {
-    id: string;
-    name: string;
-    currentStock: number;
-    buyingUnit: string;
-    sellingUnit: string;
-    conversionRate: number;
-    lowStockThreshold: number;
-    isLowStock: boolean;
-    category: 'cereal' | 'poshomill' | 'bags';
-    fractionPrices: { label: string; fraction: number; price: number }[];
-    description?: string;
-    icon?: string;
-    buyingPrice?: number;
-};
+export type { InventoryItem } from '../constants/inventoryData';
