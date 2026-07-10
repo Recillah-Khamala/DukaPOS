@@ -44,3 +44,11 @@ export function parseManualDate(day: string, month: string, year: string): strin
   const date = new Date(+year, +month - 1, +day);
   return date.toISOString();
 }
+
+export function makeCustomerId(name: string): string {
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\s+/g, '-');
+}

@@ -9,7 +9,7 @@ import type { BasketItem, CompletedSale } from '../types';
 import TopAppBar from '../components/layout/TopAppBar';
 import Colors from '../constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
-import { categoryToBasketType, parseManualDate, inventoryCategoryToCreditCategory, computeInventoryDeduction } from '../utils/creditEntryHelpers';
+import { categoryToBasketType, parseManualDate, inventoryCategoryToCreditCategory, computeInventoryDeduction, makeCustomerId } from '../utils/creditEntryHelpers';
 import ItemEntryCard from '../components/credit/ItemEntryCard';
 import LegacyDebtForm from '../components/credit/LegacyDebtForm';
 
@@ -58,10 +58,8 @@ const NewCreditEntryScreen: React.FC = () => {
 
   // Live prior-debt for the currently typed customer name (shown inline)
   const livePriorDebt = React.useMemo(() => {
-    const id = customerName.trim().toLowerCase().replace(/\s+/g, '-');
-    return entries
-      .filter(e => e.customerId === id && e.status === 'active')
-      .reduce((sum, e) => sum + e.balance, 0);
+    const id = makeCustomerId(customerName);
+    return entries.filter(e => e.customerId === id && e.status === 'active').reduce((sum, e) => sum + e.balance, 0);
   }, [entries, customerName]);
 
   const updateDraftItem = (key: string, patch: Partial<DraftItem>) => {
@@ -107,7 +105,7 @@ const handleSave = async () => {
     if (!isFormValid) return;
 
     // Compute customerId for prior debt lookup and for the new entry
-    const customerId = customerName.trim().toLowerCase().replace(/\s+/g, '-');
+    const customerId = makeCustomerId(customerName);
     const priorDebt = entries.filter(e => e.customerId === customerId && e.status === 'active')
                              .reduce((sum, e) => sum + e.balance, 0);
     console.log('Prior debt:', priorDebt);
