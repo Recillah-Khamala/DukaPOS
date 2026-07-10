@@ -52,7 +52,7 @@ export default function SalesScreen() {
   }, [params.saleSuccess]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+    <View className="flex-1" style={{ backgroundColor: '#f9fafb' }}>
       {/* Top App Bar */}
       <View style={{
         flexDirection: 'row',
@@ -85,7 +85,7 @@ export default function SalesScreen() {
       )}
 
       <ScrollView
-        style={{ flex: 1 }}
+        className="flex-1"
         contentContainerStyle={{
           paddingTop: 16,
           paddingBottom: items.length > 0 ? bottomNavHeight + 140 : bottomNavHeight + 24,

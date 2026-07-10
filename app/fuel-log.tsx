@@ -50,7 +50,7 @@ export default function FuelLogScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+    <View className="flex-1" style={{ backgroundColor: '#f9fafb' }}>
       <TopAppBar title="Fuel & Power Log" onBack={() => router.back()} />
 
       <ScrollView
@@ -82,7 +82,7 @@ export default function FuelLogScreen() {
                 <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: entry.fuelType === 'diesel' ? Colors.secondaryContainer : Colors.primaryFixed, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
                   <MaterialIcons name={entry.fuelType === 'diesel' ? 'local-gas-station' : 'bolt'} size={22} color={Colors.primary} />
                 </View>
-                <View style={{ flex: 1 }}>
+                <View className="flex-1">
                   <Text style={{ color: Colors.onSurface, fontSize: 14, fontWeight: '600' }}>
                     {entry.fuelType === 'diesel' ? 'Diesel' : 'Electricity'}
                   </Text>

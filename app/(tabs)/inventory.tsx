@@ -27,7 +27,7 @@ export default function InventoryScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+    <View className="flex-1" style={{ backgroundColor: '#f9fafb' }}>
       <View style={{
         flexDirection: 'row',
         alignItems: 'center',
@@ -37,7 +37,7 @@ export default function InventoryScreen() {
         paddingBottom: 12,
         backgroundColor: Colors.primary,
       }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}>
+        <View className="flex-row items-center gap-3 flex-1" style={{ gap: 12 }}>
           <MaterialIcons name="inventory" size={24} color="white" />
           <Text style={{ fontSize: 18, fontWeight: '600', color: 'white' }}>Inventory Management</Text>
         </View>

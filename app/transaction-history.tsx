@@ -13,11 +13,11 @@ export default function TransactionHistoryScreen() {
   const [bottomNavHeight, setBottomNavHeight] = useState(0);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+    <View className="flex-1" style={{ backgroundColor: '#f9fafb' }}>
       <TopAppBar title="Transaction History" onBack={() => router.back()} />
 
       {loading ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View className="flex-1 justify-center items-center">
           <Text style={{ color: Colors.onSurfaceVariant }}>Loading transactions...</Text>
         </View>
       ) : (
@@ -31,8 +31,8 @@ export default function TransactionHistoryScreen() {
               </Text>
             </View>
           )}
-          ListEmptyComponent={
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 64 }}>
+            ListEmptyComponent={
+            <View className="flex-1 justify-center items-center pt-16">
               <MaterialIcons name="receipt-long" size={48} color="#d1d5db" />
               <Text style={{ color: Colors.onSurfaceVariant, marginTop: 8 }}>No transactions yet</Text>
             </View>
@@ -64,7 +64,7 @@ export default function TransactionHistoryScreen() {
               </View>
 
               {/* Middle */}
-              <View style={{ flex: 1 }}>
+              <View className="flex-1">
                 <Text style={{ color: Colors.onSurface, fontSize: 14, fontWeight: '600' }}>
                   {new Date(item.completedAt).toLocaleDateString('en-KE', {
                     day: 'numeric', month: 'short', year: 'numeric',

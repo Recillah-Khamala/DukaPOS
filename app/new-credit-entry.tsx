@@ -271,7 +271,7 @@ await addSale(sale);
 };
 
 return (
-    <View style={{ flex: 1 }}>
+  <View className="flex-1">
       <TopAppBar title="New Credit Entry" onBack={() => router.back()} />
       {bannerMessage && (
         <View style={{ backgroundColor: Colors.primaryContainer, padding: 12, marginHorizontal: 16, marginTop: 8, borderRadius: 4 }}>

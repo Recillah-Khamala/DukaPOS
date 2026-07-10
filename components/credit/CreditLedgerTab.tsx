@@ -73,7 +73,7 @@ const CreditLedgerTab: React.FC<CreditLedgerTabProps> = ({ bottomNavHeight = 0 }
   const customers = Object.entries(customerMap);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View className="flex-1">
       <ScrollView
         showsVerticalScrollIndicator={true}
         persistentScrollbar={true}
@@ -86,7 +86,7 @@ const CreditLedgerTab: React.FC<CreditLedgerTabProps> = ({ bottomNavHeight = 0 }
 
         {/* Stats row */}
         <View style={{ flexDirection: 'row', gap: 12, marginBottom: 16 }}>
-          <View style={{ flex: 1, backgroundColor: Colors.surfaceContainerHigh, borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant }}>
+          <View className="flex-1" style={{ backgroundColor: Colors.surfaceContainerHigh, borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant }}>
             <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11, fontWeight: '700', textTransform: 'uppercase' }}>
               TOTAL DEBT
             </Text>
@@ -94,7 +94,7 @@ const CreditLedgerTab: React.FC<CreditLedgerTabProps> = ({ bottomNavHeight = 0 }
               KES {totalDebt.toLocaleString()}
             </Text>
           </View>
-          <View style={{ flex: 1, backgroundColor: Colors.surfaceContainerHigh, borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant }}>
+          <View className="flex-1" style={{ backgroundColor: Colors.surfaceContainerHigh, borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant }}>
             <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11, fontWeight: '700', textTransform: 'uppercase' }}>
               CUSTOMERS
             </Text>

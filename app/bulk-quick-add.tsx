@@ -98,7 +98,7 @@ export default function BulkQuickAddScreen() {
 
         {/* FIX: give the list its own explicit flex:1 container so IT claims
             the remaining vertical space instead of the tab row above */}
-        <View style={{ flex: 1 }}>
+        <View className="flex-1">
           {getFilteredItems().length > 0 ? (
             <ScrollView showsVerticalScrollIndicator={true} contentContainerStyle={{ paddingBottom: 20 }}>
               {getFilteredItems().map((item: InventoryItem) => (

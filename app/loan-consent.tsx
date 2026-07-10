@@ -22,7 +22,7 @@ const LoanConsentScreen: React.FC = () => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: Colors.surface }}>
+    <View className="flex-1" style={{ backgroundColor: Colors.surface }}>
       <TopAppBar title="Loan Consent" onBack={() => router.back()} />
       <View style={{ padding: 16 }}>
         {/* Data Sharing Consent Section */}
@@ -54,7 +54,7 @@ const LoanConsentScreen: React.FC = () => {
               <View style={{ backgroundColor: Colors.primaryFixed, borderRadius: 20, padding: 8, marginRight: 12 }}>
                 <MaterialIcons name="payments" size={20} color={Colors.primary} />
               </View>
-              <View style={{ flex: 1 }}>
+              <View className="flex-1">
                 <Text style={{ color: Colors.onSurface, fontSize: 14, fontWeight: '700' }}>
                   Monthly Revenue
                 </Text>
@@ -69,7 +69,7 @@ const LoanConsentScreen: React.FC = () => {
               <View style={{ backgroundColor: Colors.primaryFixed, borderRadius: 20, padding: 8, marginRight: 12 }}>
                 <MaterialIcons name="inventory-2" size={20} color={Colors.primary} />
               </View>
-              <View style={{ flex: 1 }}>
+              <View className="flex-1">
                 <Text style={{ color: Colors.onSurface, fontSize: 14, fontWeight: '700' }}>
                   Inventory Value
                 </Text>
@@ -84,7 +84,7 @@ const LoanConsentScreen: React.FC = () => {
               <View style={{ backgroundColor: Colors.primaryFixed, borderRadius: 20, padding: 8, marginRight: 12 }}>
                 <MaterialIcons name="receipt-long" size={20} color={Colors.primary} />
               </View>
-              <View style={{ flex: 1 }}>
+              <View className="flex-1">
                 <Text style={{ color: Colors.onSurface, fontSize: 14, fontWeight: '700' }}>
                   Transaction History
                 </Text>

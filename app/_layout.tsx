@@ -9,7 +9,7 @@ import { CreditLedgerProvider } from '../context/CreditLedgerContext';
 
 export default function RootLayout() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView className="flex-1">
       <BasketProvider>
         <DynamicProductsProvider>
           <InventoryProvider>

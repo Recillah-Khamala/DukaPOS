@@ -13,7 +13,7 @@ export default function ReportsScreen() {
   const { sales } = useSalesHistory();
 
   return (
-    <View style={{ flex: 1 }}>
+    <View className="flex-1">
       {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 48, paddingBottom: 12, backgroundColor: Colors.primary }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
@@ -39,7 +39,7 @@ export default function ReportsScreen() {
       </View>
 
 {/* Tab Content */}
-<View style={{ flex: 1 }}>
+  <View className="flex-1">
           {activeTab === 'Business Health' && <BusinessHealthTab sales={sales} bottomNavHeight={bottomNavHeight} />}
           {activeTab === 'Market Insights' && <MarketInsightsTab bottomNavHeight={bottomNavHeight} />}
         </View>

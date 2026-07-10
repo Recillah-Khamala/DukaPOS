@@ -50,7 +50,7 @@ const CreditDetailScreen: React.FC = () => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View className="flex-1">
       <TopAppBar
         title={`Detail: ${customerName}`}
         onBack={() => router.back()}
