@@ -217,7 +217,7 @@ if (deduction > currentStock) {
       status: balance <= 0.01 ? 'paid' : 'active',
     };
     await addEntry(newEntry);
-if (excessPayment > 0) {
+    if (!isExistingDebt && excessPayment > 0) {
       await recordPayment(customerId, excessPayment);
       const appliedToDebt = Math.min(excessPayment, priorDebt);
       const stillOwing = Math.max(0, priorDebt - excessPayment);
