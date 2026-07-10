@@ -123,6 +123,6 @@ export default function BulkStockEntryRow({ product, deliveryAmount, onDeliveryA
           Adding in: {product.buyingUnit}
         </Text>
       </View>
-    </View>
+    </Card>
   );
 }
