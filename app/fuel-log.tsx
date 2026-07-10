@@ -109,7 +109,7 @@ export default function FuelLogScreen() {
 
             {/* Fuel Type Chips */}
             <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 8 }}>Fuel Type</Text>
-            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16 }}>
+            <View style={{ flexDirection: 'row', marginBottom: 16 }}>
               {(['diesel', 'electricity'] as const).map((type) => (
                 <TouchableOpacity
                   key={type}
@@ -121,6 +121,7 @@ export default function FuelLogScreen() {
                     borderWidth: 1.5,
                     backgroundColor: fuelType === type ? Colors.primaryFixed : Colors.surfaceContainerHigh,
                     borderColor: fuelType === type ? Colors.primary : Colors.outlineVariant,
+                    marginRight: 8,
                   }}
                 >
                   <Text
@@ -140,7 +141,7 @@ export default function FuelLogScreen() {
             <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
               How did you buy?
             </Text>
-            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16 }}>
+            <View style={{ flexDirection: 'row', marginBottom: 16 }}>
               <TouchableOpacity
                 onPress={() => setBuyMode('by-litres')}
                 style={{
@@ -150,6 +151,7 @@ export default function FuelLogScreen() {
                   borderWidth: 1.5,
                   backgroundColor: buyMode === 'by-litres' ? Colors.primaryFixed : Colors.surfaceContainerHigh,
                   borderColor: buyMode === 'by-litres' ? Colors.primary : Colors.outlineVariant,
+                  marginRight: 8,
                 }}
               >
                 <Text

@@ -39,7 +39,7 @@ export default function UnitManagementScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.topAppBar}>
-        <MaterialIcons name="arrow-back" size={24} color="white" onPress={() => router.back()} />
+        <MaterialIcons name="arrow-back" size={24} color="white" onPress={() => router.back()} style={{ marginRight: 12 }} />
         <Text style={styles.title}>Unit Management</Text>
       </View>
       <Text style={styles.subtitle}>{item.name}</Text>
@@ -90,7 +90,7 @@ export default function UnitManagementScreen() {
                 <Pressable
                   key={unit}
                   onPress={() => setEditBuyingUnit(unit)}
-                  style={[styles.editChip, editBuyingUnit === unit ? styles.editChipSelected : styles.editChipUnselected]}
+                  style={[styles.editChip, editBuyingUnit === unit ? styles.editChipSelected : styles.editChipUnselected, { marginRight: 8, marginBottom: 8 }]}
                 >
                   <Text style={editBuyingUnit === unit ? styles.editChipTextSelected : styles.editChipTextUnselected}>
                     {unit}
@@ -106,7 +106,7 @@ export default function UnitManagementScreen() {
                 <Pressable
                   key={unit}
                   onPress={() => setEditSellingUnit(unit)}
-                  style={[styles.editChip, editSellingUnit === unit ? styles.editChipSelected : styles.editChipUnselected]}
+                  style={[styles.editChip, editSellingUnit === unit ? styles.editChipSelected : styles.editChipUnselected, { marginRight: 8, marginBottom: 8 }]}
                 >
                   <Text style={editSellingUnit === unit ? styles.editChipTextSelected : styles.editChipTextUnselected}>
                     {unit}
@@ -200,7 +200,6 @@ const styles = StyleSheet.create({
     paddingTop: 48,
     paddingBottom: 12,
     backgroundColor: Colors.primary,
-    gap: 12,
   },
   title: { fontSize: 18, fontWeight: '600', color: 'white', flex: 1 },
   subtitle: { fontSize: 16, color: Colors.onSurfaceVariant, paddingHorizontal: 16, paddingTop: 16 },
@@ -247,7 +246,7 @@ const styles = StyleSheet.create({
   },
   editTitle: { fontSize: 15, fontWeight: '600', color: Colors.onSurface, marginBottom: 16 },
   editSubtitle: { fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 8 },
-  editChipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  editChipRow: { flexDirection: 'row', flexWrap: 'wrap' },
   editChip: { borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1.5 },
   editChipSelected: { backgroundColor: Colors.primaryFixed, borderColor: Colors.primary },
   editChipUnselected: { backgroundColor: '#f3f4f6', borderColor: '#e5e7eb' },

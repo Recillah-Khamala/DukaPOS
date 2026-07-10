@@ -122,7 +122,7 @@ const CreditDetailScreen: React.FC = () => {
           <Text style={{ color: Colors.onSurface, fontSize: 14, fontWeight: '600', marginBottom: 8 }}>
             Record Payment
           </Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <TextInput
               value={paymentAmount}
               onChangeText={setPaymentAmount}
@@ -135,6 +135,7 @@ const CreditDetailScreen: React.FC = () => {
                 borderRadius: 8,
                 paddingHorizontal: 12,
                 paddingVertical: 10,
+                marginRight: 8,
               }}
             />
             <PrimaryButton onPress={handleRecordPayment} style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
@@ -152,10 +153,9 @@ const CreditDetailScreen: React.FC = () => {
               alignItems: 'center',
               flexDirection: 'row',
               justifyContent: 'center',
-              gap: 6,
             }}
           >
-            <MaterialIcons name="check-circle" size={16} color={Colors.onSecondaryContainer} />
+            <MaterialIcons name="check-circle" size={16} color={Colors.onSecondaryContainer} style={{ marginRight: 6 }} />
             <Text style={{ color: Colors.onSecondaryContainer, fontSize: 13, fontWeight: '700' }}>
               Pay Full Balance (KES {totalBalance.toLocaleString()})
             </Text>

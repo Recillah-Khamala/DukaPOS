@@ -16,8 +16,8 @@ export default function CreditScreen() {
     <View className="flex-1">
       {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 48, paddingBottom: 12, backgroundColor: Colors.primary }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-          <MaterialIcons name="account-balance" size={24} color="white" />
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <MaterialIcons name="account-balance" size={24} color="white" style={{ marginRight: 12 }} />
           <Text style={{ fontSize: 18, fontWeight: '600', color: 'white' }}>Credit</Text>
         </View>
         <MaterialIcons name="notifications-none" size={24} color="white" />
@@ -59,14 +59,13 @@ export default function CreditScreen() {
             backgroundColor: Colors.secondaryContainer,
             flexDirection: 'row',
             alignItems: 'center',
-            gap: 8,
             elevation: 4,
             zIndex: 20,
             borderWidth: 2,
             borderColor: Colors.secondary,
           }}
         >
-          <MaterialIcons name="add-circle" size={20} color={Colors.onSecondaryContainer} />
+          <MaterialIcons name="add-circle" size={20} color={Colors.onSecondaryContainer} style={{ marginRight: 8 }} />
           <Text style={{ color: Colors.onSecondaryContainer, fontSize: 14, fontWeight: '700' }}>
             New Credit Entry
           </Text>

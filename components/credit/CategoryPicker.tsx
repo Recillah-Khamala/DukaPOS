@@ -32,7 +32,6 @@ const CategoryPicker: React.FC<CategoryPickerProps> = ({
       <View style={{
         flexDirection: 'row',
         flexWrap: 'wrap',
-        gap: 8,
         marginBottom: 14,
       }}>
         {CATEGORY_OPTIONS.map(option => (
@@ -44,6 +43,8 @@ const CategoryPicker: React.FC<CategoryPickerProps> = ({
               paddingVertical: 8,
               borderRadius: 20,
               backgroundColor: selected === option.value ? Colors.primary : Colors.secondaryContainer,
+              marginRight: 8,
+              marginBottom: 8,
             }}
           >
             <Text style={{

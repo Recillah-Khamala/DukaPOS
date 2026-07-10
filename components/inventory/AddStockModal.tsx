@@ -232,9 +232,9 @@ const newThreshold = parseFloat(lowStockThreshold);
           <View style={{ marginTop: 16 }}>
             <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>Product Icon</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingBottom: 8 }}>
-              <View style={{ flexDirection: 'row', gap: 8 }}>
+              <View style={{ flexDirection: 'row' }}>
                 {ICON_OPTIONS.map((iconName) => (
-                  <TouchableOpacity key={iconName} onPress={() => setSelectedIcon(iconName)}>
+                  <TouchableOpacity key={iconName} onPress={() => setSelectedIcon(iconName)} style={{ marginRight: 8 }}>
                     <View
                       style={{
                         width: 44,
@@ -262,9 +262,9 @@ const newThreshold = parseFloat(lowStockThreshold);
           {/* Category */}
           <View style={{ marginTop: 16 }}>
             <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>Category</Text>
-            <View style={{ flexDirection: 'row', gap: 8 }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
               {(['Cereal', 'Poshomill Service', 'Bags'] as const).map((category) => (
-                <TouchableOpacity key={category} onPress={() => setSelectedCategory(category)}>
+                <TouchableOpacity key={category} onPress={() => setSelectedCategory(category)} style={{ marginRight: 8, marginBottom: 8 }}>
                   <View style={{ borderRadius: 20, paddingHorizontal: 16, paddingVertical: 8, borderWidth: 1.5, backgroundColor: selectedCategory === category ? Colors.primaryFixed : '#f3f4f6', borderColor: selectedCategory === category ? Colors.primary : '#e5e7eb' }}>
                     <Text style={{ fontSize: 14, color: selectedCategory === category ? Colors.primary : Colors.onSurfaceVariant, fontWeight: selectedCategory === category ? '700' : '400' }}>{category}</Text>
                   </View>
@@ -292,9 +292,9 @@ const newThreshold = parseFloat(lowStockThreshold);
           {/* Buying Unit */}
           <View style={{ marginTop: 16 }}>
             <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>Buying Unit (how you restock)</Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
               {(['Korokoro', 'kg', 'g', 'sack', 'piece'] as const).map((unit) => (
-                <TouchableOpacity key={unit} onPress={() => setBuyingUnit(unit)}>
+                <TouchableOpacity key={unit} onPress={() => setBuyingUnit(unit)} style={{ marginRight: 8, marginBottom: 8 }}>
                   <View style={{ borderRadius: 20, paddingHorizontal: 16, paddingVertical: 8, borderWidth: 1.5, backgroundColor: buyingUnit === unit ? Colors.primaryFixed : '#f3f4f6', borderColor: buyingUnit === unit ? Colors.primary : '#e5e7eb' }}>
                     <Text style={{ fontSize: 14, color: buyingUnit === unit ? Colors.primary : Colors.onSurfaceVariant, fontWeight: buyingUnit === unit ? '700' : '400' }}>{unit}</Text>
                   </View>
@@ -306,9 +306,9 @@ const newThreshold = parseFloat(lowStockThreshold);
           {/* Selling Unit */}
           <View style={{ marginTop: 16 }}>
             <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 6 }}>Selling Unit (how you sell to customers)</Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
               {(['Korokoro', 'kg', 'g', 'piece'] as const).map((unit) => (
-                <TouchableOpacity key={unit} onPress={() => setSellingUnit(unit)}>
+                <TouchableOpacity key={unit} onPress={() => setSellingUnit(unit)} style={{ marginRight: 8, marginBottom: 8 }}>
                   <View style={{ borderRadius: 20, paddingHorizontal: 16, paddingVertical: 8, borderWidth: 1.5, backgroundColor: sellingUnit === unit ? Colors.primaryFixed : '#f3f4f6', borderColor: sellingUnit === unit ? Colors.primary : '#e5e7eb' }}>
                     <Text style={{ fontSize: 14, color: sellingUnit === unit ? Colors.primary : Colors.onSurfaceVariant, fontWeight: sellingUnit === unit ? '700' : '400' }}>{unit}</Text>
                   </View>
@@ -373,14 +373,14 @@ const newThreshold = parseFloat(lowStockThreshold);
           <View style={{ marginTop: 16 }}>
             <Text style={{ fontSize: 13, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 8 }}>Prices by Quantity</Text>
             <Text style={{ fontSize: 11, color: Colors.onSurfaceVariant, marginBottom: 12 }}>Prices don't have to be proportional</Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
               {[
                 { label: `1/8 ${sellingUnit}`, value: price18, setValue: setPrice18, focused: price18Focused, setFocused: setPrice18Focused, errorKey: 'fractionPrice_1/8' },
                 { label: `1/4 ${sellingUnit}`, value: price14, setValue: setPrice14, focused: price14Focused, setFocused: setPrice14Focused, errorKey: 'fractionPrice_1/4' },
                 { label: `1/2 ${sellingUnit}`, value: price12, setValue: setPrice12, focused: price12Focused, setFocused: setPrice12Focused, errorKey: 'fractionPrice_1/2' },
                 { label: `1 ${sellingUnit}`,   value: price1,  setValue: setPrice1,  focused: price1Focused,  setFocused: setPrice1Focused,  errorKey: 'fractionPrice_1' },
               ].map(({ label, value, setValue, focused, setFocused, errorKey }) => (
-                <View key={label} style={{ flex: 1, minWidth: '45%' }}>
+                <View key={label} style={{ flex: 1, minWidth: '45%', marginBottom: 12 }}>
                   <Text style={{ fontSize: 12, fontWeight: '600', color: Colors.onSurfaceVariant, marginBottom: 4 }}>{label}</Text>
                   <TextInput
                     placeholder="0"

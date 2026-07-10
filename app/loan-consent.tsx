@@ -3,6 +3,7 @@ import { View, Text, Alert, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import TopAppBar from '../components/layout/TopAppBar';
+import Card from '../components/ui/Card';
 import Colors from '../constants/colors';
 
 const LoanConsentScreen: React.FC = () => {
@@ -26,14 +27,16 @@ const LoanConsentScreen: React.FC = () => {
       <TopAppBar title="Loan Consent" onBack={() => router.back()} />
       <View style={{ padding: 16 }}>
         {/* Data Sharing Consent Section */}
-        <View style={{
-          backgroundColor: Colors.surface,
-          borderRadius: 12,
-          padding: 16,
-          borderWidth: 1,
-          borderColor: Colors.outlineVariant,
-          marginBottom: 16,
-        }}>
+        <Card
+          backgroundColor={Colors.surface}
+          style={{
+            borderRadius: 12,
+            padding: 16,
+            borderWidth: 1,
+            borderColor: Colors.outlineVariant,
+            marginBottom: 16,
+          }}
+        >
           {/* Section header row */}
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
             <MaterialIcons name="security" size={24} color={Colors.primary} />
@@ -50,11 +53,11 @@ const LoanConsentScreen: React.FC = () => {
           {/* Consent items */}
           <View>
             {/* Item 1: Monthly Revenue */}
-            <View style={{ backgroundColor: Colors.surfaceContainerLowest, borderRadius: 8, padding: 12, flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
+            <Card style={{ backgroundColor: Colors.surfaceContainerLowest, borderRadius: 8, padding: 12, flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
               <View style={{ backgroundColor: Colors.primaryFixed, borderRadius: 20, padding: 8, marginRight: 12 }}>
                 <MaterialIcons name="payments" size={20} color={Colors.primary} />
               </View>
-              <View className="flex-1">
+              <View style={{ flex: 1 }}>
                 <Text style={{ color: Colors.onSurface, fontSize: 14, fontWeight: '700' }}>
                   Monthly Revenue
                 </Text>
@@ -62,14 +65,14 @@ const LoanConsentScreen: React.FC = () => {
                   A summary of your earnings for the last 6 months
                 </Text>
               </View>
-            </View>
+            </Card>
 
             {/* Item 2: Inventory Value */}
-            <View style={{ backgroundColor: Colors.surfaceContainerLowest, borderRadius: 8, padding: 12, flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
+            <Card style={{ backgroundColor: Colors.surfaceContainerLowest, borderRadius: 8, padding: 12, flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
               <View style={{ backgroundColor: Colors.primaryFixed, borderRadius: 20, padding: 8, marginRight: 12 }}>
                 <MaterialIcons name="inventory-2" size={20} color={Colors.primary} />
               </View>
-              <View className="flex-1">
+              <View style={{ flex: 1 }}>
                 <Text style={{ color: Colors.onSurface, fontSize: 14, fontWeight: '700' }}>
                   Inventory Value
                 </Text>
@@ -77,14 +80,14 @@ const LoanConsentScreen: React.FC = () => {
                   Current stock levels and estimated total valuation
                 </Text>
               </View>
-            </View>
+            </Card>
 
             {/* Item 3: Transaction History */}
-            <View style={{ backgroundColor: Colors.surfaceContainerLowest, borderRadius: 8, padding: 12, flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
+            <Card style={{ backgroundColor: Colors.surfaceContainerLowest, borderRadius: 8, padding: 12, flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
               <View style={{ backgroundColor: Colors.primaryFixed, borderRadius: 20, padding: 8, marginRight: 12 }}>
                 <MaterialIcons name="receipt-long" size={20} color={Colors.primary} />
               </View>
-              <View className="flex-1">
+              <View style={{ flex: 1 }}>
                 <Text style={{ color: Colors.onSurface, fontSize: 14, fontWeight: '700' }}>
                   Transaction History
                 </Text>
@@ -92,17 +95,17 @@ const LoanConsentScreen: React.FC = () => {
                   Anonymized logs of daily sales and supply purchases
                 </Text>
               </View>
-            </View>
+            </Card>
           </View>
 
           {/* Info chip */}
-          <View style={{ backgroundColor: Colors.secondaryContainer, borderRadius: 8, padding: 10, flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8 }}>
-            <MaterialIcons name="info" size={18} color={Colors.onSecondaryContainer} />
+          <View style={{ backgroundColor: Colors.secondaryContainer, borderRadius: 8, padding: 10, flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+            <MaterialIcons name="info" size={18} color={Colors.onSecondaryContainer} style={{ marginRight: 8 }} />
             <Text style={{ color: Colors.onSecondaryContainer, fontSize: 13, fontWeight: '600' }}>
               This sharing is one-time and valid for 30 days.
             </Text>
           </View>
-        </View>
+        </Card>
 
         {/* Action buttons */}
         <View>
@@ -115,12 +118,11 @@ const LoanConsentScreen: React.FC = () => {
               justifyContent: 'center',
               alignItems: 'center',
               flexDirection: 'row',
-              gap: 8,
               marginBottom: 12,
             }}
             onPress={handleAuthorize}
           >
-            <MaterialIcons name="check-circle" size={20} color="#fff" />
+            <MaterialIcons name="check-circle" size={20} color="#fff" style={{ marginRight: 8 }} />
             <Text style={{ color: '#fff', fontSize: 18, fontWeight: '600' }}>
               Authorize Sharing
             </Text>

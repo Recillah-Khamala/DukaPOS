@@ -34,7 +34,7 @@ const CustomerCard: React.FC<Props> = ({ name, balance, lastUpdated, categoryBal
         </View>
 
         {categoryBalances && Object.keys(categoryBalances).length > 0 && (
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 10 }}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 10 }}>
             {Object.entries(categoryBalances).map(([cat, amount]) => (
               <View key={cat} style={{ backgroundColor: Colors.secondaryContainer, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4, marginRight: 6, marginBottom: 6 }}>
                 <Text style={{ color: Colors.onSecondaryContainer, fontSize: 11, fontWeight: '600' }}>{cat}: KES {amount.toLocaleString()}</Text>

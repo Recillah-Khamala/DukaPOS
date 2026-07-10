@@ -80,12 +80,12 @@ export default function BulkStockEntryRow({ product, deliveryAmount, onDeliveryA
 
       {/* ROW 2: stepper controls + "Adding in" label */}
       <View className="flex-row items-center justify-between mt-3">
-        <View className="flex-row items-center" style={{ gap: 8 }}>
+        <View className="flex-row items-center">
           <TouchableOpacity
             onPress={handleDecrement}
             disabled={deliveryAmount <= 0}
             className="px-2 py-1 rounded-md"
-            style={{ backgroundColor: deliveryAmount <= 0 ? '#d1d5db' : Colors.secondaryContainer }}
+            style={{ backgroundColor: deliveryAmount <= 0 ? '#d1d5db' : Colors.secondaryContainer, marginRight: 8 }}
           >
             <MaterialIcons name="remove" size={20} color={deliveryAmount <= 0 ? '#9ca3af' : 'white'} />
           </TouchableOpacity>

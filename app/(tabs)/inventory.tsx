@@ -29,7 +29,7 @@ export default function InventoryScreen() {
 
   return (
     <View className="flex-1" style={{ backgroundColor: '#f9fafb' }}>
-      <View style={{
+        <View style={{
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -38,20 +38,20 @@ export default function InventoryScreen() {
         paddingBottom: 12,
         backgroundColor: Colors.primary,
       }}>
-        <View className="flex-row items-center gap-3 flex-1" style={{ gap: 12 }}>
-          <MaterialIcons name="inventory" size={24} color="white" />
+        <View className="flex-row items-center flex-1">
+          <MaterialIcons name="inventory" size={24} color="white" style={{ marginRight: 12 }} />
           <Text style={{ fontSize: 18, fontWeight: '600', color: 'white' }}>Inventory Management</Text>
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
-          <View style={{ backgroundColor: Colors.primaryFixed, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 3 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <MaterialIcons name="inventory" size={14} color={Colors.primary} />
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ backgroundColor: Colors.primaryFixed, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 3, marginRight: 16 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <MaterialIcons name="inventory" size={14} color={Colors.primary} style={{ marginRight: 4 }} />
               <Text style={{ fontSize: 11, fontWeight: '600', color: Colors.primary }}>
                 {allItems.length} Items Total
               </Text>
             </View>
           </View>
-          <MaterialIcons name="search" size={24} color="white" />
+          <MaterialIcons name="search" size={24} color="white" style={{ marginRight: 12 }} />
           <MaterialIcons name="more-vert" size={24} color="white" onPress={handleOverflowMenu} />
         </View>
       </View>
@@ -83,7 +83,7 @@ export default function InventoryScreen() {
             </Card>
           )}
 
-          <View style={{ marginVertical: 16, flexDirection: 'row', gap: 12 }}>
+          <View style={{ marginVertical: 16, flexDirection: 'row', justifyContent: 'space-between' }}>
             <TouchableOpacity
               onPress={() => setShowAddStock(true)}
               style={{
@@ -94,10 +94,9 @@ export default function InventoryScreen() {
                 justifyContent: 'center',
                 alignItems: 'center',
                 flexDirection: 'row',
-                gap: 8,
               }}
             >
-              <MaterialIcons name="add-circle" size={20} color="white" />
+              <MaterialIcons name="add-circle" size={20} color="white" style={{ marginRight: 8 }} />
               <Text style={{ color: 'white', fontWeight: '600' }}>Add Stock</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -110,10 +109,11 @@ export default function InventoryScreen() {
                 justifyContent: 'center',
                 alignItems: 'center',
                 flexDirection: 'row',
-                gap: 8,
+                marginLeft: 12,
+                marginRight: 12,
               }}
             >
-              <MaterialIcons name="add-box" size={20} color={Colors.onSecondaryContainer} />
+              <MaterialIcons name="add-box" size={20} color={Colors.onSecondaryContainer} style={{ marginRight: 8 }} />
               <Text style={{ color: Colors.onSecondaryContainer, fontWeight: '600' }}>Bulk Quick Add</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -126,10 +126,9 @@ export default function InventoryScreen() {
                 justifyContent: 'center',
                 alignItems: 'center',
                 flexDirection: 'row',
-                gap: 8,
               }}
             >
-              <MaterialIcons name="local-gas-station" size={20} color="white" />
+              <MaterialIcons name="local-gas-station" size={20} color="white" style={{ marginRight: 8 }} />
               <Text style={{ color: 'white', fontWeight: '600' }}>Fuel & Power Log</Text>
             </TouchableOpacity>
           </View>
@@ -168,7 +167,7 @@ export default function InventoryScreen() {
               </Text>
             </View>
           ) : (
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
               {bagItems.map(item => (
                 <Pressable key={item.id} style={{ width: '48%' }} onPress={() => router.push({ pathname: '/inventory/unit-management', params: { id: item.id } })}>
                   <BagItemCard item={item} />

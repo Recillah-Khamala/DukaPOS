@@ -290,7 +290,6 @@ return (
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            gap: 10,
             backgroundColor: isExistingDebt ? Colors.primaryContainer : Colors.surfaceContainerHigh,
             borderRadius: 10,
             padding: 12,
@@ -301,6 +300,7 @@ return (
             name={isExistingDebt ? 'check-box' : 'check-box-outline-blank'}
             size={20}
             color={isExistingDebt ? Colors.onPrimaryContainer : Colors.onSurfaceVariant}
+            style={{ marginRight: 10 }}
           />
           <Text
             style={{
@@ -385,19 +385,18 @@ return (
             <TouchableOpacity
               onPress={addItemRow}
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 6,
-                paddingVertical: 12,
-                borderRadius: 10,
-                borderWidth: 1.5,
-                borderColor: Colors.primary,
-                borderStyle: 'dashed',
-                marginBottom: 20,
-              }}
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingVertical: 12,
+                  borderRadius: 10,
+                  borderWidth: 1.5,
+                  borderColor: Colors.primary,
+                  borderStyle: 'dashed',
+                  marginBottom: 20,
+                }}
             >
-              <MaterialIcons name="add" size={18} color={Colors.primary} />
+                <MaterialIcons name="add" size={18} color={Colors.primary} style={{ marginRight: 6 }} />
               <Text style={{ color: Colors.primary, fontSize: 14, fontWeight: '600' }}>
                 Add Another Item
               </Text>

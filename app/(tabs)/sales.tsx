@@ -55,20 +55,20 @@ export default function SalesScreen() {
   return (
     <View className="flex-1" style={{ backgroundColor: '#f9fafb' }}>
       {/* Top App Bar */}
-      <View style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        paddingTop: 48,
-        paddingBottom: 12,
-        backgroundColor: '#012d1d',
-      }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}>
+        <View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingHorizontal: 16,
+          paddingTop: 48,
+          paddingBottom: 12,
+          backgroundColor: '#012d1d',
+        }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
           <MaterialIcons name="storefront" size={24} color="white" />
           <Text style={{ fontSize: 18, fontWeight: '600', color: 'white' }}>Kijiji Cereal Store</Text>
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <MaterialIcons name="search" size={24} color="white" />
           <MaterialIcons name="notifications-none" size={24} color="white" />
         </View>
@@ -101,7 +101,7 @@ export default function SalesScreen() {
               <Text style={{ color: Colors.onSecondaryContainer, fontSize: 12, fontWeight: '700' }}>Unit: Korokoro</Text>
             </View>
           </View>
-<View className="flex-row flex-wrap gap-3">
+  <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
              {CEREAL_PRODUCTS.map((product) => {
                const fractionPrices = product.units[0]?.fractionPrices ?? [];
                const minPrice = fractionPrices[0]?.price ?? 0;
@@ -110,7 +110,7 @@ export default function SalesScreen() {
                const basketItem = items.find((i) => i.productId === product.id);
                const isOutOfStock = outOfStockIds.has(product.id);
                return (
-                 <SelectableTile
+                   <SelectableTile
                    key={product.id}
                    title={product.name}
                    subtitle={`${minPrice} – ${maxPrice} KES`}
@@ -120,7 +120,7 @@ export default function SalesScreen() {
                    disabled={isOutOfStock}
                    badge={basketItem ? (basketItem.fractionLabel ?? String(basketItem.qty)) + ' in basket' : undefined}
                    onPress={() => setSelectedProduct(product)}
-                   style={{ width: '48%' }}
+                     style={{ width: '48%' }}
                  />
                );
              })}
@@ -138,7 +138,7 @@ export default function SalesScreen() {
 {/* Poshomill Services Section */}
          <View className="px-4 mt-4">
            <Text className="text-xl font-semibold mb-3" style={{ color: Colors.primary }}>Poshomill Services</Text>
-           <View className="gap-2">
+           <View>
              {POSHOMILL_SERVICES.map((service) => {
                const fractionPrices = service.units[0]?.fractionPrices ?? [];
                const minPrice = fractionPrices[0]?.price ?? 0;
@@ -167,7 +167,7 @@ export default function SalesScreen() {
         {/* Packaging Section */}
         <View className="px-4 mt-4">
           <Text className="text-xl font-semibold mb-3" style={{ color: Colors.primary }}>Packaging</Text>
-          <View className="gap-2">
+          <View>
             {BAG_PRODUCTS.map((bag) => {
               const minPrice = bag.variants[0]?.price ?? 0;
               const maxPrice = bag.variants[bag.variants.length - 1]?.price ?? 0;
