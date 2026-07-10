@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSharedBasket } from '../../context/BasketContext';
+import Card from '../ui/Card';
 import Colors from '../../constants/colors';
 import type { CerealProduct, PoshomillService } from '../../constants/salesData';
 import type { BasketItem, FractionPrice } from '../../types';
@@ -190,14 +191,19 @@ export default function AdjustItemModal({ product, editItem, onClose }: AdjustIt
           />
         </Pressable>
 
-        <View
-          className="rounded-t-3xl bg-white overflow-hidden"
+        <Card
           style={{
+            borderRadius: 0,
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
+            overflow: 'hidden',
+            backgroundColor: 'white',
             shadowColor: '#000',
             shadowOffset: { width: 0, height: -4 },
             shadowOpacity: 0.12,
             shadowRadius: 16,
             elevation: 16,
+            borderColor: 'transparent',
           }}
         >
           <Animated.View

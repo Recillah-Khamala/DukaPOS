@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Modal, TouchableOpacity, View, Text, Animated, Easing, TextInput, ScrollView, Dimensions } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import Card from '../ui/Card';
 import Colors from '../../constants/colors';
 import type { InventoryItem } from '../../types/index';
 import { useInventory } from '../../context/InventoryContext';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
+
+const AnimatedCard = Animated.createAnimatedComponent(Card);
 
 const ICON_OPTIONS = ['grass', 'grain', 'eco', 'nature', 'rice-bowl', 'category', 'inventory-2'] as const;
 type IconOption = typeof ICON_OPTIONS[number];
@@ -160,16 +163,18 @@ const newThreshold = parseFloat(lowStockThreshold);
       />
 
       {/* Sheet */}
-      <Animated.View
+      <AnimatedCard
         style={{
           position: 'absolute',
           bottom: 0,
           left: 0,
           right: 0,
           height: SCREEN_HEIGHT * 0.92,
-          backgroundColor: 'white',
           borderTopLeftRadius: 24,
           borderTopRightRadius: 24,
+          borderWidth: 0,
+          borderColor: 'transparent',
+          backgroundColor: 'white',
           transform: [{ translateY: animatedValue }],
         }}
       >

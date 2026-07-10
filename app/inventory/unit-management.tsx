@@ -3,6 +3,7 @@ import { View, Text, ScrollView, StyleSheet, Pressable, TextInput } from 'react-
 import { MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useInventory } from '../../context/InventoryContext';
+import Card from '../../components/ui/Card';
 import Colors from '../../constants/colors';
 
 export default function UnitManagementScreen() {
@@ -46,7 +47,7 @@ export default function UnitManagementScreen() {
       <ScrollView style={styles.scrollView}>
 
         {/* Current Configuration Card */}
-        <View style={styles.configCard}>
+        <Card style={styles.configCard}>
           <Text style={styles.configTitle}>Current Configuration</Text>
           <View style={styles.configRow}>
             <Text style={styles.configLabel}>Buying Unit</Text>
@@ -69,7 +70,7 @@ export default function UnitManagementScreen() {
             <Text style={styles.configLabel}>Low Stock Alert Below</Text>
             <Text style={styles.configValue}>{item.lowStockThreshold} {item.sellingUnit}</Text>
           </View>
-        </View>
+        </Card>
 
         <Text style={styles.derivedStock}>
           Current stock: {item.currentStock} {item.sellingUnit}
@@ -80,7 +81,7 @@ export default function UnitManagementScreen() {
             <Text style={styles.editButtonText}>Edit Configuration</Text>
           </Pressable>
         ) : (
-          <View style={styles.editCard}>
+          <Card style={styles.editCard}>
             <Text style={styles.editTitle}>Edit Unit Configuration</Text>
 
             {/* Buying Unit */}
@@ -184,7 +185,7 @@ export default function UnitManagementScreen() {
                 <Text style={styles.editSaveButtonText}>Save Changes</Text>
               </Pressable>
             </View>
-          </View>
+          </Card>
         )}
       </ScrollView>
     </View>

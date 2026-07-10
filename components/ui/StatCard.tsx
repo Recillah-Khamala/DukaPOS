@@ -1,5 +1,6 @@
 import { View, Text } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import Card from './Card';
 
 export type StatCardProps = {
   label: string;
@@ -13,7 +14,7 @@ export default function StatCard({ label, value, icon, accentColor, trend }: Sta
   const isPositive = trend ? trend.startsWith('+') : false;
   
   return (
-    <View className="bg-white rounded-lg shadow-md p-4 flex-row items-center gap-4">
+    <Card style={{ flexDirection: 'row', alignItems: 'center', gap: 16, padding: 16, marginBottom: 12, borderColor: 'transparent' }}>
       {/* Icon with accent color background */}
       <View className={`flex-shrink-0 p-3 rounded-lg ${accentColor}-100`}>
         <MaterialIcons name={icon} size={28} color={accentColor} />

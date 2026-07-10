@@ -1,6 +1,7 @@
 // components/inventory/BulkStockEntryRow.tsx
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import Card from '../ui/Card';
 import Colors from '../../constants/colors';
 
 export interface BulkStockEntryRowProps {
@@ -28,9 +29,19 @@ export default function BulkStockEntryRow({ product, deliveryAmount, onDeliveryA
   };
 
   return (
-    <View
-      className="py-4 px-6 bg-white rounded-lg shadow-sm mb-3"
-      style={{ opacity: deliveryAmount === 0 ? 0.5 : 1 }}
+    <Card
+      style={{
+        opacity: deliveryAmount === 0 ? 0.5 : 1,
+        backgroundColor: 'white',
+        paddingVertical: 16,
+        paddingHorizontal: 24,
+        marginBottom: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+        elevation: 2,
+      }}
     >
       {/* ROW 1: icon + name/stock + status badge */}
       <View className="flex-row items-center">

@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Modal, TextInput, ScrollView } from 'reac
 import { MaterialIcons } from '@expo/vector-icons';
 import { useFuelLog } from '../hooks/useFuelLog';
 import TopAppBar from '../components/layout/TopAppBar';
+import Card from '../components/ui/Card';
 import Colors from '../constants/colors';
 import { useRouter } from 'expo-router';
 import FuelEntryCard from '../components/ui/FuelEntryCard';
@@ -104,7 +105,7 @@ export default function FuelLogScreen() {
       {/* Fuel Entry Modal */}
       <Modal visible={showModal} transparent animationType="slide">
         <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.4)' }}>
-          <View style={{ backgroundColor: 'white', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24 }}>
+          <Card style={{ borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, borderWidth: 0, borderColor: 'transparent' }}>
             <Text style={{ color: Colors.primary, fontSize: 18, fontWeight: '700', marginBottom: 16 }}>Log Fuel Cost</Text>
 
             {/* Fuel Type Chips */}

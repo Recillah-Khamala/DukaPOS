@@ -1,4 +1,5 @@
 import { Text, View, TextInput } from 'react-native';
+import Card from './Card';
 
 export type ChangeCalculatorProps = {
   totalBill: number;
@@ -11,7 +12,7 @@ export default function ChangeCalculator({ totalBill, cashReceived, onCashReceiv
   const change = Math.max(0, cashReceived - totalBill);
 
   return (
-    <View className={`bg-white p-4 rounded-lg shadow-md ${className || ''}`}>
+    <Card style={{ padding: 16, marginBottom: 16, borderColor: 'transparent' }}>
       {/* Total Bill */}
       <View className="mb-4">
         <Text className="text-sm font-medium text-neutral-600">

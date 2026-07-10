@@ -2,6 +2,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Text, View, Pressable } from 'react-native';
 import type { BasketItem } from '../../types';
 import { formatLineTotal, formatQty } from '../../utils/formatQuantity';
+import Card from './Card';
 
 export type BasketItemCardProps = {
   item: BasketItem;
@@ -20,11 +21,16 @@ export default function BasketItemCard({ item, onDelete, onEdit }: BasketItemCar
     : formatLineTotal(item.qty, item.unitPrice);
 
   return (
-    <View
-      className="flex-row items-center gap-3 rounded-lg bg-white p-3"
+    <Card
       style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        backgroundColor: 'white',
+        padding: 12,
+        marginBottom: 12,
+        borderColor: item.isService ? '#7d5800' : 'transparent',
         borderLeftWidth: item.isService ? 4 : 0,
-        borderLeftColor: item.isService ? '#7d5800' : 'transparent',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.1,
