@@ -256,7 +256,7 @@ export default function BagSelectionModal({ product, onClose }: BagSelectionModa
               </Pressable>
             </View>
           </Animated.View>
-        </View>
+        </Card>
       </View>
     </Modal>
   );

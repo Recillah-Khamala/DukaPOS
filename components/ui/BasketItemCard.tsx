@@ -84,6 +84,6 @@ export default function BasketItemCard({ item, onDelete, onEdit }: BasketItemCar
           </Text>
         )}
       </View>
-    </View>
+    </Card>
   );
 }

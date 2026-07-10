@@ -410,7 +410,7 @@ export default function AdjustItemModal({ product, editItem, onClose }: AdjustIt
               )}
             </View>
           </Animated.View>
-        </View>
+        </Card>
       </View>
     </Modal>
   );

@@ -50,6 +50,6 @@ export default function ChangeCalculator({ totalBill, cashReceived, onCashReceiv
           KES {change.toLocaleString()}
         </Text>
       </View>
-    </View>
+    </Card>
   );
 }

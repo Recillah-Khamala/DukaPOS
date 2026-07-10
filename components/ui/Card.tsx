@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, ViewStyle } from 'react-native';
+import { View, ViewStyle, StyleProp } from 'react-native';
 import Colors from '../../constants/colors';
 
 type CardProps = {
   children: React.ReactNode;
-  style?: ViewStyle | ViewStyle[];
+  style?: StyleProp<ViewStyle>;
   backgroundColor?: string;
   borderColor?: string;
 };

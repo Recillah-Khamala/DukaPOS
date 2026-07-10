@@ -30,6 +30,6 @@ export default function StatCard({ label, value, icon, accentColor, trend }: Sta
           </Text>
         )}
       </View>
-    </View>
+    </Card>
   );
 }

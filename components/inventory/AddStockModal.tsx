@@ -433,7 +433,7 @@ const newThreshold = parseFloat(lowStockThreshold);
             </View>
           </TouchableOpacity>
         </View>
-      </Animated.View>
+      </AnimatedCard>
     </Modal>
   );
 };

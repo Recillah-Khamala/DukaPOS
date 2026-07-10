@@ -57,13 +57,13 @@ const ProductPickerModal: React.FC<ProductPickerModalProps> = ({ visible, onClos
       <Animated.View
         style={{
           ...StyleSheet.absoluteFillObject,
-          backgroundColor: Colors.background,
+          backgroundColor: Colors.surface,
           transform: [{ translateY: translateY }],
         }}
       >
         {/* Handle */}
         <View style={styles.handle}>
-          <View style={{ width: 40, height: 4, backgroundColor: Colors.border, borderRadius: 2 }} />
+          <View style={{ width: 40, height: 4, backgroundColor: Colors.outlineVariant, borderRadius: 2 }} />
         </View>
 
         {/* Search Input */}
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   productItem: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: Colors.outlineVariant,
   },
   productName: {
     fontSize: 16,

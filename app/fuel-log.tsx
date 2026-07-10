@@ -278,7 +278,7 @@ export default function FuelLogScreen() {
             }} style={{ alignItems: 'center', paddingVertical: 8 }}>
               <Text style={{ color: Colors.onSurfaceVariant, fontSize: 15 }}>Cancel</Text>
             </TouchableOpacity>
-          </View>
+          </Card>
         </View>
       </Modal>
     </View>
