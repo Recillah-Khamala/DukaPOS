@@ -6,6 +6,7 @@ import BottomNavBar from '../../components/layout/BottomNavBar';
 import AdjustItemModal from '../../components/sales/AdjustItemModal';
 import BagSelectionModal from '../../components/sales/BagSelectionModal';
 import SelectableTile from '../../components/ui/SelectableTile';
+import Card from '../../components/ui/Card';
 import { useSharedBasket } from '../../context/BasketContext';
 import { useInventory } from '../../context/InventoryContext';
 import Colors from '../../constants/colors';
@@ -95,14 +96,15 @@ export default function SalesScreen() {
       >
         {/* Cereal Sales Section */}
         <View className="mt-2 px-4">
-          <View className="flex-row justify-between items-center mb-3">
-            <Text className="text-xl font-semibold" style={{ color: Colors.primary }}>Cereal Sales</Text>
-            <View style={{ backgroundColor: Colors.secondaryContainer, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 4 }}>
-              <Text style={{ color: Colors.onSecondaryContainer, fontSize: 12, fontWeight: '700' }}>Unit: Korokoro</Text>
+          <Card style={{ marginBottom: 12, padding: 12 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <Text style={{ fontSize: 20, fontWeight: '700', color: Colors.primary }}>Cereal Sales</Text>
+              <View style={{ backgroundColor: Colors.secondaryContainer, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 4 }}>
+                <Text style={{ color: Colors.onSecondaryContainer, fontSize: 12, fontWeight: '700' }}>Unit: Korokoro</Text>
+              </View>
             </View>
-          </View>
-  <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
-             {CEREAL_PRODUCTS.map((product) => {
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+              {CEREAL_PRODUCTS.map((product) => {
                const fractionPrices = product.units[0]?.fractionPrices ?? [];
                const minPrice = fractionPrices[0]?.price ?? 0;
                const maxPrice = fractionPrices[fractionPrices.length - 1]?.price ?? 0;
@@ -124,7 +126,8 @@ export default function SalesScreen() {
                  />
                );
              })}
-           </View>
+              </View>
+          </Card>
         </View>
 
         {/* Add Custom Item */}
@@ -137,9 +140,10 @@ export default function SalesScreen() {
 
 {/* Poshomill Services Section */}
          <View className="px-4 mt-4">
-           <Text className="text-xl font-semibold mb-3" style={{ color: Colors.primary }}>Poshomill Services</Text>
-           <View>
-             {POSHOMILL_SERVICES.map((service) => {
+           <Card style={{ marginBottom: 12, padding: 12 }}>
+             <Text style={{ fontSize: 20, fontWeight: '700', marginBottom: 12, color: Colors.primary }}>Poshomill Services</Text>
+             <View>
+               {POSHOMILL_SERVICES.map((service) => {
                const fractionPrices = service.units[0]?.fractionPrices ?? [];
                const minPrice = fractionPrices[0]?.price ?? 0;
                const maxPrice = fractionPrices[fractionPrices.length - 1]?.price ?? 0;
@@ -161,14 +165,16 @@ export default function SalesScreen() {
                  />
                );
              })}
-           </View>
+             </View>
+           </Card>
          </View>
 
         {/* Packaging Section */}
         <View className="px-4 mt-4">
-          <Text className="text-xl font-semibold mb-3" style={{ color: Colors.primary }}>Packaging</Text>
-          <View>
-            {BAG_PRODUCTS.map((bag) => {
+          <Card style={{ marginBottom: 12, padding: 12 }}>
+            <Text style={{ fontSize: 20, fontWeight: '700', marginBottom: 12, color: Colors.primary }}>Packaging</Text>
+            <View>
+              {BAG_PRODUCTS.map((bag) => {
               const minPrice = bag.variants[0]?.price ?? 0;
               const maxPrice = bag.variants[bag.variants.length - 1]?.price ?? 0;
               const basketItem = items.find((i) => i.productId === bag.id);
@@ -189,7 +195,8 @@ export default function SalesScreen() {
               );
             })}
           </View>
-        </View>
+        </Card>
+      </View>
 
         <View style={{ height: 16 }} />
       </ScrollView>
