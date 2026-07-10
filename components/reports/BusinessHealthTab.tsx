@@ -96,7 +96,7 @@ return (
         )}
 
         {/* Today's Profit Hero */}
-       <View style={{ backgroundColor: Colors.primaryContainer, borderRadius: 12, padding: 16, alignItems: 'center', marginBottom: 16 }}>
+       <Card style={{ backgroundColor: Colors.primaryContainer, padding: 16, alignItems: 'center', marginBottom: 16 }}>
          <Text style={{ color: Colors.onPrimaryContainer, fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>
            TODAY'S PROFIT
          </Text>
@@ -123,7 +123,7 @@ return (
          <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14, marginTop: 2 }}>
            Revenue: KES {todayProfitSummary.totalRevenue.toLocaleString()}
          </Text>
-       </View>
+       </Card>
 
       {/* Business Health Score */}
       <Card style={{ marginBottom: 16 }}>
@@ -165,14 +165,14 @@ return (
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', height: 120, paddingHorizontal: 8 }}>
           {last7Days.map((day, index) => (
-            <View key={index} style={{ flex: 1, alignItems: 'center', gap: 4 }}>
+            <View key={index} style={{ flex: 1, alignItems: 'center' }}>
               <View style={{
                 width: 16,
                 height: Math.max(8, (dailyTotals[index] / maxTotal) * 100),
                 backgroundColor: index === 6 ? Colors.primary : Colors.primaryFixed,
                 borderRadius: 4,
               }} />
-              <Text style={{ fontSize: 10, color: index === 6 ? Colors.primary : Colors.onSurfaceVariant }}>
+              <Text style={{ marginTop: 4, fontSize: 10, color: index === 6 ? Colors.primary : Colors.onSurfaceVariant }}>
                 {DAY_LABELS[day.getDay()]}
               </Text>
             </View>
@@ -220,7 +220,7 @@ return (
         <ProfitabilityTable sales={recentSales} allItems={allItems} />
 
         {/* Mill Profitability */}
-        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: Colors.outlineVariant, borderRadius: 12, padding: 16, marginBottom: 16 }}>
+        <Card style={{ backgroundColor: 'white', borderColor: Colors.outlineVariant, padding: 16, marginBottom: 16 }}>
           <Text style={{ color: Colors.primary, fontSize: 13, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
             Mill Profitability — Last 30 Days
           </Text>
@@ -245,7 +245,7 @@ return (
           <TouchableOpacity onPress={() => router.push('/fuel-log')} style={{ marginTop: 12 }}>
             <Text style={{ color: Colors.secondary, fontSize: 13, fontWeight: '700' }}>View Fuel & Power Log →</Text>
           </TouchableOpacity>
-        </View>
+        </Card>
      </ScrollView>
    );
 };

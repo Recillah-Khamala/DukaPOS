@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Colors from '../../constants/colors';
+import Card from '../../components/ui/Card';
 
 interface MarketInsightsTabProps {
   bottomNavHeight: number;
@@ -35,15 +36,14 @@ const MarketInsightsTab: React.FC<MarketInsightsTabProps> = ({ bottomNavHeight }
           { label: 'Top Commodity', value: 'Maize', icon: 'grass', iconColor: Colors.secondary },
           { label: 'Market Demand', value: '+12% this week', icon: 'trending-up', iconColor: '#16a34a' },
         ].map((card) => (
-          <View
+          <Card
             key={card.label}
-            className="bg-white rounded-xl p-3 border border-outline-variant"
             style={{ width: '47%' }}
           >
             <MaterialIcons name={card.icon as any} size={24} color={card.iconColor} />
             <Text className="text-base font-bold mt-2" style={{ color: Colors.onSurface }}>{card.value}</Text>
             <Text className="text-xs mt-0.5" style={{ color: Colors.onSurfaceVariant }}>{card.label}</Text>
-          </View>
+          </Card>
         ))}
       </View>
 
@@ -54,13 +54,12 @@ const MarketInsightsTab: React.FC<MarketInsightsTabProps> = ({ bottomNavHeight }
       <Text className="text-xs mb-3" style={{ color: Colors.onSurfaceVariant }}>
         Heatmap based on Posho Mill throughput
       </Text>
-      <View
-        className="rounded-xl items-center justify-center mb-4"
-        style={{ backgroundColor: Colors.surfaceContainerHigh, height: 160 }}
+      <Card
+        style={{ backgroundColor: Colors.surfaceContainerHigh, height: 160, marginBottom: 16, alignItems: 'center', justifyContent: 'center' }}
       >
         <MaterialIcons name="map" size={48} color={Colors.outlineVariant} />
         <Text className="text-sm mt-2" style={{ color: Colors.onSurfaceVariant }}>Live map coming soon</Text>
-      </View>
+      </Card>
 
       {/* Demand by Commodity */}
       <Text className="text-base font-semibold mb-3" style={{ color: Colors.primary }}>
@@ -89,23 +88,21 @@ const MarketInsightsTab: React.FC<MarketInsightsTabProps> = ({ bottomNavHeight }
         Top Shops in Kitale
       </Text>
       {topShops.map((shop) => (
-        <View
+        <Card
           key={shop.name}
-          className="flex-row items-center justify-between rounded-lg p-3 mb-2"
-          style={{ backgroundColor: Colors.surface }}
+          style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8, backgroundColor: Colors.surface }}
         >
           <View
-            className="w-10 h-10 rounded-full items-center justify-center mr-3"
-            style={{ backgroundColor: Colors.primaryFixed }}
+            style={{ width: 40, height: 40, borderRadius: 999, alignItems: 'center', justifyContent: 'center', marginRight: 12, backgroundColor: Colors.primaryFixed }}
           >
-            <Text className="text-sm font-bold" style={{ color: Colors.primary }}>{shop.initials}</Text>
+            <Text style={{ color: Colors.primary, fontSize: 12, fontWeight: '700' }}>{shop.initials}</Text>
           </View>
-          <View className="flex-1">
-            <Text className="text-sm font-bold" style={{ color: Colors.onSurface }}>{shop.name}</Text>
-            <Text className="text-xs" style={{ color: Colors.onSurfaceVariant }}>{shop.tag}</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={{ color: Colors.onSurface, fontSize: 14, fontWeight: '700' }}>{shop.name}</Text>
+            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>{shop.tag}</Text>
           </View>
           <MaterialIcons name={shop.icon as any} size={24} color={shop.iconColor} />
-        </View>
+        </Card>
       ))}
 
     </ScrollView>

@@ -6,6 +6,7 @@ import { useSalesHistory } from '../../hooks/useSalesHistory';
 import { useCreditLedger } from '../../hooks/useCreditLedger';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
+import Card from '../../components/ui/Card';
 
 interface ShopLoansTabProps {
   bottomNavHeight: number;
@@ -59,16 +60,16 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
       </Text>
 
       {/* Business Health Score Card */}
-      <View style={{
-        backgroundColor: Colors.surface,
-        borderRadius: 12,
-        padding: 16,
-        borderLeftWidth: 8,
-        borderLeftColor: Colors.secondaryContainer,
-        borderWidth: 1,
-        borderColor: Colors.outlineVariant,
-        marginBottom: 16
-      }}>
+      <Card
+        backgroundColor={Colors.surface}
+        style={{
+          marginBottom: 16,
+          borderLeftWidth: 8,
+          borderLeftColor: Colors.secondaryContainer,
+          borderWidth: 1,
+          borderColor: Colors.outlineVariant,
+        }}
+      >
         <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14, fontWeight: '700' }}>
           Business Health Score
         </Text>
@@ -112,17 +113,17 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
             </Text>
           </View>
         </View>
-      </View>
+      </Card>
 
       {/* Available Credit Limit Hero Card */}
-      <View style={{
-        backgroundColor: Colors.primary,
-        borderRadius: 12,
-        padding: 20,
-        alignItems: 'center',
-        marginBottom: 16,
-        overflow: 'hidden'
-      }}>
+      <Card
+        backgroundColor={Colors.primary}
+        style={{
+          marginBottom: 16,
+          overflow: 'hidden',
+          borderWidth: 0,
+        }}
+      >
         <Text style={{
           color: Colors.primaryContainer,
           fontSize: 11,
@@ -178,7 +179,7 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
           </Text>
         </View>
 
-        <View style={{ backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, marginTop: 12, marginBottom: 8 }}>
+        <Card style={{ backgroundColor: 'white', padding: 16, borderColor: Colors.outlineVariant, marginTop: 12, marginBottom: 8 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <View style={{ width: 56, height: 56, backgroundColor: '#4CAF50', borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
               <MaterialIcons name="phone-iphone" size={28} color="white" />
@@ -201,7 +202,7 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
             </View>
           </View>
 
-          <View style={{ backgroundColor: Colors.surfaceContainerHigh, borderRadius: 8, padding: 10, marginTop: 12, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
+          <Card style={{ backgroundColor: Colors.surfaceContainerHigh, borderRadius: 8, padding: 10, marginTop: 12, flexDirection: 'row', alignItems: 'flex-start' }}>
             <MaterialIcons name="info" size={16} color={Colors.secondary} />
             <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>
               Your current sales data qualifies you for an instant KES 20,000 limit increase.
@@ -228,7 +229,7 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
           </TouchableOpacity>
         </View>
 
-        <View style={{ backgroundColor: 'white', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant, opacity: 0.7, flexDirection: 'row', alignItems: 'center', marginTop: 12, marginBottom: 8 }}>
+        <Card style={{ backgroundColor: 'white', padding: 16, borderColor: Colors.outlineVariant, opacity: 0.7, flexDirection: 'row', alignItems: 'center', marginTop: 12, marginBottom: 8 }}>
           <View style={{ width: 56, height: 56, backgroundColor: Colors.surfaceContainerHigh, borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
             <MaterialIcons name="business" size={28} color={Colors.outline} />
           </View>
@@ -249,15 +250,16 @@ const ShopLoansTab: React.FC<ShopLoansTabProps> = ({ bottomNavHeight }) => {
       </View>
 
       {/* Data Privacy Guarantee */}
-      <View style={{
-        backgroundColor: Colors.surfaceContainerLowest,
-        borderRadius: 12,
-        padding: 16,
-        borderWidth: 2,
-        borderStyle: 'dashed',
-        borderColor: Colors.outlineVariant,
-        marginTop: 8
-      }}>
+      <Card
+        style={{
+          backgroundColor: Colors.surfaceContainerLowest,
+          padding: 16,
+          borderWidth: 2,
+          borderStyle: 'dashed',
+          borderColor: Colors.outlineVariant,
+          marginTop: 8,
+        }}
+      >
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
           <MaterialIcons name="verified-user" size={20} color={Colors.primary} />
           <Text style={{ color: Colors.primary, fontSize: 14, fontWeight: '700', marginLeft: 8 }}>

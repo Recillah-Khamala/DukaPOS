@@ -3,6 +3,7 @@ import { Text, View, ScrollView, Pressable, TouchableOpacity, Alert } from 'reac
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import BottomNavBar from '../../components/layout/BottomNavBar';
+import Card from '../../components/ui/Card';
 import Colors from '../../constants/colors';
 import { useInventory } from '../../context/InventoryContext';
 import StockItemCard from '../../components/inventory/StockItemCard';
@@ -62,7 +63,7 @@ export default function InventoryScreen() {
       >
         <View style={{ paddingHorizontal: 16, paddingTop: 16 }}>
           {lowStockItems.length > 0 && (
-            <View style={{ backgroundColor: '#fefce8', borderWidth: 1.5, borderColor: '#fbbf24', borderRadius: 16, padding: 12, marginBottom: 8 }}>
+            <Card style={{ backgroundColor: '#fefce8', borderWidth: 1.5, borderColor: '#fbbf24', borderRadius: 16, padding: 12, marginBottom: 8 }}>
               {lowStockItems.map((item, index) => (
                 <View key={item.id} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: index === lowStockItems.length - 1 ? 0 : 1, borderBottomColor: '#fde68a' }}>
                   <MaterialIcons name={(item.icon as any) || 'grain'} size={20} color="#d97706" style={{ marginRight: 12 }} />
@@ -79,7 +80,7 @@ export default function InventoryScreen() {
                   </View>
                 </View>
               ))}
-            </View>
+            </Card>
           )}
 
           <View style={{ marginVertical: 16, flexDirection: 'row', gap: 12 }}>
