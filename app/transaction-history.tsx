@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList } from 'react-native';
+import Card from '../components/ui/Card';
 import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import TopAppBar from '../components/layout/TopAppBar';
@@ -25,31 +26,22 @@ export default function TransactionHistoryScreen() {
           data={sales}
           keyExtractor={(item) => String(item.id ?? '')}
           ListHeaderComponent={() => (
-            <View style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
-              <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600' }}>
-                {sales.length} transaction{sales.length !== 1 ? 's' : ''} total
-              </Text>
-            </View>
+              <View style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
+                <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600' }}>
+                  {sales.length} transaction{sales.length !== 1 ? 's' : ''} total
+                </Text>
+              </View>
           )}
             ListEmptyComponent={
-            <View className="flex-1 justify-center items-center pt-16">
+            <Card style={{ alignItems: 'center', padding: 24 }}>
               <MaterialIcons name="receipt-long" size={48} color="#d1d5db" />
               <Text style={{ color: Colors.onSurfaceVariant, marginTop: 8 }}>No transactions yet</Text>
-            </View>
+            </Card>
           }
           contentContainerStyle={{ paddingTop: 12, paddingBottom: bottomNavHeight + 24 }}
           renderItem={({ item }) => (
-            <View style={{
-              backgroundColor: 'white',
-              borderRadius: 12,
-              padding: 16,
-              marginHorizontal: 16,
-              marginBottom: 8,
-              borderWidth: 1,
-              borderColor: Colors.outlineVariant,
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
+            <Card style={{ marginHorizontal: 16, marginBottom: 8 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               {/* Left icon */}
               <View style={{
                 width: 44,
@@ -96,7 +88,7 @@ export default function TransactionHistoryScreen() {
                   </Text>
                 </View>
               </View>
-            </View>
+            </Card>
           )}
         />
       )}

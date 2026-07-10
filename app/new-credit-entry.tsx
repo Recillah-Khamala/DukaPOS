@@ -12,6 +12,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { categoryToBasketType, parseManualDate, inventoryCategoryToCreditCategory, computeInventoryDeduction, makeCustomerId } from '../utils/creditEntryHelpers';
 import ItemEntryCard from '../components/credit/ItemEntryCard';
 import LegacyDebtForm from '../components/credit/LegacyDebtForm';
+import WarningBanner from '../components/ui/WarningBanner';
 
 type DraftItem = {
   key: string;
@@ -273,11 +274,7 @@ await addSale(sale);
 return (
   <View className="flex-1">
       <TopAppBar title="New Credit Entry" onBack={() => router.back()} />
-      {bannerMessage && (
-        <View style={{ backgroundColor: Colors.primaryContainer, padding: 12, marginHorizontal: 16, marginTop: 8, borderRadius: 4 }}>
-          <Text style={{ color: Colors.onPrimaryContainer, fontSize: 14 }}>{bannerMessage}</Text>
-        </View>
-      )}
+      {bannerMessage && <WarningBanner message={bannerMessage} />}
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 32 }}>
         {/* Heading */}
         <Text style={{ color: Colors.primary, fontSize: 24, fontWeight: '700', marginBottom: 4 }}>

@@ -2,6 +2,7 @@
 import React from 'react';
 import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import Colors from '../../constants/colors';
+import Card from '../ui/Card';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useCreditLedger, CreditItemCategory } from '../../hooks/useCreditLedger';
 import { useRouter } from 'expo-router';
@@ -86,22 +87,22 @@ const CreditLedgerTab: React.FC<CreditLedgerTabProps> = ({ bottomNavHeight = 0 }
 
         {/* Stats row */}
         <View style={{ flexDirection: 'row', gap: 12, marginBottom: 16 }}>
-          <View className="flex-1" style={{ backgroundColor: Colors.surfaceContainerHigh, borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant }}>
+          <Card style={{ flex: 1, marginBottom: 0 }} backgroundColor={Colors.surfaceContainerHigh}>
             <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11, fontWeight: '700', textTransform: 'uppercase' }}>
               TOTAL DEBT
             </Text>
             <Text style={{ color: Colors.primary, fontSize: 24, fontWeight: '800' }}>
               KES {totalDebt.toLocaleString()}
             </Text>
-          </View>
-          <View className="flex-1" style={{ backgroundColor: Colors.surfaceContainerHigh, borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.outlineVariant }}>
+          </Card>
+          <Card style={{ flex: 1, marginBottom: 0 }} backgroundColor={Colors.surfaceContainerHigh}>
             <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11, fontWeight: '700', textTransform: 'uppercase' }}>
               CUSTOMERS
             </Text>
             <Text style={{ color: Colors.secondary, fontSize: 24, fontWeight: '800' }}>
               {customerCount}
             </Text>
-          </View>
+          </Card>
         </View>
 
         {/* Active Debts */}
@@ -154,6 +155,7 @@ const CreditLedgerTab: React.FC<CreditLedgerTabProps> = ({ bottomNavHeight = 0 }
                       borderColor: isHighDebt ? Colors.error : Colors.outlineVariant,
                       marginBottom: 8,
                     }}>
+                    <Card style={{ marginBottom: 8 }} backgroundColor={isHighDebt ? '#fef2f2' : undefined} borderColor={isHighDebt ? Colors.error : undefined}>
                       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <View style={{
                           width: 48,
