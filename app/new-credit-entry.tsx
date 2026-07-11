@@ -6,6 +6,7 @@ import { useCreditLedger, CreditItemCategory, allocatePaymentToItems } from '../
 import { useSalesHistory } from '../hooks/useSalesHistory';
 import { useInventory } from '../context/InventoryContext';
 import type { BasketItem, CompletedSale } from '../types';
+import type { InventoryItem } from '../constants/inventoryData';
 import TopAppBar from '../components/layout/TopAppBar';
 import Colors from '../constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -40,7 +41,7 @@ function prepareBuiltItemsAndTotal(
   allItems: InventoryItem[],
   deposit: number
 ) {
-  const builtItems = buildCreditItems(isExistingDebt, items, debtInfo, allItems);
+  const builtItems = buildCreditItems(isExistingDebt, items, debtInfo ?? { description: '', category: 'other' as CreditItemCategory, total: 0 }, allItems);
   const total = builtItems.reduce((sum, item) => sum + item.total, 0);
   const updatedItems = deposit > 0 ? allocatePaymentToItems(builtItems, deposit) : builtItems;
   return { builtItems, total };
@@ -148,43 +149,45 @@ const handleSave = async () => {
              createdAt
          );
 
-         // Legacy debt (pre-DukaPOS) does not affect inventory; skip deduction.
-         const warnings: string[] = [];
-         const inventoryUpdates: Array<{id: string; currentStock: number; isLowStock: boolean}> = [];
-         if (!isExistingDebt) {
-             // Log intended inventory deductions and update stock
-             // Inventory deducted once at sale time — do not duplicate in repayment flow.
-             builtItems.forEach(item => {
-                 if (item.productId) {
-                     const inventoryItem = allItems.find(it => it.id === item.productId);
-                     if (inventoryItem) {
-                         const deduction = computeInventoryDeduction(item, inventoryItem);
-                         const currentStock = inventoryItem.currentStock;
-                         let newStock: number;
-                         let isLowStock: boolean;
-                         if (deduction > currentStock) {
-                             newStock = 0;
-                             isLowStock = true;
-                             const warningMsg = `${inventoryItem.name} stock is now 0 — sale exceeded recorded stock`;
-                             warnings.push(warningMsg);
-                             console.warn(warningMsg);
-                         } else {
-                             newStock = currentStock - deduction;
-                             isLowStock = newStock <= inventoryItem.lowStockThreshold;
-                             if (isLowStock) {
-                                 const warningMsg = `Low stock: ${inventoryItem.name} (${newStock} left)`;
-                                 warnings.push(warningMsg);
-                                 console.warn(warningMsg);
-                             }
-                         }
-                     }
-                     inventoryUpdates.push({ id: inventoryItem.id, currentStock: newStock, isLowStock });
-                     console.log('would deduct', item.productId, deduction);
-                 } else {
-                     console.log('skipped - inventory item not found', item.productId);
-                 }
-             });
-         }
+// Legacy debt (pre-DukaPOS) does not affect inventory; skip deduction.
+          const warnings: string[] = [];
+          const inventoryUpdates: Array<{id: string; currentStock: number; isLowStock: boolean}> = [];
+          if (!isExistingDebt) {
+              // Log intended inventory deductions and update stock
+              // Inventory deducted once at sale time — do not duplicate in repayment flow.
+              builtItems.forEach(item => {
+                  if (item.productId) {
+                      const inventoryItem = allItems.find(it => it.id === item.productId);
+                      if (inventoryItem) {
+                          const deduction = computeInventoryDeduction(item, inventoryItem);
+                          const currentStock = inventoryItem.currentStock;
+                          let newStock: number;
+                          let isLowStock: boolean;
+                          if (deduction > currentStock) {
+                              newStock = 0;
+                              isLowStock = true;
+                              const warningMsg = `${inventoryItem.name} stock is now 0 — sale exceeded recorded stock`;
+                              warnings.push(warningMsg);
+                              console.warn(warningMsg);
+                          } else {
+                              newStock = currentStock - deduction;
+                              isLowStock = newStock <= inventoryItem.lowStockThreshold;
+                              if (isLowStock) {
+                                  const warningMsg = `Low stock: ${inventoryItem.name} (${newStock} left)`;
+                                  warnings.push(warningMsg);
+                                  console.warn(warningMsg);
+                              }
+                          }
+                          inventoryUpdates.push({ id: inventoryItem.id, currentStock: newStock, isLowStock });
+                          console.log('would deduct', item.productId, deduction);
+                      } else {
+                          console.log('skipped - inventory item not found', item.productId);
+                      }
+                  } else {
+                      console.log('skipped - inventory item not found', item.productId);
+                  }
+              });
+          }
 
      await addEntry(newEntry);
      if (!isExistingDebt && excessPayment > 0) {
@@ -224,21 +227,22 @@ const handleSave = async () => {
          completedAt: createdAt,
      };
      await addSale(sale);
-     // Apply inventory updates after successful ledger and sale writes.
-     inventoryUpdates.forEach(update => {
-         updateItem(update.id, { currentStock: update.currentStock, isLowStock: update.isLowStock });
-     });
+// Apply inventory updates after successful ledger and sale writes.
+      inventoryUpdates.forEach(update => {
+          updateItem(update.id, { currentStock: update.currentStock, isLowStock: update.isLowStock });
+      });
 
-     // Show banner if there are warnings, then go back after a delay
-     if (warnings.length > 0) {
-         setBannerMessage(warnings.join('\n'));
-         // Show banner for 3 seconds then go back
-         setTimeout(() => {
-             router.back();
-         }, 3000);
-     } else {
-         router.back();
-     }
+      // Show banner if there are warnings, then go back after a delay
+      if (warnings.length > 0) {
+          setBannerMessage(warnings.join('\n'));
+          // Show banner for 3 seconds then go back
+          setTimeout(() => {
+              router.back();
+          }, 3000);
+      } else {
+          router.back();
+      }
+  }
 
 
 return (
