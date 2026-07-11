@@ -174,7 +174,7 @@ let builtItems = buildCreditItems(
     const lastUpdatedAt = new Date().toISOString();
     const newEntry = buildCreditEntry(
       id,
-      makeCustomerId(customerName),
+      customerId,
       customerName, // Note: passed untrimmed, will be trimmed inside buildCreditEntry
       builtItems,
       total,
