@@ -1,5 +1,15 @@
-import type { InventoryItem } from '../constants/inventoryData';
+import type { InventoryItem } from '../constants/inventoryData";
 import type { CreditItem, CreditItemCategory } from '../hooks/useCreditLedger';
+
+export type DraftItem = {
+  key: string;
+  name: string;
+  qty: string;
+  unitPrice: string;
+  category: CreditItemCategory;
+  productId?: string;
+  unit?: string;
+};
 
 export function inventoryCategoryToCreditCategory(category: InventoryItem['category']): CreditItemCategory {
   switch (category) {
@@ -55,4 +65,50 @@ export function makeCustomerId(name: string): string {
 
 export function shouldApplyExcessPaymentToPriorDebt(isExistingDebt: boolean, excessPayment: number): boolean {
   return !isExistingDebt && excessPayment > 0;
+}
+
+export function buildCreditItems(
+  isExistingDebt: boolean,
+  draftItems: DraftItem[],
+  debtFields: { description: string; category: CreditItemCategory; total: number },
+  allItems: InventoryItem[]
+): CreditItem[] {
+  if (isExistingDebt) {
+    const { description, category, total } = debtFields;
+    return [
+      {
+        name: description.trim() || 'Opening Balance (before app)',
+        qty: 1,
+        unitPrice: total,
+        total: total,
+        category,
+        amountPaid: 0,
+        balance: total,
+        productId: undefined,
+      },
+    ];
+  }
+
+  return draftItems.map(item => {
+    let productId = item.productId;
+    // Guard against deleted inventory item
+    if (productId && !allItems.some(it => it.id === productId)) {
+      // Removed console.warn as per pure function requirement
+      productId = undefined;
+    }
+    const qty = parseFloat(item.qty || '0') || 0;
+    const unitPrice = parseFloat(item.unitPrice || '0') || 0;
+    const total = qty * unitPrice;
+    return {
+      name: item.name.trim(),
+      qty,
+      unitPrice,
+      total,
+      category: item.category,
+      amountPaid: 0,
+      balance: total,
+      productId,
+      unit: item.unit,
+    };
+  });
 }

@@ -15,20 +15,12 @@ import {
   inventoryCategoryToCreditCategory,
   computeInventoryDeduction,
   makeCustomerId,
+  buildCreditItems,
+  DraftItem,
 } from '../utils/creditEntryHelpers';
 import ItemEntryCard from '../components/credit/ItemEntryCard';
 import LegacyDebtForm from '../components/credit/LegacyDebtForm';
 import WarningBanner from '../components/ui/WarningBanner';
-
-type DraftItem = {
-  key: string;
-  name: string;
-  qty: string;
-  unitPrice: string;
-  category: CreditItemCategory;
-  productId?: string;
-  unit?: string;
-};
 
 const makeEmptyItem = (): DraftItem => ({
   key: Math.random().toString(36).substr(2, 9),
@@ -117,48 +109,21 @@ const handleSave = async () => {
                              .reduce((sum, e) => sum + e.balance, 0);
     console.log('Prior debt:', priorDebt);
 
-    let builtItems;
-    let total;
-    let createdAt = new Date().toISOString();
-
-    if (isExistingDebt) {
-      total = grandTotal;
-      builtItems = [
-        {
-          name: debtDescription.trim() || 'Opening Balance (before app)',
-          qty: 1,
-          unitPrice: total,
-          total: total,
-          category: debtCategory,
-          amountPaid: 0,
-          balance: total,
-          productId: undefined,
-        },
-      ];
-      createdAt = parseManualDate(debtDay, debtMonth, debtYear);
-    } else {
-      builtItems = items.map(item => {
-        let productId = item.productId;
-        // Guard against deleted inventory item
-        if (productId && !allItems.some(it => it.id === productId)) {
-          console.warn(`Product ID ${productId} not found in inventory. Removing product reference.`);
-          productId = undefined;
-        }
-        const t = itemTotal(item);
-        return {
-          name: item.name.trim(),
-          qty: parseFloat(item.qty),
-          unitPrice: parseFloat(item.unitPrice),
-          total: t,
-          category: item.category,
-          amountPaid: 0,
-          balance: t,
-          productId,
-          unit: item.unit,
-        };
-      });
-      total = builtItems.reduce((sum, i) => sum + i.total, 0);
-    }
+const builtItems = buildCreditItems(
+    isExistingDebt,
+    items,
+    {
+      description: debtDescription,
+      category: debtCategory,
+      total: grandTotal,
+    },
+    allItems
+  );
+  const total = builtItems.reduce((sum, item) => sum + item.total, 0);
+  let createdAt = new Date().toISOString();
+  if (isExistingDebt) {
+    createdAt = parseManualDate(debtDay, debtMonth, debtYear);
+  }
 
     // Apply any prior payment (deposit at sale time, or already-paid portion
     // of an old debt) using the same proportional-split logic as a later repayment.
