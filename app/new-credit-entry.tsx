@@ -109,14 +109,10 @@ const handleSave = async () => {
                              .reduce((sum, e) => sum + e.balance, 0);
     console.log('Prior debt:', priorDebt);
 
-const builtItems = buildCreditItems(
+let builtItems = buildCreditItems(
     isExistingDebt,
     items,
-    {
-      description: debtDescription,
-      category: debtCategory,
-      total: grandTotal,
-    },
+    { description: debtDescription, category: debtCategory, total: grandTotal },
     allItems
   );
   const total = builtItems.reduce((sum, item) => sum + item.total, 0);
