@@ -1,5 +1,5 @@
 import type { InventoryItem } from '../constants/inventoryData';
-import type { CreditItem, CreditItemCategory } from '../hooks/useCreditLedger';
+import type { CreditItem, CreditItemCategory, CreditEntry } from '../hooks/useCreditLedger';
 
 export type DraftItem = {
   key: string;
@@ -65,6 +65,31 @@ export function makeCustomerId(name: string): string {
 
 export function shouldApplyExcessPaymentToPriorDebt(isExistingDebt: boolean, excessPayment: number): boolean {
   return !isExistingDebt && excessPayment > 0;
+}
+
+export function buildCreditEntry(
+  id: string,
+  customerId: string,
+  customerName: string,
+  builtItems: CreditItem[],
+  total: number,
+  deposit: number,
+  createdAt: string,
+  lastUpdatedAt: string
+): CreditEntry {
+  const balance = Math.max(0, total - deposit);
+  return {
+    id,
+    customerId,
+    customerName: customerName.trim(),
+    items: builtItems,
+    totalAmount: total,
+    amountPaid: deposit,
+    balance,
+    createdAt,
+    lastUpdatedAt,
+    status: balance <= 0.01 ? 'paid' : 'active',
+  };
 }
 
 export function buildCreditItems(

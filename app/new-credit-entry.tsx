@@ -16,6 +16,7 @@ import {
   computeInventoryDeduction,
   makeCustomerId,
   buildCreditItems,
+  buildCreditEntry,
   DraftItem,
 } from '../utils/creditEntryHelpers';
 import ItemEntryCard from '../components/credit/ItemEntryCard';
@@ -121,7 +122,7 @@ let builtItems = buildCreditItems(
     createdAt = parseManualDate(debtDay, debtMonth, debtYear);
   }
 
-    // Apply any prior payment (deposit at sale time, or already-paid portion
+// Apply any prior payment (deposit at sale time, or already-paid portion
     // of an old debt) using the same proportional-split logic as a later repayment.
     if (deposit > 0) {
       builtItems = allocatePaymentToItems(builtItems, deposit);
@@ -141,7 +142,7 @@ let builtItems = buildCreditItems(
                 const currentStock = inventoryItem.currentStock;
                 let newStock: number;
                 let isLowStock: boolean;
-if (deduction > currentStock) {
+        if (deduction > currentStock) {
                     newStock = 0;
                     isLowStock = true;
                     const warningMsg = `${inventoryItem.name} stock is now 0 — sale exceeded recorded stock`;
@@ -155,7 +156,7 @@ if (deduction > currentStock) {
                         warnings.push(warningMsg);
                         console.warn(warningMsg);
 
-    }
+        }
                 }
             inventoryUpdates.push({ id: inventoryItem.id, currentStock: newStock, isLowStock });
             console.log('would deduct', item.productId, deduction);
@@ -169,20 +170,18 @@ if (deduction > currentStock) {
       });
     }
 
-    const balance = Math.max(0, total - deposit);
-
-    const newEntry: any = {
-      id: Math.random().toString(36).substr(2, 9),
-      customerId: customerId,
-      customerName: customerName.trim(),
-      items: builtItems,
-      totalAmount: total,
-      amountPaid: deposit,
-      balance,
+    const id = Math.random().toString(36).substr(2, 9);
+    const lastUpdatedAt = new Date().toISOString();
+    const newEntry = buildCreditEntry(
+      id,
+      makeCustomerId(customerName),
+      customerName, // Note: passed untrimmed, will be trimmed inside buildCreditEntry
+      builtItems,
+      total,
+      deposit,
       createdAt,
-      lastUpdatedAt: new Date().toISOString(),
-      status: balance <= 0.01 ? 'paid' : 'active',
-    };
+      lastUpdatedAt
+    );
     await addEntry(newEntry);
     if (!isExistingDebt && excessPayment > 0) {
       await recordPayment(customerId, excessPayment);
