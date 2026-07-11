@@ -68,15 +68,15 @@ export function shouldApplyExcessPaymentToPriorDebt(isExistingDebt: boolean, exc
 }
 
 export function buildCreditEntry(
-  id: string,
   customerId: string,
   customerName: string,
   builtItems: CreditItem[],
   total: number,
   deposit: number,
-  createdAt: string,
-  lastUpdatedAt: string
+  createdAt: string
 ): CreditEntry {
+  const id = Math.random().toString(36).substr(2, 9);
+  const lastUpdatedAt = new Date().toISOString();
   const balance = Math.max(0, total - deposit);
   return {
     id,

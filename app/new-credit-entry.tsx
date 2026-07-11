@@ -33,6 +33,19 @@ const makeEmptyItem = (): DraftItem => ({
   unit: undefined,
 });
 
+function prepareBuiltItemsAndTotal(
+  isExistingDebt: boolean,
+  items: DraftItem[],
+  debtInfo: { description: string; category: CreditItemCategory; total: number } | null,
+  allItems: InventoryItem[],
+  deposit: number
+) {
+  const builtItems = buildCreditItems(isExistingDebt, items, debtInfo, allItems);
+  const total = builtItems.reduce((sum, item) => sum + item.total, 0);
+  const updatedItems = deposit > 0 ? allocatePaymentToItems(builtItems, deposit) : builtItems;
+  return { builtItems, total };
+}
+
 const NewCreditEntryScreen: React.FC = () => {
   const router = useRouter();
   const { addEntry, entries, recordPayment } = useCreditLedger();
@@ -102,140 +115,131 @@ const NewCreditEntryScreen: React.FC = () => {
 
 
 const handleSave = async () => {
-    if (!isFormValid) return;
+     if (!isFormValid) return;
 
-    // Compute customerId for prior debt lookup and for the new entry
-    const customerId = makeCustomerId(customerName);
-    const priorDebt = entries.filter(e => e.customerId === customerId && e.status === 'active')
-                             .reduce((sum, e) => sum + e.balance, 0);
-    console.log('Prior debt:', priorDebt);
+     // Compute customerId for prior debt lookup and for the new entry
+     const customerId = makeCustomerId(customerName);
+     const priorDebt = entries.filter(e => e.customerId === customerId && e.status === 'active')
+                              .reduce((sum, e) => sum + e.balance, 0);
+     console.log('Prior debt:', priorDebt);
 
-let builtItems = buildCreditItems(
-    isExistingDebt,
-    items,
-    { description: debtDescription, category: debtCategory, total: grandTotal },
-    allItems
-  );
-  const total = builtItems.reduce((sum, item) => sum + item.total, 0);
-  let createdAt = new Date().toISOString();
-  if (isExistingDebt) {
-    createdAt = parseManualDate(debtDay, debtMonth, debtYear);
-  }
+     const debtInfo = isExistingDebt
+             ? { description: debtDescription, category: debtCategory, total: grandTotal }
+             : null;
 
-// Apply any prior payment (deposit at sale time, or already-paid portion
-    // of an old debt) using the same proportional-split logic as a later repayment.
-    if (deposit > 0) {
-      builtItems = allocatePaymentToItems(builtItems, deposit);
-    }
+     const { builtItems, total } = prepareBuiltItemsAndTotal(
+             isExistingDebt,
+             items,
+             debtInfo,
+             allItems,
+             deposit
+         );
+     let createdAt = new Date().toISOString();
+     if (isExistingDebt) {
+         createdAt = parseManualDate(debtDay, debtMonth, debtYear);
+     }
 
-    // Legacy debt (pre-DukaPOS) does not affect inventory; skip deduction.
-    const warnings: string[] = [];
-    const inventoryUpdates: Array<{id: string; currentStock: number; isLowStock: boolean}> = [];
-    if (!isExistingDebt) {
-      // Log intended inventory deductions and update stock
-      // Inventory deducted once at sale time — do not duplicate in repayment flow.
-      builtItems.forEach(item => {
-        if (item.productId) {
-        const inventoryItem = allItems.find(it => it.id === item.productId);
-            if (inventoryItem) {
-                const deduction = computeInventoryDeduction(item, inventoryItem);
-                const currentStock = inventoryItem.currentStock;
-                let newStock: number;
-                let isLowStock: boolean;
-        if (deduction > currentStock) {
-                    newStock = 0;
-                    isLowStock = true;
-                    const warningMsg = `${inventoryItem.name} stock is now 0 — sale exceeded recorded stock`;
-                    warnings.push(warningMsg);
-                    console.warn(warningMsg);
-                } else {
-                    newStock = currentStock - deduction;
-                    isLowStock = newStock <= inventoryItem.lowStockThreshold;
-                    if (isLowStock) {
-                        const warningMsg = `Low stock: ${inventoryItem.name} (${newStock} left)`;
-                        warnings.push(warningMsg);
-                        console.warn(warningMsg);
+     const newEntry = buildCreditEntry(
+             customerId,
+             customerName, // Note: passed untrimmed, will be trimmed inside buildCreditEntry
+             builtItems,
+             total,
+             deposit,
+             createdAt
+         );
 
-        }
-                }
-            inventoryUpdates.push({ id: inventoryItem.id, currentStock: newStock, isLowStock });
-            console.log('would deduct', item.productId, deduction);
-          } else {
-            console.log('skipped - inventory item not found', item.productId);
-          }
-        } else {
-          // unlinked (free-text) items never reach computeInventoryDeduction at all — their qty is only ever used for the line-total/ledger math, never for stock, so no unit ambiguity applies there.
-          console.log('skipped - not linked', item.name);
-        }
-      });
-    }
+         // Legacy debt (pre-DukaPOS) does not affect inventory; skip deduction.
+         const warnings: string[] = [];
+         const inventoryUpdates: Array<{id: string; currentStock: number; isLowStock: boolean}> = [];
+         if (!isExistingDebt) {
+             // Log intended inventory deductions and update stock
+             // Inventory deducted once at sale time — do not duplicate in repayment flow.
+             builtItems.forEach(item => {
+                 if (item.productId) {
+                     const inventoryItem = allItems.find(it => it.id === item.productId);
+                     if (inventoryItem) {
+                         const deduction = computeInventoryDeduction(item, inventoryItem);
+                         const currentStock = inventoryItem.currentStock;
+                         let newStock: number;
+                         let isLowStock: boolean;
+                         if (deduction > currentStock) {
+                             newStock = 0;
+                             isLowStock = true;
+                             const warningMsg = `${inventoryItem.name} stock is now 0 — sale exceeded recorded stock`;
+                             warnings.push(warningMsg);
+                             console.warn(warningMsg);
+                         } else {
+                             newStock = currentStock - deduction;
+                             isLowStock = newStock <= inventoryItem.lowStockThreshold;
+                             if (isLowStock) {
+                                 const warningMsg = `Low stock: ${inventoryItem.name} (${newStock} left)`;
+                                 warnings.push(warningMsg);
+                                 console.warn(warningMsg);
+                             }
+                         }
+                     }
+                     inventoryUpdates.push({ id: inventoryItem.id, currentStock: newStock, isLowStock });
+                     console.log('would deduct', item.productId, deduction);
+                 } else {
+                     console.log('skipped - inventory item not found', item.productId);
+                 }
+             });
+         }
 
-    const id = Math.random().toString(36).substr(2, 9);
-    const lastUpdatedAt = new Date().toISOString();
-    const newEntry = buildCreditEntry(
-      id,
-      customerId,
-      customerName, // Note: passed untrimmed, will be trimmed inside buildCreditEntry
-      builtItems,
-      total,
-      deposit,
-      createdAt,
-      lastUpdatedAt
-    );
-    await addEntry(newEntry);
-    if (!isExistingDebt && excessPayment > 0) {
-      await recordPayment(customerId, excessPayment);
-      const appliedToDebt = Math.min(excessPayment, priorDebt);
-      const stillOwing = Math.max(0, priorDebt - excessPayment);
-      // Always surface the debt-applied banner
-      warnings.push(
-        `Sale paid in full. KES ${appliedToDebt.toLocaleString()} applied to previous debt. Remaining debt: KES ${stillOwing.toLocaleString()}.`
-      );
-      // If customer paid more than all debts, also show change-due reminder
-      if (excessPayment > priorDebt) {
-        const changeDue = excessPayment - priorDebt;
-        warnings.push(
-          `Customer overpaid by KES ${changeDue.toLocaleString()} beyond all debts — please give change.`
-        );
-      }
-    }
+     await addEntry(newEntry);
+     if (!isExistingDebt && excessPayment > 0) {
+         await recordPayment(customerId, excessPayment);
+         const appliedToDebt = Math.min(excessPayment, priorDebt);
+         const stillOwing = Math.max(0, priorDebt - excessPayment);
+         // Always surface the debt-applied banner
+         warnings.push(
+           `Sale paid in full. KES ${appliedToDebt.toLocaleString()} applied to previous debt. Remaining debt: KES ${stillOwing.toLocaleString()}.`
+         );
+         // If customer paid more than all debts, also show change-due reminder
+         if (excessPayment > priorDebt) {
+             const changeDue = excessPayment - priorDebt;
+             warnings.push(
+               `Customer overpaid by KES ${changeDue.toLocaleString()} beyond all debts — please give change.`
+             );
+         }
+     }
 
-    // Also record this as a completed sale so it feeds Reports/Business Health
-    // the same way a cash sale does — revenue is recognized now, at the moment
-    // of sale, regardless of how much (if any) has actually been collected yet.
-    const saleItems: BasketItem[] = builtItems.map((item, idx) => ({
-      id: `${newEntry.id}-${idx}`,
-      productId: item.productId ?? `${newEntry.id}-${idx}`,
-      name: item.name,
-      qty: item.qty,
-      unitPrice: item.unitPrice,
-      type: categoryToBasketType(item.category as CreditItemCategory),
-    }));
+     // Also record this as a completed sale so it feeds Reports/Business Health
+     // the same way a cash sale does — revenue is recognized now, at the moment
+     // of sale, regardless of how much (if any) has actually been collected yet.
+     const saleItems: BasketItem[] = builtItems.map((item, idx) => ({
+         id: `${newEntry.id}-${idx}`,
+         productId: item.productId ?? `${newEntry.id}-${idx}`,
+         name: item.name,
+         qty: item.qty,
+         unitPrice: item.unitPrice,
+         type: categoryToBasketType(item.category as CreditItemCategory),
+     }));
 
-    const sale: CompletedSale = {
-      id: newEntry.id,
-      items: saleItems,
-      total,
-      paymentMethod: 'credit',
-      completedAt: createdAt,
-    };
-await addSale(sale);
-// Apply inventory updates after successful ledger and sale writes.
-      inventoryUpdates.forEach(update => {
-        updateItem(update.id, { currentStock: update.currentStock, isLowStock: update.isLowStock });
-      });
+     const sale: CompletedSale = {
+         id: newEntry.id,
+         items: saleItems,
+         total,
+         paymentMethod: 'credit',
+         completedAt: createdAt,
+     };
+     await addSale(sale);
+     // Apply inventory updates after successful ledger and sale writes.
+     inventoryUpdates.forEach(update => {
+         updateItem(update.id, { currentStock: update.currentStock, isLowStock: update.isLowStock });
+     });
 
      // Show banner if there are warnings, then go back after a delay
-    if (warnings.length > 0) {
-      setBannerMessage(warnings.join('\n'));
-      // Show banner for 3 seconds then go back
-      setTimeout(() => {
-        router.back();
-      }, 3000);
-    } else {
-      router.back();
-    }
-};
+     if (warnings.length > 0) {
+         setBannerMessage(warnings.join('\n'));
+         // Show banner for 3 seconds then go back
+         setTimeout(() => {
+             router.back();
+         }, 3000);
+     } else {
+         router.back();
+     }
+
 
 return (
   <View className="flex-1">
