@@ -1,4 +1,4 @@
-import type { InventoryItem } from '../constants/inventoryData";
+import type { InventoryItem } from '../constants/inventoryData';
 import type { CreditItem, CreditItemCategory } from '../hooks/useCreditLedger';
 
 export type DraftItem = {
