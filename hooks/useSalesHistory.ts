@@ -1,52 +1,33 @@
+// hooks/useSalesHistory.ts
 import { useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { CompletedSale, PaymentMethod, BasketItem } from '../types';
+import { loadData, saveData } from '../utils/storage';
 
-const HISTORY_KEY = 'duka_sales_history';
+const SALES_HISTORY_KEY = 'duka_sales_history';
 
-export function useSalesHistory() {
-  const [sales, setSales] = useState<CompletedSale[]>([]);
+export const useSalesHistory = () => {
+  const [sales, setSales] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let cancelled = false;
-    const load = async () => {
-      try {
-        const raw = await AsyncStorage.getItem(HISTORY_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw) as CompletedSale[];
-          if (!cancelled) setSales(parsed);
-        }
-      } catch (e) {
-        console.warn('Failed to load sales history:', e);
-      } finally {
-        if (!cancelled) setLoading(false);
+    const loadSales = async () => {
+      const saved = await loadData(SALES_HISTORY_KEY);
+      if (saved && Array.isArray(sales)) {
+        setSales(saved);
       }
+      setLoading(false);
     };
-    load();
-    return () => {
-      cancelled = true;
-    };
+    loadSales();
   }, []);
 
-  const addSale = async (sale: CompletedSale) => {
-    const next = [sale, ...sales];
-    setSales(next);
-    try {
-      await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(next));
-    } catch (e) {
-      console.warn('Failed to save sale:', e);
-    }
+  const addSale = async (sale) => {
+    setSales(prev => {
+      const newSales = [...prev, sale];
+      saveData(SALES_HISTORY_KEY, newSales);
+      return newSales;
+    });
   };
 
-  const clearHistory = async () => {
-    setSales([]);
-    try {
-      await AsyncStorage.removeItem(HISTORY_KEY);
-    } catch (e) {
-      console.warn('Failed to clear sales history:', e);
-    }
-  };
+  // ... other functions if any
 
-  return { sales, salesHistory: sales, loading, addSale, clearHistory };
-}
+  return { sales, addSale, /* ... */, loading };
+};

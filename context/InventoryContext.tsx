@@ -1,81 +1,62 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
-import { INVENTORY_ITEMS, type InventoryItem } from '../constants/inventoryData';
-import { useDynamicProducts } from './DynamicProductsContext';
+// context/InventoryContext.tsx
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { loadData, saveData } from '../utils/storage';
+import { useDynamicProducts } from '../context/DynamicProductsContext';
+import inventoryData from '../constants/inventoryData';
 
-interface InventoryContextValue {
-  allItems: InventoryItem[];
-  getItemById: (id: string) => InventoryItem | undefined;
-  updateItem: (id: string, updates: Partial<InventoryItem>) => void;
-  addItem: (item: InventoryItem) => void;
-}
+const InventoryContext = createContext();
+const SEED_OVERRIDES_KEY = 'duka_inventory_overrides';
 
-const InventoryContext = createContext<InventoryContextValue | undefined>(undefined);
+export const useInventory = () => useContext(InventoryContext);
+export const InventoryProvider = ({ children }) => {
+  const [inventory, setInventory] = useState(inventoryData);
+  const [seedOverrides, setSeedOverrides] = useState({});
+  const [seedOverridesLoading, setSeedOverridesLoading] = useState(true);
+  const { loading: dynamicProductsLoading = false } = useDynamicProducts() || {};
+  const loading = seedOverridesLoading || dynamicProductsLoading;
 
-export function InventoryProvider({ children }: { children: ReactNode }) {
-  const [seedOverrides, setSeedOverrides] = useState<Record<string, Partial<InventoryItem>>>({});
-  const { dynamicProducts, updateDynamicProduct, addDynamicProduct } = useDynamicProducts();
+  useEffect(() => {
+    const loadSeedOverrides = async () => {
+      const saved = await loadData(SEED_OVERRIDES_KEY);
+      setSeedOverrides(typeof saved === 'object' && saved !== null ? saved : {});
+      setSeedOverridesLoading(false);
+    };
+    loadSeedOverrides();
+  }, []);
 
-  // Combine seed items with overrides
-  const seedItemsWithOverrides = INVENTORY_ITEMS.map(item => ({
-    ...item,
-    ...seedOverrides[item.id],
-  }));
-
-  const allItems = [...seedItemsWithOverrides, ...dynamicProducts];
-
-  const getItemById = (id: string) => {
-    // Check seed overrides first
-    if (seedOverrides[id]) {
-      const baseItem = INVENTORY_ITEMS.find(i => i.id === id);
-      if (baseItem) {
-        return { ...baseItem, ...seedOverrides[id] };
-      }
+  // Apply seedOverrides to the inventory when seedOverrides change or loading completes
+  useEffect(() => {
+    if (!seedOverridesLoading) {
+      const updatedInventory = inventoryData.map(item => {
+        const override = seedOverrides[item.id];
+        return override ? { ...item, ...override } : item;
+      });
+      setInventory(updatedInventory);
     }
-    // Check seed items without overrides
-    const seedItem = INVENTORY_ITEMS.find(i => i.id === id);
-    if (seedItem) return seedItem;
-    // Check dynamic items
-    return dynamicProducts.find(i => i.id === id);
+  }, [seedOverrides, seedOverridesLoading]);
+
+  const updateItem = (id, updates) => {
+    setInventory(prev => {
+      const newInventory = prev.map(item =>
+        item.id === id ? { ...item, ...updates } : item
+      );
+      return newInventory;
+    });
+
+    // If this item is a seed item (exists in the original seed data), update the seedOverrides
+    const isSeedItem = inventoryData.some(item => item.id === id);
+    if (isSeedItem) {
+      setSeedOverrides(prev => {
+        const newOverrides = { ...prev, [id]: { ...prev[id], ...updates } };
+        saveData(SEED_OVERRIDES_KEY, newOverrides);
+        return newOverrides;
+      });
+    }
   };
 
-    const updateItem = (id: string, updates: Partial<InventoryItem>) => {
-      const seedItemExists = INVENTORY_ITEMS.some(i => i.id === id);
-      if (seedItemExists) {
-        setSeedOverrides((prev: Record<string, Partial<InventoryItem>>) => ({
-          ...prev,
-          [id]: { ...(prev[id] || {}), ...updates },
-        }));
-      } else {
-        // Assume it's a dynamic item
-        const dynamicItem = dynamicProducts.find(item => item.id === id);
-        if (dynamicItem) {
-          updateDynamicProduct({ ...dynamicItem, ...updates });
-        }
-      }
-    };
-
-    const addItem = (item: InventoryItem) => {
-      addDynamicProduct(item);
-    };
-
   return (
-    <InventoryContext.Provider
-      value={{
-        allItems,
-        getItemById,
-        updateItem,
-        addItem,
-      }}
-    >
+    <InventoryContext.Provider value={{ inventory, setInventory, seedOverrides, setSeedOverrides, updateItem, loading }}>
       {children}
     </InventoryContext.Provider>
   );
-}
-
-export function useInventory() {
-  const ctx = useContext(InventoryContext);
-  if (!ctx) {
-    throw new Error('useInventory must be used within an InventoryProvider');
-  }
-  return ctx;
-}
+};

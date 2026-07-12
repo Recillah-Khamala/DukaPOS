@@ -1,42 +1,43 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
-import type { InventoryItem } from '../constants/inventoryData';
+// context/DynamicProductsContext.tsx
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { loadData, saveData } from '../utils/storage';
 
-interface DynamicProductsContextValue {
-  dynamicProducts: InventoryItem[];
-  addDynamicProduct: (item: InventoryItem) => void;
-  updateDynamicProduct: (item: InventoryItem) => void;
-}
+const DynamicProductsContext = createContext();
+const DYNAMIC_PRODUCTS_KEY = 'duka_dynamic_products';
 
-const DynamicProductsContext = createContext<DynamicProductsContextValue | undefined>(undefined);
+export const useDynamicProducts = () => useContext(DynamicProductsContext);
+export const DynamicProductsProvider = ({ children }) => {
+  const [dynamicProducts, setDynamicProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-export function DynamicProductsProvider({ children }: { children: ReactNode }) {
-  const [dynamicProducts, setDynamicProducts] = useState<InventoryItem[]>([]);
+  useEffect(() => {
+    const loadDynamicProducts = async () => {
+      const saved = await loadData(DYNAMIC_PRODUCTS_KEY);
+      setDynamicProducts(Array.isArray(saved) ? saved : []);
+      setLoading(false);
+    };
+    loadDynamicProducts();
+  }, []);
 
-  const addDynamicProduct = (item: InventoryItem) => {
-    setDynamicProducts((prev) => [...prev, item]);
+  const addDynamicProduct = async (product) => {
+    setDynamicProducts(prev => {
+      const newProducts = [...prev, product];
+      saveData(DYNAMIC_PRODUCTS_KEY, newProducts);
+      return newProducts;
+    });
   };
 
-  const updateDynamicProduct = (item: InventoryItem) => {
-    setDynamicProducts((prev) => prev.map(p => p.id === item.id ? item : p));
+  const updateDynamicProduct = async (id, updates) => {
+    setDynamicProducts(prev => {
+      const newProducts = prev.map(p => (p.id === id ? { ...p, ...updates } : p));
+      saveData(DYNAMIC_PRODUCTS_KEY, newProducts);
+      return newProducts;
+    });
   };
 
   return (
-    <DynamicProductsContext.Provider
-      value={{
-        dynamicProducts,
-        addDynamicProduct,
-        updateDynamicProduct,
-      }}
-    >
+    <DynamicProductsContext.Provider value={{ dynamicProducts, addDynamicProduct, updateDynamicProduct, loading }}>
       {children}
     </DynamicProductsContext.Provider>
   );
-}
-
-export function useDynamicProducts(): DynamicProductsContextValue {
-  const ctx = useContext(DynamicProductsContext);
-  if (!ctx) {
-    throw new Error('useDynamicProducts must be used within a DynamicProductsProvider');
-  }
-  return ctx;
-}
+};

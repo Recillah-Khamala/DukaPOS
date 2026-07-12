@@ -44,7 +44,7 @@ function prepareBuiltItemsAndTotal(
   const updatedItems = deposit > 0 ? allocatePaymentToItems(builtItems, deposit) : builtItems;
   return { builtItems, total };
 }
-function buildSaleFromEntry(
+export function buildSaleFromEntry(
   entry: { id: string },
   builtItems: Array<{
     productId?: string;
@@ -72,7 +72,7 @@ function buildSaleFromEntry(
     createdAt: createdAt,
   };
 }
-function buildExcessPaymentMessages(excessPayment: number, priorDebt: number): string[] {
+export function buildExcessPaymentMessages(excessPayment: number, priorDebt: number): string[] {
   const messages: string[] = [];
   const appliedToDebt = Math.min(excessPayment, priorDebt);
   const stillOwing = Math.max(0, priorDebt - excessPayment);
@@ -87,7 +87,7 @@ function buildExcessPaymentMessages(excessPayment: number, priorDebt: number): s
   }
   return messages;
 }
-function computeInventoryDeductionsForSale(
+export function computeInventoryDeductionsForSale(
   builtItems: Array<{
     productId?: string;
     name: string;
@@ -217,7 +217,7 @@ const NewCreditEntryScreen: React.FC = () => {
               deposit
           );
       
-      // Step 3: Compute inventory deductions (if not existing debt)
+      // Step 3: Step 4: Build credit entry
       if (!isExistingDebt) {
           const { warnings: invWarnings, inventoryUpdates: invUpdates } = computeInventoryDeductionsForSale(builtItems, allItems);
           warnings.push(...invWarnings);
