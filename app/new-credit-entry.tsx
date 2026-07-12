@@ -23,7 +23,6 @@ import {
 import ItemEntryCard from '../components/credit/ItemEntryCard';
 import LegacyDebtForm from '../components/credit/LegacyDebtForm';
 import WarningBanner from '../components/ui/WarningBanner';
-
 const makeEmptyItem = (): DraftItem => ({
   key: Math.random().toString(36).substr(2, 9),
   name: '',
@@ -33,7 +32,6 @@ const makeEmptyItem = (): DraftItem => ({
   productId: undefined,
   unit: undefined,
 });
-
 function prepareBuiltItemsAndTotal(
   isExistingDebt: boolean,
   items: DraftItem[],
@@ -45,21 +43,16 @@ function prepareBuiltItemsAndTotal(
   const total = builtItems.reduce((sum, item) => sum + item.total, 0);
   const updatedItems = deposit > 0 ? allocatePaymentToItems(builtItems, deposit) : builtItems;
   return { builtItems, total };
-}
-
 const NewCreditEntryScreen: React.FC = () => {
   const router = useRouter();
   const { addEntry, entries, recordPayment } = useCreditLedger();
   const { addSale } = useSalesHistory();
-
   const [customerName, setCustomerName] = React.useState('');
   const [items, setItems] = React.useState<DraftItem[]>([makeEmptyItem()]);
   const [amountReceivedNow, setAmountReceivedNow] = React.useState('');
   const [bannerMessage, setBannerMessage] = React.useState<string | null>(null);
-
   // Inventory for product lookup
   const { allItems, updateItem } = useInventory();
-
   // --- Existing debt (pre-DukaPOS) mode ---
   const [isExistingDebt, setIsExistingDebt] = React.useState(false);
   const [debtDescription, setDebtDescription] = React.useState('');
@@ -69,41 +62,32 @@ const NewCreditEntryScreen: React.FC = () => {
   const [debtDay, setDebtDay] = React.useState('');
   const [debtMonth, setDebtMonth] = React.useState('');
   const [debtYear, setDebtYear] = React.useState('');
-
   // Live prior-debt for the currently typed customer name (shown inline)
   const livePriorDebt = React.useMemo(() => {
     const id = makeCustomerId(customerName);
     return entries.filter(e => e.customerId === id && e.status === 'active').reduce((sum, e) => sum + e.balance, 0);
   }, [entries, customerName]);
-
   const updateDraftItem = (key: string, patch: Partial<DraftItem>) => {
     setItems(prev => prev.map(item => (item.key === key ? { ...item, ...patch } : item)));
   };
-
   const addItemRow = () => setItems(prev => [...prev, makeEmptyItem()]);
-
   const removeItemRow = (key: string) => {
     setItems(prev => (prev.length > 1 ? prev.filter(item => item.key !== key) : prev));
   };
-
   const itemTotal = (item: DraftItem) =>
     (parseFloat(item.qty || '0') || 0) * (parseFloat(item.unitPrice || '0') || 0);
-
   const grandTotal = isExistingDebt
     ? Math.max(0, parseFloat(debtTotal || '0') || 0)
     : items.reduce((sum, item) => sum + itemTotal(item), 0);
-
-// Clamp deposit/already-paid to [0, grandTotal]
-   const depositRaw = isExistingDebt
-     ? parseFloat(debtAlreadyPaid || '0') || 0
-     : parseFloat(amountReceivedNow || '0') || 0;
-   const deposit = Math.max(0, Math.min(depositRaw, grandTotal));
-   const remainingAfterDeposit = Math.max(0, grandTotal - deposit);
-   const excessPayment = Math.max(0, depositRaw - grandTotal);
-   if (!isExistingDebt) {
-     console.log('Excess payment:', excessPayment);
-   }
-
+  // Clamp deposit/already-paid to [0, grandTotal]
+  const depositRaw = isExistingDebt
+    ? parseFloat(debtAlreadyPaid || '0') || 0
+    : parseFloat(amountReceivedNow || '0') || 0;
+  const deposit = Math.max(0, Math.min(depositRaw, grandTotal));
+  const remainingAfterDeposit = Math.max(0, grandTotal - deposit);
+  const excessPayment = Math.max(0, depositRaw - grandTotal);
+  if (!isExistingDebt) {
+    console.log('Excess payment:', excessPayment);
   const isFormValid = isExistingDebt
     ? customerName.trim() !== '' && parseFloat(debtTotal || '0') > 0
     : customerName.trim() !== '' &&
@@ -113,21 +97,16 @@ const NewCreditEntryScreen: React.FC = () => {
           parseFloat(item.qty || '0') > 0 &&
           parseFloat(item.unitPrice || '0') > 0
 );
-
-
 const handleSave = async () => {
      if (!isFormValid) return;
-
      // Compute customerId for prior debt lookup and for the new entry
      const customerId = makeCustomerId(customerName);
      const priorDebt = entries.filter(e => e.customerId === customerId && e.status === 'active')
                               .reduce((sum, e) => sum + e.balance, 0);
      console.log('Prior debt:', priorDebt);
-
      const debtInfo = isExistingDebt
              ? { description: debtDescription, category: debtCategory, total: grandTotal }
              : null;
-
      const { builtItems, total } = prepareBuiltItemsAndTotal(
              isExistingDebt,
              items,
@@ -138,8 +117,6 @@ const handleSave = async () => {
      let createdAt = new Date().toISOString();
      if (isExistingDebt) {
          createdAt = parseManualDate(debtDay, debtMonth, debtYear);
-     }
-
      const newEntry = buildCreditEntry(
              customerId,
              customerName, // Note: passed untrimmed, will be trimmed inside buildCreditEntry
@@ -148,7 +125,6 @@ const handleSave = async () => {
              deposit,
              createdAt
          );
-
 // Legacy debt (pre-DukaPOS) does not affect inventory; skip deduction.
           const warnings: string[] = [];
           const inventoryUpdates: Array<{id: string; currentStock: number; isLowStock: boolean}> = [];
@@ -176,19 +152,13 @@ const handleSave = async () => {
                                   const warningMsg = `Low stock: ${inventoryItem.name} (${newStock} left)`;
                                   warnings.push(warningMsg);
                                   console.warn(warningMsg);
-                              }
-                          }
                           inventoryUpdates.push({ id: inventoryItem.id, currentStock: newStock, isLowStock });
                           console.log('would deduct', item.productId, deduction);
                       } else {
                           console.log('skipped - inventory item not found', item.productId);
-                      }
                   } else {
                       console.log('skipped - inventory item not found', item.productId);
-                  }
               });
-          }
-
      await addEntry(newEntry);
      if (!isExistingDebt && excessPayment > 0) {
          await recordPayment(customerId, excessPayment);
@@ -204,9 +174,6 @@ const handleSave = async () => {
              warnings.push(
                `Customer overpaid by KES ${changeDue.toLocaleString()} beyond all debts — please give change.`
              );
-         }
-     }
-
      // Also record this as a completed sale so it feeds Reports/Business Health
      // the same way a cash sale does — revenue is recognized now, at the moment
      // of sale, regardless of how much (if any) has actually been collected yet.
@@ -218,7 +185,6 @@ const handleSave = async () => {
          unitPrice: item.unitPrice,
          type: categoryToBasketType(item.category as CreditItemCategory),
      }));
-
      const sale: CompletedSale = {
          id: newEntry.id,
          items: saleItems,
@@ -231,7 +197,6 @@ const handleSave = async () => {
       inventoryUpdates.forEach(update => {
           updateItem(update.id, { currentStock: update.currentStock, isLowStock: update.isLowStock });
       });
-
       // Show banner if there are warnings, then go back after a delay
       if (warnings.length > 0) {
           setBannerMessage(warnings.join('\n'));
@@ -241,12 +206,8 @@ const handleSave = async () => {
           }, 3000);
       } else {
           router.back();
-      }
-  }
-
-
-return (
-  <View className="flex-1">
+  return (
+    <View className="flex-1">
       <TopAppBar title="New Credit Entry" onBack={() => router.back()} />
       {bannerMessage && <WarningBanner message={bannerMessage} />}
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 32 }}>
@@ -257,7 +218,6 @@ return (
         <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14, marginBottom: 20 }}>
           Record a sale on credit for a customer
         </Text>
-
         {/* Existing debt toggle */}
         <TouchableOpacity
           onPress={() => setIsExistingDebt(prev => !prev)}
@@ -287,7 +247,6 @@ return (
             This is an existing debt from before I started using DukaPOS
           </Text>
         </TouchableOpacity>
-
         {/* Customer Name field */}
         <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
           Customer Name
@@ -307,13 +266,11 @@ return (
             marginBottom: 20,
           }}
         />
-
         {livePriorDebt > 0 && (
           <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, marginBottom: 12 }}>
             {`This customer has an existing balance of KES ${livePriorDebt.toLocaleString()}.`}
           </Text>
         )}
-
         {isExistingDebt ? (
           <LegacyDebtForm
             description={debtDescription}
@@ -335,26 +292,24 @@ return (
           <>
             {/* Item rows */}
             {items.map((item, index) => (
-<ItemEntryCard
-  key={item.key}
-  item={item}
-  index={index}
-  onUpdate={updateDraftItem}
-  onRemove={removeItemRow}
-  canRemove={items.length > 1}
-  onProductSelect={({ productId, name }) => {
-    const inventoryItem = allItems.find(it => it.id === productId);
-    if (inventoryItem) {
-      const creditCategory = inventoryCategoryToCreditCategory(inventoryItem.category);
-      updateDraftItem(item.key, { productId, category: creditCategory });
-    } else {
-      // Fallback: just set productId if inventory item not found (shouldn't happen)
-      updateDraftItem(item.key, { productId });
-    }
-  }}
-/>
+              <ItemEntryCard
+                key={item.key}
+                item={item}
+                index={index}
+                onUpdate={updateDraftItem}
+                onRemove={removeItemRow}
+                canRemove={items.length > 1}
+                onProductSelect={({ productId, name }) => {
+                  const inventoryItem = allItems.find(it => it.id === productId);
+                  if (inventoryItem) {
+                    const creditCategory = inventoryCategoryToCreditCategory(inventoryItem.category);
+                    updateDraftItem(item.key, { productId, category: creditCategory });
+                  } else {
+                    // Fallback: just set productId if inventory item not found (shouldn't happen)
+                    updateDraftItem(item.key, { productId });
+                }}
+              />
             ))}
-
             {/* Add another item */}
             <TouchableOpacity
               onPress={addItemRow}
@@ -377,12 +332,10 @@ return (
             </TouchableOpacity>
           </>
         )}
-
         {/* Live grand total preview */}
         <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '700', marginBottom: 20 }}>
           Total: KES {grandTotal.toLocaleString()}
         </Text>
-
         {/* Amount received now — only for non-legacy sales; legacy debt uses its own "Already Paid" field above */}
         {!isExistingDebt && (
           <View
@@ -418,7 +371,6 @@ return (
             </Text>
           </View>
         )}
-
         {isExistingDebt && deposit > 0 && (
           <View
             style={{
@@ -433,7 +385,6 @@ return (
             </Text>
           </View>
         )}
-
         {/* Save button */}
         <TouchableOpacity
           style={{
@@ -451,7 +402,5 @@ return (
         </TouchableOpacity>
       </ScrollView>
     </View>
-  );
+);
 };
-
-export default NewCreditEntryScreen;
