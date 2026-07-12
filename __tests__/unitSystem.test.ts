@@ -12,10 +12,9 @@ function getPrice(product: CerealProduct | PoshomillService, fraction: 0.125 | 0
 
 describe('Unit System Regression Tests', () => {
   describe('korokoro fraction price lookup', () => {
-    it('returns shopkeeper-set price for 1/4, not calculated from pricePerKg/4', () => {
-      const maize = CEREAL_PRODUCTS[0]; // Maize: pricePerKg=130, 1/4 price=30
-      expect(maize.pricePerKg).toBe(130);
-      expect(getPrice(maize, 0.25)).toBe(30); // Not 130 * 0.25 = 32.5
+    it('returns shopkeeper-set price for 1/4, not a calculated fraction of a per-kg rate', () => {
+      const maize = CEREAL_PRODUCTS[0]; // Maize: 1/4 price=30
+      expect(getPrice(maize, 0.25)).toBe(30);
     });
 
     it('returns correct prices for all maize fractions', () => {
