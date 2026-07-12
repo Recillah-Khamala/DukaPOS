@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useCreditLedger, CreditItemCategory, allocatePaymentToItems } from '../hooks/useCreditLedger';
+import { useCreditLedger, CreditItemCategory, allocatePaymentToItems, CreditItem } from '../hooks/useCreditLedger';
 import { useSalesHistory } from '../hooks/useSalesHistory';
 import { useInventory } from '../context/InventoryContext';
 import type { BasketItem, CompletedSale } from '../types';
@@ -43,6 +43,34 @@ function prepareBuiltItemsAndTotal(
   const total = builtItems.reduce((sum, item) => sum + item.total, 0);
   const updatedItems = deposit > 0 ? allocatePaymentToItems(builtItems, deposit) : builtItems;
   return { builtItems, total };
+}
+function buildSaleFromEntry(
+  entry: { id: string },
+  builtItems: Array<{
+    productId?: string;
+    name: string;
+    qty: string;
+    unitPrice: string;
+    category: CreditItemCategory;
+  }>,
+  total: number,
+  createdAt: string
+): CompletedSale {
+  const saleItems: BasketItem[] = builtItems.map((item, idx) => ({
+    id: `${entry.id}-${idx}`,
+    productId: item.productId ?? `${entry.id}-${idx}`,
+    name: item.name,
+    qty: item.qty,
+    unitPrice: item.unitPrice,
+    type: categoryToBasketType(item.category as CreditItemCategory),
+  }));
+  return {
+    id: entry.id,
+    items: saleItems,
+    total,
+    paymentMethod: 'credit',
+    createdAt: createdAt,
+  };
 }
 const NewCreditEntryScreen: React.FC = () => {
   const router = useRouter();
@@ -147,20 +175,20 @@ const NewCreditEntryScreen: React.FC = () => {
                       let newStock: number;
                       let isLowStock: boolean;
                       if (deduction > currentStock) {
-                          newShip = 0;
-                          isLowShip = true;
+                          newStock = 0;
+                          isLowStock = true;
                           const warningMsg = `${inventoryItem.name} stock is now 0 — sale exceeded recorded stock`;
                           warnings.push(warningMsg);
                           console.warn(warningMsg);
                       } else {
-                          newShip = currentStock - deduction;
-                          isLowShip = newShip <= inventoryItem.lowStockThreshold;
-                          if (isLowShip) {
-                              const warningMsg = `Low stock: ${inventoryItem.name} (${newShip} left)`;
+                          newStock = currentStock - deduction;
+                          isLowStock = newStock <= inventoryItem.lowStockThreshold;
+                          if (isLowStock) {
+                              const warningMsg = `Low stock: ${inventoryItem.name} (${newStock} left)`;
                               warnings.push(warningMsg);
                               console.warn(warningMsg);
                           }
-                          inventoryUpdates.push({ id: inventoryItem.id, currentStock: newShip, isLowShip });
+                          inventoryUpdates.push({ id: inventoryItem.id, currentStock: newStock, isLowStock });
                           console.log('would deduct', item.productId, deduction);
                       }
                   } else {
@@ -191,21 +219,7 @@ const NewCreditEntryScreen: React.FC = () => {
       // Also record this as a completed sale so it feeds Reports/Business Health
       // the same way a cash sale does — revenue is recognized now, at the moment
       // of sale, regardless of how much (if any) has actually been collected yet.
-      const saleItems: BasketItem[] = builtItems.map((item, idx) => ({
-          id: `${newEntry.id}-${idx}`,
-          productId: item.productId ?? `${newEntry.id}-${idx}`,
-          name: item.name,
-          qty: item.qty,
-          unitPrice: item.unitPrice,
-          type: categoryToBasketType(item.category as CreditItemCategory),
-      }));
-      const sale: CompletedSale = {
-          id: newEntry.id,
-          items: saleItems,
-          total,
-          paymentMethod: 'credit',
-          completedAt: createdAt,
-      };
+      const sale = buildSaleFromEntry(newEntry, builtItems, total, createdAt);
       await addSale(sale);
       // Apply inventory updates after successful ledger and sale writes.
        inventoryUpdates.forEach(update => {
