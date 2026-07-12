@@ -87,6 +87,54 @@ function buildExcessPaymentMessages(excessPayment: number, priorDebt: number): s
   }
   return messages;
 }
+function computeInventoryDeductionsForSale(
+  builtItems: Array<{
+    productId?: string;
+    name: string;
+    qty: string;
+    unitPrice: string;
+    category: CreditItemCategory;
+  }>,
+  allItems: InventoryItem[]
+): { warnings: string[]; inventoryUpdates: Array<{id: string; currentStock: number; isLowStock: boolean}> } {
+  const warnings: string[] = [];
+  const inventoryUpdates: Array<{id: string; currentStock: number; isLowStock: boolean}> = [];
+  
+  builtItems.forEach(item => {
+    if (item.productId) {
+      const inventoryItem = allItems.find(it => it.id === item.productId);
+      if (inventoryItem) {
+        const deduction = computeInventoryDeduction(item, inventoryItem);
+        const currentStock = inventoryItem.currentStock;
+        let newStock: number;
+        let isLowStock: boolean;
+        if (deduction > currentStock) {
+          newStock = 0;
+          isLowStock = true;
+          const warningMsg = `${inventoryItem.name} stock is now 0 — sale exceeded recorded stock`;
+          warnings.push(warningMsg);
+          console.warn(warningMsg);
+        } else {
+          newStock = currentStock - deduction;
+          isLowStock = newStock <= inventoryItem.lowStockThreshold;
+          if (isLowStock) {
+            const warningMsg = `Low stock: ${inventoryItem.name} (${newStock} left)`;
+            warnings.push(warningMsg);
+            console.warn(warningMsg);
+          }
+          inventoryUpdates.push({ id: inventoryItem.id, currentStock: newStock, isLowStock });
+          console.log('would deduct', item.productId, deduction);
+        }
+      } else {
+        console.log('skipped - inventory item not found', item.productId);
+      }
+    } else {
+      console.log('skipped - inventory item not found', item.productId);
+    }
+  });
+  
+  return { warnings, inventoryUpdates };
+}
 const NewCreditEntryScreen: React.FC = () => {
   const router = useRouter();
   const { addEntry, entries, recordPayment } = useCreditLedger();
@@ -150,11 +198,14 @@ const NewCreditEntryScreen: React.FC = () => {
       // Reset warnings and inventoryUpdates for this save operation
       warnings = [];
       inventoryUpdates = [];
-      // Compute customerId for prior debt lookup and for the new entry
+      
+      // Step 1: Compute customerId and priorDebt
       const customerId = makeCustomerId(customerName);
       const priorDebt = entries.filter(e => e.customerId === customerId && e.status === 'active')
                                .reduce((sum, e) => sum + e.balance, 0);
       console.log('Prior debt:', priorDebt);
+      
+      // Step 2: Build credit items and allocate payment (if any)
       const debtInfo = isExistingDebt
               ? { description: debtDescription, category: debtCategory, total: grandTotal }
               : null;
@@ -165,6 +216,15 @@ const NewCreditEntryScreen: React.FC = () => {
               allItems,
               deposit
           );
+      
+      // Step 3: Compute inventory deductions (if not existing debt)
+      if (!isExistingDebt) {
+          const { warnings: invWarnings, inventoryUpdates: invUpdates } = computeInventoryDeductionsForSale(builtItems, allItems);
+          warnings.push(...invWarnings);
+          inventoryUpdates.push(...invUpdates);
+      }
+      
+      // Step 4: Build credit entry
       let createdAt = new Date().toISOString();
       if (isExistingDebt) {
           createdAt = parseManualDate(debtDay, debtMonth, debtYear);
@@ -177,59 +237,27 @@ const NewCreditEntryScreen: React.FC = () => {
               deposit,
               createdAt
           );
-      // Legacy debt (pre-DukaPOS) does not affect inventory; skip deduction.
-      if (!isExistingDebt) {
-          // Log intended inventory deductions and update stock
-          // Inventory deducted once at sale time — do not duplicate in repayment flow.
-          builtItems.forEach(item => {
-              if (item.productId) {
-                  const inventoryItem = allItems.find(it => it.id === item.productId);
-                  if (inventoryItem) {
-                      const deduction = computeInventoryDeduction(item, inventoryItem);
-                      const currentStock = inventoryItem.currentStock;
-                      let newStock: number;
-                      let isLowStock: boolean;
-                      if (deduction > currentStock) {
-                          newStock = 0;
-                          isLowStock = true;
-                          const warningMsg = `${inventoryItem.name} stock is now 0 — sale exceeded recorded stock`;
-                          warnings.push(warningMsg);
-                          console.warn(warningMsg);
-                      } else {
-                          newStock = currentStock - deduction;
-                          isLowStock = newStock <= inventoryItem.lowStockThreshold;
-                          if (isLowStock) {
-                              const warningMsg = `Low stock: ${inventoryItem.name} (${newStock} left)`;
-                              warnings.push(warningMsg);
-                              console.warn(warningMsg);
-                          }
-                          inventoryUpdates.push({ id: inventoryItem.id, currentStock: newStock, isLowStock });
-                          console.log('would deduct', item.productId, deduction);
-                      }
-                  } else {
-                      console.log('skipped - inventory item not found', item.productId);
-                  }
-              } else {
-                  console.log('skipped - inventory item not found', item.productId);
-              }
-          });
-      }
+      
+      // Step 5: Add the credit entry
       await addEntry(newEntry);
+      
+      // Step 6: Handle excess payment (if not existing debt and excessPayment > 0)
       if (!isExistingDebt && excessPayment > 0) {
           await recordPayment(customerId, excessPayment);
           const messages = buildExcessPaymentMessages(excessPayment, priorDebt);
           warnings.push(...messages);
       }
-      // Also record this as a completed sale so it feeds Reports/Business Health
-      // the same way a cash sale does — revenue is recognized now, at the moment
-      // of sale, regardless of how much (if any) has actually been collected yet.
+      
+      // Step 7: Build and add the sale
       const sale = buildSaleFromEntry(newEntry, builtItems, total, createdAt);
       await addSale(sale);
-      // Apply inventory updates after successful ledger and sale writes.
+      
+      // Step 8: Apply inventory updates
        inventoryUpdates.forEach(update => {
            updateItem(update.id, { currentStock: update.currentStock, isLowStock: update.isLowStock });
        });
-      // Show banner if there are warnings, then go back after a delay
+      
+      // Step 9: Show banner if there are warnings, then go back after a delay
         if (warnings.length > 0) {
             setBannerMessage(warnings.join('\n'));
             // Show banner for 3 seconds then go back
