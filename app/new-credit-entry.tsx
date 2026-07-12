@@ -1,28 +1,28 @@
 // app/new-credit-entry.tsx
 import React from 'react';
-import { View, Text, ScrollView, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useCreditLedger, CreditItemCategory, allocatePaymentToItems, CreditItem } from '../hooks/useCreditLedger';
+import { useCreditLedger, CreditItemCategory } from '../hooks/useCreditLedger';
 import { useSalesHistory } from '../hooks/useSalesHistory';
 import { useInventory } from '../context/InventoryContext';
-import type { BasketItem, CompletedSale } from '../types';
-import type { InventoryItem } from '../constants/inventoryData';
 import TopAppBar from '../components/layout/TopAppBar';
 import Colors from '../constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import {
-  categoryToBasketType,
   parseManualDate,
   inventoryCategoryToCreditCategory,
-  computeInventoryDeduction,
   makeCustomerId,
-  buildCreditItems,
   buildCreditEntry,
+  prepareBuiltItemsAndTotal,
+  computeInventoryDeductionsForSale,
+  buildSaleFromEntry,
+  buildExcessPaymentMessages,
   DraftItem,
 } from '../utils/creditEntryHelpers';
 import ItemEntryCard from '../components/credit/ItemEntryCard';
 import LegacyDebtForm from '../components/credit/LegacyDebtForm';
 import WarningBanner from '../components/ui/WarningBanner';
+
 const makeEmptyItem = (): DraftItem => ({
   key: Math.random().toString(36).substr(2, 9),
   name: '',
@@ -32,109 +32,7 @@ const makeEmptyItem = (): DraftItem => ({
   productId: undefined,
   unit: undefined,
 });
-function prepareBuiltItemsAndTotal(
-  isExistingDebt: boolean,
-  items: DraftItem[],
-  debtInfo: { description: string; category: CreditItemCategory; total: number } | null,
-  allItems: InventoryItem[],
-  deposit: number
-) {
-  const builtItems = buildCreditItems(isExistingDebt, items, debtInfo ?? { description: '', category: 'other' as CreditItemCategory, total: 0 }, allItems);
-  const total = builtItems.reduce((sum, item) => sum + item.total, 0);
-  const updatedItems = deposit > 0 ? allocatePaymentToItems(builtItems, deposit) : builtItems;
-  return { builtItems, total };
-}
-export function buildSaleFromEntry(
-  entry: { id: string },
-  builtItems: Array<{
-    productId?: string;
-    name: string;
-    qty: string;
-    unitPrice: string;
-    category: CreditItemCategory;
-  }>,
-  total: number,
-  createdAt: string
-): CompletedSale {
-  const saleItems: BasketItem[] = builtItems.map((item, idx) => ({
-    id: `${entry.id}-${idx}`,
-    productId: item.productId ?? `${entry.id}-${idx}`,
-    name: item.name,
-    qty: item.qty,
-    unitPrice: item.unitPrice,
-    type: categoryToBasketType(item.category as CreditItemCategory),
-  }));
-  return {
-    id: entry.id,
-    items: saleItems,
-    total,
-    paymentMethod: 'credit',
-    createdAt: createdAt,
-  };
-}
-export function buildExcessPaymentMessages(excessPayment: number, priorDebt: number): string[] {
-  const messages: string[] = [];
-  const appliedToDebt = Math.min(excessPayment, priorDebt);
-  const stillOwing = Math.max(0, priorDebt - excessPayment);
-  messages.push(
-    `Sale paid in full. KES ${appliedToDebt.toLocaleString()} applied to previous debt. Remaining debt: KES ${stillOwing.toLocaleString()}.`
-  );
-  if (excessPayment > priorDebt) {
-    const changeDue = excessPayment - priorDebt;
-    messages.push(
-      `Customer overpaid by KES ${changeDue.toLocaleString()} beyond all debts — please give change.`
-    );
-  }
-  return messages;
-}
-export function computeInventoryDeductionsForSale(
-  builtItems: Array<{
-    productId?: string;
-    name: string;
-    qty: string;
-    unitPrice: string;
-    category: CreditItemCategory;
-  }>,
-  allItems: InventoryItem[]
-): { warnings: string[]; inventoryUpdates: Array<{id: string; currentStock: number; isLowStock: boolean}> } {
-  const warnings: string[] = [];
-  const inventoryUpdates: Array<{id: string; currentStock: number; isLowStock: boolean}> = [];
-  
-  builtItems.forEach(item => {
-    if (item.productId) {
-      const inventoryItem = allItems.find(it => it.id === item.productId);
-      if (inventoryItem) {
-        const deduction = computeInventoryDeduction(item, inventoryItem);
-        const currentStock = inventoryItem.currentStock;
-        let newStock: number;
-        let isLowStock: boolean;
-        if (deduction > currentStock) {
-          newStock = 0;
-          isLowStock = true;
-          const warningMsg = `${inventoryItem.name} stock is now 0 — sale exceeded recorded stock`;
-          warnings.push(warningMsg);
-          console.warn(warningMsg);
-        } else {
-          newStock = currentStock - deduction;
-          isLowStock = newStock <= inventoryItem.lowStockThreshold;
-          if (isLowStock) {
-            const warningMsg = `Low stock: ${inventoryItem.name} (${newStock} left)`;
-            warnings.push(warningMsg);
-            console.warn(warningMsg);
-          }
-          inventoryUpdates.push({ id: inventoryItem.id, currentStock: newStock, isLowStock });
-          console.log('would deduct', item.productId, deduction);
-        }
-      } else {
-        console.log('skipped - inventory item not found', item.productId);
-      }
-    } else {
-      console.log('skipped - inventory item not found', item.productId);
-    }
-  });
-  
-  return { warnings, inventoryUpdates };
-}
+
 const NewCreditEntryScreen: React.FC = () => {
   const router = useRouter();
   const { addEntry, entries, recordPayment } = useCreditLedger();
@@ -143,8 +41,8 @@ const NewCreditEntryScreen: React.FC = () => {
   const [items, setItems] = React.useState<DraftItem[]>([makeEmptyItem()]);
   const [amountReceivedNow, setAmountReceivedNow] = React.useState('');
   const [bannerMessage, setBannerMessage] = React.useState<string | null>(null);
-  // Inventory for product lookup
   const { allItems, updateItem } = useInventory();
+
   // --- Existing debt (pre-DukaPOS) mode ---
   const [isExistingDebt, setIsExistingDebt] = React.useState(false);
   const [debtDescription, setDebtDescription] = React.useState('');
@@ -154,23 +52,32 @@ const NewCreditEntryScreen: React.FC = () => {
   const [debtDay, setDebtDay] = React.useState('');
   const [debtMonth, setDebtMonth] = React.useState('');
   const [debtYear, setDebtYear] = React.useState('');
+
   // Live prior-debt for the currently typed customer name (shown inline)
   const livePriorDebt = React.useMemo(() => {
     const id = makeCustomerId(customerName);
-    return entries.filter(e => e.customerId === id && e.status === 'active').reduce((sum, e) => sum + e.balance, 0);
+    return entries
+      .filter(e => e.customerId === id && e.status === 'active')
+      .reduce((sum, e) => sum + e.balance, 0);
   }, [entries, customerName]);
+
   const updateDraftItem = (key: string, patch: Partial<DraftItem>) => {
     setItems(prev => prev.map(item => (item.key === key ? { ...item, ...patch } : item)));
   };
+
   const addItemRow = () => setItems(prev => [...prev, makeEmptyItem()]);
+
   const removeItemRow = (key: string) => {
     setItems(prev => (prev.length > 1 ? prev.filter(item => item.key !== key) : prev));
   };
+
   const itemTotal = (item: DraftItem) =>
     (parseFloat(item.qty || '0') || 0) * (parseFloat(item.unitPrice || '0') || 0);
+
   const grandTotal = isExistingDebt
     ? Math.max(0, parseFloat(debtTotal || '0') || 0)
     : items.reduce((sum, item) => sum + itemTotal(item), 0);
+
   // Clamp deposit/already-paid to [0, grandTotal]
   const depositRaw = isExistingDebt
     ? parseFloat(debtAlreadyPaid || '0') || 0
@@ -178,12 +85,7 @@ const NewCreditEntryScreen: React.FC = () => {
   const deposit = Math.max(0, Math.min(depositRaw, grandTotal));
   const remainingAfterDeposit = Math.max(0, grandTotal - deposit);
   const excessPayment = Math.max(0, depositRaw - grandTotal);
-  // Declare variables that will be used in both scopes
-  let warnings: string[] = [];
-  let inventoryUpdates: Array<{id: string; currentStock: number; isLowStock: boolean}> = [];
-  if (!isExistingDebt) {
-    console.log('Excess payment:', excessPayment);
-  }
+
   const isFormValid = isExistingDebt
     ? customerName.trim() !== '' && parseFloat(debtTotal || '0') > 0
     : customerName.trim() !== '' &&
@@ -193,95 +95,76 @@ const NewCreditEntryScreen: React.FC = () => {
           parseFloat(item.qty || '0') > 0 &&
           parseFloat(item.unitPrice || '0') > 0
       );
+
   const handleSave = async () => {
-      if (!isFormValid) return;
-      // Reset warnings and inventoryUpdates for this save operation
-      warnings = [];
-      inventoryUpdates = [];
-      
-      // Step 1: Compute customerId and priorDebt
-      const customerId = makeCustomerId(customerName);
-      const priorDebt = entries.filter(e => e.customerId === customerId && e.status === 'active')
-                               .reduce((sum, e) => sum + e.balance, 0);
-      console.log('Prior debt:', priorDebt);
-      
-      // Step 2: Build credit items and allocate payment (if any)
-      const debtInfo = isExistingDebt
-              ? { description: debtDescription, category: debtCategory, total: grandTotal }
-              : null;
-      const { builtItems, total } = prepareBuiltItemsAndTotal(
-              isExistingDebt,
-              items,
-              debtInfo,
-              allItems,
-              deposit
-          );
-      
-      // Step 3: Step 4: Build credit entry
-      if (!isExistingDebt) {
-          const { warnings: invWarnings, inventoryUpdates: invUpdates } = computeInventoryDeductionsForSale(builtItems, allItems);
-          warnings.push(...invWarnings);
-          inventoryUpdates.push(...invUpdates);
-      }
-      
-      // Step 4: Build credit entry
-      let createdAt = new Date().toISOString();
-      if (isExistingDebt) {
-          createdAt = parseManualDate(debtDay, debtMonth, debtYear);
-      }
-      const newEntry = buildCreditEntry(
-              customerId,
-              customerName, // Note: passed untrimmed, will be trimmed inside buildCreditEntry
-              builtItems,
-              total,
-              deposit,
-              createdAt
-          );
-      
-      // Step 5: Add the credit entry
-      await addEntry(newEntry);
-      
-      // Step 6: Handle excess payment (if not existing debt and excessPayment > 0)
-      if (!isExistingDebt && excessPayment > 0) {
-          await recordPayment(customerId, excessPayment);
-          const messages = buildExcessPaymentMessages(excessPayment, priorDebt);
-          warnings.push(...messages);
-      }
-      
-      // Step 7: Build and add the sale
-      const sale = buildSaleFromEntry(newEntry, builtItems, total, createdAt);
-      await addSale(sale);
-      
-      // Step 8: Apply inventory updates
-       inventoryUpdates.forEach(update => {
-           updateItem(update.id, { currentStock: update.currentStock, isLowStock: update.isLowStock });
-       });
-      
-      // Step 9: Show banner if there are warnings, then go back after a delay
-        if (warnings.length > 0) {
-            setBannerMessage(warnings.join('\n'));
-            // Show banner for 3 seconds then go back
-            setTimeout(() => {
-                router.back();
-            }, 3000);
-        } else {
-            router.back();
-        }
+    if (!isFormValid) return;
+
+    // Step 1: customer identity + their existing debt
+    const customerId = makeCustomerId(customerName);
+    const priorDebt = entries
+      .filter(e => e.customerId === customerId && e.status === 'active')
+      .reduce((sum, e) => sum + e.balance, 0);
+
+    // Step 2: build items + apply deposit allocation
+    const debtInfo = isExistingDebt
+      ? { description: debtDescription, category: debtCategory, total: grandTotal }
+      : null;
+    const { builtItems, total } = prepareBuiltItemsAndTotal(isExistingDebt, items, debtInfo, allItems, deposit);
+
+    // Step 3: compute inventory deductions (skipped entirely for legacy debt)
+    let warnings: string[] = [];
+    let inventoryUpdates: Array<{ id: string; currentStock: number; isLowStock: boolean }> = [];
+    if (!isExistingDebt) {
+      const result = computeInventoryDeductionsForSale(builtItems, allItems);
+      warnings = result.warnings;
+      inventoryUpdates = result.inventoryUpdates;
+    }
+
+    // Step 4: build + save the credit entry
+    const createdAt = isExistingDebt ? parseManualDate(debtDay, debtMonth, debtYear) : new Date().toISOString();
+    const newEntry = buildCreditEntry(customerId, customerName, builtItems, total, deposit, createdAt);
+    await addEntry(newEntry);
+
+    // Step 5: apply any excess deposit to the customer's OTHER existing debt.
+    // Guarded to non-legacy sales only — legacy debt's "Already Paid" field is
+    // scoped to that single opening balance, not the customer's whole ledger.
+    if (!isExistingDebt && excessPayment > 0) {
+      await recordPayment(customerId, excessPayment);
+      warnings.push(...buildExcessPaymentMessages(excessPayment, priorDebt));
+    }
+
+    // Step 6: record the sale for Reports/Business Health
+    const sale = buildSaleFromEntry(newEntry, builtItems, total, createdAt);
+    await addSale(sale);
+
+    // Step 7: write back inventory deductions
+    inventoryUpdates.forEach(update => {
+      updateItem(update.id, { currentStock: update.currentStock, isLowStock: update.isLowStock });
+    });
+
+    // Step 8: surface warnings, then navigate back
+    if (warnings.length > 0) {
+      setBannerMessage(warnings.join('\n'));
+      setTimeout(() => {
+        router.back();
+      }, 3000);
+    } else {
+      router.back();
+    }
   };
-  
+
   return (
     <View className="flex-1">
       <TopAppBar title="New Credit Entry" onBack={() => router.back()} />
       {bannerMessage && <WarningBanner message={bannerMessage} />}
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 32 }}>
-        {/* Heading */}
         <Text style={{ color: Colors.primary, fontSize: 24, fontWeight: '700', marginBottom: 4 }}>
           New Credit Sale
         </Text>
         <Text style={{ color: Colors.onSurfaceVariant, fontSize: 14, marginBottom: 20 }}>
           Record a sale on credit for a customer
         </Text>
-        {/* Existing debt toggle */}
+
         <TouchableOpacity
           onPress={() => setIsExistingDebt(prev => !prev)}
           style={{
@@ -310,7 +193,7 @@ const NewCreditEntryScreen: React.FC = () => {
             This is an existing debt from before I started using DukaPOS
           </Text>
         </TouchableOpacity>
-        {/* Customer Name field */}
+
         <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
           Customer Name
         </Text>
@@ -334,6 +217,7 @@ const NewCreditEntryScreen: React.FC = () => {
             {`This customer has an existing balance of KES ${livePriorDebt.toLocaleString()}.`}
           </Text>
         )}
+
         {isExistingDebt ? (
           <LegacyDebtForm
             description={debtDescription}
@@ -353,7 +237,6 @@ const NewCreditEntryScreen: React.FC = () => {
           />
         ) : (
           <>
-            {/* Item rows */}
             {items.map((item, index) => (
               <ItemEntryCard
                 key={item.key}
@@ -368,39 +251,35 @@ const NewCreditEntryScreen: React.FC = () => {
                     const creditCategory = inventoryCategoryToCreditCategory(inventoryItem.category);
                     updateDraftItem(item.key, { productId, category: creditCategory });
                   } else {
-                    // Fallback: just set productId if inventory item not found (shouldn't happen)
                     updateDraftItem(item.key, { productId });
                   }
                 }}
               />
             ))}
-            {/* Add another item */}
             <TouchableOpacity
               onPress={addItemRow}
               style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingVertical: 12,
-                  borderRadius: 10,
-                  borderWidth: 1.5,
-                  borderColor: Colors.primary,
-                  borderStyle: 'dashed',
-                  marginBottom: 20,
-                }}
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingVertical: 12,
+                borderRadius: 10,
+                borderWidth: 1.5,
+                borderColor: Colors.primary,
+                borderStyle: 'dashed',
+                marginBottom: 20,
+              }}
             >
-                <MaterialIcons name="add" size={18} color={Colors.primary} style={{ marginRight: 6 }} />
-              <Text style={{ color: Colors.primary, fontSize: 14, fontWeight: '600' }}>
-                Add Another Item
-              </Text>
+              <MaterialIcons name="add" size={18} color={Colors.primary} style={{ marginRight: 6 }} />
+              <Text style={{ color: Colors.primary, fontSize: 14, fontWeight: '600' }}>Add Another Item</Text>
             </TouchableOpacity>
           </>
         )}
-        {/* Live grand total preview */}
+
         <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '700', marginBottom: 20 }}>
           Total: KES {grandTotal.toLocaleString()}
         </Text>
-        {/* Amount received now — only for non-legacy sales; legacy debt uses its own "Already Paid" field above */}
+
         {!isExistingDebt && (
           <View
             style={{
@@ -435,6 +314,7 @@ const NewCreditEntryScreen: React.FC = () => {
             </Text>
           </View>
         )}
+
         {isExistingDebt && deposit > 0 && (
           <View
             style={{
@@ -449,7 +329,7 @@ const NewCreditEntryScreen: React.FC = () => {
             </Text>
           </View>
         )}
-        {/* Save button */}
+
         <TouchableOpacity
           style={{
             backgroundColor: isFormValid ? Colors.primary : Colors.surfaceContainerHigh,
@@ -468,3 +348,5 @@ const NewCreditEntryScreen: React.FC = () => {
     </View>
   );
 };
+
+export default NewCreditEntryScreen;
