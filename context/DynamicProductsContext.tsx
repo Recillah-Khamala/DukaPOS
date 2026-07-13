@@ -28,14 +28,14 @@ export function DynamicProductsProvider({ children }: { children: ReactNode }) {
 
   const addDynamicProduct = async (product: InventoryItem) => {
     const newProducts = [...dynamicProducts, product];
-    setDynamicProducts(newProducts);
     await saveData(DYNAMIC_PRODUCTS_KEY, newProducts);
+    setDynamicProducts(newProducts);
   };
 
-  const updateDynamicProduct = async (id: string, updates: Partial<InventoryItem>) => {
+const updateDynamicProduct = async (id: string, updates: Partial<InventoryItem>) => {
     const newProducts = dynamicProducts.map(p => (p.id === id ? { ...p, ...updates } : p));
-    setDynamicProducts(newProducts);
     await saveData(DYNAMIC_PRODUCTS_KEY, newProducts);
+    setDynamicProducts(newProducts);
   };
 
   return (
