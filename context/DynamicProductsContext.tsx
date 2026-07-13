@@ -26,7 +26,7 @@ export function DynamicProductsProvider({ children }: { children: ReactNode }) {
     load();
   }, []);
 
-  const addDynamicProduct = async (product: InventoryItem) => {
+const addDynamicProduct = async (product: InventoryItem) => {
     const newProducts = [...dynamicProducts, product];
     await saveData(DYNAMIC_PRODUCTS_KEY, newProducts);
     setDynamicProducts(newProducts);
