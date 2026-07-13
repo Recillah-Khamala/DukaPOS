@@ -18,7 +18,7 @@ const InventoryContext = createContext<InventoryContextValue | undefined>(undefi
 export function InventoryProvider({ children }: { children: ReactNode }) {
    const [seedOverrides, setSeedOverrides] = useState<Record<string, Partial<InventoryItem>>>({});
    const [seedOverridesLoading, setSeedOverridesLoading] = useState(true);
-   const { dynamicProducts, updateDynamicProduct, addDynamicProduct, loading } = useDynamicProducts();
+   const { dynamicProducts, updateDynamicProduct, addDynamicProduct, loading: dynamicProductsLoading } = useDynamicProducts();
 
    // Combine seed items with overrides
    const seedItemsWithOverrides: InventoryItem[] = INVENTORY_ITEMS.map(item => ({
@@ -27,6 +27,8 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
    }));
 
    const allItems: InventoryItem[] = [...seedItemsWithOverrides, ...dynamicProducts];
+
+   const loading = seedOverridesLoading || dynamicProductsLoading;
 
    const getItemById = (id: string): InventoryItem | undefined => {
      if (seedOverrides[id]) {
@@ -87,20 +89,20 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
      loadSeedOverrides();
    }, []);
 
-  return (
-    <InventoryContext.Provider
-      value={{
-        allItems,
-        getItemById,
-        updateItem,
-        addItem,
-        loading,
-      }}
-    >
-      {children}
-    </InventoryContext.Provider>
-  );
-}
+   return (
+     <InventoryContext.Provider
+       value={{
+         allItems,
+         getItemById,
+         updateItem,
+         addItem,
+         loading,
+       }}
+     >
+       {children}
+     </InventoryContext.Provider>
+   );
+ }
 
 export function useInventory(): InventoryContextValue {
   const ctx = useContext(InventoryContext);
