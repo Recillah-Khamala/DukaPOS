@@ -27,14 +27,14 @@ export default function InventoryScreen() {
     ]);
   };
 
-  if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.background }}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-        <Text style={{ marginTop: 16, color: Colors.onSurfaceVariant }}>Loading inventory...</Text>
-      </View>
-    );
-  }
+if (loading) {
+     return (
+       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.surface }}>
+         <ActivityIndicator size="large" color={Colors.primary} />
+         <Text style={{ marginTop: 16, color: Colors.onSurfaceVariant }}>Loading inventory...</Text>
+       </View>
+     );
+   }
 
   return (
     <View className="flex-1" style={{ backgroundColor: '#f9fafb' }}>
