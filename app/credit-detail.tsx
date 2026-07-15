@@ -87,8 +87,8 @@ const CreditDetailScreen: React.FC = () => {
                         fontSize: 11, 
                         fontWeight: '700', 
                         textTransform: 'uppercase',
-                        color: tier === 'aging' ? Colors.orange : 
-                               tier === 'atRisk' ? Colors.red : 
+                        color: tier === 'aging' ? Colors.secondaryContainer : 
+                               tier === 'atRisk' ? Colors.error : 
                                Colors.onSurfaceVariant
                       }}>
                       {ageInDays} days ago
@@ -142,21 +142,21 @@ const CreditDetailScreen: React.FC = () => {
             Record Payment
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <TextInput
-              value={paymentAmount}
-              onChangeText={setPaymentAmount}
-              placeholder="Amount received"
-              keyboardType="decimal-pad"
-              style={{
-                flex: 1,
-                borderWidth: 1,
-                borderColor: Colors.outline,
-                borderRadius: 8,
-                paddingHorizontal: 12,
-                paddingVertical: 10,
-                marginRight: 8,
-              }}
-            />
+<TextInput
+               value={paymentAmount},
+               onChangeText={setPaymentAmount}
+               placeholder="Amount received"
+               keyboardType="decimal-pad"
+               style={{
+                 flex: 1,
+                 borderWidth: 1,
+                 borderColor: Colors.outline,
+                 borderRadius: 8,
+                 paddingHorizontal: 12,
+                 paddingVertical: 10,
+                 marginRight: 8,
+               }}
+             />
             <PrimaryButton onPress={handleRecordPayment} style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
               Save
             </PrimaryButton>
