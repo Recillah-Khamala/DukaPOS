@@ -52,16 +52,23 @@ export default function AdjustItemModal({ product, editItem, onClose }: AdjustIt
     return () => sub.remove();
   }, [product]);
 
-  // Animate sheet up on open
+  // Animate sheet up on open, and reset selections for the newly-opened
+  // product — previously selectedFractions/qty persisted from whatever
+  // product was last adjusted, so switching from Maize to Regular Milling
+  // (for example) silently carried over the prior total instead of
+  // starting fresh at zero.
   useEffect(() => {
     if (!product) return;
+    setSelectedFractions([]);
+    setQty(1);
+    setMode('add');
     slideAnim.setValue(0);
     Animated.timing(slideAnim, {
       toValue: 1,
       duration: 260,
       useNativeDriver: true,
     }).start();
-  }, [product]);
+  }, [product?.id]);
 
   const handleClose = () => {
     Animated.timing(slideAnim, {
