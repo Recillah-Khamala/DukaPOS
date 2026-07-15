@@ -8,6 +8,7 @@ import Colors from '../constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import Card from '../components/ui/Card';
 import PrimaryButton from '../components/ui/PrimaryButton';
+import { getEntryAgeDays, getAgingTier } from '../utils/creditAgingHelpers';
 
 const CreditDetailScreen: React.FC = () => {
   const { customerId, customerName } = useLocalSearchParams<{ customerId: string; customerName: string }>();
@@ -69,12 +70,30 @@ const CreditDetailScreen: React.FC = () => {
         </View>
 
         {/* Entries list */}
-        {customerEntries.map((entry, index) => (
-          <Card key={index} style={{ marginBottom: 8 }}>
-            {/* Date header */}
-            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11, fontWeight: '700', textTransform: 'uppercase', marginBottom: 8 }}>
-              {new Date(entry.createdAt).toLocaleDateString('en-KE', { day: 'numeric', month: 'short', year: 'numeric' })}
-            </Text>
+{customerEntries.map((entry, index) => {
+              const ageInDays = getEntryAgeDays(entry);
+              const tier = getAgingTier(ageInDays);
+              return (
+                <Card key={index} style={{ marginBottom: 8 }}>
+                  {/* Date header */}
+                  <View style={{ flexDirection: 'row', alignItems: 'baseline', marginBottom: 8 }}>
+                    <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11, fontWeight: '700', textTransform: 'uppercase' }}>
+                      {new Date(entry.createdAt).toLocaleDateString('en-KE', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </Text>
+                    <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11, fontWeight: '700', textTransform: 'uppercase', marginHorizontal: 4 }}>
+                      ·
+                    </Text>
+                    <Text style={{ 
+                        fontSize: 11, 
+                        fontWeight: '700', 
+                        textTransform: 'uppercase',
+                        color: tier === 'aging' ? Colors.orange : 
+                               tier === 'atRisk' ? Colors.red : 
+                               Colors.onSurfaceVariant
+                      }}>
+                      {ageInDays} days ago
+                    </Text>
+                  </View>
 
             {/* Items */}
             {entry.items.map((item, itemIdx) => {
