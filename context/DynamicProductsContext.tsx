@@ -1,13 +1,13 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { loadData, saveData } from '../utils/storage';
 import type { InventoryItem } from '../constants/inventoryData';
+import { loadData, saveData } from '../utils/storage';
 
 const DYNAMIC_PRODUCTS_KEY = 'duka_dynamic_products';
 
 interface DynamicProductsContextValue {
   dynamicProducts: InventoryItem[];
-  addDynamicProduct: (product: InventoryItem) => Promise<void>;
-  updateDynamicProduct: (id: string, updates: Partial<InventoryItem>) => Promise<void>;
+  addDynamicProduct: (item: InventoryItem) => void;
+  updateDynamicProduct: (item: InventoryItem) => void;
   loading: boolean;
 }
 
@@ -15,31 +15,44 @@ const DynamicProductsContext = createContext<DynamicProductsContextValue | undef
 
 export function DynamicProductsProvider({ children }: { children: ReactNode }) {
   const [dynamicProducts, setDynamicProducts] = useState<InventoryItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const load = async () => {
       const saved = await loadData<InventoryItem[]>(DYNAMIC_PRODUCTS_KEY);
-      setDynamicProducts(Array.isArray(saved) ? saved : []);
+      if (saved && Array.isArray(saved)) {
+        setDynamicProducts(saved);
+      }
       setLoading(false);
     };
     load();
   }, []);
 
-const addDynamicProduct = async (product: InventoryItem) => {
-    const newProducts = [...dynamicProducts, product];
-    await saveData(DYNAMIC_PRODUCTS_KEY, newProducts);
-    setDynamicProducts(newProducts);
+  const addDynamicProduct = (item: InventoryItem) => {
+    setDynamicProducts((prev) => {
+      const newProducts = [...prev, item];
+      saveData(DYNAMIC_PRODUCTS_KEY, newProducts);
+      return newProducts;
+    });
   };
 
-const updateDynamicProduct = async (id: string, updates: Partial<InventoryItem>) => {
-    const newProducts = dynamicProducts.map(p => (p.id === id ? { ...p, ...updates } : p));
-    await saveData(DYNAMIC_PRODUCTS_KEY, newProducts);
-    setDynamicProducts(newProducts);
+  const updateDynamicProduct = (item: InventoryItem) => {
+    setDynamicProducts((prev) => {
+      const newProducts = prev.map((p) => (p.id === item.id ? item : p));
+      saveData(DYNAMIC_PRODUCTS_KEY, newProducts);
+      return newProducts;
+    });
   };
 
   return (
-    <DynamicProductsContext.Provider value={{ dynamicProducts, addDynamicProduct, updateDynamicProduct, loading }}>
+    <DynamicProductsContext.Provider
+      value={{
+        dynamicProducts,
+        addDynamicProduct,
+        updateDynamicProduct,
+        loading,
+      }}
+    >
       {children}
     </DynamicProductsContext.Provider>
   );

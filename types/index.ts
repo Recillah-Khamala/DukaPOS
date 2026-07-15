@@ -76,4 +76,8 @@ export interface Product {
   stockLevel?: number;
 }
 
+// InventoryItem's single source of truth lives in constants/inventoryData.ts
+// (it's defined there alongside INVENTORY_ITEMS, which needs the type in
+// scope). Re-exported here so existing `import { InventoryItem } from
+// '../types'` call sites keep working unchanged.
 export type { InventoryItem } from '../constants/inventoryData';

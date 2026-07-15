@@ -85,10 +85,12 @@ const BusinessHealthTab: React.FC<BusinessHealthTabProps> = ({ sales, bottomNavH
 return (
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: bottomNavHeight + 24 }}>
         {!bannerDismissed && todayProfitSummary.itemsWithUnknownCost.size > 0 && (
-          <TouchableOpacity onPress={() => {
-            setBannerDismissed(true);
-            router.push('/inventory');
-          }}>
+          <TouchableOpacity
+            onPress={() => {
+              setBannerDismissed(true);
+              router.push('/inventory');
+            }}
+          >
             <WarningBanner
               message={`${todayProfitSummary.itemsWithUnknownCost.size} items don't have a buying price set — profit is estimated for these. Tap to update.`}
             />
@@ -249,6 +251,5 @@ return (
      </ScrollView>
    );
 };
-
 
 export default BusinessHealthTab;

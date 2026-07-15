@@ -28,30 +28,30 @@ export default function SalesScreen() {
   const [showBanner, setShowBanner] = useState(false);
   const bannerAnim = useRef(new Animated.Value(-48)).current;
 
-  useEffect(() => {
-    if (params.saleSuccess === 'true') {
-      setBannerTotal(params.total ? Number(params.total).toLocaleString) : total.toLocaleString());
-      setShowBanner(true);
-      bannerAnim.setValue(-48);
-      Animated.timing(bannerAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
+useEffect(() => {
+     if (params.saleSuccess === 'true') {
+       setBannerTotal(params.total ? Number(params.total).toLocaleString() : total.toLocaleString());
+       setShowBanner(true);
+       bannerAnim.setValue(-48);
+       Animated.timing(bannerAnim, {
+         toValue: 0,
+         duration: 200,
+         useNativeDriver: true,
+       }).start();
 
-      const timeout = setTimeout(() => {
-        Animated.timing(bannerAnim, {
-          toValue: -48,
-          duration: 150,
-          useNativeDriver: true,
-        }).start(() => {
-          setShowBanner(false);
-          router.replace('/(tabs)/sales');
-        });
-      }, 2000);
-      return () => clearTimeout(timeout);
-    }
-  }, [params.saleSuccess]);
+       const timeout = setTimeout(() => {
+         Animated.timing(bannerAnim, {
+           toValue: -48,
+           duration: 150,
+           useNativeDriver: true,
+         }).start(() => {
+           setShowBanner(false);
+           router.replace('/(tabs)/sales');
+         });
+       }, 2000);
+       return () => clearTimeout(timeout);
+     }
+   }, [params.saleSuccess]);
 
   if (loading) {
     return (

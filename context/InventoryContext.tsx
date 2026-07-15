@@ -16,95 +16,83 @@ interface InventoryContextValue {
 const InventoryContext = createContext<InventoryContextValue | undefined>(undefined);
 
 export function InventoryProvider({ children }: { children: ReactNode }) {
-   const [seedOverrides, setSeedOverrides] = useState<Record<string, Partial<InventoryItem>>>({});
-   const [seedOverridesLoading, setSeedOverridesLoading] = useState(true);
-   const { dynamicProducts, updateDynamicProduct, addDynamicProduct, loading: dynamicProductsLoading } = useDynamicProducts();
+  const [seedOverrides, setSeedOverrides] = useState<Record<string, Partial<InventoryItem>>>({});
+  const [seedOverridesLoading, setSeedOverridesLoading] = useState<boolean>(true);
+  const { dynamicProducts, updateDynamicProduct, addDynamicProduct, loading: dynamicProductsLoading } =
+    useDynamicProducts();
 
-   // Combine seed items with overrides
-   const seedItemsWithOverrides: InventoryItem[] = INVENTORY_ITEMS.map(item => ({
-     ...item,
-     ...seedOverrides[item.id],
-   }));
+  useEffect(() => {
+    const load = async () => {
+      const saved = await loadData<Record<string, Partial<InventoryItem>>>(SEED_OVERRIDES_KEY);
+      if (saved && typeof saved === 'object') {
+        setSeedOverrides(saved);
+      }
+      setSeedOverridesLoading(false);
+    };
+    load();
+  }, []);
 
-   const allItems: InventoryItem[] = [...seedItemsWithOverrides, ...dynamicProducts];
+  // Combine seed items with overrides
+  const seedItemsWithOverrides = INVENTORY_ITEMS.map(item => ({
+    ...item,
+    ...seedOverrides[item.id],
+  }));
 
-   const loading = seedOverridesLoading || dynamicProductsLoading;
+  const allItems = [...seedItemsWithOverrides, ...dynamicProducts];
 
-   const getItemById = (id: string): InventoryItem | undefined => {
-     if (seedOverrides[id]) {
-       const baseItem = INVENTORY_ITEMS.find(i => i.id === id);
-       if (baseItem) {
-         return { ...baseItem, ...seedOverrides[id] };
-       }
-     }
-     const seedItem = INVENTORY_ITEMS.find(i => i.id === id);
-     if (seedItem) return seedItem;
-     return dynamicProducts.find((i: InventoryItem) => i.id === id);
-   };
+  const getItemById = (id: string) => {
+    // Check seed overrides first
+    if (seedOverrides[id]) {
+      const baseItem = INVENTORY_ITEMS.find(i => i.id === id);
+      if (baseItem) {
+        return { ...baseItem, ...seedOverrides[id] };
+      }
+    }
+    // Check seed items without overrides
+    const seedItem = INVENTORY_ITEMS.find(i => i.id === id);
+    if (seedItem) return seedItem;
+    // Check dynamic items
+    return dynamicProducts.find(i => i.id === id);
+  };
 
-   const updateItem = (id: string, updates: Partial<InventoryItem>) => {
-     const seedItemExists = INVENTORY_ITEMS.some(i => i.id === id);
-     if (seedItemExists) {
-       setSeedOverrides(prev => {
-         const newOverrides = {
-           ...prev,
-           [id]: { ...(prev[id] || {}), ...updates },
-         };
-         // Persist the updated overrides
-         saveData(SEED_OVERRIDES_KEY, newOverrides).catch(err => {
-           console.error('Failed to save seed overrides', err);
-         });
-         return newOverrides;
-       });
-     } else {
-       const dynamicItem = dynamicProducts.find((item: InventoryItem) => item.id === id);
-       if (dynamicItem) {
-         updateDynamicProduct(id, updates);
-       }
-     }
-   };
+  const updateItem = (id: string, updates: Partial<InventoryItem>) => {
+    const seedItemExists = INVENTORY_ITEMS.some(i => i.id === id);
+    if (seedItemExists) {
+      const newOverrides = {
+        ...seedOverrides,
+        [id]: { ...(seedOverrides[id] || {}), ...updates },
+      };
+      saveData(SEED_OVERRIDES_KEY, newOverrides);
+      setSeedOverrides(newOverrides);
+    } else {
+      // Assume it's a dynamic item
+      const dynamicItem = dynamicProducts.find(item => item.id === id);
+      if (dynamicItem) {
+        updateDynamicProduct({ ...dynamicItem, ...updates });
+      }
+    }
+  };
 
-   const addItem = (item: InventoryItem) => {
-     addDynamicProduct(item);
-   };
+  const addItem = (item: InventoryItem) => {
+    addDynamicProduct(item);
+  };
 
-   // Load saved seed overrides on component mount
-   useEffect(() => {
-     const loadSeedOverrides = async () => {
-       try {
-         const saved = await loadData<Record<string, Partial<InventoryItem>>>(SEED_OVERRIDES_KEY);
-         if (saved && typeof saved === 'object' && !Array.isArray(saved)) {
-           setSeedOverrides(saved);
-         } else {
-           setSeedOverrides({});
-         }
-       } catch (err) {
-         console.error('Failed to load seed overrides', err);
-         setSeedOverrides({});
-       } finally {
-         setSeedOverridesLoading(false);
-       }
-     };
+  return (
+    <InventoryContext.Provider
+      value={{
+        allItems,
+        getItemById,
+        updateItem,
+        addItem,
+        loading: seedOverridesLoading || dynamicProductsLoading,
+      }}
+    >
+      {children}
+    </InventoryContext.Provider>
+  );
+}
 
-     loadSeedOverrides();
-   }, []);
-
-   return (
-     <InventoryContext.Provider
-       value={{
-         allItems,
-         getItemById,
-         updateItem,
-         addItem,
-         loading,
-       }}
-     >
-       {children}
-     </InventoryContext.Provider>
-   );
- }
-
-export function useInventory(): InventoryContextValue {
+export function useInventory() {
   const ctx = useContext(InventoryContext);
   if (!ctx) {
     throw new Error('useInventory must be used within an InventoryProvider');
