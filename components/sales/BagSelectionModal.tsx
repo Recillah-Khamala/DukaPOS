@@ -6,13 +6,15 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSharedBasket } from '../../context/BasketContext';
 import Card from '../ui/Card';
 import Colors from '../../constants/colors';
-import { formatLineTotal, roundToNearest5 } from '../../utils/formatQuantity';
+import { roundToNearest5 } from '../../utils/formatQuantity';
 import type { BagProduct } from '../../types';
 
 type BagSelectionModalProps = {
   product: BagProduct | null;
   onClose: () => void;
 };
+
+type Selection = { size: string; label: string; price: number };
 
 const SIZE_OPTIONS: { size: string; label: string }[] = [
   { size: 'small', label: 'Small' },
@@ -26,22 +28,22 @@ export default function BagSelectionModal({ product, onClose }: BagSelectionModa
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(0)).current;
   const { addItem } = useSharedBasket();
-  const [selectedSize, setSelectedSize] = useState<string>('medium');
-  const [qty, setQty] = useState(1);
+  const [selections, setSelections] = useState<Selection[]>([]);
+  const [mode, setMode] = useState<'add' | 'remove'>('add');
 
   useEffect(() => {
     if (!product) return;
-    // Reset state when product changes
-    setSelectedSize('medium');
-    setQty(1);
-    // Animate sheet up on open
+    // Reset the running selection whenever a different bag product opens —
+    // mirrors AdjustItemModal's per-product reset.
+    setSelections([]);
+    setMode('add');
     slideAnim.setValue(0);
     Animated.timing(slideAnim, {
       toValue: 1,
       duration: 260,
       useNativeDriver: true,
     }).start();
-  }, [product]);
+  }, [product?.id]);
 
   useEffect(() => {
     if (!product) return;
@@ -62,32 +64,45 @@ export default function BagSelectionModal({ product, onClose }: BagSelectionModa
     onClose();
   };
 
-  const handleDecrement = () => {
-    setQty((prev) => Math.max(1, prev - 1));
-  };
+  const handleSizePress = (option: { size: string; label: string }) => {
+    if (!product) return;
+    const variant = product.variants.find(v => v.size === option.size);
+    if (!variant) return;
 
-  const handleIncrement = () => {
-    setQty((prev) => Math.min(MAX_QTY, prev + 1));
+    if (mode === 'add') {
+      if (selections.length >= MAX_QTY) return;
+      setSelections(prev => [...prev, { size: option.size, label: variant.label, price: variant.price }]);
+    } else {
+      setSelections(prev => {
+        const reversed = [...prev].reverse();
+        const idx = reversed.findIndex(s => s.size === option.size);
+        if (idx === -1) return prev;
+        const actualIndex = prev.length - 1 - idx;
+        return prev.filter((_, i) => i !== actualIndex);
+      });
+      setMode('add');
+    }
   };
 
   const handleAddToBasket = () => {
-    if (!product) return;
-    const variant = product.variants.find(v => v.size === selectedSize);
-    if (variant) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      addItem({
-        id: `${product.id}_${Date.now()}`,
-        productId: product.id,
-        name: product.name,
-        qty,
-        unitPrice: variant.price,
-        type: 'bag',
-        variantLabel: variant.label,
-        unitType: product.unitType,
-        icon: product.icon,
-      });
-      handleClose();
-    }
+    if (!product || selections.length === 0) return;
+    const totalQty = selections.length;
+    const totalPrice = selections.reduce((sum, s) => sum + s.price, 0);
+    const breakdown = selections.map(s => s.label).join(' + ');
+
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    addItem({
+      id: `${product.id}_${Date.now()}`,
+      productId: product.id,
+      name: product.name,
+      qty: totalQty,
+      unitPrice: totalPrice,
+      type: 'bag',
+      variantLabel: breakdown,
+      unitType: product.unitType,
+      icon: product.icon,
+    });
+    handleClose();
   };
 
   if (!product) return null;
@@ -97,8 +112,9 @@ export default function BagSelectionModal({ product, onClose }: BagSelectionModa
     outputRange: [600, 0],
   });
 
-  const selectedVariant = product.variants.find(v => v.size === selectedSize);
-  const totalPrice = roundToNearest5(qty * (selectedVariant?.price ?? 0));
+  const breakdown = selections.length === 0 ? null : selections.map(s => s.label).join(' + ');
+  const totalPrice = selections.reduce((sum, s) => sum + s.price, 0);
+  const canAdd = selections.length > 0;
 
   return (
     <Modal visible={!!product} transparent animationType="none" onRequestClose={handleClose}>
@@ -174,83 +190,77 @@ export default function BagSelectionModal({ product, onClose }: BagSelectionModa
                 SIZE
               </Text>
 
-              {/* Size chips */}
+              {/* Size chips — tapping adds (or removes, in remove mode) one bag of that size */}
               <View className="flex-row gap-2 mb-4">
-                {SIZE_OPTIONS.map((option) => {
-                  const isActive = selectedSize === option.size;
-                  return (
-                    <Pressable
-                      key={option.size}
-                      onPress={() => setSelectedSize(option.size)}
-                      className="flex-1 items-center px-2 py-1 rounded-md"
-                      style={{
-                        backgroundColor: isActive ? Colors.secondaryContainer : Colors.surfaceContainerHigh,
-                        borderColor: isActive ? Colors.secondary : undefined,
-                        borderWidth: 1,
-                      }}
-                    >
-                      <Text
-                        className="text-[12px] font-bold"
-                        style={{ color: isActive ? Colors.onSecondaryContainer : Colors.onSurfaceVariant }}
-                      >
-                        {option.label}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
+                {SIZE_OPTIONS.map((option) => (
+                  <Pressable
+                    key={option.size}
+                    onPress={() => handleSizePress(option)}
+                    className="flex-1 h-11 items-center justify-center rounded-full border active:scale-95"
+                    style={{
+                      backgroundColor: Colors.surfaceContainerHigh,
+                      borderColor: Colors.outlineVariant,
+                    }}
+                  >
+                    <Text className="text-sm font-bold" style={{ color: Colors.onSurfaceVariant }}>
+                      {option.label}
+                    </Text>
+                  </Pressable>
+                ))}
               </View>
 
-              {/* Quantity label */}
-              <Text className="text-[12px] font-bold text-on-surface-variant uppercase mb-2">
-                QUANTITY
-              </Text>
-
-              {/* Stepper */}
-              <View className="flex-row items-center gap-4 mb-4">
+              {/* Add / remove mode toggle + running breakdown */}
+              <View className="flex-row items-center gap-4 mt-4 mb-2">
                 <Pressable
-                  onPress={handleDecrement}
-                  disabled={qty <= 1}
-                  className="w-12 h-12 items-center justify-center rounded-full border"
+                  onPress={() => setMode('remove')}
+                  disabled={selections.length === 0}
+                  className="w-12 h-12 items-center justify-center rounded-full border active:scale-95"
                   style={{
-                    backgroundColor: qty <= 1 ? Colors.surfaceContainerHigh : Colors.surfaceContainerHigh,
-                    borderColor: qty <= 1 ? Colors.outlineVariant : Colors.outlineVariant,
-                    opacity: qty <= 1 ? 0.38 : 1,
+                    backgroundColor: mode === 'remove' ? 'rgba(186, 26, 26, 0.12)' : Colors.surfaceContainerHigh,
+                    borderColor: mode === 'remove' ? Colors.error : Colors.outlineVariant,
+                    opacity: selections.length === 0 ? 0.38 : 1,
                   }}
                 >
                   <Text className="text-2xl font-bold" style={{ color: Colors.onSurfaceVariant }}>−</Text>
                 </Pressable>
 
-                <Text className="text-3xl font-extrabold text-center" style={{ minWidth: 64, color: Colors.primary }}>
-                  {qty}
+                <Text className="text-base font-extrabold text-center flex-1" style={{ color: Colors.primary }}>
+                  {breakdown ?? 'Select a size'}
                 </Text>
 
                 <Pressable
-                  onPress={handleIncrement}
-                  disabled={qty >= MAX_QTY}
-                  className="w-12 h-12 items-center justify-center rounded-full border"
+                  onPress={() => setMode('add')}
+                  className="w-12 h-12 items-center justify-center rounded-full border active:scale-95"
                   style={{
-                    backgroundColor: Colors.surfaceContainerHigh,
-                    borderColor: Colors.outlineVariant,
+                    backgroundColor: mode === 'add' ? Colors.primaryFixed : Colors.surfaceContainerHigh,
+                    borderColor: mode === 'add' ? Colors.primary : Colors.outlineVariant,
                   }}
                 >
-                  <Text className="text-2xl font-bold" style={{ color: Colors.onSurfaceVariant }}>+</Text>
+                  <Text className="text-2xl font-bold" style={{ color: mode === 'add' ? Colors.primary : Colors.onSurfaceVariant }}>+</Text>
                 </Pressable>
               </View>
 
               {/* Live price preview */}
               <Text className="text-sm text-on-surface-variant mb-4">
-                {qty} × {selectedVariant?.label} {product.name} ={' '}
-                <Text className="font-bold text-primary">{formatLineTotal(qty, selectedVariant?.price ?? 0)}</Text>
+                {breakdown ? (
+                  <>
+                    {breakdown} ={' '}
+                    <Text className="font-bold text-primary">{roundToNearest5(totalPrice)} KES</Text>
+                  </>
+                ) : (
+                  'Select a size to begin'
+                )}
               </Text>
 
               {/* CTA */}
               <Pressable
                 onPress={handleAddToBasket}
+                disabled={!canAdd}
                 className="w-full flex-row items-center justify-center rounded-xl py-3.5 active:scale-95"
-                style={{ backgroundColor: Colors.primary }}
+                style={{ backgroundColor: canAdd ? Colors.primary : '#d1d5db' }}
               >
-                <MaterialIcons name="add" size={20} color={Colors.onPrimary} />
-                <Text className="ml-2 text-base font-semibold" style={{ color: Colors.onPrimary }}>
+                <MaterialIcons name="add" size={20} color={canAdd ? Colors.onPrimary : '#9ca3af'} />
+                <Text className="ml-2 text-base font-semibold" style={{ color: canAdd ? Colors.onPrimary : '#6b7280' }}>
                   Add Bag to Basket
                 </Text>
               </Pressable>
