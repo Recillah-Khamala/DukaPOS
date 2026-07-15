@@ -7,7 +7,7 @@ import CustomerCard from '../ui/CustomerCard';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useCreditLedger, CreditItemCategory } from '../../hooks/useCreditLedger';
 import type { CreditEntry } from '../../context/CreditLedgerContext';
-import { getCustomerAgingTier } from '../../utils/creditAgingHelpers';
+import { getCustomerAgingTier, getEntryAgeDays } from '../../utils/creditAgingHelpers';
 import { useRouter } from 'expo-router';
 
 const CATEGORY_LABELS: Record<CreditItemCategory, string> = {
@@ -49,11 +49,15 @@ const CreditLedgerTab: React.FC<CreditLedgerTabProps> = ({ bottomNavHeight = 0 }
     );
   }
 
-  const activeEntries = entries.filter(e => e.status === 'active');
-  const totalDebt = activeEntries.reduce((sum, e) => sum + e.balance, 0);
-  const customerCount = new Set(activeEntries.map(e => e.customerId)).size;
+const activeEntries = entries.filter(e => e.status === 'active');
+   const totalDebt = activeEntries.reduce((sum, e) => sum + e.balance, 0);
+   const customerCount = new Set(activeEntries.map(e => e.customerId)).size;
+   const atRiskBalance = activeEntries.reduce((sum, e) => {
+     const age = getEntryAgeDays(e);
+     return age >= 90 ? sum + e.balance : sum;
+   }, 0);
 
-// Group by customerId, and within each customer, break down outstanding
+   // Group by customerId, and within each customer, break down outstanding
    // balance by category so a shopkeeper can see e.g. "Cereal KES 200 · Milling KES 50"
    const customerMap: Record<string, CustomerMapData> = {};
 
@@ -88,7 +92,7 @@ const CreditLedgerTab: React.FC<CreditLedgerTabProps> = ({ bottomNavHeight = 0 }
           Shop Credit Health
         </Text>
 
-        {/* Stats row */}
+{/* Stats row */}
         <View style={{ flexDirection: 'row', marginBottom: 16 }}>
           <Card style={{ flex: 1, marginBottom: 0, marginRight: 12 }} backgroundColor={Colors.surfaceContainerHigh}>
             <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11, fontWeight: '700', textTransform: 'uppercase' }}>
@@ -108,7 +112,20 @@ const CreditLedgerTab: React.FC<CreditLedgerTabProps> = ({ bottomNavHeight = 0 }
           </Card>
         </View>
 
-        {/* Active Debts */}
+        {atRiskBalance > 0 && (
+          <View style={{ marginBottom: 16 }}>
+            <Card style={{ width: '100%' }} backgroundColor={Colors.surfaceContainerHigh}>
+              <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11, fontWeight: '700', textTransform: 'uppercase' }}>
+                AT RISK (90+ days)
+              </Text>
+              <Text style={{ color: Colors.primary, fontSize: 24, fontWeight: '800' }}>
+                KES {atRiskBalance.toLocaleString()}
+              </Text>
+            </Card>
+          </View>
+        )}
+
+{/* Active Debts */}
         <View style={{ marginTop: 24 }}>
           <Text style={{
             color: Colors.onSurfaceVariant,
