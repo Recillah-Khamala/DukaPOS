@@ -10,10 +10,11 @@ type Props = {
   lastUpdated?: string;
   categoryBalances?: Record<string, number>;
   isHighDebt?: boolean;
+  agingTier?: 'current' | 'aging' | 'atRisk';
   onPress?: () => void;
 };
 
-const CustomerCard: React.FC<Props> = ({ name, balance, lastUpdated, categoryBalances, isHighDebt, onPress }) => {
+const CustomerCard: React.FC<Props> = ({ name, balance, lastUpdated, categoryBalances, isHighDebt, agingTier, onPress }) => {
   const formattedDate = lastUpdated ? new Date(lastUpdated).toLocaleDateString('en-KE', { year: 'numeric', month: 'short', day: 'numeric' }) : undefined;
 
   return (
@@ -27,10 +28,20 @@ const CustomerCard: React.FC<Props> = ({ name, balance, lastUpdated, categoryBal
             <Text style={{ color: Colors.onSurface, fontSize: 16, fontWeight: '600' }}>{name}</Text>
             {formattedDate && <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>Last update: {formattedDate}</Text>}
           </View>
-          <View style={{ alignItems: 'flex-end' }}>
-            <Text style={{ color: isHighDebt ? Colors.error : Colors.onSurface, fontSize: 20, fontWeight: '800' }}>KES {balance.toLocaleString()}</Text>
-            <Text style={{ color: isHighDebt ? Colors.error : Colors.onSurface, fontSize: 11, fontWeight: '700', textTransform: 'uppercase' }}>{isHighDebt ? 'High Debt' : 'Standard'}</Text>
-          </View>
+<View style={{ alignItems: 'flex-end' }}>
+             <Text style={{ color: isHighDebt ? Colors.error : Colors.onSurface, fontSize: 20, fontWeight: '800' }}>KES {balance.toLocaleString()}</Text>
+             <Text style={{ color: isHighDebt ? Colors.error : Colors.onSurface, fontSize: 11, fontWeight: '700', textTransform: 'uppercase' }}>{isHighDebt ? 'High Debt' : 'Standard'}</Text>
+             {agingTier === 'aging' && (
+               <Text style={{ backgroundColor: Colors.secondaryContainer, color: Colors.onSecondaryContainer, fontSize: 10, fontWeight: '600', textTransform: 'uppercase', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginTop: 4 }}>
+                 60+ days
+               </Text>
+             )}
+             {agingTier === 'atRisk' && (
+               <Text style={{ backgroundColor: Colors.error, color: Colors.white, fontSize: 10, fontWeight: '600', textTransform: 'uppercase', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginTop: 4 }}>
+                 90+ days — At Risk
+               </Text>
+             )}
+           </View>
         </View>
 
         {categoryBalances && Object.keys(categoryBalances).length > 0 && (
