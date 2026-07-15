@@ -6,6 +6,8 @@ import Card from '../ui/Card';
 import CustomerCard from '../ui/CustomerCard';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useCreditLedger, CreditItemCategory } from '../../hooks/useCreditLedger';
+import type { CreditEntry } from '../../context/CreditLedgerContext';
+import { getCustomerAgingTier } from '../../utils/creditAgingHelpers';
 import { useRouter } from 'expo-router';
 
 const CATEGORY_LABELS: Record<CreditItemCategory, string> = {
@@ -17,11 +19,11 @@ const CATEGORY_LABELS: Record<CreditItemCategory, string> = {
 
 type CategoryBalanceMap = Partial<Record<CreditItemCategory, number>>;
 
-type CustomerCreditSummary = {
-  name: string;
-  balance: number;
-  lastUpdated: string;
-  categoryBalances: CategoryBalanceMap;
+type CustomerMapData = {
+    name: string;
+    entries: CreditEntry[];
+    lastUpdated: string;
+    categoryBalances: CategoryBalanceMap;
 };
 
 interface CreditLedgerTabProps {
@@ -51,28 +53,28 @@ const CreditLedgerTab: React.FC<CreditLedgerTabProps> = ({ bottomNavHeight = 0 }
   const totalDebt = activeEntries.reduce((sum, e) => sum + e.balance, 0);
   const customerCount = new Set(activeEntries.map(e => e.customerId)).size;
 
-  // Group by customerId, and within each customer, break down outstanding
-  // balance by category so a shopkeeper can see e.g. "Cereal KES 200 · Milling KES 50"
-  const customerMap: Record<string, CustomerCreditSummary> = {};
+// Group by customerId, and within each customer, break down outstanding
+   // balance by category so a shopkeeper can see e.g. "Cereal KES 200 · Milling KES 50"
+   const customerMap: Record<string, CustomerMapData> = {};
 
-  activeEntries.forEach(e => {
-    if (!customerMap[e.customerId]) {
-      customerMap[e.customerId] = { name: e.customerName, balance: 0, lastUpdated: e.lastUpdatedAt, categoryBalances: {} };
-    }
-    const cust = customerMap[e.customerId];
-    cust.balance += e.balance;
-    if (e.lastUpdatedAt > cust.lastUpdated) {
-      cust.lastUpdated = e.lastUpdatedAt;
-    }
-    e.items.forEach(item => {
-      const cat = item.category ?? 'other';
-      const itemBalance = item.balance ?? item.total;
-      if (itemBalance > 0) {
-        cust.categoryBalances[cat] = (cust.categoryBalances[cat] ?? 0) + itemBalance;
-      }
-    });
-  });
-  const customers = Object.entries(customerMap);
+   activeEntries.forEach(e => {
+     if (!customerMap[e.customerId]) {
+       customerMap[e.customerId] = { name: e.customerName, entries: [e], lastUpdated: e.lastUpdatedAt, categoryBalances: {} };
+     }
+     const cust = customerMap[e.customerId];
+     cust.entries.push(e);
+     if (e.lastUpdatedAt > cust.lastUpdated) {
+       cust.lastUpdated = e.lastUpdatedAt;
+     }
+     e.items.forEach(item => {
+       const cat = item.category ?? 'other';
+       const itemBalance = item.balance ?? item.total;
+       if (itemBalance > 0) {
+         cust.categoryBalances[cat] = (cust.categoryBalances[cat] ?? 0) + itemBalance;
+       }
+     });
+   });
+   const customers = Object.entries(customerMap);
 
   return (
     <View className="flex-1">
@@ -127,28 +129,31 @@ const CreditLedgerTab: React.FC<CreditLedgerTabProps> = ({ bottomNavHeight = 0 }
             </Card>
           ) : (
             <>
-              {customers.map(([customerId, data]) => {
-                const isHighDebt = data.balance > 1000;
-                const formattedDate = new Date(data.lastUpdated).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric'
-                });
-                const categoryEntries = Object.entries(data.categoryBalances) as [CreditItemCategory, number][];
+{customers.map(([customerId, data]) => {
+                 const balance = data.entries.reduce((sum, e) => sum + e.balance, 0);
+                 const isHighDebt = balance > 1000;
+                 const formattedDate = new Date(data.lastUpdated).toLocaleDateString('en-US', {
+                   year: 'numeric',
+                   month: 'short',
+                   day: 'numeric'
+                 });
+                 const categoryEntries = Object.entries(data.categoryBalances) as [CreditItemCategory, number][];
+                 const agingTier = getCustomerAgingTier(data.entries);
 
-                return (
-                  <TouchableOpacity key={customerId} onPress={() => router.push({ pathname: '/credit-detail', params: { customerId, customerName: data.name } })}>
-                    <CustomerCard
-                      name={data.name}
-                      balance={data.balance}
-                      lastUpdated={data.lastUpdated}
-                      categoryBalances={data.categoryBalances}
-                      isHighDebt={isHighDebt}
-                      onPress={() => router.push({ pathname: '/credit-detail', params: { customerId, customerName: data.name } })}
-                    />
-                  </TouchableOpacity>
-                );
-              })}
+                 return (
+                   <TouchableOpacity key={customerId} onPress={() => router.push({ pathname: '/credit-detail', params: { customerId, customerName: data.name } })}>
+                     <CustomerCard
+                       name={data.name}
+                       balance={balance}
+                       lastUpdated={data.lastUpdated}
+                       categoryBalances={data.categoryBalances}
+                       isHighDebt={isHighDebt}
+                       agingTier={agingTier}
+                       onPress={() => router.push({ pathname: '/credit-detail', params: { customerId, customerName: data.name } })}
+                     />
+                   </TouchableOpacity>
+                 );
+               })}
             </>
           )}
         </View>
