@@ -31,6 +31,7 @@ export default function AdjustItemModal({ product, editItem, onClose }: AdjustIt
   const [qty, setQty] = useState(1);
   const [selectedFractions, setSelectedFractions] = useState<FractionPrice[]>([]);
   const [mode, setMode] = useState<'add' | 'remove'>('add');
+  const [lastTapped, setLastTapped] = useState<Fraction | null>(null);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
 
   useEffect(() => {
@@ -62,6 +63,7 @@ export default function AdjustItemModal({ product, editItem, onClose }: AdjustIt
     setSelectedFractions([]);
     setQty(1);
     setMode('add');
+    setLastTapped(null);
     slideAnim.setValue(0);
     Animated.timing(slideAnim, {
       toValue: 1,
@@ -168,6 +170,7 @@ export default function AdjustItemModal({ product, editItem, onClose }: AdjustIt
   const handleChipPress = (chip: { label: string; value: number }) => {
     const target = fractionPrices.find((fp) => fp.fraction === chip.value);
     if (!target) return;
+    setLastTapped(chip.value as Fraction);
     if (mode === 'add') {
       setSelectedFractions((prev) => [...prev, target]);
     } else {
@@ -258,24 +261,27 @@ export default function AdjustItemModal({ product, editItem, onClose }: AdjustIt
             <View className="px-4 pt-4 pb-2">
               {isKorokoro && !isPiece && (
                 <View className="flex-row gap-2 mb-2">
-                  {FRACTIONS.map((chip) => (
-                    <Pressable
-                      key={chip.label}
-                      onPress={() => handleChipPress(chip)}
-                      className="flex-1 h-11 items-center justify-center rounded-full border active:scale-95"
-                      style={{
-                        backgroundColor: Colors.surfaceContainerHigh,
-                        borderColor: Colors.outlineVariant,
-                      }}
-                    >
-                      <Text
-                        className="text-sm font-bold"
-                        style={{ color: Colors.onSurfaceVariant }}
+                  {FRACTIONS.map((chip) => {
+                    const isActive = lastTapped === chip.value;
+                    return (
+                      <Pressable
+                        key={chip.label}
+                        onPress={() => handleChipPress(chip)}
+                        className="flex-1 h-11 items-center justify-center rounded-full border active:scale-95"
+                        style={{
+                          backgroundColor: isActive ? Colors.secondaryContainer : Colors.surfaceContainerHigh,
+                          borderColor: isActive ? Colors.secondary : Colors.outlineVariant,
+                        }}
                       >
-                        {chip.label}
-                      </Text>
-                    </Pressable>
-                  ))}
+                        <Text
+                          className="text-sm font-bold"
+                          style={{ color: isActive ? Colors.onSecondaryContainer : Colors.onSurfaceVariant }}
+                        >
+                          {chip.label}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
                 </View>
               )}
 

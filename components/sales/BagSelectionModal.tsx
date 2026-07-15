@@ -30,6 +30,7 @@ export default function BagSelectionModal({ product, onClose }: BagSelectionModa
   const { addItem } = useSharedBasket();
   const [selections, setSelections] = useState<Selection[]>([]);
   const [mode, setMode] = useState<'add' | 'remove'>('add');
+  const [lastTapped, setLastTapped] = useState<string | null>(null);
 
   useEffect(() => {
     if (!product) return;
@@ -37,6 +38,7 @@ export default function BagSelectionModal({ product, onClose }: BagSelectionModa
     // mirrors AdjustItemModal's per-product reset.
     setSelections([]);
     setMode('add');
+    setLastTapped(null);
     slideAnim.setValue(0);
     Animated.timing(slideAnim, {
       toValue: 1,
@@ -68,6 +70,7 @@ export default function BagSelectionModal({ product, onClose }: BagSelectionModa
     if (!product) return;
     const variant = product.variants.find(v => v.size === option.size);
     if (!variant) return;
+    setLastTapped(option.size);
 
     if (mode === 'add') {
       if (selections.length >= MAX_QTY) return;
@@ -192,21 +195,24 @@ export default function BagSelectionModal({ product, onClose }: BagSelectionModa
 
               {/* Size chips — tapping adds (or removes, in remove mode) one bag of that size */}
               <View className="flex-row gap-2 mb-4">
-                {SIZE_OPTIONS.map((option) => (
-                  <Pressable
-                    key={option.size}
-                    onPress={() => handleSizePress(option)}
-                    className="flex-1 h-11 items-center justify-center rounded-full border active:scale-95"
-                    style={{
-                      backgroundColor: Colors.surfaceContainerHigh,
-                      borderColor: Colors.outlineVariant,
-                    }}
-                  >
-                    <Text className="text-sm font-bold" style={{ color: Colors.onSurfaceVariant }}>
-                      {option.label}
-                    </Text>
-                  </Pressable>
-                ))}
+                {SIZE_OPTIONS.map((option) => {
+                  const isActive = lastTapped === option.size;
+                  return (
+                    <Pressable
+                      key={option.size}
+                      onPress={() => handleSizePress(option)}
+                      className="flex-1 h-11 items-center justify-center rounded-full border active:scale-95"
+                      style={{
+                        backgroundColor: isActive ? Colors.secondaryContainer : Colors.surfaceContainerHigh,
+                        borderColor: isActive ? Colors.secondary : Colors.outlineVariant,
+                      }}
+                    >
+                      <Text className="text-sm font-bold" style={{ color: isActive ? Colors.onSecondaryContainer : Colors.onSurfaceVariant }}>
+                        {option.label}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
               </View>
 
               {/* Add / remove mode toggle + running breakdown */}
