@@ -83,16 +83,16 @@ const CreditDetailScreen: React.FC = () => {
                 <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11, fontWeight: '700', textTransform: 'uppercase', marginHorizontal: 4 }}>
                   ·
                 </Text>
-                <Text style={{
-                    fontSize: 11,
-                    fontWeight: '700',
-                    textTransform: 'uppercase',
-                    color: tier === 'aging' ? Colors.secondary :
-                           tier === 'atRisk' ? Colors.error :
-                           Colors.onSurfaceVariant
-                  }}>
-                  {ageInDays} days ago
-                </Text>
+<Text style={{
+                     fontSize: 11,
+                     fontWeight: '700',
+                     textTransform: 'uppercase',
+                     color: tier === 'aging' ? Colors.secondaryContainer :
+                            tier === 'atRisk' ? Colors.error :
+                            Colors.onSurfaceVariant
+                   }}>
+                   {ageInDays} days ago
+                 </Text>
               </View>
 
               {/* Items */}
