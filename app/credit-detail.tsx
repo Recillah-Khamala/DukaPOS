@@ -70,61 +70,62 @@ const CreditDetailScreen: React.FC = () => {
         </View>
 
         {/* Entries list */}
-{customerEntries.map((entry, index) => {
-              const ageInDays = getEntryAgeDays(entry);
-              const tier = getAgingTier(ageInDays);
-              return (
-                <Card key={index} style={{ marginBottom: 8 }}>
-                  {/* Date header */}
-                  <View style={{ flexDirection: 'row', alignItems: 'baseline', marginBottom: 8 }}>
-                    <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11, fontWeight: '700', textTransform: 'uppercase' }}>
-                      {new Date(entry.createdAt).toLocaleDateString('en-KE', { day: 'numeric', month: 'short', year: 'numeric' })}
-                    </Text>
-                    <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11, fontWeight: '700', textTransform: 'uppercase', marginHorizontal: 4 }}>
-                      ·
-                    </Text>
-                    <Text style={{ 
-                        fontSize: 11, 
-                        fontWeight: '700', 
-                        textTransform: 'uppercase',
-                        color: tier === 'aging' ? Colors.secondaryContainer : 
-                               tier === 'atRisk' ? Colors.error : 
-                               Colors.onSurfaceVariant
-                      }}>
-                      {ageInDays} days ago
-                    </Text>
-                  </View>
+        {customerEntries.map((entry, index) => {
+          const ageInDays = getEntryAgeDays(entry);
+          const tier = getAgingTier(ageInDays);
+          return (
+            <Card key={index} style={{ marginBottom: 8 }}>
+              {/* Date header */}
+              <View style={{ flexDirection: 'row', alignItems: 'baseline', marginBottom: 8 }}>
+                <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11, fontWeight: '700', textTransform: 'uppercase' }}>
+                  {new Date(entry.createdAt).toLocaleDateString('en-KE', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </Text>
+                <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11, fontWeight: '700', textTransform: 'uppercase', marginHorizontal: 4 }}>
+                  ·
+                </Text>
+                <Text style={{
+                    fontSize: 11,
+                    fontWeight: '700',
+                    textTransform: 'uppercase',
+                    color: tier === 'aging' ? Colors.secondary :
+                           tier === 'atRisk' ? Colors.error :
+                           Colors.onSurfaceVariant
+                  }}>
+                  {ageInDays} days ago
+                </Text>
+              </View>
 
-            {/* Items */}
-            {entry.items.map((item, itemIdx) => {
-              const itemBalance = item.balance ?? item.total;
-              const isPartlyPaid = itemBalance < item.total && itemBalance > 0;
-              return (
-                <React.Fragment key={itemIdx}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <Text style={{ color: Colors.onSurface, fontSize: 15 }}>
-                      {item.name}
-                    </Text>
-                    <Text style={{ color: Colors.onSurface, fontSize: 15, fontWeight: '600' }}>
-                      KES {itemBalance.toLocaleString()}
-                      {isPartlyPaid ? ` of ${item.total.toLocaleString()}` : ''}
-                    </Text>
-                  </View>
-                  {itemIdx < entry.items.length - 1 && (
-                    <View style={{ height: 1, backgroundColor: Colors.outlineVariant }} />
-                  )}
-                </React.Fragment>
-              );
-            })}
+              {/* Items */}
+              {entry.items.map((item, itemIdx) => {
+                const itemBalance = item.balance ?? item.total;
+                const isPartlyPaid = itemBalance < item.total && itemBalance > 0;
+                return (
+                  <React.Fragment key={itemIdx}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+                      <Text style={{ color: Colors.onSurface, fontSize: 15 }}>
+                        {item.name}
+                      </Text>
+                      <Text style={{ color: Colors.onSurface, fontSize: 15, fontWeight: '600' }}>
+                        KES {itemBalance.toLocaleString()}
+                        {isPartlyPaid ? ` of ${item.total.toLocaleString()}` : ''}
+                      </Text>
+                    </View>
+                    {itemIdx < entry.items.length - 1 && (
+                      <View style={{ height: 1, backgroundColor: Colors.outlineVariant }} />
+                    )}
+                  </React.Fragment>
+                );
+              })}
 
-            {/* Footer */}
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 8 }}>
-              <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '700' }}>
-                KES {entry.balance.toLocaleString()}
-              </Text>
-            </View>
-          </Card>
-        ))}
+              {/* Footer */}
+              <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 8 }}>
+                <Text style={{ color: Colors.primary, fontSize: 16, fontWeight: '700' }}>
+                  KES {entry.balance.toLocaleString()}
+                </Text>
+              </View>
+            </Card>
+          );
+        })}
 
         {/* Total balance card */}
         <View style={{ backgroundColor: Colors.primary, borderRadius: 12, padding: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, marginBottom: 16 }}>
@@ -142,21 +143,21 @@ const CreditDetailScreen: React.FC = () => {
             Record Payment
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-<TextInput
-               value={paymentAmount},
-               onChangeText={setPaymentAmount}
-               placeholder="Amount received"
-               keyboardType="decimal-pad"
-               style={{
-                 flex: 1,
-                 borderWidth: 1,
-                 borderColor: Colors.outline,
-                 borderRadius: 8,
-                 paddingHorizontal: 12,
-                 paddingVertical: 10,
-                 marginRight: 8,
-               }}
-             />
+            <TextInput
+              value={paymentAmount}
+              onChangeText={setPaymentAmount}
+              placeholder="Amount received"
+              keyboardType="decimal-pad"
+              style={{
+                flex: 1,
+                borderWidth: 1,
+                borderColor: Colors.outline,
+                borderRadius: 8,
+                paddingHorizontal: 12,
+                paddingVertical: 10,
+                marginRight: 8,
+              }}
+            />
             <PrimaryButton onPress={handleRecordPayment} style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
               Save
             </PrimaryButton>
