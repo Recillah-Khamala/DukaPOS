@@ -24,16 +24,21 @@ const BusinessHealthTab: React.FC<BusinessHealthTabProps> = ({ sales, bottomNavH
    const todayStr = new Date().toDateString();
    const todaySales = sales.filter(s => new Date(s.completedAt).toDateString() === todayStr);
    const yesterdayStr = new Date(Date.now() - 86400000).toDateString();
-   const yesterdayTotal = sales
-     .filter(s => new Date(s.completedAt).toDateString() === yesterdayStr)
-     .reduce((sum, s) => sum + s.total, 0);
+   const yesterdaySales = sales.filter(s => new Date(s.completedAt).toDateString() === yesterdayStr);
 
    const { allItems } = useInventory();
    const todayProfitSummary = computeProfitSummary(todaySales, allItems);
-   const todayTotal = todayProfitSummary.totalRevenue;
+   // "% from yesterday" sits directly under the profit headline number, so the
+   // comparison must be profit-to-profit, not profit-to-revenue. Previously this
+   // compared today's revenue against yesterday's revenue while displaying next to
+   // a profit figure — a cosmetic mismatch that could be misleading on days with
+   // unusual margins (e.g. a high-revenue, low-margin day looking "up" when profit
+   // was actually down).
+   const yesterdayProfitSummary = computeProfitSummary(yesterdaySales, allItems);
+   const yesterdayProfit = yesterdayProfitSummary.totalActualProfit;
 
-   const percentChange = yesterdayTotal === 0 ? null :
-     Math.round(((todayTotal - yesterdayTotal) / yesterdayTotal) * 100);
+   const percentChange = yesterdayProfit === 0 ? null :
+     Math.round(((todayProfitSummary.totalActualProfit - yesterdayProfit) / yesterdayProfit) * 100);
 
    const thirtyDaysAgo = Date.now() - 30 * 86400000;
    const recentSales = sales.filter(s => new Date(s.completedAt).getTime() >= thirtyDaysAgo);

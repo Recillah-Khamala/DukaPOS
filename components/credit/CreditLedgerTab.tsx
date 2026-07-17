@@ -114,11 +114,18 @@ const activeEntries = entries.filter(e => e.status === 'active');
 
         {atRiskBalance > 0 && (
           <View style={{ marginBottom: 16 }}>
-            <Card style={{ width: '100%' }} backgroundColor={Colors.surfaceContainerHigh}>
-              <Text style={{ color: Colors.onSurfaceVariant, fontSize: 11, fontWeight: '700', textTransform: 'uppercase' }}>
-                AT RISK (90+ days)
-              </Text>
-              <Text style={{ color: Colors.primary, fontSize: 24, fontWeight: '800' }}>
+            {/* Styled distinctly from TOTAL DEBT/CUSTOMERS above — this card flags
+                genuine risk (90+ day unpaid balances), so it uses an error-tinted
+                background/border and error-colored text instead of the neutral
+                surfaceContainerHigh treatment those two share. */}
+            <Card style={{ width: '100%', borderColor: Colors.error }} backgroundColor="#fef2f2">
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 2 }}>
+                <MaterialIcons name="warning" size={14} color={Colors.error} />
+                <Text style={{ color: Colors.error, fontSize: 11, fontWeight: '700', textTransform: 'uppercase', marginLeft: 4 }}>
+                  AT RISK (90+ days)
+                </Text>
+              </View>
+              <Text style={{ color: Colors.error, fontSize: 24, fontWeight: '800' }}>
                 KES {atRiskBalance.toLocaleString()}
               </Text>
             </Card>
@@ -149,11 +156,6 @@ const activeEntries = entries.filter(e => e.status === 'active');
 {customers.map(([customerId, data]) => {
                  const balance = data.entries.reduce((sum, e) => sum + e.balance, 0);
                  const isHighDebt = balance > 1000;
-                 const formattedDate = new Date(data.lastUpdated).toLocaleDateString('en-US', {
-                   year: 'numeric',
-                   month: 'short',
-                   day: 'numeric'
-                 });
                  const categoryEntries = Object.entries(data.categoryBalances) as [CreditItemCategory, number][];
                  const agingTier = getCustomerAgingTier(data.entries);
 
