@@ -1,6 +1,6 @@
 // app/new-credit-entry.tsx
 import React from 'react';
-import { View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TextInput, TouchableOpacity, Modal } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useCreditLedger, CreditItemCategory } from '../hooks/useCreditLedger';
 import { useSalesHistory } from '../hooks/useSalesHistory';
@@ -38,6 +38,8 @@ const NewCreditEntryScreen: React.FC = () => {
   const { addEntry, entries, recordPayment } = useCreditLedger();
   const { addSale } = useSalesHistory();
   const [customerName, setCustomerName] = React.useState('');
+  const [mode, setMode] = React.useState<'new' | 'existing' | null>(null);
+  const [selectedExistingCustomer, setSelectedExistingCustomer] = React.useState('');
   const [items, setItems] = React.useState<DraftItem[]>([makeEmptyItem()]);
   const [amountReceivedNow, setAmountReceivedNow] = React.useState('');
   const [bannerMessage, setBannerMessage] = React.useState<string | null>(null);
@@ -95,6 +97,23 @@ const NewCreditEntryScreen: React.FC = () => {
           parseFloat(item.qty || '0') > 0 &&
           parseFloat(item.unitPrice || '0') > 0
       );
+
+  const handleConfirmCustomer = () => {
+    if (mode === null) {
+      alert('Please select a customer type');
+      return;
+    }
+    if (mode === 'existing' && selectedExistingCustomer === '') {
+      alert('Please select an existing customer');
+      return;
+    }
+    const customerId = makeCustomerId(customerName);
+    console.log({
+      mode,
+      customerName,
+      customerId,
+    });
+  };
 
   const handleSave = async () => {
     if (!isFormValid) return;
@@ -194,24 +213,125 @@ const NewCreditEntryScreen: React.FC = () => {
           </Text>
         </TouchableOpacity>
 
-        <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
-          Customer Name
-        </Text>
-        <TextInput
-          placeholder="e.g. Mama Njeri"
-          value={customerName}
-          onChangeText={setCustomerName}
-          style={{
-            borderWidth: 1.5,
-            borderColor: Colors.outlineVariant,
-            borderRadius: 10,
-            paddingHorizontal: 14,
-            paddingVertical: 12,
-            fontSize: 15,
-            color: Colors.onSurface,
-            marginBottom: 20,
-          }}
-        />
+        {/* Customer Selection UI */}
+        {mode === null ? (
+          <>
+            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
+              Is this a new customer or an existing one?
+            </Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 20 }}>
+              <TouchableOpacity
+                onPress={() => setMode('new')}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  backgroundColor: Colors.surfaceContainerHigh,
+                  borderRadius: 10,
+                  padding: 12,
+                  flex: 1,
+                  marginRight: 4,
+                }}
+              >
+                <MaterialIcons name="person-add" size={20} color={Colors.primary} style={{ marginRight: 6 }} />
+                <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600' }}>
+                  New Customer
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setMode('existing')}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  backgroundColor: Colors.surfaceContainerHigh,
+                  borderRadius: 10,
+                  padding: 12,
+                  flex: 1,
+                  marginLeft: 4,
+                }}
+              >
+                <MaterialIcons name="person" size={20} color={Colors.primary} style={{ marginRight: 6 }} />
+                <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600' }}>
+                  Existing Customer
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        ) : mode === 'existing' ? (
+          <>
+            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
+              Select Existing Customer
+            </Text>
+            {/* Modal for existing customer picker */}
+            <Modal
+              transparent={true}
+              visible={selectedExistingCustomer === '' && mode === 'existing'}
+            >
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10, width: '80%' }}>
+                  <Text style={{ color: Colors.onSurface, fontSize: 16, fontWeight: '600', marginBottom: 12 }}>
+                    Select a Customer
+                  </Text>
+                  {['Mama Njeri', 'John Doe', 'Jane Smith'].map((name, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      onPress={() => {
+                        setSelectedExistingCustomer(name);
+                        setCustomerName(name); // update the customerName state for the rest of the form
+                      }}
+                    >
+                      <Text style={{ color: Colors.onSurface, padding: 10 }}>{name}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+            </Modal>
+            {selectedExistingCustomer !== '' ? (
+              <Text style={{ color: Colors.onSurface, fontSize: 15, marginBottom: 20 }}>
+                Selected: {selectedExistingCustomer}
+              </Text>
+            ) : null}
+          </>
+        ) : (
+          <>
+            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
+              Customer Name
+            </Text>
+            <TextInput
+              placeholder="e.g. Mama Njeri"
+              value={customerName}
+              onChangeText={setCustomerName}
+              style={{
+                borderWidth: 1.5,
+                borderColor: Colors.outlineVariant,
+                borderRadius: 10,
+                paddingHorizontal: 14,
+                paddingVertical: 12,
+                fontSize: 15,
+                color: Colors.onSurface,
+                marginBottom: 20,
+              }}
+            />
+          </>
+        )}
+
+        {/* Confirm Customer Button */}
+        {(mode !== null || selectedExistingCustomer !== '') && (
+          <TouchableOpacity
+            onPress={handleConfirmCustomer}
+            style={{
+              backgroundColor: Colors.primary,
+              borderRadius: 12,
+              paddingVertical: 14,
+              alignItems: 'center',
+              marginBottom: 20,
+            }}
+          >
+            <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>
+              Confirm Customer Selection
+            </Text>
+          </TouchableOpacity>
+        )}
+
         {livePriorDebt > 0 && (
           <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, marginBottom: 12 }}>
             {`This customer has an existing balance of KES ${livePriorDebt.toLocaleString()}.`}
