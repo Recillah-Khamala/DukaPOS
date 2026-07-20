@@ -1,17 +1,17 @@
-// app/new-credit-entry.tsx
+﻿// app/new-credit-entry.tsx
 import React from 'react';
-import { View, Text, ScrollView, TextInput, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, ScrollView, TextInput, TouchableOpacity, Modal, FlatList } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useCreditLedger, CreditItemCategory } from '../hooks/useCreditLedger';
 import { useSalesHistory } from '../hooks/useSalesHistory';
 import { useInventory } from '../context/InventoryContext';
+import { useCustomers } from '../context/CustomersContext';
 import TopAppBar from '../components/layout/TopAppBar';
 import Colors from '../constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import {
   parseManualDate,
   inventoryCategoryToCreditCategory,
-  makeCustomerId,
   buildCreditEntry,
   prepareBuiltItemsAndTotal,
   computeInventoryDeductionsForSale,
@@ -37,12 +37,7 @@ const NewCreditEntryScreen: React.FC = () => {
   const router = useRouter();
   const { addEntry, entries, recordPayment } = useCreditLedger();
   const { addSale } = useSalesHistory();
-  const [customerName, setCustomerName] = React.useState('');
-  const [mode, setMode] = React.useState<'new' | 'existing' | null>(null);
-  const [selectedExistingCustomer, setSelectedExistingCustomer] = React.useState('');
-  const [items, setItems] = React.useState<DraftItem[]>([makeEmptyItem()]);
-  const [amountReceivedNow, setAmountReceivedNow] = React.useState('');
-  const [bannerMessage, setBannerMessage] = React.useState<string | null>(null);
+  const { customers, loading, addCustomer: addCustomerToContext } = useCustomers();
   const { allItems, updateItem } = useInventory();
 
   // --- Existing debt (pre-DukaPOS) mode ---
@@ -55,13 +50,58 @@ const NewCreditEntryScreen: React.FC = () => {
   const [debtMonth, setDebtMonth] = React.useState('');
   const [debtYear, setDebtYear] = React.useState('');
 
-  // Live prior-debt for the currently typed customer name (shown inline)
+  // Customer selection state
+  const [customer, setCustomer] = React.useState<Customer | null>(null);
+  const [isCreatingNew, setIsCreatingNew] = React.useState(false);
+  const [newCustomerName, setNewCustomerName] = React.useState('');
+
+  // Generate a UUID for new customers
+  const generateUUID = async (): Promise<string> => {
+    const { randomUUID } = await import('expo-crypto');
+    return randomUUID();
+  };
+
+  // Handle creating a new customer
+  const handleCreateNewCustomer = async () => {
+    if (!newCustomerName.trim()) {
+      alert('Please enter a customer name');
+      return;
+    }
+    try {
+      const id = await generateUUID();
+      const newCustomer: Customer = {
+        id,
+        name: newCustomerName.trim(),
+        createdAt: new Date().toISOString(),
+      };
+      await addCustomerToContext({ name: newCustomerName.trim() }); // This will save to context and storage
+      setCustomer(newCustomer);
+      setIsCreatingNew(false);
+      setNewCustomerName('');
+    } catch (e) {
+      console.error('Failed to create customer:', e);
+      alert('Failed to create customer');
+    }
+  };
+
+  // Handle selecting an existing customer
+  const handleSelectExistingCustomer = (selectedCustomer: Customer) => {
+    setCustomer(selectedCustomer);
+    setIsCreatingNew(false);
+  };
+
+  // Handle changing the customer (reset selection)
+  const handleChangeCustomer = () => {
+    setCustomer(null);
+  };
+
+  // Live prior-debt for the selected customer (shown inline)
   const livePriorDebt = React.useMemo(() => {
-    const id = makeCustomerId(customerName);
+    if (!customer) return 0;
     return entries
-      .filter(e => e.customerId === id && e.status === 'active')
+      .filter(e => e.customerId === customer.id && e.status === 'active')
       .reduce((sum, e) => sum + e.balance, 0);
-  }, [entries, customerName]);
+  }, [entries, customer]);
 
   const updateDraftItem = (key: string, patch: Partial<DraftItem>) => {
     setItems(prev => prev.map(item => (item.key === key ? { ...item, ...patch } : item)));
@@ -88,38 +128,21 @@ const NewCreditEntryScreen: React.FC = () => {
   const remainingAfterDeposit = Math.max(0, grandTotal - deposit);
   const excessPayment = Math.max(0, depositRaw - grandTotal);
 
-  const isFormValid = isExistingDebt
-    ? customerName.trim() !== '' && parseFloat(debtTotal || '0') > 0
-    : customerName.trim() !== '' &&
-      items.every(
-        item =>
-          item.name.trim() !== '' &&
-          parseFloat(item.qty || '0') > 0 &&
-          parseFloat(item.unitPrice || '0') > 0
-      );
-
-  const handleConfirmCustomer = () => {
-    if (mode === null) {
-      alert('Please select a customer type');
-      return;
-    }
-    if (mode === 'existing' && selectedExistingCustomer === '') {
-      alert('Please select an existing customer');
-      return;
-    }
-    const customerId = makeCustomerId(customerName);
-    console.log({
-      mode,
-      customerName,
-      customerId,
-    });
-  };
+  const isFormValid = customer !== null &&
+    (isExistingDebt
+      ? parseFloat(debtTotal || '0') > 0
+      : items.every(
+          item =>
+            item.name.trim() !== '' &&
+            parseFloat(item.qty || '0') > 0 &&
+            parseFloat(item.unitPrice || '0') > 0
+        ));
 
   const handleSave = async () => {
     if (!isFormValid) return;
 
     // Step 1: customer identity + their existing debt
-    const customerId = makeCustomerId(customerName);
+    const customerId = customer!.id;
     const priorDebt = entries
       .filter(e => e.customerId === customerId && e.status === 'active')
       .reduce((sum, e) => sum + e.balance, 0);
@@ -141,7 +164,7 @@ const NewCreditEntryScreen: React.FC = () => {
 
     // Step 4: build + save the credit entry
     const createdAt = isExistingDebt ? parseManualDate(debtDay, debtMonth, debtYear) : new Date().toISOString();
-    const newEntry = buildCreditEntry(customerId, customerName, builtItems, total, deposit, createdAt);
+    const newEntry = buildCreditEntry(customerId, customer!.name, builtItems, total, deposit, createdAt);
     await addEntry(newEntry);
 
     // Step 5: apply any excess deposit to the customer's OTHER existing debt.
@@ -184,6 +207,7 @@ const NewCreditEntryScreen: React.FC = () => {
           Record a sale on credit for a customer
         </Text>
 
+        {/* Existing debt toggle (unchanged) */}
         <TouchableOpacity
           onPress={() => setIsExistingDebt(prev => !prev)}
           style={{
@@ -213,15 +237,15 @@ const NewCreditEntryScreen: React.FC = () => {
           </Text>
         </TouchableOpacity>
 
-        {/* Customer Selection UI */}
-        {mode === null ? (
+        {/* Customer Selection */}
+        {customer === null ? (
           <>
             <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
               Is this a new customer or an existing one?
             </Text>
             <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 20 }}>
               <TouchableOpacity
-                onPress={() => setMode('new')}
+                onPress={() => setIsCreatingNew(true)}
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -238,7 +262,7 @@ const NewCreditEntryScreen: React.FC = () => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => setMode('existing')}
+                onPress={() => setIsCreatingNew(false)} // We'll show the list in a modal or flatlist below
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -255,89 +279,104 @@ const NewCreditEntryScreen: React.FC = () => {
                 </Text>
               </TouchableOpacity>
             </View>
-          </>
-        ) : mode === 'existing' ? (
-          <>
-            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
-              Select Existing Customer
-            </Text>
-            {/* Modal for existing customer picker */}
-            <Modal
-              transparent={true}
-              visible={selectedExistingCustomer === '' && mode === 'existing'}
-            >
-              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10, width: '80%' }}>
-                  <Text style={{ color: Colors.onSurface, fontSize: 16, fontWeight: '600', marginBottom: 12 }}>
-                    Select a Customer
+
+            {/* New Customer Input */}
+            {isCreatingNew && (
+              <View style={{ marginBottom: 20 }}>
+                <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
+                  Enter New Customer Name
+                </Text>
+                <TextInput
+                  placeholder="e.g. Mama Njeri"
+                  value={newCustomerName}
+                  onChangeText={setNewCustomerName}
+                  style={{
+                    borderWidth: 1.5,
+                    borderColor: Colors.outlineVariant,
+                    borderRadius: 10,
+                    paddingHorizontal: 14,
+                    paddingVertical: 12,
+                    fontSize: 15,
+                    color: Colors.onSurface,
+                    marginBottom: 8,
+                  }}
+                />
+                <TouchableOpacity
+                  onPress={handleCreateNewCustomer}
+                  style={{
+                    backgroundColor: Colors.primary,
+                    borderRadius: 12,
+                    paddingVertical: 14,
+                    alignItems: 'center',
+                  }}
+                >
+                  <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>
+                    Create Customer
                   </Text>
-                  {['Mama Njeri', 'John Doe', 'Jane Smith'].map((name, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      onPress={() => {
-                        setSelectedExistingCustomer(name);
-                        setCustomerName(name); // update the customerName state for the rest of the form
-                      }}
-                    >
-                      <Text style={{ color: Colors.onSurface, padding: 10 }}>{name}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
+                </TouchableOpacity>
               </View>
-            </Modal>
-            {selectedExistingCustomer !== '' ? (
-              <Text style={{ color: Colors.onSurface, fontSize: 15, marginBottom: 20 }}>
-                Selected: {selectedExistingCustomer}
-              </Text>
-            ) : null}
+            )}
+
+            {/* Existing Customer List */}
+            {!isCreatingNew && (
+              <View>
+                <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
+                  Select Existing Customer
+                </Text>
+                {loading ? (
+                  <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13 }}>Loading customers...</Text>
+                ) : customers.length === 0 ? (
+                  <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13 }}>No customers found</Text>
+                ) : (
+                  <FlatList
+                    data={customers}
+                    keyExtractor={item => item.id}
+                    renderItem={({ item }) => (
+                      <TouchableOpacity
+                        onPress={() => handleSelectExistingCustomer(item)}
+                        style={{
+                          padding: 12,
+                          borderWidth: 1,
+                          borderColor: Colors.outlineVariant,
+                          borderRadius: 6,
+                          marginBottom: 4,
+                        }}
+                      >
+                        <Text style={{ color: Colors.onSurface, fontSize: 15 }}>
+                          {item.name}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                    contentContainerStyle={{ paddingHorizontal: 12 }}
+                  />
+                )}
+              </View>
+            )}
           </>
         ) : (
           <>
-            <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
-              Customer Name
-            </Text>
-            <TextInput
-              placeholder="e.g. Mama Njeri"
-              value={customerName}
-              onChangeText={setCustomerName}
-              style={{
-                borderWidth: 1.5,
-                borderColor: Colors.outlineVariant,
-                borderRadius: 10,
-                paddingHorizontal: 14,
-                paddingVertical: 12,
-                fontSize: 15,
-                color: Colors.onSurface,
-                marginBottom: 20,
-              }}
-            />
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <Text style={{ color: Colors.onSurface, fontSize: 16, fontWeight: '600' }}>
+                Customer: {customer?.name}
+              </Text>
+              <TouchableOpacity
+                onPress={handleChangeCustomer}
+                style={{ padding: 8 }}
+              >
+                <MaterialIcons name="edit" size={20} color={Colors.primary} />
+              </TouchableOpacity>
+            </View>
           </>
         )}
 
-        {/* Confirm Customer Button */}
-        {(mode !== null || selectedExistingCustomer !== '') && (
-          <TouchableOpacity
-            onPress={handleConfirmCustomer}
-            style={{
-              backgroundColor: Colors.primary,
-              borderRadius: 12,
-              paddingVertical: 14,
-              alignItems: 'center',
-              marginBottom: 20,
-            }}
-          >
-            <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>
-              Confirm Customer Selection
-            </Text>
-          </TouchableOpacity>
-        )}
-
+        {/* Live prior debt (if any) */}
         {livePriorDebt > 0 && (
           <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, marginBottom: 12 }}>
             {`This customer has an existing balance of KES ${livePriorDebt.toLocaleString()}.`}
           </Text>
         )}
 
+        {/* Debt mode form (existing debt or new credit entry) */}
         {isExistingDebt ? (
           <LegacyDebtForm
             description={debtDescription}
@@ -430,6 +469,7 @@ const NewCreditEntryScreen: React.FC = () => {
             <Text style={{ color: Colors.onSecondaryContainer, fontSize: 13 }}>
               {deposit > 0
                 ? `Paid now: KES ${deposit.toLocaleString()}  ·  Remaining on credit: KES ${remainingAfterDeposit.toLocaleString()}`
+
                 : 'Leave blank if nothing is paid today'}
             </Text>
           </View>

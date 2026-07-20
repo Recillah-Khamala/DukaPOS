@@ -59,9 +59,12 @@ export function parseManualDate(day: string, month: string, year: string): strin
   return date.toISOString();
 }
 
-// Strips punctuation before collapsing whitespace, so "Mama Njeri!" and
-// "Mama, Njeri" both normalize to the same id. Does not solve genuine
-// misspellings or nicknames — that needs a customer picker, not a slug fix.
+/**
+ * @deprecated Use UUIDs from CustomersContext instead. This function is kept for reference only.
+ * Strips punctuation before collapsing whitespace, so "Mama Njeri!" and
+ * "Mama, Njeri" both normalize to the same id. Does not solve genuine
+ * misspellings or nicknames - that needs a customer picker, not a slug fix.
+ */
 export function makeCustomerId(name: string): string {
   return name
     .trim()

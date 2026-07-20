@@ -80,4 +80,11 @@ export interface Product {
 // (it's defined there alongside INVENTORY_ITEMS, which needs the type in
 // scope). Re-exported here so existing `import { InventoryItem } from
 // '../types'` call sites keep working unchanged.
+
+export interface Customer {
+  id: string;
+  name: string;
+  createdAt: string;
+}
 export type { InventoryItem } from '../constants/inventoryData';
+
