@@ -42,18 +42,18 @@ const CustomerPicker: React.FC<CustomerPickerProps> = ({ customer, onCustomerSel
     setIsCreatingNew(false);
   };
 
-  if (customer !== null) {
-    return (
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <Text style={{ color: Colors.onSurface, fontSize: 16, fontWeight: '600' }}>
-          Customer: {customer.name}
-        </Text>
-        <TouchableOpacity onPress={onChangeCustomer} style={{ padding: 8 }}>
-          <MaterialIcons name="edit" size={20} color={Colors.primary} />
-        </TouchableOpacity>
-      </View>
-    );
-  }
+if (customer != null) {
+     return (
+       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+         <Text style={{ color: Colors.onSurface, fontSize: 16, fontWeight: '600' }}>
+           Customer: {customer.name}
+         </Text>
+         <TouchableOpacity onPress={onChangeCustomer} style={{ padding: 8 }}>
+           <MaterialIcons name="edit" size={20} color={Colors.primary} />
+         </TouchableOpacity>
+       </View>
+     );
+   }
 
   return (
     <>
