@@ -205,7 +205,7 @@ export default function NewCreditEntryScreen() {
                     {item.name} - {item.quantity} × KES {item.unitPrice.toFixed(2)} = KES {(item.quantity * item.unitPrice).toFixed(2)}
                   </Text>
                 </View>
-              })
+)}
               contentContainerStyle={{ paddingHorizontal: 4 }}
             />
           )}
