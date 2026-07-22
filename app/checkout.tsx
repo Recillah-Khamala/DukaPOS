@@ -10,12 +10,15 @@ import PaymentMethodSelector from '../components/ui/PaymentMethodSelector';
 import ChangeCalculator from '../components/ui/ChangeCalculator';
 import AdjustItemModal from '../components/sales/AdjustItemModal';
 import Card from '../components/ui/Card';
+import CustomerPicker from '../components/credit/CustomerPicker';
 import { useSharedBasket } from '../context/BasketContext';
 import { useSalesHistory } from '../hooks/useSalesHistory';
 import { useInventory } from '../context/InventoryContext';
-import { useCreditLedger } from '../hooks/useCreditLedger';
+import { useCreditLedger, allocatePaymentToItems } from '../hooks/useCreditLedger';
+import { buildCreditEntry, basketTypeToCreditCategory } from '../utils/creditEntryHelpers';
+import type { CreditItem } from '../hooks/useCreditLedger';
 import { CEREAL_PRODUCTS, POSHOMILL_SERVICES, BAG_PRODUCTS } from '../constants/salesData';
-import type { PaymentMethod, UnitType, CompletedSale, BasketItem } from '../types';
+import type { PaymentMethod, UnitType, CompletedSale, BasketItem, Customer } from '../types';
 
 const FRACTION_CYCLE: UnitType[] = ['korokoro', 'kg'];
 
@@ -55,7 +58,8 @@ const getSmallestFractionFromLabel = (label?: string): number => {
 export default function CheckoutScreen() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
   const [cashReceived, setCashReceived] = useState(0);
-  const [creditCustomerName, setCreditCustomerName] = useState('');
+  const [creditCustomer, setCreditCustomer] = useState<Customer | null>(null);
+  const [creditDepositAmount, setCreditDepositAmount] = useState('');
   const [bottomNavHeight, setBottomNavHeight] = useState(0);
   const [selectedEditItem, setSelectedEditItem] = useState<BasketItem | null>(null);
   const router = useRouter();
@@ -106,25 +110,36 @@ export default function CheckoutScreen() {
         console.warn('Failed to update inventory:', e);
       }
       // Credit ledger entry if credit payment
-      if (paymentMethod === 'credit' && creditCustomerName.trim()) {
-        const customerId = creditCustomerName.trim().toLowerCase().replace(/\s+/g, '-');
-        addEntry({
-          id: Date.now().toString(),
-          customerId,
-          customerName: creditCustomerName.trim(),
-          items: items.map(i => ({
-            name: i.name,
-            qty: i.qty,
-            unitPrice: i.unitPrice,
-            total: i.qty * i.unitPrice,
-          })),
-          totalAmount: total,
+      if (paymentMethod === 'credit' && creditCustomer) {
+        const rawDeposit = parseFloat(creditDepositAmount || '0') || 0;
+        const deposit = Math.max(0, Math.min(rawDeposit, total));
+
+        const creditItems: CreditItem[] = items.map(item => ({
+          name: item.name,
+          qty: item.qty,
+          unitPrice: item.unitPrice,
+          total: item.qty * item.unitPrice,
+          category: basketTypeToCreditCategory(item.type),
           amountPaid: 0,
-          balance: total,
-          createdAt: new Date().toISOString(),
-          lastUpdatedAt: new Date().toISOString(),
-          status: 'active',
-        });
+          balance: item.qty * item.unitPrice,
+          productId: item.productId,
+        }));
+        // Same deposit-allocation math the standalone New Credit Entry
+        // screen uses, so a partial payment taken here is split across
+        // items identically rather than leaving every item's balance at
+        // its full total the way this path used to (it never had a
+        // deposit field, so amountPaid/balance never reflected one).
+        const allocatedItems = deposit > 0 ? allocatePaymentToItems(creditItems, deposit) : creditItems;
+
+        const newEntry = buildCreditEntry(
+          creditCustomer.id,
+          creditCustomer.name,
+          allocatedItems,
+          total,
+          deposit,
+          completedSale.completedAt
+        );
+        await addEntry(newEntry);
       }
       clearBasket();
       router.replace('/(tabs)/sales?saleSuccess=true&total=' + encodeURIComponent(String(total)));
@@ -239,16 +254,35 @@ export default function CheckoutScreen() {
                 </Card>
               ) : paymentMethod === 'credit' ? (
                 <Card>
-                  <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
-                    Customer Name
-                  </Text>
-                  <TextInput
-                    value={creditCustomerName}
-                    onChangeText={setCreditCustomerName}
-                    placeholder="e.g. Mama Njeri"
-                    placeholderTextColor="#9ca3af"
-                    style={{ borderWidth: 1.5, borderColor: Colors.outlineVariant, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: Colors.onSurface }}
+                  <CustomerPicker
+                    customer={creditCustomer}
+                    onCustomerSelected={setCreditCustomer}
+                    onChangeCustomer={() => setCreditCustomer(null)}
                   />
+                  {creditCustomer && (
+                    <>
+                      <Text style={{ color: Colors.onSurfaceVariant, fontSize: 13, fontWeight: '600', marginBottom: 6 }}>
+                        Amount Received Now (optional)
+                      </Text>
+                      <TextInput
+                        value={creditDepositAmount}
+                        onChangeText={setCreditDepositAmount}
+                        placeholder="e.g. 100"
+                        keyboardType="numeric"
+                        placeholderTextColor="#9ca3af"
+                        style={{ borderWidth: 1.5, borderColor: Colors.outlineVariant, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: Colors.onSurface, marginBottom: 4 }}
+                      />
+                      <Text style={{ color: Colors.onSurfaceVariant, fontSize: 12 }}>
+                        {(() => {
+                          const raw = parseFloat(creditDepositAmount || '0') || 0;
+                          const deposit = Math.max(0, Math.min(raw, total));
+                          return deposit > 0
+                            ? `Paid now: KES ${deposit.toLocaleString()} · Remaining on credit: KES ${(total - deposit).toLocaleString()}`
+                            : 'Leave blank if nothing is paid today';
+                        })()}
+                      </Text>
+                    </>
+                  )}
                 </Card>
               ) : (
                 <ChangeCalculator
@@ -259,7 +293,7 @@ export default function CheckoutScreen() {
               )}
               <Pressable
                 onPress={handleConfirm}
-                disabled={items.length === 0 || (paymentMethod === 'credit' && creditCustomerName.trim() === '')}
+                disabled={items.length === 0 || (paymentMethod === 'credit' && creditCustomer === null)}
                 className="w-full flex-row items-center justify-center rounded-lg py-3.5 active:scale-95"
                 style={{
                   backgroundColor: items.length === 0 ? '#d1d5db' : '#012d1d',
