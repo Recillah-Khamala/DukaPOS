@@ -38,6 +38,23 @@ export function categoryToBasketType(category: CreditItemCategory): 'cereal' | '
   }
 }
 
+// Inverse of categoryToBasketType, for building credit items directly from
+// a shopper's basket (checkout.tsx's "Sell on Credit" path) rather than
+// from the standalone New Credit Entry form's DraftItem rows. 'service'
+// basket items default to 'milling' — the only service DukaPOS currently
+// sells — since the basket type alone can't distinguish milling from a
+// generic 'other' service.
+export function basketTypeToCreditCategory(type: 'cereal' | 'bag' | 'service'): CreditItemCategory {
+  switch (type) {
+    case 'cereal':
+      return 'cereal';
+    case 'bag':
+      return 'bags';
+    case 'service':
+      return 'milling';
+  }
+}
+
 export function computeInventoryDeduction(item: CreditItem, inventoryItem: InventoryItem): number {
   // If unit is not set (e.g., legacy draft or bags/poshomill path), default to sellingUnit.
   // This is safe because the selling unit is the canonical unit in which stock is tracked.

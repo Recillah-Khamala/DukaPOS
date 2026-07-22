@@ -1,9 +1,9 @@
 ﻿import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import Colors from '../../constants/colors';
-import { useCustomers } from '../../context/CustomersContext';
-import type { Customer } from '../../types';
+import Colors from '../constants/colors';
+import { useCustomers } from '../context/CustomersContext';
+import type { Customer } from '../types';
 
 interface CustomerPickerProps {
   customer: Customer | null;
