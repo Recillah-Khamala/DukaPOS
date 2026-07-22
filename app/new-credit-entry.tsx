@@ -6,6 +6,7 @@ import { useCreditLedger, CreditItemCategory } from '../hooks/useCreditLedger';
 import { useSalesHistory } from '../hooks/useSalesHistory';
 import { useInventory } from '../context/InventoryContext';
 import { useCustomers } from '../context/CustomersContext';
+import type { Customer } from '../types';
 import TopAppBar from '../components/layout/TopAppBar';
 import Colors from '../constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -50,16 +51,15 @@ const NewCreditEntryScreen: React.FC = () => {
   const [debtMonth, setDebtMonth] = React.useState('');
   const [debtYear, setDebtYear] = React.useState('');
 
+  // --- Credit sale items + payment ---
+  const [items, setItems] = React.useState<DraftItem[]>([makeEmptyItem()]);
+  const [amountReceivedNow, setAmountReceivedNow] = React.useState('');
+  const [bannerMessage, setBannerMessage] = React.useState<string | null>(null);
+
   // Customer selection state
   const [customer, setCustomer] = React.useState<Customer | null>(null);
   const [isCreatingNew, setIsCreatingNew] = React.useState(false);
   const [newCustomerName, setNewCustomerName] = React.useState('');
-
-  // Generate a UUID for new customers
-  const generateUUID = async (): Promise<string> => {
-    const { randomUUID } = await import('expo-crypto');
-    return randomUUID();
-  };
 
   // Handle creating a new customer
   const handleCreateNewCustomer = async () => {
@@ -68,13 +68,17 @@ const NewCreditEntryScreen: React.FC = () => {
       return;
     }
     try {
-      const id = await generateUUID();
-      const newCustomer: Customer = {
-        id,
-        name: newCustomerName.trim(),
-        createdAt: new Date().toISOString(),
-      };
-      await addCustomerToContext({ name: newCustomerName.trim() }); // This will save to context and storage
+      // FIX: previously generated a UUID locally (via expo-crypto) and used
+      // it as this screen's `customer` state, while separately calling
+      // addCustomerToContext({ name }) — which mints its OWN random UUID
+      // internally when it actually persists the record. That meant the
+      // customer attributed to this credit entry and the customer actually
+      // saved to storage ended up with two different ids.
+      //
+      // addCustomer now returns the Customer it actually persisted (with
+      // its real id), so that's the single source of truth used here —
+      // no separate id generation needed in this file at all.
+      const newCustomer = await addCustomerToContext({ name: newCustomerName.trim() });
       setCustomer(newCustomer);
       setIsCreatingNew(false);
       setNewCustomerName('');
@@ -141,11 +145,11 @@ const NewCreditEntryScreen: React.FC = () => {
   const handleSave = async () => {
     if (!isFormValid) return;
 
-    // Step 1: customer identity + their existing debt
+    // Step 1: customer identity + their existing debt.
+    // Reuses livePriorDebt (already computed above for the currently
+    // selected customer) instead of recomputing the same filter/reduce here.
     const customerId = customer!.id;
-    const priorDebt = entries
-      .filter(e => e.customerId === customerId && e.status === 'active')
-      .reduce((sum, e) => sum + e.balance, 0);
+    const priorDebt = livePriorDebt;
 
     // Step 2: build items + apply deposit allocation
     const debtInfo = isExistingDebt

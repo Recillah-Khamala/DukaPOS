@@ -8,7 +8,18 @@ const CUSTOMERS_KEY = 'duka_customers';
 interface CustomersContextValue {
   customers: Customer[];
   loading: boolean;
-  addCustomer: (customer: Omit<Customer, 'id' | 'createdAt'>) => Promise<void>;
+  // Returns the created Customer (including its generated id) so callers
+  // that need to use the customer immediately (e.g. attaching a credit
+  // entry to them) don't have to separately generate their own id and risk
+  // it diverging from the one actually persisted here.
+  addCustomer: (customer: Omit<Customer, 'id' | 'createdAt'>) => Promise<Customer>;
+  // Bulk-add customers that already have a fixed id — used by the one-time
+  // legacy customerId migration, which must preserve each old CreditEntry's
+  // existing customerId rather than mint a new random one. Also avoids the
+  // stale-closure race of calling addCustomer() repeatedly in a loop (each
+  // call would otherwise persist against the same pre-loop `customers`
+  // snapshot, silently dropping all but the last addition).
+  addCustomers: (newCustomers: Customer[]) => Promise<void>;
   getCustomerById: (id: string) => Customer | undefined;
 }
 
@@ -20,23 +31,38 @@ export function CustomersProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const load = async () => {
-      const saved = await loadData<Customer[]>(CUSTOMERS_KEY);
-      if (saved && Array.isArray(saved)) {
-        setCustomers(saved);
+      try {
+        const saved = await loadData<Customer[]>(CUSTOMERS_KEY);
+        if (saved && Array.isArray(saved)) {
+          setCustomers(saved);
+        }
+      } catch (e) {
+        console.error('Failed to load customers from storage:', e);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     load();
   }, []);
 
-  const addCustomer = async (customerData: Omit<Customer, 'id' | 'createdAt'>) => {
+  const persist = async (newCustomers: Customer[]) => {
+    setCustomers(newCustomers);
+    await saveData(CUSTOMERS_KEY, newCustomers);
+  };
+
+  const addCustomer = async (customerData: Omit<Customer, 'id' | 'createdAt'>): Promise<Customer> => {
     const newCustomer: Customer = {
       id: (await randomUUID()).toString(),
       name: customerData.name,
       createdAt: new Date().toISOString(),
     };
-    setCustomers(prev => [...prev, newCustomer]);
-    await saveData(CUSTOMERS_KEY, [...customers, newCustomer]);
+    await persist([...customers, newCustomer]);
+    return newCustomer;
+  };
+
+  const addCustomers = async (newCustomers: Customer[]) => {
+    if (newCustomers.length === 0) return;
+    await persist([...customers, ...newCustomers]);
   };
 
   const getCustomerById = (id: string) => {
@@ -49,6 +75,7 @@ export function CustomersProvider({ children }: { children: ReactNode }) {
         customers,
         loading,
         addCustomer,
+        addCustomers,
         getCustomerById,
       }}
     >
