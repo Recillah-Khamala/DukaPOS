@@ -118,7 +118,7 @@ const activeEntries = entries.filter(e => e.status === 'active');
                 genuine risk (90+ day unpaid balances), so it uses an error-tinted
                 background/border and error-colored text instead of the neutral
                 surfaceContainerHigh treatment those two share. */}
-            <Card style={{ width: '100%', borderColor: Colors.error }} backgroundColor="#fef2f2">
+            <Card style={{ width: '100%', borderColor: Colors.error }} backgroundColor={Colors.surface}>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 2 }}>
                 <MaterialIcons name="warning" size={14} color={Colors.error} />
                 <Text style={{ color: Colors.error, fontSize: 11, fontWeight: '700', textTransform: 'uppercase', marginLeft: 4 }}>
